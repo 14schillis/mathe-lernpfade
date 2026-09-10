@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I.1 Wachstumsprozesse – Lernpfad</title>
+<style>
+
+/* ============ Grundlagen (aus MASTER) ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;        /* Hefteintrag-Blau */
+  --accent-soft:#eaf1f8;
+  --pos:#1f6fb2;           /* exponentiell / Quotient */
+  --pos-bg:#dceaf6;
+  --neg:#b45309;           /* linear / Differenz */
+  --neg-bg:#fbeadb;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+  --alge:#5aa832;
+  --alge-soft:#dff0cf;
+  --wasser:#bcdcef;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+/* overflow-x:clip statt hidden – hidden würde einen Scroll-Container erzeugen
+   und damit position:sticky der Visualisierungen außer Kraft setzen. */
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+.steps{display:flex;gap:6px;list-style:none;margin:-11px 0 0;padding:0 0 2px}
+.steps li{flex:1;display:flex}
+.steps button{
+  /* Balken bleibt schlank, die Tippfläche wird nach oben und unten vergrößert */
+  width:100%;border:0;background:transparent;padding:14px 0 19px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:23px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:4px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+.gap{margin-top:14px}
+
+/* ============ Arbeitsansicht ============ */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:900px){
+  .work{grid-template-columns:1fr;gap:10px}
+  .work .viz svg{max-width:620px}
+}
+@media(min-width:901px) and (min-height:640px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 10px)}
+}
+/* Station 6: die Kette ist flach, die Aufgabenspalte bekommt mehr Platz */
+@media(min-width:901px){
+  .station[data-nr="6"] .work{grid-template-columns:minmax(0,.8fr) minmax(0,1fr)}
+}
+
+/* ============ Mathematik-Satz ============ */
+.m{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:italic}
+.m .up{font-style:normal}
+/* .mf: aufrechter Mathematiksatz, kursiv nur für Variablen in <i> */
+.mf{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:normal}
+.mf i{font-style:italic}
+/* Variablen nie durch text-transform verändern: d bleibt d, a bleibt a */
+.m,.mf{text-transform:none}
+.mblock{
+  text-align:center;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.big{font-size:clamp(1.15rem,3.2vw,1.45rem)}
+sub,sup{font-size:.68em}
+.formrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.15em .35em}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.pick:focus-visible,
+.chip:focus-visible,.modebtn:focus-visible{
+  outline:3px solid #7ba9d0;outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rückmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+.nextnote{display:block;margin-top:7px;font-weight:600;color:var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+.answer label{font-weight:600}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:120px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+.unit{font-size:.95rem;color:var(--ink-soft)}
+
+/* Sicherungs-Box (Hefteintrag-Box aus MASTER) */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:920px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.18em 0}
+.heft .duo{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+@media(min-width:720px){.heft .duo{grid-template-columns:1fr 1fr}}
+.duo .box{background:#fff;border:1px solid #c9dcec;border-radius:8px;padding:10px 13px}
+.duo .box.lin{border-left:4px solid var(--neg)}
+.duo .box.exp{border-left:4px solid var(--pos)}
+.duo .box .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.duo .box.lin .t{color:var(--neg)}
+.duo .box.exp .t{color:var(--pos)}
+.duo .box p{margin:.22em 0;font-size:.97rem}
+
+/* Wertetabellen */
+.tblscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.wt{
+  display:grid;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:8px;overflow:hidden;font-size:.92rem;font-variant-numeric:tabular-nums;
+  min-width:0;
+}
+.wt>div{background:#fff;padding:7px 3px;text-align:center;line-height:1.25}
+.wt .lab{text-align:left;padding-left:9px;font-weight:600;background:#f5f8fb;font-size:.86rem}
+.wt .hd{background:#f5f8fb;font-weight:600}
+.oprow{display:grid;margin:3px 0 2px;font-size:.85rem;font-variant-numeric:tabular-nums}
+.oprow .olab{font-size:.8rem;font-weight:600;padding-left:9px;display:flex;align-items:center}
+.opc{border-radius:6px;text-align:center;padding:4px 2px;transform:translateX(50%);font-weight:600}
+.opc.d{background:var(--neg-bg);color:#7a3907;border:1px solid #e3c19c}
+.opc.q{background:var(--pos-bg);color:#14456e;border:1px solid #a8c9e2}
+.oprow .olab.d{color:var(--neg)}
+.oprow .olab.q{color:var(--pos)}
+@media(max-width:620px){
+  .wt{font-size:.82rem}
+  .wt .lab{font-size:.76rem;padding-left:6px}
+  .oprow{font-size:.76rem}
+  .oprow .olab{font-size:.72rem;padding-left:6px}
+}
+
+/* Wertekacheln */
+.vals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.val{
+  border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:7px 11px;
+  background:#fff;display:flex;align-items:baseline;gap:8px;flex:1 1 160px;
+}
+.val .k{font-size:.82rem;color:var(--ink-soft)}
+.val .v{font-size:1.14rem;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto}
+.val.lin{border-left-color:var(--neg)}
+.val.exp{border-left-color:var(--pos)}
+.val.exp .v{color:#14456e}
+.val.lin .v{color:#7a3907}
+
+/* Schieberegler */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:30px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.78rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{
+  content:"";display:block;width:1.5px;height:8px;background:#94a3b8;margin:0 auto 3px;
+}
+.scale span.mark{font-weight:700;color:var(--accent);font-size:.85rem}
+.scale span.mark::before{background:var(--accent);height:10px}
+
+/* Anzeige-Box */
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:10px 14px;background:#fff;
+}
+.valbox .vlabel{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vrow{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:2px}
+.valbox .vnum{
+  font-size:1.55rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;display:inline-block;
+}
+.valbox .vsub{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Legende */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:4px 0 2px;color:var(--ink-soft)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:20px;height:13px;border:1.4px solid;display:inline-block;flex:0 0 auto;border-radius:2px}
+.sw-lin{border-color:var(--neg);background:var(--neg-bg)}
+.sw-exp{border-color:var(--pos);background:var(--pos-bg)}
+.sw-alge{border-color:#4a8f28;background:var(--alge)}
+.sw-wasser{border-color:#8dbcd6;background:var(--wasser)}
+
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+
+/* ============ Sachkontext-Illustrationen ============ */
+/* große Illustration: breit nebeneinander, schmal unterhalb des Textes */
+.illu{display:grid;grid-template-columns:1fr;gap:clamp(10px,1.8vw,20px);align-items:center}
+@media(min-width:780px){.illu{grid-template-columns:minmax(0,1fr) minmax(0,300px)}}
+.illu .txt>p:first-child{margin-top:0}
+.pic{width:100%;margin:0 auto;display:block}
+.pic.pond{max-width:300px}
+/* kleine Illustration neben dem Aufgabentext */
+.ctx{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:2px 0 10px}
+.ctx .txt{flex:1 1 250px;min-width:0}
+.ctx .txt>p:first-child{margin-top:0}
+.ctx .pic{flex:0 0 128px;width:128px}
+.ctx .pic.tall{flex:0 0 104px;width:104px}
+@media(max-width:420px){.ctx .pic{flex:0 0 98px;width:98px}.ctx .pic.tall{flex:0 0 84px;width:84px}}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+
+/* Modusknöpfe (Zunahme / Abnahme) */
+.modes{display:flex;flex-wrap:wrap;gap:9px;margin:4px 0 10px}
+.modebtn{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+  padding:9px 16px;cursor:pointer;font-weight:650;min-height:44px;
+  -webkit-tap-highlight-color:transparent;flex:1 1 auto;
+}
+.modebtn.sel{background:var(--accent);color:#fff}
+
+/* Schrittweiser Modellaufbau (Station 3) */
+.build{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0 2px}
+@media(min-width:760px){.build{grid-template-columns:1fr 1fr}}
+.bcol{border:1px solid var(--line);border-radius:8px;padding:11px 13px;background:#fff}
+.bcol.lin{border-left:4px solid var(--neg)}
+.bcol.exp{border-left:4px solid var(--pos)}
+.bcol .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.bcol.lin .t{color:var(--neg)}
+.bcol.exp .t{color:var(--pos)}
+.brow{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  padding:6px 0;border-top:1px dashed var(--line);font-size:1rem;
+}
+.brow:first-of-type{border-top:0}
+.brow .step{font-size:.78rem;color:var(--ink-soft);flex:0 0 4.9em}
+.brow .term{font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif}
+.brow .res{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.brow.gen{border-top:2px solid var(--line);margin-top:4px;padding-top:9px;font-weight:600}
+.brow.gen .term{font-size:1.12rem}
+.arrowtag{
+  display:inline-block;border-radius:6px;padding:1px 7px;font-size:.82rem;font-weight:700;
+}
+.arrowtag.d{background:var(--neg-bg);color:#7a3907}
+.arrowtag.q{background:var(--pos-bg);color:#14456e}
+
+/* Detektiv-Karten (Station 7) */
+.pick3{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 2px}
+.pick{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:9px 14px;
+  cursor:pointer;min-height:44px;font-weight:600;color:var(--ink);flex:1 1 150px;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.pick:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.pick.sel-ok{border-color:var(--ok);background:var(--ok-bg);color:#14603c}
+.pick.sel-no{border-color:#c0392b;background:#fbeceb}
+.pick:disabled{cursor:default;opacity:.6}
+.pick.sel-ok:disabled{opacity:1}
+.counter{font-size:.85rem;color:var(--ink-soft);margin:4px 0 0}
+.counter b{color:var(--accent)}
+
+/* Kette (Station 6) */
+.chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;margin:12px 0 6px}
+.cbox{
+  border:2px solid var(--accent);border-radius:8px;min-width:62px;padding:9px 8px;
+  text-align:center;font-weight:700;font-size:1.1rem;background:#fff;color:var(--accent);
+  font-variant-numeric:tabular-nums;
+}
+.cbox.unknown{border-style:dashed;color:#94a3b8;background:#fbfcfe}
+.carr{display:flex;flex-direction:column;align-items:center;min-width:52px;color:var(--pos)}
+.carr .lbl{font-size:.85rem;font-weight:700;font-family:"Cambria Math",Cambria,Georgia,serif}
+.carr .ln{font-size:1.2rem;line-height:1}
+
+/* ============ Fußnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.locknote{font-size:.82rem;color:var(--hint);text-align:center;padding:0 12px 7px;display:none}
+.locknote.show{display:block}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{padding-bottom:5px;font-size:.79rem}
+  .steps{padding-bottom:0}
+}
+@media print{footer.nav,header.top{position:static}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">I. Exponentielles Wachstum und Logarithmus</div>
+    <div class="titel">I.1 Wachstumsprozesse</div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Herr Meyers Irrtum</h2>
+  <div class="meta">Station 1 von 8 · etwa 5 Minuten</div>
+
+  <div class="card narrow">
+    <div class="illu">
+      <div class="txt">
+        <p class="lead">Herr Meyer sieht regelmäßig nach den Goldfischen in seinem Teich. Der Teich ist
+          <strong>64&nbsp;m²</strong> groß.</p>
+        <p>Am <strong>Sonntag</strong> sind <strong>1&nbsp;m²</strong> mit Algen bedeckt.<br>
+           Am <strong>Montag</strong> sind es schon <strong>2&nbsp;m²</strong>.</p>
+        <p>Für die Fische ist eine algenfreie Oberfläche überlebenswichtig. Herr Meyer nimmt sich deshalb
+          für den nächsten <strong>Samstag</strong> eine Reinigung vor.</p>
+      </div>
+      <svg class="pic pond" viewBox="0 0 320 208" role="img"
+       aria-label="Illustration eines Gartenteichs mit teilweisem Algenbewuchs und zwei Goldfischen">
+    <rect x="0" y="0" width="320" height="208" rx="10" fill="#eef4e7"/>
+    <!-- Grashalme am Rand -->
+    <g stroke="#c3d9ab" stroke-width="2.2" fill="none" stroke-linecap="round">
+      <path d="M14 200 C 12 190 14 182 20 176"/><path d="M24 202 C 24 192 28 184 34 179"/>
+      <path d="M300 202 C 302 192 300 184 294 178"/><path d="M288 203 C 288 194 284 186 279 181"/>
+    </g>
+    <!-- Schilf hinter dem Teich -->
+    <g stroke="#5f9a44" stroke-width="2.4" fill="none" stroke-linecap="round">
+      <path d="M52 96 C 46 76 44 60 46 46"/><path d="M60 98 C 60 78 64 62 72 52"/>
+      <path d="M266 94 C 272 74 272 58 267 46"/><path d="M275 97 C 283 79 288 65 287 54"/>
+    </g>
+    <ellipse cx="46" cy="44" rx="3" ry="8.5" fill="#9c7a48"/>
+    <ellipse cx="267" cy="44" rx="3" ry="8.5" fill="#9c7a48"/>
+    <!-- Steinrand -->
+    <ellipse cx="160" cy="120" rx="140" ry="76" fill="#e2e7ea"/>
+    <ellipse cx="160" cy="120" rx="140" ry="76" fill="none" stroke="#cdd6db" stroke-width="1.5"/>
+    <g fill="#d3dade" stroke="#c0cad0" stroke-width="1">
+      <ellipse cx="160" cy="194" rx="13" ry="7"/><ellipse cx="96" cy="185" rx="11" ry="6.5"/>
+      <ellipse cx="226" cy="184" rx="12" ry="6.5"/>
+    </g>
+    <!-- Wasser -->
+    <ellipse cx="160" cy="120" rx="127" ry="65" fill="#bcdcef"/>
+    <ellipse cx="118" cy="98" rx="52" ry="16" fill="#d8ecf8" opacity="0.75"/>
+    <!-- Algenbewuchs -->
+    <g fill="#6fb43f" stroke="#4f9c2c" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M62 150 C 54 133 74 119 96 123 C 112 113 134 123 132 139 C 144 147 136 165 116 165
+               C 98 175 68 168 62 150 Z"/>
+      <path d="M168 84 C 164 70 188 62 202 70 C 218 66 228 80 218 90 C 204 98 176 96 168 84 Z"/>
+      <path d="M228 148 C 224 136 244 130 254 138 C 264 141 264 154 252 158 C 240 164 230 158 228 148 Z"/>
+    </g>
+    <g fill="#8ac95c" opacity="0.85">
+      <ellipse cx="92" cy="137" rx="12" ry="7"/><ellipse cx="196" cy="80" rx="9" ry="5.5"/>
+    </g>
+    <!-- Goldfische -->
+    <g transform="translate(178,132) scale(1.05)">
+      <path d="M0 0 L-11 -7 L-11 7 Z" fill="#e8913a"/>
+      <path d="M0 0 C 8 -9 26 -9 33 0 C 26 9 8 9 0 0 Z" fill="#f4a44c"/>
+      <circle cx="25" cy="-2" r="1.7" fill="#3f2a13"/>
+    </g>
+    <g transform="translate(150,160) scale(0.85)">
+      <path d="M0 0 L-11 -7 L-11 7 Z" fill="#e8913a"/>
+      <path d="M0 0 C 8 -9 26 -9 33 0 C 26 9 8 9 0 0 Z" fill="#f6b467"/>
+      <circle cx="25" cy="-2" r="1.7" fill="#3f2a13"/>
+    </g>
+  </svg>
+    </div>
+    <div id="q1a"></div>
+  </div>
+
+  <div class="card" id="c1viz" style="display:none">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl1">Tag für Tag weiterschalten:</label>
+          <input type="range" id="sl1" min="0" max="6" step="1" value="0"
+                 aria-label="Tag von Sonntag bis Samstag weiterschalten">
+          <div class="scale" id="scale1"></div>
+        </div>
+        <div id="svg1"></div>
+        <div class="legend">
+          <span><i class="swatch sw-alge"></i>mit Algen bedeckt</span>
+          <span><i class="swatch sw-wasser"></i>freie Wasserfläche</span>
+        </div>
+        <div class="figcap">Jedes kleine Quadrat steht für 1&nbsp;m² der 64&nbsp;m² großen Wasseroberfläche.</div>
+      </div>
+      <div class="task">
+        <div class="vals">
+          <div class="val lin"><span class="k">Herr Meyers Annahme</span><span class="v" id="v1lin">1 m²</span></div>
+        </div>
+        <div class="vals" id="v1expwrap" style="display:none">
+          <div class="val exp"><span class="k">tatsächlich</span><span class="v" id="v1exp">1 m²</span></div>
+        </div>
+        <p class="q" style="margin-top:12px" id="q1task">Schalte von Sonntag bis Samstag durch und beobachte,
+          wie sich der Teich nach Herrn Meyers Annahme füllt.</p>
+        <!-- Phase 1: nur Herrn Meyers Annahme -->
+        <div class="fb hint show" id="explore1">Schiebe den Regler bis ganz nach rechts – bis Samstag.</div>
+        <div id="revealwrap" style="display:none">
+          <div class="fb ok show">Nach Herrn Meyers Annahme wären am Samstag erst <strong>7&nbsp;m²</strong>
+            von 64&nbsp;m² bedeckt. Zeit genug also.</div>
+          <button class="btn gap" id="btnReveal">Was ist wirklich passiert?</button>
+        </div>
+        <!-- Phase 2: Vergleich beider Entwicklungen -->
+        <div id="phase2" style="display:none">
+          <div class="fb sol show">Am Samstag war der Teich <strong>vollständig zugewachsen</strong>.</div>
+          <div class="fb hint show" id="explore1b">Schalte jetzt noch einmal von Sonntag bis Samstag
+            durch und vergleiche dabei beide Entwicklungen.</div>
+        </div>
+        <div id="wrapQ1b" style="display:none">
+          <div id="q1b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Was bleibt gleich?</h2>
+  <div class="meta">Station 2 von 8 · etwa 6 Minuten · die Kernstation</div>
+
+  <div class="card">
+    <p class="lead">Beide Entwicklungen starten mit 1 und 2. Trotzdem laufen sie völlig auseinander.
+      Untersuche jetzt, <strong>wie man jeweils von einem Wert zum nächsten kommt</strong>.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <h3 style="margin-top:6px">Annahme von Herrn Meyer</h3>
+        <div class="tblscroll"><div id="tab2lin"></div></div>
+        <div id="op2lin"></div>
+
+        <h3 style="margin-top:18px">Tatsächliche Entwicklung</h3>
+        <div class="tblscroll"><div id="tab2exp"></div></div>
+        <div id="op2exp"></div>
+
+        <div class="btnrow">
+          <button class="btn ghost" id="btnDiff">Differenzen anzeigen</button>
+          <button class="btn ghost" id="btnQuot">Quotienten anzeigen</button>
+        </div>
+        <div class="figcap">Die Differenz ist <span class="mf"><i>B</i>(<i>t</i>+1) − <i>B</i>(<i>t</i>)</span>,
+          der Quotient ist <span class="mf"><i>B</i>(<i>t</i>+1) : <i>B</i>(<i>t</i>)</span>.</div>
+      </div>
+      <div class="task">
+        <div class="fb hint show" id="explore2">Lass dir zuerst die <strong>Differenzen</strong> anzeigen.</div>
+        <div id="wrapQ2a" style="display:none"><div id="q2a"></div></div>
+        <div id="wrapQ2b" style="display:none" class="gap"><div id="q2b"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="after2" style="display:none">
+    <div class="heft">
+      <div class="h">📝 SICHERUNG</div>
+      <p><span class="mf"><i>B</i>(<i>t</i>)</span> ist der Bestand nach <span class="m">t</span>&thinsp; gleichen Zeitschritten,
+        <span class="mf"><i>B</i>(0)</span> der <strong>Anfangsbestand</strong>.</p>
+      <div class="duo">
+        <div class="box lin">
+          <div class="t">Lineares Wachstum</div>
+          <p>konstanter <strong>Zuwachs</strong> <span class="m">d</span></p>
+          <p class="mf"><i>d</i> = <i>B</i>(<i>t</i>+1) − <i>B</i>(<i>t</i>)</p>
+          <p class="mf" style="font-size:1.08rem"><i>B</i>(<i>t</i>) = <i>B</i>(0) + <i>t</i> · <i>d</i></p>
+          <p class="small" style="margin-top:6px"><span class="mf"><i>d</i> &gt; 0</span>: lineare Zunahme<br>
+            <span class="mf"><i>d</i> &lt; 0</span>: lineare Abnahme</p>
+        </div>
+        <div class="box exp">
+          <div class="t">Exponentielles Wachstum</div>
+          <p>konstanter <strong>Wachstumsfaktor</strong> <span class="m">a</span></p>
+          <p class="mf"><i>a</i> = <i>B</i>(<i>t</i>+1) : <i>B</i>(<i>t</i>)</p>
+          <p class="mf" style="font-size:1.08rem"><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Beide Entwicklungen im Diagramm</h3>
+      <div id="svg2"></div>
+      <div class="legend" style="justify-content:center">
+        <span><i class="swatch sw-lin"></i>Herr Meyers Annahme (linear)</span>
+        <span><i class="swatch sw-exp"></i>tatsächliche Entwicklung (exponentiell)</span>
+      </div>
+      <div class="figcap">Beide starten bei 1. Am Samstag trennen sie 57&nbsp;m².</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Woher kommen die beiden Grundmodelle?</h2>
+  <div class="meta">Station 3 von 8 · etwa 4 Minuten</div>
+
+  <div class="card">
+    <p class="lead">Beide Male ist der Anfangsbestand <span class="mf"><i>B</i>(0) = 3</span>.
+      Links wird in jedem Zeitschritt <strong>4 addiert</strong>, rechts wird jedes Mal
+      <strong>mit 2 multipliziert</strong>. Baue die Schritte nacheinander auf.</p>
+
+    <div class="build">
+      <div class="bcol lin">
+        <div class="t">Linear – Zuwachs <span class="m">d</span> = 4</div>
+        <div id="b3lin"></div>
+      </div>
+      <div class="bcol exp">
+        <div class="t">Exponentiell – Faktor <span class="m">a</span> = 2</div>
+        <div id="b3exp"></div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn" id="btnStep3">Ein Zeitschritt weiter</button>
+      <button class="btn ghost" id="btnReset3" style="display:none">Von vorn</button>
+    </div>
+    <p class="counter" id="cnt3">Zeitschritte: <b>0</b> von 3</p>
+    <div class="fb hint show" id="explore3">Tippe auf „Ein Zeitschritt weiter“.</div>
+
+    <div id="wrapQ3" style="display:none" class="gap"><div id="q3"></div></div>
+  </div>
+
+  <div class="heft" id="heft3" style="display:none">
+    <div class="h">📝 MERKEN</div>
+    <p><strong>Linear:</strong> Der Zuwachs <span class="m">d</span>&thinsp; wird <span class="m">t</span>-mal
+      <em>addiert</em> &nbsp;→&nbsp; <span class="mf"><i>B</i>(<i>t</i>) = <i>B</i>(0) + <i>t</i> · <i>d</i></span></p>
+    <p><strong>Exponentiell:</strong> Der Faktor <span class="m">a</span>&thinsp; wird <span class="m">t</span>-mal
+      <em>multipliziert</em> &nbsp;→&nbsp; <span class="mf"><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span></p>
+    <p class="small">Deshalb steht <span class="m">t</span>&thinsp; beim exponentiellen Wachstum <strong>oben</strong>
+      im Exponenten: Es gibt an, <em>wie oft</em> der Faktor angewendet wurde.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Von Prozenten zum Wachstumsfaktor</h2>
+  <div class="meta">Station 4 von 8 · etwa 5 Minuten</div>
+
+  <div class="card">
+    <p class="lead">In Sachaufgaben steht meist eine <strong>Prozentangabe</strong> statt eines Faktors.
+      In jedem Zeitschritt entspricht der <strong>bisherige Bestand</strong> <strong>100&nbsp;%</strong>.
+      Von diesem Wert aus wird um <span class="m">p</span>&thinsp;% zu- oder abgenommen.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="modes">
+          <button class="modebtn sel" id="m4zu">Zunahme um <span class="m">p</span>&thinsp;%</button>
+          <button class="modebtn" id="m4ab">Abnahme um <span class="m">p</span>&thinsp;%</button>
+        </div>
+        <div class="sliderbox">
+          <label class="slabel" for="sl4"><span class="m">p</span>&thinsp; einstellen:</label>
+          <input type="range" id="sl4" min="1" max="50" step="1" value="25"
+                 aria-label="Prozentsatz p einstellen">
+          <div class="scale" id="scale4"></div>
+        </div>
+        <div id="svg4"></div>
+        <div class="figcap" id="cap4"></div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Wachstumsfaktor</div>
+          <div class="vrow">
+            <span class="mf" style="font-size:1.2rem"><i>a</i>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v4a">1,25</span>
+          </div>
+          <div class="vsub" id="v4sub">100 % + 25 % = 125 %</div>
+        </div>
+        <p class="q" style="margin-top:12px">Stelle verschiedene Prozentsätze ein – erkunde dabei
+          beides: die <strong>Zunahme</strong> und die <strong>Abnahme</strong>.</p>
+        <div class="fb hint show" id="explore4">Verändere den Prozentsatz bei der <strong>Zunahme</strong> und beobachte den Faktor.</div>
+        <div id="wrapQ4a" style="display:none"><div id="q4a"></div></div>
+        <div id="wrapQ4b" style="display:none" class="gap"><div id="q4b"></div></div>
+        <div id="wrapQ4c" style="display:none" class="gap"><div id="q4c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft4" style="display:none">
+    <div class="h">📝 SICHERUNG</div>
+    <div class="duo">
+      <div class="box exp">
+        <div class="t">Zunahme um <span class="m">p</span>&thinsp;%</div>
+        <p class="mf" style="font-size:1.08rem"><i>a</i> = 1 + <i>p</i> : 100</p>
+        <p class="small">Es gilt <span class="m">a</span>&thinsp; &gt; 1 &nbsp;→&nbsp; <strong>exponentielle Zunahme</strong></p>
+      </div>
+      <div class="box lin">
+        <div class="t">Abnahme um <span class="m">p</span>&thinsp;%</div>
+        <p class="mf" style="font-size:1.08rem"><i>a</i> = 1 − <i>p</i> : 100</p>
+        <p class="small">Es gilt 0 &lt; <span class="m">a</span>&thinsp; &lt; 1 &nbsp;→&nbsp; <strong>exponentielle Abnahme</strong></p>
+      </div>
+    </div>
+    <p style="margin-top:10px"><strong>Achtung:</strong> „Abnahme um 20&nbsp;%“ bedeutet
+      <strong>nicht</strong> Faktor 0,20, sondern Faktor <strong>0,80</strong> – es bleiben ja 80&nbsp;% übrig.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2>Eine Wachstumsgleichung aufstellen</h2>
+  <div class="meta">Station 5 von 8 · etwa 6 Minuten</div>
+
+  <div class="card">
+    <h3>A · Blattläuse im Gewächshaus</h3>
+    <div class="ctx">
+      <div class="txt">
+        <p>In einem Gewächshaus breiten sich Blattläuse aus. Jeden Tag wird gezählt:</p>
+      </div>
+      <svg class="pic" viewBox="0 0 150 130" role="img"
+         aria-label="Illustration eines Blattes mit mehreren Blattläusen">
+      <path d="M22 112 C 20 62 60 20 132 22 C 138 92 96 122 22 112 Z" fill="#8fc46a"/>
+      <path d="M22 112 C 20 62 60 20 132 22 C 138 92 96 122 22 112 Z" fill="none"
+            stroke="#5f9a44" stroke-width="2"/>
+      <path d="M24 111 C 62 92 100 62 131 23" stroke="#4f8f3a" stroke-width="2.2" fill="none"/>
+      <g stroke="#6fae52" stroke-width="1.5" fill="none">
+        <path d="M43 101 C 48 88 50 76 46 64"/><path d="M62 89 C 70 76 74 64 72 52"/>
+        <path d="M84 73 C 94 62 100 50 100 38"/>
+        <path d="M52 97 C 66 96 78 100 86 108"/><path d="M74 81 C 88 80 100 84 108 92"/>
+      </g>
+      <!-- Blattläuse -->
+      <g fill="#c9e2a8" stroke="#4f7a34" stroke-width="1.3">
+        <g transform="translate(52,88) scale(1.25)"><ellipse rx="7" ry="5"/>
+          <path d="M5 -4 L9 -8 M-5 -4 L-9 -8" stroke-linecap="round"/>
+          <path d="M-3 5 L-4 8 M3 5 L4 8" stroke-linecap="round"/></g>
+        <g transform="translate(75,70) scale(1.25)"><ellipse rx="7" ry="5"/>
+          <path d="M5 -4 L9 -8 M-5 -4 L-9 -8" stroke-linecap="round"/>
+          <path d="M-3 5 L-4 8 M3 5 L4 8" stroke-linecap="round"/></g>
+        <g transform="translate(96,52) scale(1.25)"><ellipse rx="6.2" ry="4.5"/>
+          <path d="M4.5 -3.5 L8 -7 M-4.5 -3.5 L-8 -7" stroke-linecap="round"/>
+          <path d="M-3 4.5 L-4 7 M3 4.5 L4 7" stroke-linecap="round"/></g>
+        <g transform="translate(60,60) scale(1.2)"><ellipse rx="6" ry="4.4"/>
+          <path d="M4.5 -3.5 L8 -7 M-4.5 -3.5 L-8 -7" stroke-linecap="round"/></g>
+        <g transform="translate(101,84) scale(1.2)"><ellipse rx="6.6" ry="4.8"/>
+          <path d="M4.5 -3.5 L8 -7 M-4.5 -3.5 L-8 -7" stroke-linecap="round"/>
+          <path d="M-3 4.8 L-4 7.5 M3 4.8 L4 7.5" stroke-linecap="round"/></g>
+        <g transform="translate(40,71) scale(1.15)"><ellipse rx="5.6" ry="4.1"/>
+          <path d="M4 -3 L7 -6.5 M-4 -3 L-7 -6.5" stroke-linecap="round"/></g>
+      </g>
+      <g fill="#3f6a2a">
+        <circle cx="57" cy="87" r="1.2"/><circle cx="80" cy="69" r="1.2"/>
+        <circle cx="101" cy="51" r="1.1"/><circle cx="106" cy="83" r="1.1"/>
+      </g>
+    </svg>
+    </div>
+    <div class="tblscroll"><div id="tab5a"></div></div>
+    <div id="op5a"></div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btnQ5a">Quotienten prüfen</button>
+    </div>
+
+    <div id="s5a1" class="gap"></div>
+    <div id="s5a2" class="gap" style="display:none"></div>
+    <div id="s5a3" class="gap" style="display:none"></div>
+    <div class="fb ok" id="fb5a">
+      <strong>Geschafft.</strong> Aus Anfangsbestand und Wachstumsfaktor entsteht direkt die Gleichung.
+    </div>
+  </div>
+
+  <div class="card" id="c5b" style="display:none">
+    <h3>B · Der Wert eines Laptops</h3>
+    <div class="ctx">
+      <div class="txt">
+        <p>Ein Laptop kostet neu <strong>1500&nbsp;€</strong>. Sein Wert sinkt jedes Jahr um
+          <strong>20&nbsp;%</strong>. Hier ist <span class="m">t</span>&thinsp; die Zahl der vergangenen Jahre.</p>
+      </div>
+      <svg class="pic" viewBox="0 0 150 118" role="img"
+         aria-label="Illustration eines Laptops, auf dem Bildschirm eine fallende Wertkurve">
+      <rect x="26" y="14" width="98" height="66" rx="6" fill="#33475b"/>
+      <rect x="32" y="20" width="86" height="52" rx="3" fill="#dbe9f4"/>
+      <!-- fallende Wertkurve auf dem Bildschirm -->
+      <polyline points="40,30 60,42 80,52 100,60 110,64" fill="none" stroke="#b45309"
+                stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="#b45309"><circle cx="40" cy="30" r="2.8"/><circle cx="80" cy="52" r="2.6"/>
+        <circle cx="110" cy="64" r="2.8"/></g>
+      <path d="M36 66 L114 66" stroke="#b9cfe0" stroke-width="1.4"/>
+      <!-- Gehäuse -->
+      <path d="M26 80 L124 80 L136 94 L14 94 Z" fill="#d7dfe5"/>
+      <path d="M14 94 L136 94 L138 99 A4 4 0 0 1 134 103 L16 103 A4 4 0 0 1 12 99 Z" fill="#bcc7cf"/>
+      <rect x="62" y="85" width="26" height="4" rx="2" fill="#aab7c1"/>
+    </svg>
+    </div>
+
+    <div id="s5b1"></div>
+    <div id="s5b2" class="gap" style="display:none"></div>
+    <div id="s5b3" class="gap" style="display:none"></div>
+    <div id="s5b4" class="gap" style="display:none"></div>
+  </div>
+
+  <div class="heft" id="heft5" style="display:none">
+    <div class="h">📝 MERKEN</div>
+    <p>So stellt man eine Wachstumsgleichung auf:</p>
+    <p>1. Anfangsbestand <span class="mf"><i>B</i>(0)</span> ablesen.</p>
+    <p>2. Prüfen, wie sich der Bestand pro Zeitschritt verändert.</p>
+    <p>3. Wachstumsfaktor <span class="m">a</span>&thinsp; bestimmen (aus dem Quotienten oder aus der Prozentangabe).</p>
+    <p>4. Einsetzen: <span class="mf" style="font-size:1.08rem"><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span></p>
+  </div>
+</section>
+
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>Der Faktor zwischen zwei entfernten Werten</h2>
+  <div class="meta">Station 6 von 8 · etwa 6 Minuten</div>
+
+  <div class="card">
+    <p class="lead">Oft kennt man nicht zwei <em>benachbarte</em> Werte, sondern zwei Werte,
+      zwischen denen <strong>mehrere Zeitschritte</strong> liegen.</p>
+    <p>Ein Bestand wächst exponentiell. Bekannt ist nur:
+      bei <span class="mf"><i>t</i> = 0</span> sind es <strong>10</strong>,
+      bei <span class="mf"><i>t</i> = 3</span> sind es <strong>80</strong>.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="chain" id="chain6"></div>
+        <div class="figcap">Zwischen 10 und 80 liegen drei Zeitschritte.</div>
+      </div>
+      <div class="task">
+        <div id="q6a"></div>
+        <div id="wrapQ6b" style="display:none" class="gap"><div id="q6b"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft6" style="display:none">
+    <div class="h">📝 SICHERUNG</div>
+    <p>Liegen zwischen zwei bekannten Beständen <span class="m">n</span>&thinsp; gleiche Zeitschritte,
+      so wird der Faktor <span class="m">n</span>-mal angewendet:</p>
+    <p class="mblock big mf"><i>B</i>(<i>t</i><sub>2</sub>) = <i>B</i>(<i>t</i><sub>1</sub>) · <i>a</i><sup><i>n</i></sup>
+      &nbsp;&nbsp;also&nbsp;&nbsp; <i>a</i><sup><i>n</i></sup> = <i>B</i>(<i>t</i><sub>2</sub>) : <i>B</i>(<i>t</i><sub>1</sub>)</p>
+    <p>Ist der Anfangsbestand bekannt, lautet der Ansatz kurz
+      <span class="mf"><i>B</i>(<i>n</i>) = <i>B</i>(0) · <i>a</i><sup><i>n</i></sup></span>.</p>
+    <p>Den Faktor <span class="m">a</span>&thinsp; erhält man daraus mit der <strong><span class="m">n</span>-ten Wurzel</strong>.</p>
+    <p class="small">Wichtig: Der Quotient der beiden Bestände ist <strong>nicht</strong> der Wachstumsfaktor,
+      solange mehr als ein Zeitschritt dazwischenliegt.</p>
+  </div>
+
+  <div class="card" id="c6t" style="display:none">
+    <h3>Transfer · Maispflanze</h3>
+    <div class="ctx">
+      <div class="txt">
+        <p>Eine Maispflanze ist zu Beginn <strong>9,0&nbsp;cm</strong> hoch. Nach <strong>2 Wochen</strong>
+          misst der Bauer <strong>20,3&nbsp;cm</strong>. Er nimmt exponentielles Wachstum an.
+          Der Taschenrechner ist erlaubt.</p>
+      </div>
+      <svg class="pic tall" viewBox="0 0 120 168" role="img"
+         aria-label="Illustration einer jungen Maispflanze mit Höhenmaß">
+      <!-- Höhenmaß -->
+      <g stroke="#a3b1c2" stroke-width="1.6" fill="none" stroke-linecap="round">
+        <path d="M16 142 L16 34"/>
+        <path d="M11 39 L16 32 L21 39"/><path d="M11 137 L16 144 L21 137"/>
+      </g>
+      <g stroke="#c3ccd6" stroke-width="1.4">
+        <path d="M16 122 L24 122"/><path d="M16 102 L24 102"/><path d="M16 82 L24 82"/>
+        <path d="M16 62 L24 62"/><path d="M16 42 L24 42"/>
+      </g>
+      <!-- Erde -->
+      <path d="M0 140 Q 60 130 120 140 L120 160 Q 60 168 0 160 Z" fill="#b98a5f"/>
+      <path d="M0 140 Q 60 130 120 140" fill="none" stroke="#9c6f47" stroke-width="1.6"/>
+      <!-- Blätter -->
+      <g fill="#7cba52" stroke="#4f8f3a" stroke-width="1.6" stroke-linejoin="round">
+        <path d="M62 116 C 40 116 26 104 22 90 C 42 92 58 100 62 116 Z"/>
+        <path d="M64 96 C 84 94 98 82 102 68 C 82 71 68 80 64 96 Z"/>
+        <path d="M63 76 C 44 72 32 60 30 46 C 48 52 60 62 63 76 Z"/>
+        <path d="M65 58 C 82 52 92 40 92 28 C 76 36 66 46 65 58 Z"/>
+      </g>
+      <!-- Halm -->
+      <path d="M62 140 C 60 108 61 74 65 42" stroke="#4f8f3a" stroke-width="5"
+            fill="none" stroke-linecap="round"/>
+      <path d="M65 42 C 66 34 64 28 60 22" stroke="#5faa3f" stroke-width="3.4"
+            fill="none" stroke-linecap="round"/>
+      <path d="M65 42 C 70 34 74 30 80 26" stroke="#5faa3f" stroke-width="3"
+            fill="none" stroke-linecap="round"/>
+    </svg>
+    </div>
+    <div id="s6t1"></div>
+    <div id="s6t2" class="gap" style="display:none"></div>
+    <div id="s6t3" class="gap" style="display:none"></div>
+    <div id="s6t4" class="gap" style="display:none"></div>
+  </div>
+</section>
+
+<!-- ================= STATION 7 ================= -->
+<section class="station" data-nr="7">
+  <h2>Wachstumsdetektiv</h2>
+  <div class="meta">Station 7 von 8 · etwa 6 Minuten</div>
+
+  <div class="card narrow">
+    <p class="lead">Entscheide für jede Tabelle: <strong>linear</strong>, <strong>exponentiell</strong>
+      oder <strong>weder noch</strong>?</p>
+    <p class="small">Rate nicht nach dem Aussehen der Zahlen. Nutze die beiden Prüfknöpfe:
+      linear heißt <em>konstante Differenz</em>, exponentiell heißt <em>konstanter Quotient</em>.</p>
+    <p class="counter" id="cnt7">gelöst: <b>0</b> von 4</p>
+  </div>
+
+  <div class="card" id="d7a"></div>
+  <div class="card" id="d7b"></div>
+  <div class="card" id="d7c"></div>
+  <div class="card" id="d7d"></div>
+
+  <div class="heft" id="heft7" style="display:none">
+    <div class="h">📝 MERKEN</div>
+    <p><strong>Differenzen konstant</strong> → lineares Wachstum</p>
+    <p><strong>Quotienten konstant</strong> → exponentielles Wachstum</p>
+    <p><strong>weder noch</strong> → keines von beiden; es gibt viele andere Wachstumsarten.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 8 ================= -->
+<section class="station" data-nr="8">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 8 von 8 · etwa 5 Minuten</div>
+
+  <div class="card narrow"><div id="q8a"></div></div>
+  <div class="card narrow" id="w8b" style="display:none"><div id="q8b"></div></div>
+  <div class="card narrow" id="w8c" style="display:none"><div id="q8c"></div></div>
+  <div class="card narrow" id="w8d" style="display:none"><div id="q8d"></div></div>
+  <div class="card narrow" id="w8e" style="display:none"><div id="q8e"></div></div>
+  <div class="card narrow" id="w8f" style="display:none"><div id="q8f"></div></div>
+
+  <div class="card narrow" id="ende" style="display:none;border-left:5px solid var(--accent)">
+    <h3 style="font-size:1.18rem">Du kannst jetzt Wachstumsprozesse unterscheiden.</h3>
+    <p>Bei <strong>linearem</strong> Wachstum ist die Differenz aufeinanderfolgender Werte konstant:
+      <span class="mf"><i>B</i>(<i>t</i>) = <i>B</i>(0) + <i>t</i> · <i>d</i></span>.<br>
+      Bei <strong>exponentiellem</strong> Wachstum ist der Quotient konstant:
+      <span class="mf"><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span>.</p>
+    <p>Dabei bedeutet <span class="mf"><i>a</i> &gt; 1</span> eine Zunahme und
+      <span class="mf">0 &lt; <i>a</i> &lt; 1</span> eine Abnahme.</p>
+    <div class="fb hint show" style="margin-top:14px">
+      <strong>🧪 Experiment für den Unterricht:</strong> Miss den Zerfall einer Bierschaumkrone
+      Minute für Minute und prüfe mit deinen eigenen Messwerten, ob eine exponentielle Abnahme vorliegt.
+    </div>
+    <p style="margin-top:14px"><strong>Ausblick:</strong> Bisher war <span class="m">t</span>&thinsp; immer eine
+      ganze Zahl von Zeitschritten. Was passiert dazwischen? Und wie rechnet man aus, <em>wann</em> ein
+      bestimmter Bestand erreicht ist? Darum geht es in den nächsten Abschnitten.</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn ghost" id="prev">←<span class="lbl"> Zurück</span></button>
+    <div class="nav-mid">
+      <div class="pos" id="pos">Station 1 von 8</div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <button class="btn" id="next"><span class="lbl">Weiter </span>→</button>
+  </div>
+  <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+function $(id){return document.getElementById(id);}
+
+/* Deutsche Zahlschreibweise, höchstens dec Nachkommastellen,
+   überflüssige Nullen werden entfernt. */
+function num(v,dec){
+  if(dec===undefined) dec=4;
+  if(Math.abs(v)<5e-10) v=0;
+  var s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){ s=s.replace(/0+$/,""); s=s.replace(/\.$/,""); }
+  return s.replace(".",",");
+}
+/* Eingabe des Schülers in eine Zahl verwandeln: Komma und Punkt erlaubt. */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/€|m²|cm|%/g,"").replace(",",".");
+  if(s==="") return NaN;
+  return Number(s);
+}
+function measureChrome(){
+  var h=document.querySelector("header.top"), ft=document.querySelector("footer.nav");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+  if(ft) document.documentElement.style.setProperty("--footH", ft.offsetHeight+"px");
+}
+window.addEventListener("resize",measureChrome);
+window.addEventListener("orientationchange",function(){ setTimeout(measureChrome,250); });
+
+/* =========================================================
+   SVG-Werkzeuge (aus MASTER)
+   ========================================================= */
+var NS="http://www.w3.org/2000/svg";
+function el(name,attrs){
+  var e=document.createElementNS(NS,name);
+  for(var k in attrs){ if(attrs.hasOwnProperty(k)) e.setAttribute(k,attrs[k]); }
+  return e;
+}
+function clear(g){ while(g && g.firstChild) g.removeChild(g.firstChild); }
+
+function Board(host,opt){
+  var W=opt.w||640, H=opt.h||230;
+  var pad={l:opt.padL||48,r:opt.padR||26,t:opt.padT||18,b:opt.padB||32};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",opt.label||"Koordinatensystem");
+  var xmin=opt.xmin,xmax=opt.xmax,ymin=opt.ymin,ymax=opt.ymax;
+  function X(x){ return pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r); }
+  function Y(y){ return H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b); }
+  var api={svg:svg,X:X,Y:Y,W:W,H:H,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax};
+
+  var g=el("g",{}); var i;
+  if(opt.gridx) for(i=Math.ceil(xmin/opt.gridx)*opt.gridx;i<=xmax+1e-9;i+=opt.gridx)
+    g.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#eef1f5","stroke-width":1}));
+  if(opt.gridy) for(i=Math.ceil(ymin/opt.gridy)*opt.gridy;i<=ymax+1e-9;i+=opt.gridy)
+    g.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#eef1f5","stroke-width":1}));
+  svg.appendChild(g);
+
+  api.content=(function(){ var l=el("g",{}); svg.appendChild(l); return l; })();
+  api.over=function(){ var l=el("g",{}); svg.appendChild(l); return l; };
+
+  api.axes=function(){
+    var a=el("g",{}), i;
+    a.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:"#334155","stroke-width":1.8}));
+    a.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-10)+","+(Y(0)-5)+" "+(X(xmax)-10)+","+(Y(0)+5),fill:"#334155"}));
+    a.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:"#334155","stroke-width":1.8}));
+    a.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-5)+","+(Y(ymax)+10)+" "+(X(0)+5)+","+(Y(ymax)+10),fill:"#334155"}));
+    if(opt.tickx) for(i=Math.ceil(xmin/opt.tickx)*opt.tickx;i<=xmax-0.2;i+=opt.tickx){
+      if(Math.abs(i)<1e-9) continue;
+      a.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:"#334155","stroke-width":1.3}));
+      var t=el("text",{x:X(i),y:Y(0)+18,"text-anchor":"middle","font-size":14,fill:"#475569",
+        "font-family":"Segoe UI,system-ui,sans-serif"});
+      t.textContent=num(i,2); a.appendChild(t);
+    }
+    if(opt.ticky) for(i=Math.ceil(ymin/opt.ticky)*opt.ticky;i<=ymax-0.2;i+=opt.ticky){
+      if(Math.abs(i)<1e-9) continue;
+      a.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:"#334155","stroke-width":1.3}));
+      var t2=el("text",{x:X(0)-8,y:Y(i)+4.5,"text-anchor":"end","font-size":14,fill:"#475569",
+        "font-family":"Segoe UI,system-ui,sans-serif"});
+      t2.textContent=num(i,2); a.appendChild(t2);
+    }
+    /* Achsennamen mit Abstand, damit nichts überlagert wird */
+    var lx=el("text",{x:X(xmax)-3,y:Y(0)+34,"text-anchor":"end","font-size":15,fill:"#334155",
+      "font-family":"Segoe UI,system-ui,sans-serif"});
+    lx.textContent=opt.nameX||"x"; a.appendChild(lx);
+    var ly=el("text",{x:4,y:15,"text-anchor":"start","font-size":15,fill:"#334155",
+      "font-family":"Segoe UI,system-ui,sans-serif"});
+    ly.textContent=opt.nameY||"y"; a.appendChild(ly);
+    svg.appendChild(a);
+  };
+  api.curve=function(fn,x0,x1,color,width,dash,layer){
+    var pts=[],N=360,i;
+    for(i=0;i<=N;i++){ var x=x0+(x1-x0)*i/N; pts.push(X(x)+","+Y(fn(x))); }
+    var at={points:pts.join(" "),fill:"none",stroke:color||"#0f172a","stroke-width":width||2.6,
+      "stroke-linejoin":"round","stroke-linecap":"round"};
+    if(dash) at["stroke-dasharray"]=dash;
+    var p=el("polyline",at); (layer||svg).appendChild(p); return p;
+  };
+  api.dot=function(x,y,color,r,layer){
+    (layer||svg).appendChild(el("circle",{cx:X(x),cy:Y(y),r:r||5,fill:color||"#1f4e79",
+      stroke:"#fff","stroke-width":1.4}));
+  };
+  api.text=function(x,y,s,o){
+    o=o||{};
+    var t=el("text",{x:X(x)+(o.dx||0),y:Y(y)+(o.dy||0),"font-size":o.size||13,fill:o.fill||"#334155",
+      "text-anchor":o.anchor||"middle","font-family":o.family||"Segoe UI,system-ui,sans-serif",
+      "font-weight":o.weight||"400","font-style":o.italic?"italic":"normal"});
+    t.textContent=s; (o.layer||svg).appendChild(t); return t;
+  };
+  host.innerHTML=""; host.appendChild(svg);
+  return api;
+}
+
+/* =========================================================
+   Stationssteuerung (aus MASTER)
+   ========================================================= */
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var cur=0;
+var done=[]; for(var _i=0;_i<TOTAL;_i++) done.push(false);
+done[TOTAL-1]=true;
+var maxReached=0;
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", j<maxReached && j!==cur);
+    btns[j].disabled = j>maxReached;
+    btns[j].style.cursor = j>maxReached ? "default" : "pointer";
+  }
+  $("pos").textContent="Station "+(cur+1)+" von "+TOTAL;
+  $("barfill").style.width=((cur+1)/TOTAL*100)+"%";
+  $("prev").disabled=(cur===0);
+  $("next").style.visibility=(cur===TOTAL-1)?"hidden":"visible";
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+}
+function updateNext(){
+  var free=done[cur];
+  $("next").disabled=!free;
+  $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
+}
+function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i; if(cur>maxReached) maxReached=cur;
+  render();
+}
+$("prev").onclick=function(){ go(cur-1); };
+$("next").onclick=function(){ if(done[cur]) go(cur+1); };
+
+/* =========================================================
+   Multiple Choice mit gestuften Hilfen
+   Stufe 1: Denkhinweis zur gewählten Antwort
+   Stufe 2: konkreterer Hinweis (opt. hint2)
+   Stufe 3: Lösung auf Wunsch
+   ========================================================= */
+function mc(hostId,question,options,correctIdx,hint2,onSolved){
+  var host=$(hostId);
+  host.innerHTML="";
+  var fb=null;
+  if(question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=question; host.appendChild(qp);
+  }
+  var wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display="none";
+  host.appendChild(solBtn);
+  fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var solved=false, wrongCount=0;
+  function lockAll(){
+    var all=wrap.querySelectorAll(".opt");
+    for(var k=0;k<all.length;k++) all[k].disabled=true;
+  }
+  function finish(){ solved=true; solBtn.style.display="none"; lockAll(); if(onSolved) onSolved(); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+
+      (options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish();
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        if(wrongCount===1){
+          fb.innerHTML="<strong>Denkhinweis:</strong> "+(o.no||"Überlege noch einmal.");
+        } else {
+          fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hint2||o.no||"Überlege noch einmal.");
+          solBtn.style.display="inline-block";
+        }
+      }
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* =========================================================
+   Zahleneingabe mit gestuften Hilfen
+   ========================================================= */
+function numTask(hostId,cfg){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(cfg.question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=cfg.question; host.appendChild(qp);
+  }
+  var row=document.createElement("div"); row.className="answer";
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("inputmode","decimal");
+  inp.setAttribute("aria-label",cfg.aria||"Antwort eingeben");
+  if(cfg.placeholder) inp.placeholder=cfg.placeholder;
+  row.appendChild(inp);
+  if(cfg.unit){ var u=document.createElement("span"); u.className="unit"; u.innerHTML=cfg.unit; row.appendChild(u); }
+  var btn=document.createElement("button"); btn.className="btn"; btn.type="button"; btn.textContent="Prüfen";
+  row.appendChild(btn);
+  host.appendChild(row);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display="none"; host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var solved=false, wrong=0;
+  var hints=cfg.hints||[];
+  /* cfg.dec: Ist eine bestimmte Rundung verlangt, wird auf genau diese
+     Stellenzahl gerundet verglichen – 1,5 und 1,50 gelten dann als gleich,
+     1,49 und 1,51 dagegen nicht. Sonst entscheidet die Toleranz cfg.tol. */
+  function istRichtig(v){
+    if(cfg.dec!==undefined){
+      var f=Math.pow(10,cfg.dec);
+      return Math.round(v*f)/f === Math.round(cfg.correct*f)/f;
+    }
+    return Math.abs(v-cfg.correct)<=(cfg.tol||1e-9);
+  }
+  function finish(){
+    solved=true; inp.disabled=true; btn.disabled=true; solBtn.style.display="none";
+    inp.classList.remove("no"); inp.classList.add("ok");
+    if(cfg.onSolved) cfg.onSolved();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    inp.value=num(cfg.correct,cfg.dec!==undefined?cfg.dec:4);
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+(cfg.solution||num(cfg.correct,4));
+    finish();
+  };
+  function check(){
+    if(solved) return;
+    var v=parseNum(inp.value);
+    if(isNaN(v)){
+      fb.className="fb hint show";
+      fb.innerHTML="Gib eine Zahl ein. Dezimalzahlen kannst du mit Komma schreiben.";
+      return;
+    }
+    if(istRichtig(v)){
+      fb.className="fb ok show";
+      fb.innerHTML="<strong>Richtig.</strong> "+(cfg.ok||"");
+      finish();
+    } else {
+      wrong++; inp.classList.add("no");
+      fb.className="fb hint show";
+      if(wrong===1){
+        fb.innerHTML="<strong>Denkhinweis:</strong> "+(hints[0]||"Prüfe deine Rechnung noch einmal.");
+      } else {
+        fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hints[1]||hints[0]||"Prüfe deine Rechnung noch einmal.");
+        solBtn.style.display="inline-block";
+      }
+    }
+  }
+  btn.onclick=check;
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+  return {focus:function(){ inp.focus(); }};
+}
+
+/* =========================================================
+   Wertetabellen
+   ========================================================= */
+function wertetabelle(host,cfg){
+  /* cfg: {labT, labB, ts:[...], bs:[...], dec} */
+  var n=cfg.ts.length;
+  var d=document.createElement("div");
+  d.className="wt";
+  d.style.gridTemplateColumns=(cfg.labw||"7.6em")+" repeat("+n+",minmax(0,1fr))";
+  var html='<div class="lab hd">'+cfg.labT+"</div>";
+  var i;
+  for(i=0;i<n;i++) html+='<div class="hd">'+num(cfg.ts[i],2)+"</div>";
+  html+='<div class="lab">'+cfg.labB+"</div>";
+  for(i=0;i<n;i++) html+="<div>"+num(cfg.bs[i],cfg.dec===undefined?4:cfg.dec)+"</div>";
+  d.innerHTML=html;
+  host.innerHTML=""; host.appendChild(d);
+  return d;
+}
+/* Versetzte Zeile mit Differenzen bzw. Quotienten */
+function oprow(host,cfg){
+  /* cfg: {kind:"d"|"q", label, values:[...], n, labw} */
+  var d=document.createElement("div");
+  d.className="oprow";
+  d.style.gridTemplateColumns=(cfg.labw||"7.6em")+" repeat("+cfg.n+",minmax(0,1fr))";
+  var html='<div class="olab '+cfg.kind+'">'+cfg.label+"</div>";
+  for(var i=0;i<cfg.values.length;i++){
+    html+='<div class="opc '+cfg.kind+'" style="grid-column:'+(i+2)+'">'+cfg.values[i]+"</div>";
+  }
+  d.innerHTML=html;
+  host.appendChild(d);
+  return d;
+}
+function diffs(bs){ var r=[],i; for(i=0;i<bs.length-1;i++) r.push(bs[i+1]-bs[i]); return r; }
+function quots(bs){ var r=[],i; for(i=0;i<bs.length-1;i++) r.push(bs[i+1]/bs[i]); return r; }
+
+/* Skala unter einem Regler (aus MASTER) */
+function buildScale(hostId,marks,lo,hi){
+  var sc=$(hostId); if(!sc) return;
+  sc.innerHTML="";
+  marks.forEach(function(m){
+    var pos=(m.x-lo)/(hi-lo);
+    var e=document.createElement("span");
+    e.style.left="calc(10px + "+(pos*100)+"% - "+(pos*20)+"px)";
+    e.innerHTML=m.t;
+    if(m.mark) e.className="mark";
+    sc.appendChild(e);
+  });
+}
+
+/* =========================================================
+   STATION 1 – Herr Meyers Irrtum
+   ========================================================= */
+var TAGE=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
+var MEYER=[1,2,3,4,5,6,7];
+var ECHT =[1,2,4,8,16,32,64];
+
+var S1=(function(){
+  /* Drei getrennte Zustände halten Phase 1 und Phase 2 sauber auseinander:
+     revealed        – der zweite Teich ist eingeblendet (Phase 2 läuft)
+     seenFirstEnd    – Samstag wurde im ersten Durchgang erreicht
+     seenSecondEnd   – Samstag wurde im zweiten Durchgang erreicht */
+  var revealed=false, seenFirstEnd=false, seenSecondEnd=false;
+  var NS_=NS;
+  /* Zwei Teiche als 8x8-Raster in einem SVG */
+  var W=620,H=316, CELL=26, GAP=2, GRID=8*CELL+7*GAP;   /* = 222 */
+  var OX=[36, 620-36-GRID], OY=64;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img",
+    "aria-label":"Zwei Teiche mit je 64 Feldern: links Herrn Meyers Annahme, rechts die tatsächliche Entwicklung"});
+  svg.setAttribute("style","width:100%;height:auto");
+  var cells=[[],[]], titles=[], subs=[], groups=[];
+  var COL=["#b45309","#1f6fb2"];
+  for(var s=0;s<2;s++){
+    (function(s){
+      var g=el("g",{}); groups.push(g);
+      var ti=el("text",{x:OX[s]+GRID/2,y:26,"text-anchor":"middle","font-size":16,"font-weight":"700",
+        fill:COL[s],"font-family":"Segoe UI,system-ui,sans-serif"});
+      ti.textContent = s===0 ? "Herr Meyers Annahme" : "Tatsächliche Entwicklung";
+      g.appendChild(ti); titles.push(ti);
+      var su=el("text",{x:OX[s]+GRID/2,y:48,"text-anchor":"middle","font-size":16,
+        fill:"#334155","font-family":"Segoe UI,system-ui,sans-serif","font-weight":"600"});
+      su.textContent="1 m² von 64 m²";
+      g.appendChild(su); subs.push(su);
+      /* Rahmen */
+      g.appendChild(el("rect",{x:OX[s]-5,y:OY-5,width:GRID+10,height:GRID+10,rx:7,
+        fill:"none",stroke:"#cbd5e1","stroke-width":1.5}));
+      for(var r=0;r<8;r++) for(var c=0;c<8;c++){
+        /* Füllung von unten nach oben, innerhalb einer Zeile von links nach rechts */
+        var idx=(7-r)*8+c;
+        var rc=el("rect",{x:OX[s]+c*(CELL+GAP),y:OY+r*(CELL+GAP),width:CELL,height:CELL,rx:3,
+          fill:"#bcdcef",stroke:"#8dbcd6","stroke-width":1});
+        cells[s][idx]=rc; g.appendChild(rc);
+      }
+      svg.appendChild(g);
+    })(s);
+  }
+  groups[1].setAttribute("opacity","0");
+  groups[1].setAttribute("aria-hidden","true");
+  $("svg1").appendChild(svg);
+
+  function paint(s,n){
+    for(var i=0;i<64;i++){
+      var on=i<n;
+      cells[s][i].setAttribute("fill", on?"#5aa832":"#bcdcef");
+      cells[s][i].setAttribute("stroke", on?"#4a8f28":"#8dbcd6");
+    }
+    subs[s].textContent=n+" m² von 64 m²";
+  }
+  function update(){
+    var t=Number($("sl1").value);
+    paint(0,MEYER[t]);
+    $("v1lin").textContent=MEYER[t]+" m²";
+    if(revealed){
+      paint(1,ECHT[t]);
+      $("v1exp").textContent=ECHT[t]+" m²";
+    }
+    if(!revealed){
+      /* Phase 1 – läuft nur, solange der zweite Teich verborgen ist */
+      if(!seenFirstEnd && t===6){
+        seenFirstEnd=true;
+        $("explore1").style.display="none";
+        $("revealwrap").style.display="block";
+        measureChrome();
+      }
+    } else {
+      /* Phase 2 – die Frage erscheint erst am Ende des zweiten Durchgangs */
+      if(!seenSecondEnd && t===6){
+        seenSecondEnd=true;
+        $("explore1b").style.display="none";
+        $("wrapQ1b").style.display="block";
+        measureChrome();
+      }
+    }
+  }
+  $("sl1").addEventListener("input",update);
+  buildScale("scale1",[{x:0,t:"So"},{x:1,t:"Mo"},{x:2,t:"Di"},{x:3,t:"Mi"},{x:4,t:"Do"},{x:5,t:"Fr"},{x:6,t:"Sa"}],0,6);
+  $("btnReveal").onclick=function(){
+    revealed=true;                     /* ab jetzt greift ausschließlich die Phase-2-Logik */
+    groups[1].setAttribute("opacity","1");
+    groups[1].removeAttribute("aria-hidden");
+    $("v1expwrap").style.display="flex";
+    $("revealwrap").style.display="none";
+    $("phase2").style.display="block";
+    $("q1task").innerHTML="Vergleiche jetzt beide Entwicklungen Tag für Tag.";
+    $("sl1").value=0;                  /* zurück auf Sonntag: beide Teiche zeigen 1 m² */
+    update();
+    measureChrome();
+  };
+  update();
+  return {start:function(){ var c=$("c1viz"); c.style.display="block"; measureChrome();
+    setTimeout(function(){ c.scrollIntoView({block:"start",behavior:"smooth"}); },120); }};
+})();
+
+/* richtige Antwort: A */
+mc("q1a","Herr Meyer denkt: „Jeden Tag kommt wieder 1&nbsp;m² dazu.“ Welche Werte erwartet er dann?",[
+  {t:"1; 2; 3; 4; 5; 6; 7&nbsp;m²",
+   ok:"Genau das nimmt Herr Meyer an: jeden Tag 1&nbsp;m² mehr."},
+  {t:"1; 2; 4; 8; 16; 32; 64&nbsp;m²",
+   no:"Prüfe: Kommt hier von einem Tag zum nächsten wirklich immer <em>1</em>&nbsp;m² dazu?"},
+  {t:"1; 2; 3; 5; 8; 13; 21&nbsp;m²",
+   no:"Prüfe: Kommt hier von einem Tag zum nächsten wirklich immer <em>1</em>&nbsp;m² dazu?"}
+],0,"Herr Meyer rechnet ganz einfach: 1, dann 1+1 = 2, dann 2+1 = 3 und so weiter.",
+function(){ S1.start(); });
+
+/* richtige Antwort: C */
+mc("q1b","Beide Entwicklungen beginnen mit 1 und 2. Woran liegt der große Unterschied?",[
+  {t:"Die tatsächliche Entwicklung startet bei einem größeren Wert.",
+   no:"Schalte noch einmal auf Sonntag zurück und vergleiche die beiden Startwerte."},
+  {t:"Bei der tatsächlichen Entwicklung kommt jeden Tag gleich viel dazu.",
+   no:"Schalte Tag für Tag weiter und achte darauf, wie viele Felder rechts jeweils <em>neu</em> dazukommen."},
+  {t:"Die bedeckte Fläche wird jeden Tag verdoppelt; deshalb wird auch der tägliche Zuwachs immer größer.",
+   ok:"Genau: 1 → 2 → 4 → 8 → 16 → 32 → 64. Jeden Tag wird die bedeckte Fläche <strong>mit 2 multipliziert</strong>. "+
+      "Deshalb wächst auch der tägliche Zuwachs: von Freitag auf Samstag kommen an einem einzigen Tag 32&nbsp;m² dazu."}
+],2,"Schalte noch einmal Tag für Tag durch und lies rechts mit: 1, dann 2, dann 4, dann 8&nbsp;m². "+
+   "Womit muss man jeden Wert malnehmen, um den nächsten zu erhalten?",
+function(){ setDone(0); });
+
+/* =========================================================
+   STATION 2 – Was bleibt gleich?
+   ========================================================= */
+var S2=(function(){
+  var TS=[0,1,2,3,4,5,6];
+  wertetabelle($("tab2lin"),{labT:"Zeit t in Tagen",labB:"Bestand B(t) in m²",ts:TS,bs:MEYER,dec:0,labw:"7.2em"});
+  wertetabelle($("tab2exp"),{labT:"Zeit t in Tagen",labB:"Bestand B(t) in m²",ts:TS,bs:ECHT,dec:0,labw:"7.2em"});
+  var shownD=false, shownQ=false;
+
+  function addD(){
+    if(shownD) return; shownD=true;
+    oprow($("op2lin"),{kind:"d",label:"Differenz",n:7,labw:"7.2em",
+      values:diffs(MEYER).map(function(v){return "+"+num(v,2);})});
+    oprow($("op2exp"),{kind:"d",label:"Differenz",n:7,labw:"7.2em",
+      values:diffs(ECHT).map(function(v){return "+"+num(v,2);})});
+    $("btnDiff").disabled=true;
+    $("explore2").style.display="none";
+    $("wrapQ2a").style.display="block";
+    measureChrome();
+  }
+  function addQ(){
+    if(shownQ) return; shownQ=true;
+    /* Der Quotient ist eine Zahl – kein Malpunkt davor. */
+    oprow($("op2lin"),{kind:"q",label:"Quotient",n:7,labw:"7.2em",
+      values:quots(MEYER).map(function(v){return num(v,3);})});
+    oprow($("op2exp"),{kind:"q",label:"Quotient",n:7,labw:"7.2em",
+      values:quots(ECHT).map(function(v){return num(v,3);})});
+    $("btnQuot").disabled=true;
+    measureChrome();
+  }
+  $("btnDiff").onclick=addD;
+  $("btnQuot").onclick=addQ;
+  return {addD:addD,addQ:addQ,hasQ:function(){return shownQ;}};
+})();
+
+/* richtige Antwort: B */
+mc("q2a","Sieh dir die <strong>Differenzen</strong> an. Bei welcher Entwicklung ist die Differenz von Tag zu Tag immer gleich?",[
+  {t:"Bei beiden.",
+   no:"Vergleiche in der unteren Tabelle die Differenzen: +1, +2, +4, +8 … Sind die gleich?"},
+  {t:"Nur bei Herrn Meyers Annahme.",
+   ok:"Dort ist die Differenz immer +1. Bei der tatsächlichen Entwicklung wird sie dagegen immer größer."},
+  {t:"Nur bei der tatsächlichen Entwicklung.",
+   no:"Vergleiche in der oberen Tabelle die Differenzen: +1, +1, +1 … und in der unteren: +1, +2, +4 …"}
+],1,"Konstant heißt: in jedem Schritt derselbe Wert. Oben steht überall +1, unten stehen +1, +2, +4, +8, +16, +32.",
+function(){
+  S2.addQ();
+  $("wrapQ2b").style.display="block";
+  measureChrome();
+});
+
+/* richtige Antwort: A */
+mc("q2b","Und jetzt die <strong>Quotienten</strong>. Bei welcher Entwicklung ist der Quotient von Tag zu Tag immer gleich?",[
+  {t:"Nur bei der tatsächlichen Entwicklung.",
+   ok:"Dort ist der Quotient überall 2: Der Bestand wird jeden Tag mit 2 multipliziert."},
+  {t:"Nur bei Herrn Meyers Annahme.",
+   no:"Lies in der oberen Tabelle die Quotienten der Reihe nach: 2; 1,5; 1,333 … Sind die gleich?"},
+  {t:"Bei beiden.",
+   no:"Lies in der oberen Tabelle die Quotienten der Reihe nach: 2; 1,5; 1,333 … Sind die gleich?"}
+],0,"In der unteren Tabelle ist der Quotient in jedem Schritt 2. In der oberen Tabelle werden die Quotienten immer kleiner.",
+function(){
+  $("after2").style.display="block";
+  setDone(1);
+  drawS2Diagram();
+  measureChrome();
+});
+
+var s2drawn=false;
+function drawS2Diagram(){
+  if(s2drawn) return; s2drawn=true;
+  var P=Board($("svg2"),{w:640,h:300,xmin:-0.45,xmax:6.9,ymin:-5,ymax:72,
+    gridx:1,gridy:8,tickx:1,ticky:8,padL:52,padB:44,
+    nameX:"t in Tagen",nameY:"B(t) in m²",
+    label:"Diagramm: Herrn Meyers lineare Annahme und die tatsächliche exponentielle Entwicklung"});
+  P.axes();
+  var exp=P.over(), lin=P.over();   /* lineare Punkte zuletzt: bei t = 0 und t = 1 liegen sie unter den blauen */
+  /* Exakte Kurven zu den Modellen */
+  P.curve(function(x){ return 1+x; },0,6,"#b45309",2.4,null,lin);
+  P.curve(function(x){ return Math.pow(2,x); },0,6,"#1f6fb2",2.6,null,exp);
+  for(var t=0;t<=6;t++){
+    P.dot(t,MEYER[t],"#b45309",5,lin);
+    P.dot(t,ECHT[t],"#1f6fb2",5,exp);
+  }
+  P.text(6,64,"64",{dx:-4,dy:-13,fill:"#14456e",weight:"700",size:14,layer:exp,anchor:"end"});
+  P.text(6,7,"7",{dx:-8,dy:-11,fill:"#7a3907",weight:"700",size:14,layer:lin,anchor:"end"});
+}
+</script>
+
+<script>
+"use strict";
+
+/* =========================================================
+   STATION 3 – Woher kommen die beiden Grundmodelle?
+   ========================================================= */
+var S3=(function(){
+  var B0=3, D=4, A=2;
+  var STEPS=[
+    {lab:"Start",
+     lin:'<i>B</i>(0) = 3',                                  linv:3,
+     exp:'<i>B</i>(0) = 3',                                  expv:3},
+    {lab:"1 Schritt",
+     lin:'3 <span class="arrowtag d">+ 4</span>',            linv:7,
+     exp:'3 <span class="arrowtag q">· 2</span>',            expv:6},
+    {lab:"2 Schritte",
+     lin:'3 + 4 + 4 &nbsp;=&nbsp; 3 + 2 · 4',                linv:11,
+     exp:'3 · 2 · 2 &nbsp;=&nbsp; 3 · 2<sup>2</sup>',        expv:12},
+    {lab:"3 Schritte",
+     lin:'3 + 4 + 4 + 4 &nbsp;=&nbsp; 3 + 3 · 4',            linv:15,
+     exp:'3 · 2 · 2 · 2 &nbsp;=&nbsp; 3 · 2<sup>3</sup>',    expv:24}
+  ];
+  var k=0;
+  function rowHTML(cls,step,term,res){
+    return '<div class="brow'+(cls||"")+'"><span class="step">'+step+'</span>'+
+           '<span class="term">'+term+'</span><span class="res">'+res+'</span></div>';
+  }
+  function draw(){
+    var hl="", he="";
+    for(var i=0;i<=k;i++){
+      hl+=rowHTML("",STEPS[i].lab,STEPS[i].lin,STEPS[i].linv);
+      he+=rowHTML("",STEPS[i].lab,STEPS[i].exp,STEPS[i].expv);
+    }
+    if(k>=3){
+      hl+=rowHTML(" gen","<i>t</i> Schritte",'<i>B</i>(<i>t</i>) = 3 + <i>t</i> · 4',"");
+      he+=rowHTML(" gen","<i>t</i> Schritte",'<i>B</i>(<i>t</i>) = 3 · 2<sup><i>t</i></sup>',"");
+    }
+    $("b3lin").innerHTML=hl;
+    $("b3exp").innerHTML=he;
+    $("cnt3").innerHTML="Zeitschritte: <b>"+k+"</b> von 3";
+    $("btnStep3").disabled=(k>=3);
+    $("btnReset3").style.display=(k>0)?"inline-block":"none";
+    if(k>=3){
+      $("explore3").style.display="none";
+      $("wrapQ3").style.display="block";
+    }
+    measureChrome();
+  }
+  $("btnStep3").onclick=function(){ if(k<3){ k++; draw(); } };
+  $("btnReset3").onclick=function(){ k=0; draw(); };
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: C */
+mc("q3","Beim exponentiellen Wachstum steht <span class='m'>t</span>&thinsp; oben im Exponenten. Warum?",[
+  {t:"Weil der Anfangsbestand 3 mit <span class='m'>t</span>&thinsp; multipliziert wird.",
+   no:"Vergleiche die beiden Spalten: Nur links wird mit <span class='m'>t</span>&thinsp; multipliziert – rechts steht <span class='m'>t</span>&thinsp; ganz woanders."},
+  {t:"Weil <span class='m'>t</span>&thinsp; in der Mathematik immer oben geschrieben wird.",
+   no:"Sieh dir die Zeile „nach 3 Schritten“ rechts an: 3 · 2 · 2 · 2. Zähle, wie oft die 2 vorkommt."},
+  {t:"Weil der Faktor 2 nach <span class='m'>t</span>&thinsp; Schritten genau <span class='m'>t</span>-mal angewendet wurde.",
+   ok:"Nach 3 Schritten steht 2 · 2 · 2 = 2<sup>3</sup>. Nach <span class='m'>t</span>&thinsp; Schritten also 2<sup><span class='m'>t</span></sup>."}
+],2,"Der Exponent zählt, <em>wie oft</em> der Faktor angewendet wurde. Beim linearen Wachstum zählt <span class='m'>t</span>&thinsp; dagegen, wie oft der Zuwachs addiert wurde.",
+function(){
+  $("heft3").style.display="block";
+  setDone(2);
+  measureChrome();
+});
+
+/* =========================================================
+   STATION 4 – Von Prozenten zum Wachstumsfaktor
+   ========================================================= */
+var S4=(function(){
+  var W=620,H=196;
+  var X0=40, PX=3;                 /* 1 % entspricht 3 px */
+  function X(pct){ return X0+pct*PX; }
+  var YB=66, HB=50;                /* Balken */
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img",
+    "aria-label":"Prozentstreifen: bisheriger Bestand 100 Prozent, verändert um p Prozent"});
+  svg.setAttribute("style","width:100%;height:auto");
+
+  var defs=el("defs");
+  var pat=el("pattern",{id:"p4weg",width:8,height:8,patternUnits:"userSpaceOnUse",
+    patternTransform:"rotate(45)"});
+  pat.appendChild(el("rect",{width:8,height:8,fill:"#f1f5f9"}));
+  pat.appendChild(el("line",{x1:0,y1:0,x2:0,y2:8,stroke:"#a3b1c2","stroke-width":2}));
+  defs.appendChild(pat); svg.appendChild(defs);
+
+  /* Achse */
+  var ax=el("g",{});
+  ax.appendChild(el("line",{x1:X(0),y1:155,x2:X(158),y2:155,stroke:"#cbd5e1","stroke-width":1.5}));
+  [0,50,100,150].forEach(function(p){
+    ax.appendChild(el("line",{x1:X(p),y1:150,x2:X(p),y2:160,stroke:"#94a3b8","stroke-width":1.4}));
+    var t=el("text",{x:X(p),y:177,"text-anchor":"middle","font-size":13.5,fill:"#64748b",
+      "font-family":"Segoe UI,system-ui,sans-serif"});
+    t.textContent=p+" %"; ax.appendChild(t);
+  });
+  svg.appendChild(ax);
+
+  var rKept=el("rect",{x:X(0),y:YB,width:X(100)-X(0),height:HB,rx:4,
+    fill:"#dceaf6",stroke:"#1f6fb2","stroke-width":1.6});
+  var rRem=el("rect",{x:X(100),y:YB,width:0,height:HB,rx:4,
+    fill:"url(#p4weg)",stroke:"#a3b1c2","stroke-width":1.6});
+  var rExt=el("rect",{x:X(100),y:YB,width:0,height:HB,rx:4,
+    fill:"#e2f2e8",stroke:"#1e7a4d","stroke-width":1.6});
+  svg.appendChild(rKept); svg.appendChild(rRem); svg.appendChild(rExt);
+
+  /* Trennlinie bei 100 % */
+  svg.appendChild(el("line",{x1:X(100),y1:YB-26,x2:X(100),y2:YB+HB+10,
+    stroke:"#1f4e79","stroke-width":1.6,"stroke-dasharray":"5 4"}));
+  var t100=el("text",{x:X(100),y:YB-32,"text-anchor":"middle","font-size":13.5,fill:"#1f4e79",
+    "font-weight":"600","font-family":"Segoe UI,system-ui,sans-serif"});
+  t100.textContent="Bestand vorher: 100 %"; svg.appendChild(t100);
+
+  var tKept=el("text",{x:X(50),y:YB+HB/2+6,"text-anchor":"middle","font-size":16,fill:"#14456e",
+    "font-weight":"700","font-family":"Segoe UI,system-ui,sans-serif"});
+  tKept.textContent="100 %"; svg.appendChild(tKept);
+
+  var tDelta=el("text",{x:X(112),y:YB+HB/2+5,"text-anchor":"middle","font-size":15,
+    "font-weight":"700","font-family":"Segoe UI,system-ui,sans-serif",
+    stroke:"#ffffff","stroke-width":3.5,"paint-order":"stroke","stroke-linejoin":"round"});
+  svg.appendChild(tDelta);
+
+  /* Ergebnisklammer */
+  var brk=el("path",{d:"",fill:"none",stroke:"#1f4e79","stroke-width":1.6});
+  svg.appendChild(brk);
+  var tTot=el("text",{x:X(60),y:144,"text-anchor":"middle","font-size":14.5,fill:"#1f4e79",
+    "font-weight":"700","font-family":"Segoe UI,system-ui,sans-serif"});
+  svg.appendChild(tTot);
+
+  $("svg4").appendChild(svg);
+
+  var mode="zu";                  /* "zu" oder "ab" */
+  /* Beide Modi müssen tatsächlich mit dem Regler erkundet werden.
+     movedZu / movedAb merken sich das getrennt; die Reihenfolge ist beliebig. */
+  var movedZu=false, movedAb=false;
+
+  function update(){
+    var p=Number($("sl4").value);
+    var kept = (mode==="zu") ? 100 : 100-p;
+    var total= (mode==="zu") ? 100+p : 100-p;
+    var a = total/100;
+
+    rKept.setAttribute("x",X(0));
+    rKept.setAttribute("width",X(kept)-X(0));
+    tKept.setAttribute("x",(X(0)+X(kept))/2);
+    tKept.textContent=kept+" %";
+
+    if(mode==="zu"){
+      rExt.setAttribute("x",X(100)); rExt.setAttribute("width",X(100+p)-X(100));
+      rRem.setAttribute("width",0);
+      tDelta.setAttribute("x",(X(100)+X(100+p))/2);
+      tDelta.setAttribute("fill","#14603c");
+      tDelta.textContent="+"+p+" %";
+      tDelta.setAttribute("y", p<14 ? YB-8 : YB+HB/2+5);
+    } else {
+      rRem.setAttribute("x",X(100-p)); rRem.setAttribute("width",X(100)-X(100-p));
+      rExt.setAttribute("width",0);
+      tDelta.setAttribute("x",(X(100-p)+X(100))/2);
+      tDelta.setAttribute("fill","#7a3907");
+      tDelta.textContent="−"+p+" %";
+      tDelta.setAttribute("y", p<14 ? YB-8 : YB+HB/2+5);
+    }
+    /* Klammer unter dem Ergebnisbalken */
+    var x1=X(0), x2=X(total), yb=YB+HB+8;
+    brk.setAttribute("d","M"+x1+" "+yb+" v7 H"+x2+" v-7");
+    tTot.setAttribute("x",(x1+x2)/2);
+    tTot.textContent="Bestand danach: "+total+" %";
+
+    /* immer zwei Nachkommastellen, damit z. B. 0,80 nicht als 0,8 erscheint */
+    var aTxt=a.toFixed(2).replace(".",",");
+    $("v4a").textContent=aTxt;
+    $("v4sub").textContent = (mode==="zu")
+      ? ("bisheriger Bestand 100 % + "+p+" % = "+total+" %")
+      : ("bisheriger Bestand 100 % − "+p+" % = "+total+" %");
+    $("cap4").innerHTML = (mode==="zu")
+      ? "Der neue Bestand entspricht "+total+" % des bisherigen Bestands – also dem "+aTxt+"-fachen."
+      : "Es bleiben "+total+" % des bisherigen Bestands übrig – also das "+aTxt+"-fache.";
+
+    if(movedZu && movedAb){
+      if($("wrapQ4a").style.display==="none"){
+        $("explore4").style.display="none";
+        $("wrapQ4a").style.display="block";
+        measureChrome();
+      }
+    } else if(!movedZu && !movedAb){
+      $("explore4").innerHTML = (mode==="zu")
+        ? "Verändere den Prozentsatz bei der <strong>Zunahme</strong> und beobachte den Faktor."
+        : "Verändere den Prozentsatz bei der <strong>Abnahme</strong> und beobachte den Faktor.";
+    } else if(!movedAb){
+      $("explore4").innerHTML="Wechsle jetzt zur <strong>Abnahme</strong> und verändere auch dort den Prozentsatz.";
+    } else {
+      $("explore4").innerHTML="Wechsle jetzt zur <strong>Zunahme</strong> und verändere auch dort den Prozentsatz.";
+    }
+  }
+  $("sl4").addEventListener("input",function(){
+    if(mode==="zu"){ movedZu=true; } else { movedAb=true; }
+    update();
+  });
+  /* Die Modusknöpfe wechseln nur die Ansicht – beliebig oft, ohne eigenen Zustand. */
+  $("m4zu").onclick=function(){
+    mode="zu"; $("m4zu").classList.add("sel"); $("m4ab").classList.remove("sel"); update();
+  };
+  $("m4ab").onclick=function(){
+    mode="ab"; $("m4ab").classList.add("sel"); $("m4zu").classList.remove("sel"); update();
+  };
+  buildScale("scale4",[{x:1,t:"1"},{x:10,t:"10"},{x:20,t:"20"},{x:30,t:"30"},{x:40,t:"40"},{x:50,t:"50"}],1,50);
+  update();
+  return {};
+})();
+
+/* richtige Antwort: B */
+mc("q4a","Ein Bestand nimmt pro Zeitschritt um <strong>8&nbsp;%</strong> zu. Wie lautet der Wachstumsfaktor?",[
+  {t:"<span class='m'>a</span>&thinsp; = 0,08",
+   no:"Der bisherige Bestand bleibt vollständig erhalten. Er entspricht 100 %, die 8 % kommen <em>dazu</em>."},
+  {t:"<span class='m'>a</span>&thinsp; = 1,08",
+   ok:"100 % + 8 % = 108 % = 1,08. Wegen <span class='m'>a</span>&thinsp; &gt; 1 ist das eine Zunahme."},
+  {t:"<span class='m'>a</span>&thinsp; = 1,8",
+   no:"Achte auf die Stellen: 8 % sind 0,08 – nicht 0,8. Stelle am Regler einmal 8 ein."}
+],1,"Rechne wie am Streifen: 100 % + 8 % = 108 %. Und 108 % als Zahl geschrieben ist 1,08.",
+function(){ $("wrapQ4b").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("q4b","Und jetzt aufgepasst: Ein Bestand <strong>nimmt um 20&nbsp;% ab</strong>. Wie lautet der Wachstumsfaktor?",[
+  {t:"<span class='m'>a</span>&thinsp; = 0,20",
+   no:"0,20 wären nur 20 % – aber 20 % gehen ja <em>verloren</em>. Stelle am Regler „Abnahme“ mit 20 ein."},
+  {t:"<span class='m'>a</span>&thinsp; = 1,20",
+   no:"Bei einer Abnahme muss der Bestand kleiner werden. Ist das mit einem Faktor über 1 möglich?"},
+  {t:"<span class='m'>a</span>&thinsp; = 0,80",
+   ok:"100 % − 20 % = 80 % = 0,80. Es bleiben 80 % übrig. Wegen 0 &lt; <span class='m'>a</span>&thinsp; &lt; 1 ist das eine Abnahme."}
+],2,"Frage dich nicht, wie viel weggeht, sondern <strong>wie viel übrig bleibt</strong>: 100 % − 20 % = 80 %.",
+function(){ $("wrapQ4c").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: A */
+mc("q4c","Ein Wachstum hat den Faktor <span class='m'>a</span>&thinsp; = 0,82. Was bedeutet das?",[
+  {t:"Exponentielle Abnahme – der Bestand sinkt pro Zeitschritt um 18 %.",
+   ok:"Es bleiben 82 % übrig, es gehen also 100 % − 82 % = 18 % verloren."},
+  {t:"Exponentielle Abnahme – der Bestand sinkt pro Zeitschritt um 82 %.",
+   no:"0,82 gibt an, wie viel <em>übrig bleibt</em>, nicht wie viel verloren geht."},
+  {t:"Exponentielle Zunahme um 82 %.",
+   no:"Prüfe zuerst: Ist 0,82 größer oder kleiner als 1? Und was bedeutet das für den Bestand?"}
+],0,"Es gilt 0,82 = 82 %. Der Rest zu 100 % ist der Verlust: 100 % − 82 % = 18 %.",
+function(){
+  $("heft4").style.display="block";
+  setDone(3);
+  measureChrome();
+});
+</script>
+
+<script>
+"use strict";
+
+/* =========================================================
+   STATION 5 – Eine Wachstumsgleichung aufstellen
+   ========================================================= */
+var LAUS_T=[0,1,2,3], LAUS_B=[80,120,180,270];
+
+(function(){
+  wertetabelle($("tab5a"),{labT:"Zeit t in Tagen",labB:"Anzahl B(t)",ts:LAUS_T,bs:LAUS_B,dec:0,labw:"7.6em"});
+  var shown=false;
+  $("btnQ5a").onclick=function(){
+    if(shown) return; shown=true;
+    oprow($("op5a"),{kind:"q",label:"Quotient",n:4,labw:"7.6em",
+      values:quots(LAUS_B).map(function(v){return num(v,3);})});
+    $("btnQ5a").disabled=true;
+    measureChrome();
+  };
+})();
+
+/* Schritt 1: Anfangsbestand */
+numTask("s5a1",{
+  question:"<strong>Schritt 1:</strong> Wie groß ist der Anfangsbestand <span class='mf'><i>B</i>(0)</span>?",
+  correct:80, tol:0, unit:"Läuse",
+  aria:"Anfangsbestand eingeben",
+  hints:["Der Anfangsbestand ist der Wert zur Zeit <span class='m'>t</span>&thinsp; = 0.",
+         "Sieh in der Tabelle in die erste Spalte: dort steht <span class='m'>t</span>&thinsp; = 0."],
+  solution:"<span class='mf'><i>B</i>(0) = 80</span>",
+  ok:"Das ist der Wert in der Spalte <span class='m'>t</span>&thinsp; = 0.",
+  onSolved:function(){ $("s5a2").style.display="block"; measureChrome(); }
+});
+
+/* Schritt 2: Wachstumsfaktor */
+numTask("s5a2",{
+  question:"<strong>Schritt 2:</strong> Wie groß ist der Wachstumsfaktor <span class='m'>a</span>?",
+  correct:1.5, tol:0.001,
+  aria:"Wachstumsfaktor eingeben",
+  placeholder:"z. B. 1,4",
+  hints:["Teile zwei aufeinanderfolgende Werte durcheinander. Lass dir dazu die Quotienten anzeigen.",
+         "120 : 80 = 1,5 &nbsp;&nbsp; 180 : 120 = 1,5 &nbsp;&nbsp; 270 : 180 = 1,5 – der Quotient ist also konstant."],
+  solution:"<span class='mf'><i>a</i> = 1,5</span> &nbsp;(das entspricht einer Zunahme um 50 %)",
+  ok:"Der Quotient ist immer 1,5 – die Zahl der Läuse wächst also exponentiell.",
+  onSolved:function(){ $("s5a3").style.display="block"; measureChrome(); }
+});
+
+/* Schritt 3: Gleichung, richtige Antwort: B */
+mc("s5a3","<strong>Schritt 3:</strong> Welche Wachstumsgleichung gehört dazu?",[
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 80 + 1,5 · <i>t</i></span>",
+   no:"Das wäre lineares Wachstum mit dem Zuwachs 1,5. Hier ist aber der <em>Quotient</em> konstant."},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 80 · 1,5<sup><i>t</i></sup></span>",
+   ok:"Anfangsbestand mal Wachstumsfaktor hoch <span class='m'>t</span>. Probe: 80 · 1,5<sup>3</sup> = 270. ✓"},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 1,5 · 80<sup><i>t</i></sup></span>",
+   no:"Hier sind Anfangsbestand und Wachstumsfaktor vertauscht. Welche Zahl steht bei <span class='m'>t</span>&thinsp; = 0 in der Tabelle?"}
+],1,"Die Grundform lautet <span class='mf'><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span>. Setze <span class='mf'><i>B</i>(0) = 80</span> und <span class='mf'><i>a</i> = 1,5</span> ein.",
+function(){
+  $("fb5a").classList.add("show");
+  $("c5b").style.display="block";
+  measureChrome();
+});
+
+/* --- Teil B: Laptop --- */
+numTask("s5b1",{
+  question:"<strong>Schritt 1:</strong> Wie groß ist der Anfangsbestand <span class='mf'><i>B</i>(0)</span>?",
+  correct:1500, tol:0, unit:"€",
+  aria:"Anfangswert in Euro eingeben",
+  hints:["Der Anfangsbestand ist der Wert zu Beginn, also beim Kauf.",
+         "Im Text steht: „Ein Laptop kostet neu 1500 €.“"],
+  solution:"<span class='mf'><i>B</i>(0) = 1500</span>",
+  onSolved:function(){ $("s5b2").style.display="block"; measureChrome(); }
+});
+
+/* richtige Antwort: A */
+mc("s5b2","<strong>Schritt 2:</strong> Der Wert sinkt jedes Jahr um 20 %. Wie groß ist der Wachstumsfaktor <span class='m'>a</span>?",[
+  {t:"<span class='m'>a</span>&thinsp; = 0,8",
+   ok:"100 % − 20 % = 80 % = 0,8. Wegen 0 &lt; <span class='m'>a</span>&thinsp; &lt; 1 liegt eine exponentielle Abnahme vor."},
+  {t:"<span class='m'>a</span>&thinsp; = 0,2",
+   no:"0,2 wären nur die 20 %, die verloren gehen. Gefragt ist, wie viel übrig bleibt."},
+  {t:"<span class='m'>a</span>&thinsp; = 1,2",
+   no:"Bei einer Abnahme muss der Wert kleiner werden. Ist das mit einem Faktor über 1 möglich?"}
+],0,"Denke an Station 4: Abnahme um <span class='m'>p</span>&thinsp;% bedeutet <span class='mf'><i>a</i> = 1 − <i>p</i> : 100</span>.",
+function(){ $("s5b3").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("s5b3","<strong>Schritt 3:</strong> Wie lautet die Wachstumsgleichung?",[
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 1500 − 0,8 · <i>t</i></span>",
+   no:"Das wäre lineares Wachstum. Hier wird aber jedes Jahr mit demselben Faktor multipliziert."},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 1500 · 0,2<sup><i>t</i></sup></span>",
+   no:"Prüfe deinen Faktor aus Schritt 2 noch einmal: Wie viel Prozent bleiben übrig?"},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 1500 · 0,8<sup><i>t</i></sup></span>",
+   ok:"Probe nach einem Jahr: 1500 · 0,8 = 1200 €. Das sind genau 20 % weniger. ✓"}
+],2,"Setze in <span class='mf'><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span> die Werte <span class='mf'><i>B</i>(0) = 1500</span> und <span class='mf'><i>a</i> = 0,8</span> ein.",
+function(){ $("s5b4").style.display="block"; measureChrome(); });
+
+numTask("s5b4",{
+  question:"<strong>Schritt 4:</strong> Wie viel ist der Laptop nach <strong>3 Jahren</strong> noch wert?",
+  correct:768, tol:1, unit:"€",
+  aria:"Wert nach drei Jahren in Euro eingeben",
+  hints:["Setze <span class='m'>t</span>&thinsp; = 3 in deine Gleichung ein.",
+         "Rechne 1500 · 0,8<sup>3</sup>. Der Taschenrechner ist erlaubt."],
+  solution:"1500 · 0,8<sup>3</sup> = 1500 · 0,512 = <strong>768 €</strong>",
+  ok:"1500 · 0,8<sup>3</sup> = 768 €.",
+  onSolved:function(){
+    $("heft5").style.display="block";
+    setDone(4);
+    measureChrome();
+  }
+});
+
+/* =========================================================
+   STATION 6 – Faktor zwischen zwei entfernten Werten
+   ========================================================= */
+var S6=(function(){
+  var vals=[10,null,null,80];
+  function draw(){
+    var h="";
+    for(var i=0;i<4;i++){
+      h+='<div class="cbox'+(vals[i]===null?" unknown":"")+'">'+(vals[i]===null?"?":vals[i])+"</div>";
+      if(i<3) h+='<div class="carr"><span class="lbl">· <i>a</i></span><span class="ln">→</span></div>';
+    }
+    $("chain6").innerHTML=h;
+    measureChrome();
+  }
+  draw();
+  return {fill:function(){ vals=[10,20,40,80]; draw(); }};
+})();
+
+/* richtige Antwort: C */
+mc("q6a","Sieh dir die Kette an: Wie oft wird der Faktor <span class='m'>a</span>&thinsp; zwischen 10 und 80 angewendet?",[
+  {t:"einmal", no:"Zähle in der Kette die Pfeile, nicht die Kästchen."},
+  {t:"zweimal", no:"Zähle in der Kette die Pfeile, nicht die Kästchen."},
+  {t:"dreimal", ok:"Zwischen <span class='mf'><i>t</i> = 0</span> und <span class='mf'><i>t</i> = 3</span> liegen drei Zeitschritte – also drei Pfeile."}
+],2,"Von <span class='mf'><i>t</i> = 0</span> nach <span class='mf'><i>t</i> = 3</span> sind es 3 − 0 = 3 Zeitschritte.",
+function(){ $("wrapQ6b").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: A */
+mc("q6b","Es gilt also <span class='mf'>10 · <i>a</i><sup>3</sup> = 80</span>, kurz <span class='mf'><i>a</i><sup>3</sup> = 8</span>. Wie groß ist <span class='m'>a</span>?",[
+  {t:"<span class='m'>a</span>&thinsp; = 2",
+   ok:"Es gilt 2<sup>3</sup> = 8. Die Kette lautet: 10 → 20 → 40 → 80."},
+  {t:"<span class='m'>a</span>&thinsp; = 8",
+   no:"Das wäre der Quotient 80 : 10. Aber der Faktor wird ja dreimal angewendet, nicht einmal. Setze 8 zur Probe ein: 10 · 8 · 8 · 8 – passt das?"},
+  {t:"<span class='m'>a</span>&thinsp; = 2,67",
+   no:"Das wäre 8 : 3. Der Faktor wird aber nicht durch 3 geteilt, sondern dreimal <em>multipliziert</em>."}
+],0,"Gesucht ist die Zahl, die dreimal mit sich selbst multipliziert 8 ergibt – also die dritte Wurzel aus 8.",
+function(){
+  S6.fill();
+  $("heft6").style.display="block";
+  $("c6t").style.display="block";
+  measureChrome();
+});
+
+/* --- Transfer: Maispflanze (Anfangsbestand ist gegeben) --- */
+var MAIS_A = Math.sqrt(20.3/9.0);          /* ≈ 1,5019 – gerundet 1,50 */
+
+numTask("s6t1",{
+  question:"<strong>Schritt 1:</strong> Wie viele Zeitschritte (Wochen) liegen zwischen den beiden Angaben?",
+  correct:2, tol:0, unit:"Wochen",
+  aria:"Anzahl der Zeitschritte eingeben",
+  hints:["Die erste Angabe gilt zu Beginn, also bei <span class='m'>t</span>&thinsp; = 0.",
+         "Von <span class='mf'><i>t</i> = 0</span> bis <span class='mf'><i>t</i> = 2</span> – rechne 2 − 0."],
+  solution:"<strong>2</strong> Wochen",
+  ok:"Der Faktor wird also zweimal angewendet.",
+  onSolved:function(){ $("s6t2").style.display="block"; measureChrome(); }
+});
+
+/* richtige Antwort: B */
+mc("s6t2","<strong>Schritt 2:</strong> Welcher Ansatz ist richtig?",[
+  {t:"<span class='mf'>9,0 · <i>a</i> = 20,3</span>",
+   no:"So wäre der Faktor nur einmal angewendet. Wie viele Wochen liegen aber dazwischen?"},
+  {t:"<span class='mf'>9,0 · <i>a</i><sup>2</sup> = 20,3</span>",
+   ok:"Nach zwei Wochen wurde der Faktor zweimal angewendet – deshalb <span class='mf'><i>a</i><sup>2</sup></span>."},
+  {t:"<span class='mf'>9,0 · 2 · <i>a</i> = 20,3</span>",
+   no:"Bei exponentiellem Wachstum wird der Faktor mehrfach <em>multipliziert</em>, nicht mit der Zahl der Schritte malgenommen."}
+],1,"Es gilt <span class='mf'><i>B</i>(<i>n</i>) = <i>B</i>(0) · <i>a</i><sup><i>n</i></sup></span> mit <span class='mf'><i>B</i>(0) = 9,0</span> und <span class='mf'><i>n</i> = 2</span>.",
+function(){ $("s6t3").style.display="block"; measureChrome(); });
+
+numTask("s6t3",{
+  question:"<strong>Schritt 3:</strong> Bestimme den Wachstumsfaktor <span class='m'>a</span>&thinsp; auf zwei Nachkommastellen.",
+  correct:MAIS_A, dec:2,
+  aria:"Wachstumsfaktor eingeben",
+  placeholder:"z. B. 1,42",
+  hints:["Forme den Ansatz um: <span class='mf'><i>a</i><sup>2</sup> = 20,3 : 9,0</span>.",
+         "Es gilt <span class='mf'><i>a</i><sup>2</sup> ≈ 2,2556</span>. Ziehe daraus mit dem Taschenrechner die Quadratwurzel."],
+  solution:"<span class='mf'><i>a</i><sup>2</sup> = 20,3 : 9,0 ≈ 2,2556</span>, also <span class='mf'><i>a</i> = √2,2556 ≈ <strong>1,50</strong></span>",
+  ok:"<span class='mf'><i>a</i> ≈ 1,50</span> – die Pflanze wächst pro Woche um etwa 50 %.",
+  onSolved:function(){ $("s6t4").style.display="block"; measureChrome(); }
+});
+
+/* richtige Antwort: C */
+mc("s6t4","<strong>Schritt 4:</strong> Wie lautet die Wachstumsgleichung für die Höhe in cm?",[
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 9,0 + 1,50 · <i>t</i></span>",
+   no:"Das wäre lineares Wachstum. Hier wird aber jede Woche mit demselben Faktor multipliziert."},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 20,3 · 1,50<sup><i>t</i></sup></span>",
+   no:"20,3 cm ist die Höhe nach zwei Wochen. Welcher Wert gehört zu <span class='mf'><i>t</i> = 0</span>?"},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 9,0 · 1,50<sup><i>t</i></sup></span>",
+   ok:"Probe: 9,0 · 1,50<sup>2</sup> = 20,25 ≈ 20,3. ✓"}
+],2,"Setze in <span class='mf'><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span> den Anfangsbestand 9,0 und den Faktor 1,50 ein.",
+function(){ setDone(5); });
+
+/* =========================================================
+   STATION 7 – Wachstumsdetektiv
+   ========================================================= */
+var geloest7=0;
+function detektiv(hostId,cfg){
+  var host=$(hostId);
+  host.innerHTML="";
+  var h3=document.createElement("h3"); h3.textContent=cfg.titel; host.appendChild(h3);
+  var scroll=document.createElement("div"); scroll.className="tblscroll"; host.appendChild(scroll);
+  var tw=document.createElement("div"); scroll.appendChild(tw);
+  wertetabelle(tw,{labT:"t",labB:"B(t)",ts:cfg.ts,bs:cfg.bs,dec:4,labw:"4.6em"});
+  var ops=document.createElement("div"); host.appendChild(ops);
+
+  var row=document.createElement("div"); row.className="btnrow";
+  var bD=document.createElement("button"); bD.className="btn ghost"; bD.type="button";
+  bD.textContent="Differenzen prüfen";
+  var bQ=document.createElement("button"); bQ.className="btn ghost"; bQ.type="button";
+  bQ.textContent="Quotienten prüfen";
+  row.appendChild(bD); row.appendChild(bQ); host.appendChild(row);
+
+  var sd=false, sq=false;
+  bD.onclick=function(){
+    if(sd) return; sd=true; bD.disabled=true;
+    oprow(ops,{kind:"d",label:"Differenz",n:cfg.ts.length,labw:"4.6em",
+      values:diffs(cfg.bs).map(function(v){return (v>=0?"+":"−")+num(Math.abs(v),4);})});
+    measureChrome();
+  };
+  bQ.onclick=function(){
+    if(sq) return; sq=true; bQ.disabled=true;
+    oprow(ops,{kind:"q",label:"Quotient",n:cfg.ts.length,labw:"4.6em",
+      values:quots(cfg.bs).map(function(v){return num(v,4);})});
+    measureChrome();
+  };
+
+  var qp=document.createElement("p"); qp.className="q"; qp.style.marginTop="12px";
+  qp.textContent="Welche Entwicklung liegt hier vor?";
+  host.appendChild(qp);
+  var pk=document.createElement("div"); pk.className="pick3"; host.appendChild(pk);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display="none"; host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var LAB=["linear","exponentiell","weder noch"];
+  var btns=[], solved=false, wrong=0;
+  function lock(){ for(var i=0;i<3;i++) btns[i].disabled=true; }
+  function finish(){
+    solved=true; solBtn.style.display="none"; lock();
+    geloest7++;
+    $("cnt7").innerHTML="gelöst: <b>"+geloest7+"</b> von 4";
+    if(geloest7===4){ $("heft7").style.display="block"; setDone(6); }
+    measureChrome();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    btns[cfg.correct].classList.add("sel-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+LAB[cfg.correct]+". "+cfg.erklaerung;
+    finish();
+  };
+  for(var i=0;i<3;i++){
+    (function(i){
+      var b=document.createElement("button");
+      b.className="pick"; b.type="button"; b.textContent=LAB[i];
+      b.onclick=function(){
+        if(solved) return;
+        if(i===cfg.correct){
+          b.classList.add("sel-ok");
+          fb.className="fb ok show";
+          fb.innerHTML="<strong>Richtig.</strong> "+cfg.erklaerung;
+          finish();
+        } else {
+          b.classList.add("sel-no"); b.disabled=true; wrong++;
+          fb.className="fb hint show";
+          if(wrong===1){
+            fb.innerHTML="<strong>Denkhinweis:</strong> Rate nicht nach dem Aussehen der Zahlen. "+
+              "Lass dir die <strong>Differenzen</strong> anzeigen: Sind sie alle gleich?";
+          } else {
+            fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+cfg.hint2;
+            solBtn.style.display="inline-block";
+          }
+        }
+        measureChrome();
+      };
+      btns.push(b); pk.appendChild(b);
+    })(i);
+  }
+}
+
+detektiv("d7a",{
+  titel:"Tabelle 1", ts:[0,1,2,3,4], bs:[5,15,45,135,405], correct:1,
+  hint2:"Lass dir jetzt die <strong>Quotienten</strong> anzeigen: 15 : 5 = 3; 45 : 15 = 3; 135 : 45 = 3 …",
+  erklaerung:"Die Quotienten sind alle gleich 3, die Differenzen dagegen nicht (+10, +30, +90, +270). "+
+    "Also exponentielles Wachstum mit <span class='mf'><i>a</i> = 3</span>."
+});
+detektiv("d7b",{
+  titel:"Tabelle 2", ts:[0,1,2,3,4], bs:[5,15,25,35,45], correct:0,
+  hint2:"Die Differenzen lauten +10, +10, +10, +10. Was bedeutet eine konstante Differenz?",
+  erklaerung:"Die Differenzen sind alle gleich 10, die Quotienten dagegen nicht (3; 1,6667; 1,4; 1,2857). "+
+    "Also lineares Wachstum mit dem Zuwachs <span class='mf'><i>d</i> = 10</span>."
+});
+detektiv("d7c",{
+  titel:"Tabelle 3", ts:[0,1,2,3,4], bs:[5,6,9,14,21], correct:2,
+  hint2:"Die Differenzen lauten +1, +3, +5, +7 – nicht konstant. Prüfe jetzt auch die Quotienten.",
+  erklaerung:"Weder die Differenzen (+1, +3, +5, +7) noch die Quotienten (1,2; 1,5; 1,5556; 1,5) sind konstant. "+
+    "Also weder lineares noch exponentielles Wachstum."
+});
+detektiv("d7d",{
+  titel:"Tabelle 5", ts:[0,1,2,3,4], bs:[5,5.5,6.05,6.655,7.3205], correct:1,
+  hint2:"Die Differenzen werden größer (+0,5, +0,55, +0,605, +0,6655). Prüfe nun die Quotienten.",
+  erklaerung:"Die Quotienten sind alle gleich 1,1. Also exponentielles Wachstum mit "+
+    "<span class='mf'><i>a</i> = 1,1</span> – das entspricht einer Zunahme um 10 % pro Zeitschritt."
+});
+
+/* =========================================================
+   STATION 8 – Abschlusscheck
+   ========================================================= */
+/* richtige Antwort: B */
+mc("q8a","<strong>1.</strong> Auf ein Sparkonto werden jedes Jahr 40 € eingezahlt. Welche Art von Wachstum ist das?",[
+  {t:"Exponentielles Wachstum.",
+   no:"Prüfe: Wird hier jedes Jahr mit demselben Faktor multipliziert oder derselbe Betrag addiert?"},
+  {t:"Lineares Wachstum.",
+   ok:"In jedem Zeitschritt kommt derselbe Betrag dazu: die Differenz ist konstant."},
+  {t:"Weder noch.",
+   no:"Prüfe: Ist die Differenz von Jahr zu Jahr konstant?"}
+],1,"Konstante Differenz bedeutet linear, konstanter Quotient bedeutet exponentiell.",
+function(){ $("w8b").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("q8b","<strong>2.</strong> Eine Tabelle enthält die Werte 3; 7; 11; 15; 19. Was ist hier konstant?",[
+  {t:"Der Quotient: er beträgt immer 4.",
+   no:"Rechne einmal 7 : 3 und dann 11 : 7. Kommt zweimal dasselbe heraus?"},
+  {t:"Beides – Differenz und Quotient.",
+   no:"Rechne einmal 7 : 3 und dann 11 : 7. Kommt zweimal dasselbe heraus?"},
+  {t:"Die Differenz: sie beträgt immer 4.",
+   ok:"7 − 3 = 4, 11 − 7 = 4, 15 − 11 = 4, 19 − 15 = 4. Es liegt lineares Wachstum vor."}
+],2,"Bilde erst die Differenzen (7 − 3, 11 − 7 …) und dann die Quotienten (7 : 3, 11 : 7 …). Nur eines von beidem ist konstant.",
+function(){ $("w8c").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: A */
+mc("q8c","<strong>3.</strong> Eine Population nimmt pro Jahr um 4 % ab. Wie lautet der Wachstumsfaktor?",[
+  {t:"<span class='m'>a</span>&thinsp; = 0,96",
+   ok:"100 % − 4 % = 96 % = 0,96."},
+  {t:"<span class='m'>a</span>&thinsp; = 0,04",
+   no:"0,04 wären nur die 4 %, die verloren gehen. Gefragt ist, wie viel übrig bleibt."},
+  {t:"<span class='m'>a</span>&thinsp; = 1,04",
+   no:"Bei einer Abnahme muss der Bestand kleiner werden. Passt dazu ein Faktor über 1?"}
+],0,"Abnahme um <span class='m'>p</span>&thinsp;% bedeutet <span class='mf'><i>a</i> = 1 − <i>p</i> : 100</span>.",
+function(){ $("w8d").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("q8d","<strong>4.</strong> Ein Bestand wird durch <span class='mf'><i>B</i>(<i>t</i>) = 250 · 0,85<sup><i>t</i></sup></span> beschrieben. Was trifft zu?",[
+  {t:"Exponentielle Zunahme, denn der Anfangsbestand ist mit 250 recht groß.",
+   no:"Für Zunahme oder Abnahme ist nicht der Anfangsbestand entscheidend, sondern der Wachstumsfaktor."},
+  {t:"Exponentielle Abnahme um 85 % pro Zeitschritt.",
+   no:"0,85 gibt an, wie viel <em>übrig bleibt</em>. Wie viel geht dann verloren?"},
+  {t:"Exponentielle Abnahme um 15 % pro Zeitschritt.",
+   ok:"Wegen 0 &lt; 0,85 &lt; 1 liegt eine Abnahme vor, und 100 % − 85 % = 15 %."}
+],2,"Prüfe zuerst: Ist der Faktor größer oder kleiner als 1? Rechne dann 100 % − 85 %.",
+function(){ $("w8e").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: B */
+mc("q8e","<strong>5.</strong> Eine Kultur enthält zu Beginn 400 Bakterien. Ihre Anzahl nimmt pro Stunde um 20 % zu. Welche Gleichung passt?",[
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 400 + 1,2 · <i>t</i></span>",
+   no:"Das wäre lineares Wachstum. Eine Zunahme <em>um 20 %</em> bedeutet aber Multiplizieren."},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 400 · 1,2<sup><i>t</i></sup></span>",
+   ok:"<span class='mf'><i>B</i>(0) = 400</span> und <span class='mf'><i>a</i> = 1 + 20 : 100 = 1,2</span>."},
+  {t:"<span class='mf'><i>B</i>(<i>t</i>) = 400 · 0,2<sup><i>t</i></sup></span>",
+   no:"Mit dem Faktor 0,2 würde der Bestand stark <em>schrumpfen</em>. Hier soll er aber wachsen."}
+],1,"Bestimme zuerst den Faktor aus der Prozentangabe und setze ihn dann in <span class='mf'><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span> ein.",
+function(){ $("w8f").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: A */
+mc("q8f","<strong>6.</strong> Ein Bestand wächst exponentiell in <strong>2 Zeitschritten</strong> von 25 auf 100. Wie groß ist der Wachstumsfaktor?",[
+  {t:"<span class='m'>a</span>&thinsp; = 2",
+   ok:"Es gilt <span class='mf'>25 · <i>a</i><sup>2</sup> = 100</span>, also <span class='mf'><i>a</i><sup>2</sup> = 4</span> und <span class='mf'><i>a</i> = 2</span>. Die Kette lautet 25 → 50 → 100."},
+  {t:"<span class='m'>a</span>&thinsp; = 4",
+   no:"4 ist der Quotient 100 : 25. Aber der Faktor wird zweimal angewendet. Probe: 25 · 4 · 4 = 400 – zu viel."},
+  {t:"<span class='m'>a</span>&thinsp; = 75",
+   no:"Das ist die Differenz 100 − 25. Bei exponentiellem Wachstum wird aber nicht addiert, sondern multipliziert."}
+],0,"Setze an: <span class='mf'><i>B</i>(0) · <i>a</i><sup><i>n</i></sup> = <i>B</i>(<i>n</i>)</span> mit <span class='mf'><i>n</i> = 2</span>. Gesucht ist die Zahl, die zweimal mit sich selbst multipliziert 4 ergibt.",
+function(){ $("ende").style.display="block"; measureChrome(); });
+
+/* =========================================================
+   Start
+   ========================================================= */
+buildSteps();
+render();
+measureChrome();
+</script>
+</body>
+</html>
