@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I.2a Das bestimmte Integral als Flächenbilanz – Lernpfad</title>
+<style>
+/* ============ Grundlagen ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;        /* Hefteintrag-Blau */
+  --accent-soft:#eaf1f8;
+  --pos:#1f6fb2;           /* positiver Bilanzbeitrag */
+  --pos-bg:#dceaf6;
+  --neg:#b45309;           /* negativer Bilanzbeitrag */
+  --neg-bg:#fbeadb;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+/* overflow-x:clip statt hidden – hidden würde einen Scroll-Container erzeugen
+   und damit position:sticky der Visualisierungen außer Kraft setzen. */
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+.steps{display:flex;gap:6px;list-style:none;margin:0;padding:0 0 6px}
+.steps li{flex:1;display:flex}
+.steps button{
+  width:100%;border:0;background:transparent;padding:0 0 14px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:8px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+
+/* ============ Arbeitsansicht ============ */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:900px){
+  .work{grid-template-columns:1fr;gap:10px}
+  .work .viz svg{max-width:600px}
+  /* Station 1: flachere Grafik, damit Regler, Wert und Frage zusammen sichtbar bleiben */
+  .station[data-nr="1"] .viz svg{max-width:540px}
+}
+@media(min-width:901px) and (min-height:640px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 10px)}
+}
+
+/* ============ Mathematik-Satz ============ */
+.m{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:italic}
+.m .up{font-style:normal}
+.mblock{
+  text-align:center;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.intg{display:inline-flex;align-items:center;gap:.1em;font-style:italic;vertical-align:middle}
+.intg.sm .intsym{font-size:1.5em}
+.intg.sm .intlim{height:2.1em;font-size:.55em;margin-right:.15em}
+.q .intg.sm,p .intg.sm{margin:0 .1em}
+.intsym{font-style:normal;font-size:2.1em;line-height:.9;font-family:Georgia,"Times New Roman",serif}
+.intlim{display:inline-flex;flex-direction:column;justify-content:space-between;
+  height:3em;font-size:.62em;font-style:italic;line-height:1;margin-right:.2em}
+.up{font-style:normal}
+.big{font-size:clamp(1.15rem,3.2vw,1.5rem)}
+.big .intsym{font-size:3.1em}
+.big .intlim{height:4.5em}
+sub,sup{font-size:.68em}
+.formrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.15em .35em}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.pick:focus-visible{
+  outline:3px solid #7ba9d0;outline-offset:2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rückmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+.nextnote{display:block;margin-top:7px;font-weight:600;color:var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+.answer label{font-weight:600}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:110px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+
+/* Hefteintrag-Box */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:880px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.18em 0}
+
+/* Zuordnung positiv/negativ */
+.assign{display:flex;flex-direction:column;gap:10px;margin:10px 0 4px}
+.arow{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;
+}
+.arow .alab{
+  font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic;font-weight:700;
+  font-size:1.2rem;color:var(--accent);min-width:44px;
+}
+.arow .apos{font-size:.86rem;color:var(--ink-soft);flex:1 1 130px}
+.pick{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;
+  cursor:pointer;min-height:44px;font-weight:600;color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.pick:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.pick.sel-ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.pick.sel-no{border-color:#c0392b;background:#fbeceb}
+.pick:disabled{cursor:default;opacity:.55}
+.arow.done{border-color:var(--ok);background:var(--ok-bg)}
+.arow.done .pick:not(.sel-ok){display:none}
+
+/* Bilanz-Kacheln */
+.tiles{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.tile{
+  border-radius:8px;padding:7px 13px;font-weight:700;font-size:1.05rem;
+  border:1.5px solid;min-width:56px;text-align:center;
+}
+.tile.p{border-color:var(--pos);background:var(--pos-bg);color:#14456e}
+.tile.n{border-color:var(--neg);background:var(--neg-bg);color:#7a3907}
+.tile.r{border-color:var(--accent);background:var(--accent);color:#fff}
+.tiles .op{font-size:1.15rem;font-weight:700;color:var(--ink-soft)}
+.cmp{display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0}
+@media(min-width:760px){.cmp{grid-template-columns:1fr 1fr}}
+.cmpbox{border:1px solid var(--line);border-radius:8px;padding:11px 14px;background:#fff}
+.cmpbox .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:650}
+
+/* Schieberegler für die bewegliche Grenze */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:34px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.8rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{
+  content:"";display:block;width:1.5px;height:8px;background:#94a3b8;margin:0 auto 3px;
+}
+.scale span.mark{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic;
+  font-weight:700;color:var(--accent);font-size:.95rem}
+.scale span.mark::before{background:var(--accent);height:10px}
+
+/* Anzeige des aktuellen Integralwerts */
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:10px 14px;background:#fff;
+}
+.valbox .vlabel{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vrow{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:2px}
+.valbox .vnum{
+  font-size:1.6rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;min-width:4.2ch;display:inline-block;
+}
+.valbox .vsub{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Legende */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.87rem;margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:22px;height:14px;border:1.4px solid;display:inline-block;flex:0 0 auto}
+.sw-p{border-color:var(--pos);background:var(--pos-bg)}
+.sw-n{border-color:var(--neg);background:var(--neg-bg)}
+
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+
+/* ============ Fußnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.locknote{font-size:.82rem;color:var(--hint);text-align:center;padding:0 12px 7px;display:none}
+.locknote.show{display:block}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{padding-bottom:5px;font-size:.79rem}
+  .steps{padding-bottom:4px}
+}
+@media print{footer.nav,header.top{position:static}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">I. Flächeninhalt und bestimmtes Integral</div>
+    <div class="titel">I.2a Das bestimmte Integral als Flächenbilanz</div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Der Integralwert verändert sich</h2>
+  <div class="meta">Station 1 von 6 · etwa 7 Minuten · Erkundung mit dem Schieberegler</div>
+
+  <div class="card">
+    <p class="lead">Im Lernpfad I.1 lag der Graph immer <strong>oberhalb</strong> der Achse.
+       Jetzt schneidet er sie. Die untere Grenze <span class="m">a</span> bleibt fest –
+       die obere Grenze <span class="m">x</span> kannst du verschieben.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="slX">obere Grenze <span class="m">x</span> verschieben:</label>
+          <input type="range" id="slX" min="0" max="1000" step="1" value="0"
+                 aria-label="Obere Integralgrenze x verschieben">
+          <div class="scale" id="scaleX"></div>
+        </div>
+        <div id="svg1"></div>
+        <div class="figcap">Die Integrationsvariable heißt hier <span class="m">t</span> –
+          so bleibt <span class="m">x</span> für die bewegliche Grenze frei.</div>
+      </div>
+
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">aktueller Integralwert</div>
+          <div class="vrow">
+            <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">x</span><span class="u">a</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+            <span class="m up" style="font-size:1.1rem">&nbsp;=&nbsp;</span>
+            <span class="vnum" id="vInt">0,00</span>
+          </div>
+          <div class="vsub">obere Grenze <span class="m">x</span> = <span id="vX">1,00</span></div>
+        </div>
+
+        <p class="q" style="margin-top:12px">Forschungsauftrag</p>
+        <p class="small" style="margin-top:-4px">Bewege die obere Grenze <span class="m">x</span> langsam von
+          links nach rechts – bis ganz ans rechte Ende. Beobachte dabei den Integralwert.</p>
+        <div class="fb hint show" id="explore1">Bewege den Regler zunächst ein Stück nach rechts.</div>
+
+        <div id="wrapQ1a" style="display:none">
+          <div id="q1a"></div>
+        </div>
+        <div id="wrapQ1b" style="display:none">
+          <div class="fb hint show" id="explore2">Schiebe <span class="m">x</span> nun über die Nullstelle
+            hinaus weiter nach rechts.</div>
+          <div id="q1b" style="display:none"></div>
+        </div>
+        <div id="wrapQ1c" style="display:none">
+          <div id="q1c"></div>
+        </div>
+
+        <div id="reflex1" style="display:none">
+          <div class="cmpbox" style="margin-top:12px">
+            <div class="t">Werte beim Weiterschieben nach rechts</div>
+            <div class="tiles" style="gap:6px">
+              <span class="tile p">6,00</span><span class="op">→</span>
+              <span class="tile n">5,00</span><span class="op">→</span>
+              <span class="tile n">4,00</span><span class="op">→</span>
+              <span class="tile n">2,00</span>
+            </div>
+            <p class="small" style="margin:2px 0 0">Es kommt Fläche hinzu – aber der Wert wird kleiner.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Positive und negative Bilanzbeiträge</h2>
+  <div class="meta">Station 2 von 6 · etwa 5 Minuten</div>
+
+  <div class="card narrow" style="border-left:4px solid var(--accent)">
+    <p style="margin:0"><strong>Das hast du in Station 1 beobachtet:</strong><br>
+      Kommt Fläche <strong>oberhalb</strong> der <span class="m">x</span>-Achse hinzu, wächst der Integralwert.<br>
+      Kommt Fläche <strong>unterhalb</strong> der <span class="m">x</span>-Achse hinzu, sinkt er.</p>
+    <p style="margin:.6em 0 0">Dafür gibt es Fachbegriffe: Eine Teilfläche oberhalb der Achse liefert einen
+      <strong>positiven Bilanzbeitrag</strong>, eine Teilfläche unterhalb der Achse einen
+      <strong>negativen Bilanzbeitrag</strong>.</p>
+  </div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div id="svg2"></div>
+        <div class="figcap">Drei Teilflächen zwischen dem Graphen von <span class="m">f</span> und der
+          <span class="m">x</span>-Achse im Intervall <span class="m">[a; b]</span>.</div>
+      </div>
+      <div class="task">
+        <p>Übertrage deine Erkenntnis jetzt auf drei Teilflächen.</p>
+        <p class="q">Entscheide für jede Teilfläche, welchen Bilanzbeitrag sie liefert.</p>
+        <div class="assign" id="assign2"></div>
+        <div class="fb" id="fb2"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft2" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Ergänze jetzt in <strong>Abschnitt A</strong> die beiden Zeilen unter der Abbildung:</p>
+    <p>„Flächen oberhalb der <span class="m">x</span>-Achse werden <strong>positiv gezählt</strong>.“</p>
+    <p>„Flächen unterhalb der <span class="m">x</span>-Achse werden <strong>negativ gezählt</strong>.“</p>
+  </div>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Die Flächenbilanz</h2>
+  <div class="meta">Station 3 von 6 · etwa 7 Minuten</div>
+
+  <div class="card narrow">
+    <p><strong>Satz: Flächenbilanz.</strong> Für eine auf <span class="m">[a; b]</span> integrierbare Funktion gibt
+       das bestimmte Integral die <strong>Bilanz</strong> der Flächen zwischen dem Graphen von
+       <span class="m">f</span> und der <span class="m">x</span>-Achse an.</p>
+    <p class="mblock big" style="margin:clamp(12px,2vh,20px) 0">
+      <span class="intg"><span class="intsym">∫</span><span class="intlim"><span class="o">b</span><span class="u">a</span></span><span class="m">f(x)&nbsp;</span><span class="m up">d</span><span class="m">x</span></span>
+      <span class="m"> = A<sub>o</sub> − A<sub>u</sub></span>
+    </p>
+    <p class="small"><span class="m">A<sub>o</sub></span> ist der gesamte Flächeninhalt
+      <strong>oberhalb</strong>, <span class="m">A<sub>u</sub></span> der gesamte Flächeninhalt
+      <strong>unterhalb</strong> der <span class="m">x</span>-Achse.</p>
+  </div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div id="svg3"></div>
+        <div class="figcap">Die Teilflächen sind maßstabsgetreu gezeichnet.</div>
+      </div>
+      <div class="task">
+        <h3>Bilanz berechnen</h3>
+        <p>Gegeben sind die Flächeninhalte:
+           <span class="m">A<sub>1</sub></span> = 6 FE, <span class="m">A<sub>2</sub></span> = 4 FE,
+           <span class="m">A<sub>3</sub></span> = 3 FE.</p>
+        <p class="q">Welchen Wert hat das bestimmte Integral
+          <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">b</span><span class="u">a</span></span><span class="m">f(x)&nbsp;</span><span class="m up">d</span><span class="m">x</span></span>?</p>
+        <div class="answer">
+          <label for="inI">Integralwert =</label>
+          <input type="text" id="inI" inputmode="decimal" autocomplete="off" aria-label="Integralwert">
+          <button class="btn" onclick="checkNum('I')">Prüfen</button>
+          <button class="btn ghost" id="solI" style="display:none" onclick="showNum('I')">Lösungsweg zeigen</button>
+        </div>
+        <div class="fb" id="fbI"></div>
+        <div id="tiles3" style="display:none">
+          <p class="small" style="margin-bottom:2px">So setzt sich die Bilanz zusammen:</p>
+          <div class="tiles">
+            <span class="tile p">+ 6</span><span class="op">+</span>
+            <span class="tile n">− 4</span><span class="op">+</span>
+            <span class="tile p">+ 3</span><span class="op">=</span>
+            <span class="tile r">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft3" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Ergänze jetzt im <strong>Satz „Flächenbilanz“</strong> in Abschnitt A die Lücke:</p>
+    <p>„… gibt das bestimmte Integral die <strong>Bilanz</strong> der Flächen … an.“</p>
+    <p class="small">Die Formel <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">b</span><span class="u">a</span></span><span class="m">f(x)&nbsp;</span><span class="m up">d</span><span class="m">x</span></span> <span class="m up">= </span><span class="m">A<sub>o</sub> − A<sub>u</sub></span> steht bereits im Hefteintrag.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Flächenbilanz ≠ geometrischer Flächeninhalt</h2>
+  <div class="meta">Station 4 von 6 · etwa 8 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div id="svg4"></div>
+        <div class="figcap">Dieselben drei Teilflächen wie in Station 3.</div>
+      </div>
+      <div class="task">
+        <p>In Station 3 hast du den Integralwert <strong>5</strong> bestimmt. Er ist eine <em>Bilanz</em>:
+           die Teilfläche unterhalb der <span class="m">x</span>-Achse wurde abgezogen.</p>
+        <p class="q">Wie groß ist der <strong>gesamte geometrische Flächeninhalt</strong>, den die drei Teilflächen
+           zusammen einnehmen?</p>
+        <div class="answer">
+          <label for="inG">Flächeninhalt =</label>
+          <input type="text" id="inG" inputmode="decimal" autocomplete="off" aria-label="Geometrischer Flächeninhalt">
+          <button class="btn" onclick="checkNum('G')">Prüfen</button>
+          <button class="btn ghost" id="solG" style="display:none" onclick="showNum('G')">Lösungsweg zeigen</button>
+        </div>
+        <div class="fb" id="fbG"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="cmp4" style="display:none">
+    <h3>Gegenüberstellung</h3>
+    <div class="cmp">
+      <div class="cmpbox">
+        <div class="t">Integralwert · Flächenbilanz</div>
+        <div class="tiles">
+          <span class="tile p">+ 6</span><span class="op">+</span>
+          <span class="tile n">− 4</span><span class="op">+</span>
+          <span class="tile p">+ 3</span><span class="op">=</span>
+          <span class="tile r">5</span>
+        </div>
+        <p class="small" style="margin:2px 0 0">Die Fläche unterhalb der <span class="m">x</span>-Achse wird
+          <strong>abgezogen</strong>: <span class="m">A<sub>o</sub> − A<sub>u</sub></span></p>
+      </div>
+      <div class="cmpbox">
+        <div class="t">gesamter geometrischer Flächeninhalt</div>
+        <div class="tiles">
+          <span class="tile p">6</span><span class="op">+</span>
+          <span class="tile n">4</span><span class="op">+</span>
+          <span class="tile p">3</span><span class="op">=</span>
+          <span class="tile r">13</span>
+        </div>
+        <p class="small" style="margin:2px 0 0">Alle Teilflächen werden <strong>addiert</strong>:
+          <span class="m">A<sub>o</sub> + A<sub>u</sub></span></p>
+      </div>
+    </div>
+    <p class="q" style="margin-top:14px">Was folgt daraus allgemein?</p>
+    <div class="opts" id="q4"></div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="heft" id="heft4" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Vervollständige jetzt in Abschnitt A den Bereich
+       <strong>„Flächenbilanz ≠ geometrischer Flächeninhalt“</strong>:</p>
+    <p>Integralwert / Flächenbilanz: <span class="m">A<sub>o</sub> − A<sub>u</sub></span></p>
+    <p>gesamter geometrischer Flächeninhalt: <span class="m">A<sub>o</sub> + A<sub>u</sub></span></p>
+    <p>Und die Zeile darunter:
+       „Für die abgebildeten drei Teilflächen gilt: Integral =
+       <strong><span class="m">A<sub>1</sub> − A<sub>2</sub> + A<sub>3</sub></span></strong>“</p>
+  </div>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2>Sonderfall: Integralwert 0</h2>
+  <div class="meta">Station 5 von 6 · etwa 6 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div id="svg5"></div>
+        <div class="figcap">Hier sind die Flächen oberhalb und unterhalb der <span class="m">x</span>-Achse
+          <strong>gleich groß</strong>: je 4 FE.</div>
+      </div>
+      <div class="task">
+        <p class="q">Kann ein bestimmtes Integral den Wert 0 haben, obwohl zwischen Graph und
+           <span class="m">x</span>-Achse Flächen vorhanden sind?</p>
+        <div class="opts" id="q5a"></div>
+        <div class="fb" id="fb5a"></div>
+
+        <div id="teil5b" style="display:none">
+          <p class="q" style="margin-top:16px">Woran liegt das?</p>
+          <div class="opts" id="q5b"></div>
+          <div class="fb" id="fb5b"></div>
+        </div>
+
+        <div id="tiles5" style="display:none;margin-top:14px">
+          <div class="cmpbox">
+            <div class="t">Flächenbilanz</div>
+            <div class="tiles">
+              <span class="tile p">+ 4</span><span class="op">+</span>
+              <span class="tile n">− 4</span><span class="op">=</span>
+              <span class="tile r">0</span>
+            </div>
+          </div>
+          <div class="cmpbox" style="margin-top:8px">
+            <div class="t">geometrischer Flächeninhalt</div>
+            <div class="tiles">
+              <span class="tile p">4</span><span class="op">+</span>
+              <span class="tile n">4</span><span class="op">=</span>
+              <span class="tile r">8</span>
+            </div>
+          </div>
+          <p style="margin-top:10px"><strong>Merke:</strong> Integralwert 0 bedeutet <em>nicht</em>,
+            dass keine Fläche vorhanden ist.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft5" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Lies jetzt den <strong>Sonderfall</strong> am Ende von Abschnitt A und markiere ihn:</p>
+    <p>„Sind die positiven und negativen Flächeninhalte gleich groß, dann gilt
+       <span class="m">∫<sub>a</sub><sup>b</sup> f(x) dx = 0</span>. Trotzdem können zwischen Graph und
+       <span class="m">x</span>-Achse Flächen vorhanden sein.“</p>
+  </div>
+</section>
+
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 6 von 6 · etwa 4 Minuten</div>
+
+  <div class="card narrow"><div id="q6a"></div></div>
+  <div class="card narrow" id="w6b" style="display:none"><div id="q6b"></div></div>
+  <div class="card narrow" id="w6c" style="display:none"><div id="q6c"></div></div>
+  <div class="card narrow" id="w6d" style="display:none"><div id="q6d"></div></div>
+
+  <div class="card narrow" id="ende" style="display:none;border-left:5px solid var(--accent)">
+    <h3 style="font-size:1.18rem">Du kannst jetzt bestimmte Integrale als Flächenbilanz deuten.</h3>
+    <p>Du hast selbst beobachtet: Kommt Fläche unterhalb der <span class="m">x</span>-Achse hinzu, sinkt
+       der Integralwert. Flächen oberhalb zählen positiv, Flächen unterhalb negativ – der Integralwert ist
+       deshalb im Allgemeinen nicht der geometrische Flächeninhalt.</p>
+    <p style="margin-top:14px"><strong>Ausblick:</strong> Im nächsten Lernpfad betrachten wir genauer,
+       wie sich der Integralwert verändert, wenn die obere Grenze <span class="m">x</span> verschoben wird –
+       so wie in Station 1. Dadurch entsteht eine neue Funktion: die Integralfunktion.</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn ghost" id="prev">←<span class="lbl"> Zurück</span></button>
+    <div class="nav-mid">
+      <div class="pos" id="pos">Station 1 von 6</div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <button class="btn" id="next"><span class="lbl">Weiter </span>→</button>
+  </div>
+  <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+function $(id){return document.getElementById(id);}
+function fmt(v,d){
+  var s=(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);
+  s=s.replace(/(\.\d*?)0+$/,"$1").replace(/\.$/,"");
+  return s.replace(".",",");
+}
+/* feste Anzeige mit zwei Dezimalstellen (deutsche Schreibweise) */
+function fmt2(v){
+  if(Math.abs(v)<5e-5) v=0;
+  return v.toFixed(2).replace(".",",");
+}
+function num(str){
+  if(str===null||str===undefined) return NaN;
+  var s=String(str).trim().replace(/\s/g,"").replace(",",".");
+  if(s==="") return NaN;
+  return Number(s);
+}
+function measureChrome(){
+  var h=document.querySelector("header.top"), ft=document.querySelector("footer.nav");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+  if(ft) document.documentElement.style.setProperty("--footH", ft.offsetHeight+"px");
+}
+window.addEventListener("resize",measureChrome);
+window.addEventListener("orientationchange",function(){ setTimeout(measureChrome,250); });
+
+/* =========================================================
+   Kurvenmodell
+   Die Kurve besteht aus Sinus-Halbbögen. Ein Bogen der Breite w
+   mit der Amplitude (π/2)·w hat exakt den Flächeninhalt w².
+   Da die Steigung an jeder Nullstelle π²/2 beträgt, ist die
+   Kurve an den Übergängen knickfrei.
+   ========================================================= */
+function wave(a, widths, signs){
+  var segs=[], x=a;
+  for(var i=0;i<widths.length;i++){
+    segs.push({x0:x, x1:x+widths[i], w:widths[i], s:signs[i], A:widths[i]*widths[i]});
+    x+=widths[i];
+  }
+  return {
+    a:a, b:x, segs:segs,
+    f:function(t){
+      for(var i=0;i<segs.length;i++){
+        var g=segs[i];
+        if(t>=g.x0-1e-9 && t<=g.x1+1e-9)
+          return g.s*(Math.PI/2)*g.w*Math.sin(Math.PI*(t-g.x0)/g.w);
+      }
+      return 0;
+    }
+  };
+}
+var S6=Math.sqrt(6), S3=Math.sqrt(3);
+var W_MAIN = wave(1.0, [S6, 2, S3], [1,-1,1]);   /* Flächen 6 | 4 | 3 */
+var W_INTRO= wave(1.0, [S6, 2],     [1,-1]);     /* Flächen 6 | 4, ohne Zahlenangabe */
+var W_ZERO = wave(1.0, [2, 2],      [1,-1]);     /* Flächen 4 | 4 */
+
+/* =========================================================
+   SVG-Zeichenwerkzeuge
+   ========================================================= */
+var NS="http://www.w3.org/2000/svg";
+function el(name,attrs){
+  var e=document.createElementNS(NS,name);
+  for(var k in attrs){ if(attrs.hasOwnProperty(k)) e.setAttribute(k,attrs[k]); }
+  return e;
+}
+/* Zeichenfläche ohne Achsenskala: nur x- und y-Achse mit Pfeil,
+   Marken werden gezielt gesetzt. */
+function Board(host,opt){
+  var W=opt.w||620, H=opt.h||400;
+  var pad=opt.pad||{l:40,r:30,t:26,b:52};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",opt.label||"Mathematische Grafik");
+
+  var defs=el("defs");
+  function pat(id,bg,stroke,rot){
+    var p=el("pattern",{id:id,width:8,height:8,patternUnits:"userSpaceOnUse",patternTransform:"rotate("+rot+")"});
+    p.appendChild(el("rect",{width:8,height:8,fill:bg}));
+    p.appendChild(el("line",{x1:0,y1:0,x2:0,y2:8,stroke:stroke,"stroke-width":2}));
+    return p;
+  }
+  defs.appendChild(pat(opt.uid+"-pp","#dceaf6","#1f6fb2",45));
+  defs.appendChild(pat(opt.uid+"-pn","#fbeadb","#b45309",-45));
+  /* neutrale Schraffur: verrät vor der Entdeckung noch kein Vorzeichen */
+  defs.appendChild(pat(opt.uid+"-pneutral","#eceff3","#94a3b8",45));
+  svg.appendChild(defs);
+
+  var xmin=opt.xmin,xmax=opt.xmax,ymin=opt.ymin,ymax=opt.ymax;
+  function X(x){ return pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r); }
+  function Y(y){ return H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b); }
+  var api={svg:svg,X:X,Y:Y,uid:opt.uid,W:W,H:H};
+  api.content=(function(){ var g=el("g",{}); svg.appendChild(g); return g; })();
+
+  api.axes=function(){
+    var g=el("g",{});
+    /* x-Achse */
+    g.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:"#334155","stroke-width":1.8}));
+    g.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-10)+","+(Y(0)-5)+" "+(X(xmax)-10)+","+(Y(0)+5),fill:"#334155"}));
+    /* y-Achse am linken Rand, außerhalb des Kurvenbereichs */
+    var xy=opt.yAxisAt!==undefined?opt.yAxisAt:0;
+    g.appendChild(el("line",{x1:X(xy),y1:Y(ymin),x2:X(xy),y2:Y(ymax)+2,stroke:"#334155","stroke-width":1.8}));
+    g.appendChild(el("polygon",{points:X(xy)+","+Y(ymax)+" "+(X(xy)-5)+","+(Y(ymax)+10)+" "+(X(xy)+5)+","+(Y(ymax)+10),fill:"#334155"}));
+    /* Beschriftungen mit Abstand, außerhalb des Kurvenbereichs */
+    var tx=el("text",{x:X(xmax)-2,y:Y(0)-14,"text-anchor":"end","font-size":16,fill:"#334155",
+      "font-style":"italic","font-family":"Georgia,serif"});
+    tx.textContent=opt.axisLabelX||"x"; g.appendChild(tx);
+    var ty=el("text",{x:X(xy)-13,y:Y(ymax)+16,"text-anchor":"end","font-size":16,fill:"#334155",
+      "font-style":"italic","font-family":"Georgia,serif"});
+    ty.textContent="y"; g.appendChild(ty);
+    svg.appendChild(g);
+  };
+  /* Marke auf der x-Achse mit Beschriftung darunter */
+  api.markX=function(x,label,strong){
+    var g=el("g",{});
+    g.appendChild(el("line",{x1:X(x),y1:Y(0)-6,x2:X(x),y2:Y(0)+6,
+      stroke:strong?"#1f4e79":"#64748b","stroke-width":strong?2.2:1.6}));
+    var t=el("text",{x:X(x),y:Y(0)+27,"text-anchor":"middle","font-size":strong?17:14,
+      fill:strong?"#1f4e79":"#64748b","font-family":"Georgia,serif","font-style":"italic",
+      "font-weight":strong?"700":"400"});
+    t.textContent=label; g.appendChild(t);
+    svg.appendChild(g);
+  };
+  api.curve=function(fn,x0,x1,color,width){
+    var pts=[],N=400;
+    for(var i=0;i<=N;i++){ var x=x0+(x1-x0)*i/N; pts.push(X(x)+","+Y(fn(x))); }
+    var p=el("polyline",{points:pts.join(" "),fill:"none",stroke:color||"#0f172a",
+      "stroke-width":width||3,"stroke-linejoin":"round","stroke-linecap":"round"});
+    svg.appendChild(p); return p;
+  };
+  api.label=function(x,y,s,o){
+    o=o||{};
+    var t=el("text",{x:X(x),y:Y(y),"font-size":o.size||15,fill:o.fill||"#334155",
+      "text-anchor":o.anchor||"middle","font-family":o.family||"Segoe UI,system-ui,sans-serif",
+      "font-weight":o.weight||"400","font-style":o.italic?"italic":"normal"});
+    t.textContent=s; svg.appendChild(t); return t;
+  };
+  host.innerHTML=""; host.appendChild(svg);
+  return api;
+}
+/* Ein Segment der Kurve exakt zwischen seinen Nullstellen einfärben */
+function fillSeg(P,Wv,i){
+  var g=Wv.segs[i], pts=[P.X(g.x0)+","+P.Y(0)], N=120;
+  for(var k=0;k<=N;k++){ var t=g.x0+(g.x1-g.x0)*k/N; pts.push(P.X(t)+","+P.Y(Wv.f(t))); }
+  pts.push(P.X(g.x1)+","+P.Y(0));
+  var pg=el("polygon",{points:pts.join(" "),
+    fill:"url(#"+P.uid+(g.s>0?"-pp":"-pn")+")",
+    stroke:g.s>0?"#1f6fb2":"#b45309","stroke-width":1.8});
+  P.content.appendChild(pg);
+  return pg;
+}
+/* Beschriftung sicher innerhalb der Teilfläche (auf halber Höhe der Bogenmitte) */
+function segLabel(P,Wv,i,txt,opt){
+  opt=opt||{};
+  var g=Wv.segs[i], mid=(g.x0+g.x1)/2, h=Wv.f(mid);
+  /* Höhe relativ zur Bogenhöhe: dort ist die Fläche breit genug für die Beschriftung */
+  var hf=(opt.hf!==undefined)?opt.hf:0.50;
+  var t=el("text",{x:P.X(mid),y:P.Y(h*hf)+6,"text-anchor":"middle",
+    "font-size":opt.size||21,"font-family":"Cambria Math,Cambria,Georgia,serif",
+    "font-style":"italic","font-weight":"700",
+    fill:g.s>0?"#14456e":"#7a3907"});
+  t.textContent=txt;
+  P.svg.appendChild(t);
+  return t;
+}
+/* Vorzeichen als eingekreistes + bzw. − innerhalb der Teilfläche */
+function segSign(P,Wv,i,hf){
+  var g=Wv.segs[i], mid=(g.x0+g.x1)/2, h=Wv.f(mid);
+  var cx=P.X(mid), cy=P.Y(h*((hf!==undefined)?hf:0.20));
+  var col=g.s>0?"#1f6fb2":"#b45309";
+  var grp=el("g",{});
+  grp.appendChild(el("circle",{cx:cx,cy:cy,r:13,fill:"#fff",stroke:col,"stroke-width":2.2}));
+  var t=el("text",{x:cx,y:cy+7,"text-anchor":"middle","font-size":22,
+    "font-family":"Segoe UI,system-ui,sans-serif","font-weight":"700",fill:col});
+  t.textContent=g.s>0?"+":"−";
+  grp.appendChild(t);
+  P.svg.appendChild(grp);
+  return grp;
+}
+
+/* =========================================================
+   Stationssteuerung
+   ========================================================= */
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var cur=0;
+var done=[false,false,false,false,false,false];
+done[5]=true;                       /* Station 6 hat kein Weiter */
+var maxReached=0;
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", j<maxReached && j!==cur);
+    btns[j].disabled = j>maxReached;
+    btns[j].style.cursor = j>maxReached ? "default" : "pointer";
+  }
+  $("pos").textContent="Station "+(cur+1)+" von "+TOTAL;
+  $("barfill").style.width=((cur+1)/TOTAL*100)+"%";
+  $("prev").disabled=(cur===0);
+  $("next").style.visibility=(cur===TOTAL-1)?"hidden":"visible";
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+}
+function updateNext(){
+  var free=done[cur];
+  $("next").disabled=!free;
+  $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
+}
+function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i; if(cur>maxReached) maxReached=cur;
+  render();
+}
+$("prev").onclick=function(){ go(cur-1); };
+$("next").onclick=function(){ if(done[cur]) go(cur+1); };
+
+/* =========================================================
+   Multiple Choice mit gestuften Hilfen
+   ========================================================= */
+function mc(hostId,fbId,question,options,correctIdx,onSolved){
+  var host=$(hostId), fb=fbId?$(fbId):null, wrap=host;
+  if(question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=question; host.appendChild(qp);
+    wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+    if(!fb){ fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb); }
+  } else { wrap.className="opts"; }
+
+  var solved=false, wrongCount=0;
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display="none";
+  fb.parentNode.insertBefore(solBtn, fb);
+
+  function lockAll(){
+    var all=wrap.querySelectorAll(".opt");
+    for(var k=0;k<all.length;k++) all[k].disabled=true;
+  }
+  function finish(){ solved=true; solBtn.style.display="none"; lockAll(); if(onSolved) onSolved(); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+
+      (options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish();
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        fb.innerHTML="<strong>Denkhinweis:</strong> "+(o.no||"Überlege noch einmal.");
+        if(wrongCount>=2) solBtn.style.display="inline-block";
+      }
+    };
+    wrap.appendChild(b);
+  });
+}
+function addNote(fbId,txt){
+  var fb=$(fbId); if(!fb) return;
+  var s=document.createElement("span");
+  s.className="nextnote"; s.textContent=txt; fb.appendChild(s);
+}
+
+/* =========================================================
+   STATION 1 – Entdeckung mit beweglicher oberer Grenze
+   ========================================================= */
+
+/* Exakter Wert von ∫ von a bis X.
+   Für ein Segment gilt geschlossen:
+   ∫ s·(π/2)·w·sin(π(t−x0)/w) dt von x0 bis X = s·(w²/2)·(1 − cos(π(X−x0)/w)).
+   Bei X = x0 + w ergibt das s·w², also genau den Flächeninhalt des Bogens. */
+function integralTo(Wv,X){
+  var sum=0;
+  for(var i=0;i<Wv.segs.length;i++){
+    var g=Wv.segs[i];
+    if(X<=g.x0) break;
+    var t=Math.min(X,g.x1);
+    sum += g.s*(g.w*g.w/2)*(1-Math.cos(Math.PI*(t-g.x0)/g.w));
+  }
+  return sum;
+}
+
+var S1 = (function(){
+  var Wv=W_INTRO;
+  var NULLST=Wv.segs[0].x1;                 /* Nullstelle zwischen den beiden Bereichen */
+  var P=Board($("svg1"),{uid:"s1",w:620,h:370,xmin:-0.7,xmax:6.5,ymin:-4.3,ymax:4.7,
+    axisLabelX:"t",
+    label:"Graph einer Funktion; die Fläche von der festen Grenze a bis zur beweglichen Grenze x ist eingefärbt"});
+  var areaLayer=P.content;
+  var markLayer=el("g",{});                 /* bewegliche Grenze, immer oberhalb der Fläche */
+  var revealed=false;                       /* nach der Entdeckung: Farben nach Vorzeichen */
+
+  P.axes();
+  P.markX(Wv.a,"a",true);
+  P.curve(Wv.f,Wv.a,Wv.b,"#0f172a",3);
+  P.svg.appendChild(markLayer);
+
+  /* Skala unter dem Regler */
+  (function(){
+    var sc=$("scaleX");
+    function put(pos,txt,isMark){
+      var e=document.createElement("span");
+      /* Der Reglerdaumen ist rund 20 px breit; seine Mitte läuft nur zwischen
+         10 px und (Breite − 10 px). Die Marken werden entsprechend eingerückt. */
+      e.style.left="calc(10px + "+(pos*100)+"% - "+(pos*20)+"px)";
+      e.textContent=txt;
+      if(isMark) e.className="mark";
+      sc.appendChild(e);
+    }
+    var span=Wv.b-Wv.a;
+    put(0,"a",true);
+    put((NULLST-Wv.a)/span,"Nullstelle",false);
+    put(1,"b",true);
+  })();
+
+  function clear(g){ while(g.firstChild) g.removeChild(g.firstChild); }
+
+  /* Fläche von a bis X, an der Nullstelle geteilt gezeichnet */
+  function drawArea(X){
+    clear(areaLayer);
+    for(var i=0;i<Wv.segs.length;i++){
+      var g=Wv.segs[i];
+      if(X<=g.x0+1e-9) break;
+      var hi=Math.min(X,g.x1);
+      var pts=[P.X(g.x0)+","+P.Y(0)], N=110;
+      for(var k=0;k<=N;k++){
+        var t=g.x0+(hi-g.x0)*k/N;
+        pts.push(P.X(t)+","+P.Y(Wv.f(t)));
+      }
+      pts.push(P.X(hi)+","+P.Y(0));
+      var fill, stroke;
+      if(revealed){
+        fill="url(#s1"+(g.s>0?"-pp":"-pn")+")";
+        stroke=g.s>0?"#1f6fb2":"#b45309";
+      } else {
+        fill="url(#s1-pneutral)";
+        stroke="#64748b";
+      }
+      areaLayer.appendChild(el("polygon",{points:pts.join(" "),fill:fill,stroke:stroke,"stroke-width":1.6}));
+    }
+  }
+  /* Bewegliche Grenze: senkrechte Linie und Beschriftung unter der Achse */
+  function drawMark(X){
+    clear(markLayer);
+    var y=Wv.f(X);
+    markLayer.appendChild(el("line",{x1:P.X(X),y1:P.Y(0),x2:P.X(X),y2:P.Y(y),
+      stroke:"#1f4e79","stroke-width":2.6}));
+    markLayer.appendChild(el("circle",{cx:P.X(X),cy:P.Y(0),r:5,fill:"#1f4e79"}));
+    var t=el("text",{x:P.X(X),y:P.Y(0)+(y>=0?27:-14),"text-anchor":"middle","font-size":17,
+      fill:"#1f4e79","font-family":"Georgia,serif","font-style":"italic","font-weight":"700"});
+    t.textContent="x"; markLayer.appendChild(t);
+  }
+
+  var seenPos=false, seenNeg=false, q1aDone=false;
+  /* Frage 2 wird erst beantwortbar, wenn beides zutrifft:
+     Frage 1 ist bearbeitet UND x lag deutlich im Bereich unterhalb der Achse. */
+  function tryShowQ1b(){
+    if(!q1aDone || !seenNeg) return;
+    var e2=$("explore2"); if(e2) e2.style.display="none";
+    $("q1b").style.display="block";
+  }
+  function update(){
+    var f=Number($("slX").value)/1000;
+    var X=Wv.a+f*(Wv.b-Wv.a);
+    drawArea(X); drawMark(X);
+    $("vInt").textContent=fmt2(integralTo(Wv,X));
+    $("vX").textContent=fmt2(X);
+    /* Erkundungsfortschritt */
+    if(!seenPos && X>=Wv.a+0.55*(NULLST-Wv.a)){
+      seenPos=true;
+      $("explore1").style.display="none";
+      $("wrapQ1a").style.display="block";
+    }
+    if(seenPos && !seenNeg && X>=NULLST+0.45*Wv.segs[1].w){
+      seenNeg=true;
+      tryShowQ1b();
+    }
+  }
+  $("slX").addEventListener("input",update);
+  update();
+
+  return {
+    nullst:NULLST,
+    seenNeg:function(){ return seenNeg; },
+    armSecond:function(){
+      q1aDone=true;
+      $("wrapQ1b").style.display="block";
+      tryShowQ1b();
+    },
+    reveal:function(){
+      revealed=true;
+      update();
+      /* Vorzeichen erst jetzt sichtbar machen */
+      segSign(P,Wv,0); segSign(P,Wv,1,0.18);
+    }
+  };
+})();
+
+/* Beobachtung 1 – richtige Antwort: C */
+mc("q1a",null,"Was passiert mit dem Integralwert, solange <span class='m'>x</span> durch den Bereich läuft, in dem der Graph <strong>oberhalb</strong> der Achse liegt?",[
+  {t:"Er wird kleiner.",
+   no:"Schiebe <span class='m'>x</span> im linken Bereich noch einmal langsam nach rechts und lies den angezeigten Wert mit."},
+  {t:"Er bleibt gleich.",
+   no:"Vergleiche den Wert bei <span class='m'>x</span> = 1 mit dem Wert weiter rechts."},
+  {t:"Er wird größer.",
+   ok:"Während weitere Fläche oberhalb der Achse hinzukommt, wächst der Integralwert."}
+],2,function(){
+  S1.armSecond();
+});
+
+/* Beobachtung 2 – richtige Antwort: A */
+mc("q1b",null,"Und jetzt: Du schiebst <span class='m'>x</span> weiter nach rechts, es kommt zusätzliche Fläche hinzu. Was passiert mit dem Integralwert <strong>hinter der Nullstelle</strong>?",[
+  {t:"Er wird kleiner.",
+   ok:"Genau: Das betrachtete Intervall wird größer und es kommt weitere Fläche hinzu – trotzdem sinkt der Integralwert."},
+  {t:"Er wächst weiter, nur langsamer.",
+   no:"Sieh genau hin: Vergleiche den Wert an der Nullstelle mit dem Wert am rechten Ende."},
+  {t:"Er bleibt konstant.",
+   no:"Schiebe <span class='m'>x</span> ganz nach rechts und beobachte die Anzeige noch einmal."}
+],0,function(){ $("wrapQ1c").style.display="block"; });
+
+/* Entdeckung – richtige Antwort: B */
+mc("q1c",null,"<strong>Die entscheidende Frage:</strong> Was muss das für die Flächenstücke <em>unterhalb</em> der Achse bedeuten?",[
+  {t:"Sie werden einfach ignoriert.",
+   no:"Bewege <span class='m'>x</span> noch einmal vom oberen in den unteren Bereich und beobachte den angezeigten Integralwert. Würde etwas ignoriert, dürfte sich der Wert dort gar nicht ändern."},
+  {t:"Sie gehen mit negativem Vorzeichen in den Integralwert ein.",
+   ok:"Genau. Zusätzliche Fläche unterhalb der Achse verkleinert den Integralwert. Sie liefert deshalb einen <strong>negativen Bilanzbeitrag</strong>."},
+  {t:"Sie werden mit positivem Vorzeichen addiert.",
+   no:"Dann müsste der Integralwert weiter wachsen. Beobachte noch einmal, was beim Überschreiten der Nullstelle geschieht."},
+  {t:"Sie machen das Integral undefiniert.",
+   no:"Die Anzeige liefert durchgehend einen Wert. Beobachte stattdessen, in welche Richtung sich dieser Wert ändert."}
+],1,function(){
+  S1.reveal();
+  $("reflex1").style.display="block";
+  setDone(0);
+});
+
+/* =========================================================
+   STATION 2
+   ========================================================= */
+var P2=null, s2Signs=[];
+(function(){
+  P2=Board($("svg2"),{uid:"s2",w:620,h:400,xmin:-0.7,xmax:8.1,ymin:-4.3,ymax:4.7,
+    label:"Graph mit drei Teilflächen A1 oberhalb, A2 unterhalb und A3 oberhalb der x-Achse"});
+  fillSeg(P2,W_MAIN,0); fillSeg(P2,W_MAIN,1); fillSeg(P2,W_MAIN,2);
+  P2.axes();
+  P2.markX(W_MAIN.a,"a",true);
+  P2.markX(W_MAIN.b,"b",true);
+  P2.curve(W_MAIN.f,W_MAIN.a,W_MAIN.b,"#0f172a",3);
+  segLabel(P2,W_MAIN,0,"A₁");
+  segLabel(P2,W_MAIN,1,"A₂");
+  segLabel(P2,W_MAIN,2,"A₃");
+})();
+
+(function(){
+  var rows=[
+    {name:"A₁", lage:"oberhalb der x-Achse", pos:true},
+    {name:"A₂", lage:"unterhalb der x-Achse", pos:false},
+    {name:"A₃", lage:"oberhalb der x-Achse", pos:true}
+  ];
+  var solvedCount=0;
+  var host=$("assign2");
+  rows.forEach(function(r,i){
+    var row=document.createElement("div"); row.className="arow";
+    var lab=document.createElement("span"); lab.className="alab"; lab.textContent=r.name;
+    var pos=document.createElement("span"); pos.className="apos"; pos.textContent=r.lage;
+    row.appendChild(lab); row.appendChild(pos);
+    [["zählt positiv",true],["zählt negativ",false]].forEach(function(b){
+      var btn=document.createElement("button");
+      btn.type="button"; btn.className="pick"; btn.textContent=b[0];
+      btn.onclick=function(){
+        var fb=$("fb2");
+        if(row.classList.contains("done")) return;
+        if(b[1]===r.pos){
+          btn.classList.add("sel-ok");
+          row.classList.add("done");
+          row.querySelectorAll(".pick").forEach(function(x){ x.disabled=true; });
+          solvedCount++;
+          fb.className="fb ok show";
+          fb.innerHTML="<strong>Richtig.</strong> "+
+            (r.pos ? "Teilflächen oberhalb der <span class='m'>x</span>-Achse liefern einen positiven Beitrag."
+                   : "Teilflächen unterhalb der <span class='m'>x</span>-Achse liefern einen negativen Beitrag.");
+          if(solvedCount===3){
+            fb.innerHTML="<strong>Alle drei richtig zugeordnet.</strong> In der Grafik siehst du jetzt die Vorzeichen.";
+            s2Signs=[segSign(P2,W_MAIN,0),segSign(P2,W_MAIN,1),segSign(P2,W_MAIN,2)];
+            $("heft2").style.display="block";
+            setDone(1);
+          }
+        } else {
+          btn.classList.add("sel-no");
+          setTimeout(function(){ btn.classList.remove("sel-no"); },900);
+          fb.className="fb hint show";
+          fb.innerHTML="<strong>Denkhinweis:</strong> Sieh dir an, ob "+r.name+
+            " ober- oder unterhalb der <span class='m'>x</span>-Achse liegt. "+
+            "Oberhalb bedeutet: die Funktionswerte sind positiv.";
+        }
+      };
+      row.appendChild(btn);
+    });
+    host.appendChild(row);
+  });
+})();
+
+/* =========================================================
+   STATION 3
+   ========================================================= */
+(function(){
+  var P=Board($("svg3"),{uid:"s3",w:620,h:400,xmin:-0.7,xmax:8.1,ymin:-4.3,ymax:4.7,
+    label:"Graph mit den Teilflächen A1 gleich 6, A2 gleich 4 und A3 gleich 3 Flächeneinheiten"});
+  fillSeg(P,W_MAIN,0); fillSeg(P,W_MAIN,1); fillSeg(P,W_MAIN,2);
+  P.axes();
+  P.markX(W_MAIN.a,"a",true);
+  P.markX(W_MAIN.b,"b",true);
+  P.curve(W_MAIN.f,W_MAIN.a,W_MAIN.b,"#0f172a",3);
+  segLabel(P,W_MAIN,0,"A₁ = 6",{size:19});
+  segLabel(P,W_MAIN,1,"A₂ = 4",{size:19});
+  segLabel(P,W_MAIN,2,"A₃ = 3",{size:15,hf:0.42});
+  segSign(P,W_MAIN,0); segSign(P,W_MAIN,1); segSign(P,W_MAIN,2,0.15);
+})();
+
+var tries={I:0,G:0};
+var NUMSOL={
+  I:{val:5,
+     h1:"Zwei Teilflächen liegen oberhalb, eine unterhalb der <span class='m'>x</span>-Achse. Welche wird abgezogen?",
+     h2:"<span class='m'>A<sub>2</sub></span> liegt unterhalb und zählt negativ. Rechne also 6 − 4 + 3.",
+     sol:"<span class='intg sm'><span class='intsym'>∫</span><span class='intlim'><span class='o'>b</span><span class='u'>a</span></span><span class='m'>f(x)&nbsp;</span><span class='m up'>d</span><span class='m'>x</span></span> = <span class='m'>A<sub>1</sub> − A<sub>2</sub> + A<sub>3</sub></span> = 6 − 4 + 3 = <strong>5</strong>",
+     after:function(){ $("tiles3").style.display="block"; $("heft3").style.display="block"; setDone(2); }},
+  G:{val:13,
+     h1:"Beim geometrischen Flächeninhalt zählt nur die Größe der Flächen, nicht ihre Lage.",
+     h2:"Alle drei Teilflächen werden addiert: 6 + 4 + 3.",
+     sol:"<span class='m'>A</span> = <span class='m'>A<sub>1</sub> + A<sub>2</sub> + A<sub>3</sub></span> = 6 + 4 + 3 = <strong>13</strong>",
+     after:function(){ $("cmp4").style.display="block"; addNote("fbG","↓ Unten stehen beide Ergebnisse nebeneinander."); }}
+};
+function checkNum(key){
+  var inp=$("in"+key), fb=$("fb"+key), S=NUMSOL[key];
+  var v=num(inp.value);
+  if(isNaN(v)){ fb.className="fb hint show"; fb.innerHTML="Bitte gib eine Zahl ein."; return; }
+  if(Math.abs(v-S.val)<1e-9){
+    inp.classList.remove("no"); inp.classList.add("ok");
+    fb.className="fb ok show";
+    fb.innerHTML="<strong>Richtig.</strong><br>"+S.sol;
+    S.after();
+  } else {
+    tries[key]++;
+    inp.classList.add("no");
+    fb.className="fb hint show";
+    fb.innerHTML="<strong>Denkhinweis:</strong> "+(tries[key]===1?S.h1:S.h2);
+    if(tries[key]>=2) $("sol"+key).style.display="inline-block";
+  }
+}
+function showNum(key){
+  var S=NUMSOL[key], fb=$("fb"+key);
+  fb.className="fb sol show";
+  fb.innerHTML="<strong>Lösungsweg:</strong><br>"+S.sol;
+  $("in"+key).value=fmt(S.val,0);
+  $("in"+key).classList.remove("no");
+  S.after();
+}
+
+/* =========================================================
+   STATION 4
+   ========================================================= */
+(function(){
+  var P=Board($("svg4"),{uid:"s4",w:620,h:400,xmin:-0.7,xmax:8.1,ymin:-4.3,ymax:4.7,
+    label:"Dieselben drei Teilflächen mit den Inhalten 6, 4 und 3 Flächeneinheiten"});
+  fillSeg(P,W_MAIN,0); fillSeg(P,W_MAIN,1); fillSeg(P,W_MAIN,2);
+  P.axes();
+  P.markX(W_MAIN.a,"a",true);
+  P.markX(W_MAIN.b,"b",true);
+  P.curve(W_MAIN.f,W_MAIN.a,W_MAIN.b,"#0f172a",3);
+  segLabel(P,W_MAIN,0,"A₁ = 6",{size:19});
+  segLabel(P,W_MAIN,1,"A₂ = 4",{size:19});
+  segLabel(P,W_MAIN,2,"A₃ = 3",{size:15,hf:0.42});
+})();
+
+/* richtige Antwort: A */
+mc("q4","fb4",null,[
+  {t:"Flächenbilanz und geometrischer Flächeninhalt sind im Allgemeinen verschieden.",
+   ok:"Gleich sind sie nur, wenn gar keine Fläche unterhalb der <span class='m'>x</span>-Achse liegt."},
+  {t:"Flächenbilanz und geometrischer Flächeninhalt sind immer gleich.",
+   no:"Vergleiche die beiden Ergebnisse: 5 und 13. Sie unterscheiden sich deutlich."},
+  {t:"Die Flächenbilanz ist immer größer als der geometrische Flächeninhalt.",
+   no:"Hier ist die Bilanz 5 und damit kleiner als 13. Eine unterhalb liegende Fläche verkleinert die Bilanz."}
+],0,function(){ $("heft4").style.display="block"; setDone(3); });
+
+/* =========================================================
+   STATION 5
+   ========================================================= */
+(function(){
+  var P=Board($("svg5"),{uid:"s5",w:600,h:380,xmin:-0.7,xmax:5.9,ymin:-4.0,ymax:4.4,
+    label:"Graph mit zwei gleich großen Flächen: eine oberhalb, eine unterhalb der x-Achse"});
+  fillSeg(P,W_ZERO,0); fillSeg(P,W_ZERO,1);
+  P.axes();
+  P.markX(W_ZERO.a,"a",true);
+  P.markX(W_ZERO.b,"b",true);
+  P.curve(W_ZERO.f,W_ZERO.a,W_ZERO.b,"#0f172a",3);
+  segLabel(P,W_ZERO,0,"A₁ = 4",{size:19});
+  segLabel(P,W_ZERO,1,"A₂ = 4",{size:19});
+  segSign(P,W_ZERO,0); segSign(P,W_ZERO,1);
+})();
+
+/* richtige Antwort: B */
+mc("q5a","fb5a",null,[
+  {t:"Nein – wo eine Fläche ist, kann das Integral nicht 0 sein.",
+   no:"Denk an die Vorzeichen: Ein Beitrag kann positiv, ein anderer negativ sein."},
+  {t:"Ja, das ist möglich.",
+   ok:"Hier gilt sogar genau das: 4 − 4 = 0."},
+  {t:"Nur wenn der Graph vollständig auf der <span class='m'>x</span>-Achse verläuft.",
+   no:"Dann gäbe es überhaupt keine Fläche. Gefragt ist der Fall, dass Flächen vorhanden <em>sind</em>."}
+],1,function(){
+  $("teil5b").style.display="block";
+  addNote("fb5a","↓ Eine Frage folgt noch.");
+});
+
+/* richtige Antwort: C */
+mc("q5b","fb5b",null,[
+  {t:"Weil die beiden Flächen sehr klein sind.",
+   no:"Die Größe allein entscheidet nicht. Beide Flächen haben hier immerhin 4 FE."},
+  {t:"Weil die Fläche unterhalb der <span class='m'>x</span>-Achse nicht mitgezählt wird.",
+   no:"Sie wird sehr wohl mitgezählt – allerdings mit negativem Vorzeichen."},
+  {t:"Weil sich der positive und der negative Bilanzbeitrag gegenseitig aufheben.",
+   ok:"4 − 4 = 0. Der geometrische Flächeninhalt beträgt trotzdem 4 + 4 = 8 FE."}
+],2,function(){
+  $("tiles5").style.display="block";
+  $("heft5").style.display="block";
+  setDone(4);
+});
+
+/* =========================================================
+   STATION 6 – Abschlusscheck
+   ========================================================= */
+/* richtige Antwort: D */
+mc("q6a",null,"<strong>1.</strong> Welches Vorzeichen hat der Beitrag einer Teilfläche, die <em>unterhalb</em> der <span class='m'>x</span>-Achse liegt?",[
+  {t:"Immer ein positives.", no:"Positiv zählen die Teilflächen oberhalb der <span class='m'>x</span>-Achse."},
+  {t:"Das hängt von der Größe der Fläche ab.", no:"Die Größe bestimmt den Betrag des Beitrags, nicht sein Vorzeichen."},
+  {t:"Gar keines – sie wird weggelassen.", no:"Sie wird berücksichtigt, allerdings mit einem Vorzeichen."},
+  {t:"Ein negatives.", ok:"Genau das hast du in Station 1 am sinkenden Integralwert beobachtet."}
+],3,function(){ $("w6b").style.display="block"; });
+
+/* richtige Antwort: B */
+mc("q6b",null,"<strong>2.</strong> Wie berechnet man den Integralwert, wenn <span class='m'>A<sub>1</sub></span> und <span class='m'>A<sub>3</sub></span> oberhalb und <span class='m'>A<sub>2</sub></span> unterhalb der <span class='m'>x</span>-Achse liegen?",[
+  {t:"<span class='m'>A<sub>1</sub> + A<sub>2</sub> + A<sub>3</sub></span>",
+   no:"So erhältst du den gesamten geometrischen Flächeninhalt, nicht die Bilanz."},
+  {t:"<span class='m'>A<sub>1</sub> − A<sub>2</sub> + A<sub>3</sub></span>",
+   ok:"Nur die unterhalb liegende Teilfläche wird abgezogen."},
+  {t:"<span class='m'>A<sub>1</sub> − A<sub>2</sub> − A<sub>3</sub></span>",
+   no:"<span class='m'>A<sub>3</sub></span> liegt oberhalb der <span class='m'>x</span>-Achse und zählt deshalb positiv."}
+],1,function(){ $("w6c").style.display="block"; });
+
+/* richtige Antwort: C */
+mc("q6c",null,"<strong>3.</strong> Was ist der Unterschied zwischen Flächenbilanz und geometrischem Flächeninhalt?",[
+  {t:"Es ist derselbe Wert, nur anders benannt.",
+   no:"In Station 4 ergaben sich 5 und 13 – zwei verschiedene Werte."},
+  {t:"Die Bilanz misst in Flächeneinheiten, der Flächeninhalt in Längeneinheiten.",
+   no:"Beide sind Flächeninhalte und werden in Flächeneinheiten angegeben."},
+  {t:"Bei der Bilanz werden Flächen unterhalb der Achse abgezogen, beim Flächeninhalt alle addiert.",
+   ok:"Bilanz: <span class='m'>A<sub>o</sub> − A<sub>u</sub></span> · Flächeninhalt: <span class='m'>A<sub>o</sub> + A<sub>u</sub></span>"}
+],2,function(){ $("w6d").style.display="block"; });
+
+/* richtige Antwort: A */
+mc("q6d",null,"<strong>4.</strong> Kann ein Integralwert 0 sein, obwohl zwischen Graph und <span class='m'>x</span>-Achse Flächen vorhanden sind?",[
+  {t:"Ja, wenn positive und negative Beiträge gleich groß sind.",
+   ok:"Genau der Sonderfall aus Station 5."},
+  {t:"Nein, niemals.",
+   no:"In Station 5 war das Integral 0, obwohl 8 FE Fläche vorhanden waren."},
+  {t:"Ja, aber nur wenn der Graph eine Gerade ist.",
+   no:"Die Form des Graphen spielt keine Rolle – entscheidend sind die Beiträge."}
+],0,function(){ $("ende").style.display="block"; });
+
+/* =========================================================
+   Enter-Taste in Eingabefeldern
+   ========================================================= */
+(function(){
+  var map={inI:function(){checkNum("I");}, inG:function(){checkNum("G");}};
+  Object.keys(map).forEach(function(id){
+    var e=$(id); if(!e) return;
+    e.addEventListener("keydown",function(ev){
+      if(ev.key==="Enter"){ ev.preventDefault(); map[id](); }
+    });
+  });
+})();
+
+/* =========================================================
+   Start
+   ========================================================= */
+buildSteps();
+render();
+measureChrome();
+</script>
+</body>
+</html>
