@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I.2b Die Integralfunktion – Lernpfad</title>
+<style>
+
+/* ============ Grundlagen ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;        /* Hefteintrag-Blau */
+  --accent-soft:#eaf1f8;
+  --pos:#1f6fb2;           /* positiver Bilanzbeitrag */
+  --pos-bg:#dceaf6;
+  --neg:#b45309;           /* negativer Bilanzbeitrag */
+  --neg-bg:#fbeadb;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+/* overflow-x:clip statt hidden – hidden würde einen Scroll-Container erzeugen
+   und damit position:sticky der Visualisierungen außer Kraft setzen. */
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+.steps{display:flex;gap:6px;list-style:none;margin:0;padding:0 0 6px}
+.steps li{flex:1;display:flex}
+.steps button{
+  width:100%;border:0;background:transparent;padding:0 0 14px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:8px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+
+/* ============ Arbeitsansicht ============ */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:900px){
+  .work{grid-template-columns:1fr;gap:10px}
+  .work .viz svg{max-width:600px}
+  /* Station 1: flachere Grafik, damit Regler, Wert und Frage zusammen sichtbar bleiben */
+  .station[data-nr="1"] .viz svg{max-width:540px}
+}
+@media(min-width:901px) and (min-height:640px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 10px)}
+}
+
+/* ============ Mathematik-Satz ============ */
+.m{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:italic}
+.m .up{font-style:normal}
+.mblock{
+  text-align:center;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.intg{display:inline-flex;align-items:center;gap:.1em;font-style:italic;vertical-align:middle}
+.intg.sm .intsym{font-size:1.5em}
+.intg.sm .intlim{height:2.1em;font-size:.55em;margin-right:.15em}
+.q .intg.sm,p .intg.sm{margin:0 .1em}
+.intsym{font-style:normal;font-size:2.1em;line-height:.9;font-family:Georgia,"Times New Roman",serif}
+.intlim{display:inline-flex;flex-direction:column;justify-content:space-between;
+  height:3em;font-size:.62em;font-style:italic;line-height:1;margin-right:.2em}
+.up{font-style:normal}
+.big{font-size:clamp(1.15rem,3.2vw,1.5rem)}
+.big .intsym{font-size:3.1em}
+.big .intlim{height:4.5em}
+sub,sup{font-size:.68em}
+.formrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.15em .35em}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.pick:focus-visible,
+.chip:focus-visible,.slot:focus-visible{
+  outline:3px solid #7ba9d0;outline-offset:2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rückmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+.nextnote{display:block;margin-top:7px;font-weight:600;color:var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+.answer label{font-weight:600}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:110px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+
+/* Hefteintrag-Box */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:880px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.18em 0}
+
+/* Zuordnung positiv/negativ */
+.assign{display:flex;flex-direction:column;gap:10px;margin:10px 0 4px}
+.arow{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff;
+}
+.arow .alab{
+  font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic;font-weight:700;
+  font-size:1.2rem;color:var(--accent);min-width:44px;
+}
+.arow .apos{font-size:.86rem;color:var(--ink-soft);flex:1 1 130px}
+.pick{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;
+  cursor:pointer;min-height:44px;font-weight:600;color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.pick:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.pick.sel-ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.pick.sel-no{border-color:#c0392b;background:#fbeceb}
+.pick:disabled{cursor:default;opacity:.55}
+.arow.done{border-color:var(--ok);background:var(--ok-bg)}
+.arow.done .pick:not(.sel-ok){display:none}
+
+/* Zuordnung */
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 14px;max-width:760px}
+.chip{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:22px;
+  padding:9px 15px;cursor:pointer;font-weight:600;min-height:44px;
+  -webkit-tap-highlight-color:transparent;
+}
+.chip.sel{background:var(--accent);color:#fff}
+.chip.used{opacity:.32;pointer-events:none;text-decoration:line-through}
+.slots{display:flex;flex-direction:column;gap:9px;max-width:760px}
+.slot{
+  display:flex;align-items:center;gap:12px;border:1.5px dashed var(--line);border-radius:8px;
+  padding:9px 13px;background:#fff;cursor:pointer;min-height:52px;width:100%;text-align:left;
+  -webkit-tap-highlight-color:transparent;
+}
+.slot .sym{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic;font-size:1.28rem;
+  min-width:50px;text-align:center;color:var(--accent);font-weight:600;flex:0 0 auto}
+.slot .fill{color:var(--ink-soft)}
+.slot.filled{border-style:solid;border-color:var(--ok);background:var(--ok-bg)}
+.slot.filled .fill{color:var(--ink);font-weight:600}
+.slot.wrong{border-color:#c0392b;background:#fbeceb}
+
+/* Bilanz-Kacheln */
+.tiles{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.tile{
+  border-radius:8px;padding:7px 13px;font-weight:700;font-size:1.05rem;
+  border:1.5px solid;min-width:56px;text-align:center;
+}
+.tile.p{border-color:var(--pos);background:var(--pos-bg);color:#14456e}
+.tile.n{border-color:var(--neg);background:var(--neg-bg);color:#7a3907}
+.tile.r{border-color:var(--accent);background:var(--accent);color:#fff}
+.tiles .op{font-size:1.15rem;font-weight:700;color:var(--ink-soft)}
+.cmp{display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0}
+@media(min-width:760px){.cmp{grid-template-columns:1fr 1fr}}
+.cmpbox{border:1px solid var(--line);border-radius:8px;padding:11px 14px;background:#fff}
+.cmpbox .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:650}
+
+/* Schieberegler für die bewegliche Grenze */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:34px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.8rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{
+  content:"";display:block;width:1.5px;height:8px;background:#94a3b8;margin:0 auto 3px;
+}
+.scale span.mark{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic;
+  font-weight:700;color:var(--accent);font-size:.95rem}
+.scale span.mark::before{background:var(--accent);height:10px}
+
+/* Anzeige des aktuellen Integralwerts */
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:10px 14px;background:#fff;
+}
+.valbox .vlabel{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vrow{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:2px}
+.valbox .vnum{
+  font-size:1.6rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;min-width:4.2ch;display:inline-block;
+}
+.valbox .vsub{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Legende */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.87rem;margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:22px;height:14px;border:1.4px solid;display:inline-block;flex:0 0 auto}
+.sw-p{border-color:var(--pos);background:var(--pos-bg)}
+.sw-n{border-color:var(--neg);background:var(--neg-bg)}
+
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+
+/* ============ Fußnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.locknote{font-size:.82rem;color:var(--hint);text-align:center;padding:0 12px 7px;display:none}
+.locknote.show{display:block}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{padding-bottom:5px;font-size:.79rem}
+  .steps{padding-bottom:4px}
+}
+@media print{footer.nav,header.top{position:static}}
+
+/* ===== Ergänzungen für I.2b ===== */
+/* Zwei Koordinatensysteme untereinander in einer Visualisierungsspalte */
+.sys{margin:0 0 6px}
+.sys .caption{
+  font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;font-weight:650;
+  color:var(--ink-soft);margin:0 0 2px 4px;
+}
+.sys.fsys .caption{color:#334155}
+.sys.isys .caption{color:var(--accent)}
+.sys.isys{border-top:1px dashed var(--line);padding-top:8px}
+
+/* Wertekacheln für f(x) und I_a(x) */
+.vals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.val{
+  border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:6px 11px;
+  background:#fff;display:flex;align-items:baseline;gap:8px;flex:1 1 150px;
+}
+.val .k{font-size:.82rem;color:var(--ink-soft)}
+.val .v{font-size:1.12rem;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto}
+.val.f{border-left-color:#334155}
+.val.i{border-left-color:var(--accent)}
+.val.trend{border-left-color:#6b7280}
+
+/* Auswahlknöpfe für die untere Grenze a */
+.achoice{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 4px}
+.achoice button{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+  padding:9px 16px;cursor:pointer;font-weight:650;min-height:44px;
+  font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.02rem;
+  -webkit-tap-highlight-color:transparent;
+}
+.achoice button.sel{background:var(--accent);color:#fff}
+
+/* Punktezähler in Station 2 */
+.counter{font-size:.85rem;color:var(--ink-soft);margin:4px 0 0}
+.counter b{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">I. Flächeninhalt und bestimmtes Integral</div>
+    <div class="titel">I.2b Die Integralfunktion</div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Erinnerung: die bewegliche Grenze</h2>
+  <div class="meta">Station 1 von 8 · etwa 4 Minuten</div>
+
+  <div class="card">
+    <p class="lead">Wie in I.2a: Die untere Grenze <span class="m">a</span> bleibt fest, die obere Grenze
+      <span class="m">x</span> lässt sich verschieben.</p>
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl1">obere Grenze <span class="m">x</span> verschieben:</label>
+          <input type="range" id="sl1" min="0" max="130" step="1" value="0"
+                 aria-label="Obere Integralgrenze x verschieben">
+          <div class="scale" id="scale1"></div>
+        </div>
+        <div class="sys fsys">
+          <div id="svg1"></div>
+        </div>
+        <div class="figcap">Die Integrationsvariable heißt <span class="m">t</span> –
+          so bleibt <span class="m">x</span> für die bewegliche Grenze frei.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">aktueller Integralwert</div>
+          <div class="vrow">
+            <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">x</span><span class="u">a</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+            <span class="m up" style="font-size:1.1rem">&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v1Int">0,00</span>
+          </div>
+          <div class="vsub">obere Grenze <span class="m">x</span> = <span id="v1X">1,50</span></div>
+        </div>
+        <p class="q" style="margin-top:12px">Bewege <span class="m">x</span> einmal von links nach rechts und
+          beobachte den Integralwert.</p>
+        <div class="fb hint show" id="explore1">Bewege den Regler zunächst nach rechts.</div>
+        <div id="wrapQ1a" style="display:none"><div id="q1a"></div></div>
+        <div id="wrapQ1b" style="display:none">
+          <div class="fb hint show" id="explore1b">Schiebe <span class="m">x</span> weiter nach rechts, bis der
+            Graph von <span class="m">f</span>&thinsp; unterhalb der Achse verläuft.</div>
+          <div id="q1b" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Aus Integralwerten werden Punkte</h2>
+  <div class="meta">Station 2 von 8 · etwa 8 Minuten · die Kernstation</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl2">obere Grenze <span class="m">x</span> verschieben:</label>
+          <input type="range" id="sl2" min="0" max="130" step="1" value="0"
+                 aria-label="Obere Integralgrenze x verschieben">
+          <div class="scale" id="scale2"></div>
+        </div>
+        <div class="sys fsys">
+          <div class="caption">Graph von <span class="m">f</span> · Fläche von <span class="m">a</span> bis <span class="m">x</span></div>
+          <div id="svg2f"></div>
+        </div>
+        <div class="sys isys">
+          <div class="caption">Wertepaare (<span class="m">x</span> | Integralwert)</div>
+          <div id="svg2i"></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">aktueller Integralwert</div>
+          <div class="vrow">
+            <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">x</span><span class="u">a</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+            <span class="m up" style="font-size:1.1rem">&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v2Int">0,00</span>
+          </div>
+          <div class="vsub">obere Grenze <span class="m">x</span> = <span id="v2X">1,50</span></div>
+        </div>
+
+        <p class="q" style="margin-top:12px">Arbeitsauftrag</p>
+        <p class="small" style="margin-top:-4px">Schiebe <span class="m">x</span> nacheinander auf diese Stellen:
+          <strong>1,5 · 2 · 3 · 4 · 5 · 6,5 · 8</strong>. Sobald du eine davon erreichst, wird der Knopf aktiv.</p>
+        <button class="btn" id="btnPunkt" disabled>Punkt eintragen</button>
+        <p class="counter" id="cnt2">eingetragen: <b>0</b> von 7</p>
+        <div class="fb" id="fb2set"></div>
+
+        <div id="wrapQ2" style="display:none" class="cardgap">
+          <div id="q2"></div>
+        </div>
+        <div id="after2" style="display:none">
+          <div class="fb ok show" style="margin-top:10px">
+            <strong>Die Punkte liegen auf einer Kurve.</strong> Sie ist jetzt eingezeichnet:
+            Zu jedem <span class="m">x</span> gehört genau ein Integralwert – das ist eine <strong>Funktion</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Die Integralfunktion</h2>
+  <div class="meta">Station 3 von 8 · etwa 5 Minuten</div>
+
+  <div class="card narrow">
+    <p>Die Zuordnung, die du gerade erzeugt hast, bekommt jetzt einen Namen.</p>
+    <p class="mblock big" style="margin:clamp(12px,2vh,20px) 0">
+      <span class="m">I<sub>a</sub>(x) = </span>
+      <span class="intg"><span class="intsym">∫</span><span class="intlim"><span class="o">x</span><span class="u">a</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+    </p>
+    <p>Die Funktion <span class="m">I<sub>a</sub></span> heißt <strong>Integralfunktion</strong> von
+      <span class="m">f</span>&thinsp; zur unteren Grenze <span class="m">a</span>. Ihr Funktionswert
+      <span class="m">I<sub>a</sub>(x)</span> gibt die <strong>Flächenbilanz</strong> zwischen dem Graphen von
+      <span class="m">f</span>&thinsp; und der <span class="m">x</span>-Achse von <span class="m">a</span> bis
+      <span class="m">x</span> an.</p>
+  </div>
+
+  <div class="card narrow">
+    <h3>Bezeichnungen zuordnen</h3>
+    <p class="small">Wähle zuerst einen Begriff, tippe ihn dann in der passenden Zeile an.</p>
+    <div class="chips" id="chips3"></div>
+    <div class="slots" id="slots3"></div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card narrow" id="bsp3" style="display:none">
+    <h3>Beispiel zur Schreibweise</h3>
+    <p>Angenommen, es gilt
+      <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o up">4</span><span class="u up">1</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+      <span class="m up"> = 5</span>. Dann ist
+      <span class="m">I<sub>1</sub>(4) = </span>
+      <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o up">4</span><span class="u up">1</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+      <span class="m up"> = 5</span>.</p>
+    <p class="small">Der Funktionswert von <span class="m">I<sub>1</sub></span> an der Stelle 4 ist also 5.</p>
+  </div>
+
+  <div class="heft" id="heft3" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Ergänze jetzt <strong>Abschnitt 1</strong> und <strong>Abschnitt 2</strong>:</p>
+    <p>Abschnitt 1: Die untere Grenze <span class="m">a</span> bleibt <strong>fest</strong>, die obere Grenze
+      <span class="m">x</span> ist <strong>variabel</strong>.</p>
+    <p>In der Definition: <span class="m">I<sub>a</sub></span> heißt <strong>Integralfunktion</strong> von
+      <span class="m">f</span>&thinsp; zur unteren Grenze <span class="m">a</span>.</p>
+    <p>Abschnitt 2: Der Funktionswert gibt die <strong>Flächenbilanz</strong> an.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Warum ist <span class="m">a</span> eine Nullstelle?</h2>
+  <div class="meta">Station 4 von 8 · etwa 4 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl4">obere Grenze <span class="m">x</span> verschieben:</label>
+          <input type="range" id="sl4" min="0" max="130" step="1" value="60"
+                 aria-label="Obere Integralgrenze x verschieben">
+          <div class="scale" id="scale4"></div>
+        </div>
+        <div class="sys fsys">
+          <div id="svg4"></div>
+        </div>
+        <div class="figcap">Schiebe <span class="m">x</span> ganz nach links auf <span class="m">a</span>.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">aktueller Integralwert</div>
+          <div class="vrow">
+            <span class="m">I<sub>a</sub>(x)</span>
+            <span class="m up" style="font-size:1.1rem">&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v4Int">0,00</span>
+          </div>
+          <div class="vsub">obere Grenze <span class="m">x</span> = <span id="v4X">1,50</span></div>
+        </div>
+        <p class="q" style="margin-top:12px">Schiebe <span class="m">x</span> genau auf <span class="m">a</span>.
+          Was zeigt der Integralwert dann an?</p>
+        <div class="fb hint show" id="explore4">Bewege den Regler ganz nach links.</div>
+        <div id="wrapQ4" style="display:none"><div id="q4"></div></div>
+        <div id="after4" style="display:none">
+          <div class="fb ok show" style="margin-top:10px">
+            Bei <span class="m">x = a</span> liegt zwischen den Grenzen keine Fläche.<br>
+            <span class="m">I<sub>a</sub>(a) = </span>
+            <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">a</span><span class="u">a</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+            <span class="m up"> = 0</span> – der Punkt <span class="m">(a | 0)</span> liegt also immer auf dem
+            Graphen von <span class="m">I<sub>a</sub></span>. Damit ist <span class="m">a</span> stets eine
+            <strong>Nullstelle</strong> von <span class="m">I<sub>a</sub></span>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft4" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Ergänze jetzt <strong>Abschnitt 3</strong>:</p>
+    <p>„Damit ist die untere Grenze <span class="m">a</span> stets eine <strong>Nullstelle</strong> der
+      Integralfunktion <span class="m">I<sub>a</sub></span>.“</p>
+  </div>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2><span class="m">f</span>&thinsp; und <span class="m">I<sub>a</sub></span> vergleichen</h2>
+  <div class="meta">Station 5 von 8 · etwa 8 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl5">Stelle <span class="m">x</span> in beiden Graphen:</label>
+          <input type="range" id="sl5" min="0" max="130" step="1" value="0"
+                 aria-label="Stelle x in beiden Koordinatensystemen">
+          <div class="scale" id="scale5"></div>
+        </div>
+        <div class="sys fsys">
+          <div class="caption">Graph von <span class="m">f</span></div>
+          <div id="svg5f"></div>
+        </div>
+        <div class="sys isys">
+          <div class="caption">Graph von <span class="m">I<sub>a</sub></span></div>
+          <div id="svg5i"></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="vals">
+          <div class="val f"><span class="k"><span class="m">f(x)</span></span><span class="v" id="v5f">0,00</span></div>
+          <div class="val i"><span class="k"><span class="m">I<sub>a</sub>(x)</span></span><span class="v" id="v5i">0,00</span></div>
+        </div>
+        <div class="vals" style="margin-top:0">
+          <div class="val trend"><span class="k">Stelle <span class="m">x</span></span><span class="v" id="v5x">1,50</span></div>
+        </div>
+        <p class="small">Die senkrechte Linie steht in beiden Koordinatensystemen an derselben Stelle.</p>
+        <div class="fb hint show" id="explore5">Bewege <span class="m">x</span> einmal über den ganzen Bereich.</div>
+        <div id="wrapQ5a" style="display:none"><div id="q5a"></div></div>
+        <div id="wrapQ5b" style="display:none"><div id="q5b"></div></div>
+        <div id="wrapQ5c" style="display:none"><div id="q5c"></div></div>
+        <div id="wrapQ5d" style="display:none"><div id="q5d"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft5" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Fülle jetzt die Tabelle in <strong>Abschnitt 4</strong> aus:</p>
+    <p><span class="m">f(t) &gt; 0</span> → <span class="m">I<sub>a</sub></span> <strong>steigt</strong></p>
+    <p><span class="m">f(t) &lt; 0</span> → <span class="m">I<sub>a</sub></span> <strong>fällt</strong></p>
+    <p><span class="m">f</span>&thinsp; wechselt von + nach − → <span class="m">I<sub>a</sub></span> hat dort ein
+      <strong>lokales Maximum</strong></p>
+    <p><span class="m">f</span>&thinsp; wechselt von − nach + → <span class="m">I<sub>a</sub></span> hat dort ein
+      <strong>lokales Minimum</strong></p>
+  </div>
+</section>
+
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>Die untere Grenze <span class="m">a</span> verändern</h2>
+  <div class="meta">Station 6 von 8 · etwa 6 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sys fsys">
+          <div class="caption">Graph von <span class="m">f</span></div>
+          <div id="svg6f"></div>
+        </div>
+        <div class="sys isys">
+          <div class="caption">Graphen der Integralfunktionen</div>
+          <div id="svg6i"></div>
+        </div>
+      </div>
+      <div class="task">
+        <p class="q">Wähle eine untere Grenze:</p>
+        <div class="achoice" id="achoice6"></div>
+        <div class="valbox" style="margin-top:8px">
+          <div class="vlabel">gewählte Integralfunktion</div>
+          <div class="vrow">
+            <span class="m" id="v6name" style="font-size:1.1rem">I<sub>1,5</sub>(x) = </span>
+            <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">x</span><span class="u" id="v6a">1,5</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+          </div>
+          <div class="vsub" id="v6null"><span class="m">a</span> = 1,5 ist eine Nullstelle</div>
+        </div>
+        <p class="q" style="margin-top:12px">Forschungsauftrag</p>
+        <p class="small" style="margin-top:-4px">Probiere alle drei unteren Grenzen aus. Was verändert sich am
+          Graphen – und was bleibt gleich? Die zuvor gewählten Graphen bleiben blass sichtbar.</p>
+        <div class="fb hint show" id="explore6">Wähle nacheinander alle drei Werte für <span class="m">a</span>.</div>
+        <div id="wrapQ6" style="display:none"><div id="q6"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft6" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Ergänze jetzt <strong>Abschnitt 6</strong> (er steht auf dem Blatt hinter Abschnitt 5):</p>
+    <p>Mit einer anderen unteren Grenze entsteht eine <strong>andere</strong> Integralfunktion.</p>
+    <p>Beobachtung: Die <strong>Form</strong> des Graphen bleibt erhalten; der Graph wird in
+      <strong><span class="m">y</span>-Richtung</strong> verschoben.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 7 ================= -->
+<section class="station" data-nr="7">
+  <h2><span class="m">x</span> liegt links von <span class="m">a</span></h2>
+  <div class="meta">Station 7 von 8 · etwa 6 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl7">obere Grenze <span class="m">x</span> – jetzt auch links von
+            <span class="m">a</span>:</label>
+          <input type="range" id="sl7" min="0" max="160" step="1" value="30"
+                 aria-label="Obere Integralgrenze x, auch links von a">
+          <div class="scale" id="scale7"></div>
+        </div>
+        <div class="sys fsys">
+          <div id="svg7"></div>
+        </div>
+        <div class="figcap">Im Bereich links von <span class="m">a</span> liegt der Graph von
+          <span class="m">f</span>&thinsp; oberhalb der Achse.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">aktueller Integralwert</div>
+          <div class="vrow">
+            <span class="m">I<sub>a</sub>(x)</span>
+            <span class="m up" style="font-size:1.1rem">&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v7Int">0,00</span>
+          </div>
+          <div class="vsub">obere Grenze <span class="m">x</span> = <span id="v7X">1,50</span></div>
+        </div>
+        <p class="q" style="margin-top:12px">Schiebe <span class="m">x</span> nach links über
+          <span class="m">a</span> hinaus und beobachte den Integralwert.</p>
+        <div class="fb hint show" id="explore7">Bewege den Regler nach links, bis <span class="m">x</span>
+          kleiner als <span class="m">a</span> ist.</div>
+
+        <div id="beob7" style="display:none">
+          <div class="fb hint show">
+            <strong>Auffällig:</strong> Die Fläche zwischen <span class="m">x</span> und
+            <span class="m">a</span> liegt <em>oberhalb</em> der Achse – trotzdem ist der
+            Integralwert negativ.
+          </div>
+        </div>
+        <div id="wrapQ7" style="display:none"><div id="q7"></div></div>
+        <div id="erk7" style="display:none">
+          <div class="fb sol show">
+            Der Grund ist die <strong>Integrationsrichtung</strong>:
+            <span class="mblock" style="margin:8px 0">
+              <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">x</span><span class="u">a</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+              <span class="m up"> = − </span>
+              <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o">a</span><span class="u">x</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+            </span>
+            Das ist die schon bekannte Regel vom Vertauschen der Grenzen.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card narrow" id="unter7" style="display:none">
+    <h3>Zwei verschiedene Gründe für ein Minuszeichen</h3>
+    <div class="cmp">
+      <div class="cmpbox">
+        <div class="t">Grund 1 · <span class="m">f(t) &lt; 0</span></div>
+        <p style="margin:.3em 0">Der Graph liegt <strong>unterhalb</strong> der <span class="m">x</span>-Achse.
+          Die Teilfläche liefert einen <strong>negativen Flächenbeitrag</strong>.</p>
+        <p class="small" style="margin:.2em 0 0">Das war das Thema von I.2a.</p>
+      </div>
+      <div class="cmpbox">
+        <div class="t">Grund 2 · <span class="m">x &lt; a</span></div>
+        <p style="margin:.3em 0">Es wird <strong>entgegen der üblichen Richtung</strong> integriert.
+          Das Vertauschen der Grenzen dreht das Vorzeichen um.</p>
+        <p class="small" style="margin:.2em 0 0">Die Fläche selbst kann dabei oberhalb der Achse liegen.</p>
+      </div>
+    </div>
+    <p class="small" style="margin-top:8px">Beide Gründe sind voneinander unabhängig – sie können auch
+      zusammen auftreten.</p>
+  </div>
+
+  <div class="heft" id="heft7" style="display:none">
+    <div class="h">📝 HEFTEINTRAG</div>
+    <p>Ergänze jetzt <strong>Abschnitt 5</strong> (er steht auf dem Blatt vor Abschnitt 6):</p>
+    <p>Lücke: Genutzt wird die bekannte Regel zum <strong>Vertauschen der Integralgrenzen</strong>.</p>
+    <p>Beispiel: Ist
+      <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o up">3</span><span class="u up">1</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+      <span class="m up"> = 4</span>, dann gilt <span class="m">I<sub>3</sub>(1) = </span>
+      <span class="intg sm"><span class="intsym">∫</span><span class="intlim"><span class="o up">1</span><span class="u up">3</span></span><span class="m">f(t)&nbsp;</span><span class="m up">d</span><span class="m">t</span></span>
+      <span class="m up"> = − 4</span>.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 8 ================= -->
+<section class="station" data-nr="8">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 8 von 8 · etwa 5 Minuten</div>
+
+  <div class="card narrow"><div id="q8a"></div></div>
+  <div class="card narrow" id="w8b" style="display:none"><div id="q8b"></div></div>
+  <div class="card narrow" id="w8c" style="display:none"><div id="q8c"></div></div>
+  <div class="card narrow" id="w8d" style="display:none"><div id="q8d"></div></div>
+  <div class="card narrow" id="w8e" style="display:none"><div id="q8e"></div></div>
+
+  <div class="card narrow" id="ende" style="display:none;border-left:5px solid var(--accent)">
+    <h3 style="font-size:1.18rem">Du kennst jetzt die Integralfunktion.</h3>
+    <p>Sie ordnet jedem <span class="m">x</span> die Flächenbilanz von <span class="m">a</span> bis
+      <span class="m">x</span> zu. Die untere Grenze <span class="m">a</span> ist dabei immer eine Nullstelle.</p>
+    <p style="margin-top:14px"><strong>Ausblick:</strong> Du hast beobachtet, dass der Verlauf von
+      <span class="m">I<sub>a</sub></span> eng mit den Funktionswerten von <span class="m">f</span>
+      zusammenhängt. Warum das so ist, untersuchen wir im nächsten Kapitel.</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn ghost" id="prev">←<span class="lbl"> Zurück</span></button>
+    <div class="nav-mid">
+      <div class="pos" id="pos">Station 1 von 8</div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <button class="btn" id="next"><span class="lbl">Weiter </span>→</button>
+  </div>
+  <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+function $(id){return document.getElementById(id);}
+function fmt2(v){ if(Math.abs(v)<5e-5) v=0; return v.toFixed(2).replace(".",","); }
+function fmtS(v){                                  /* kurze Form: 1,5 statt 1,50 */
+  if(Math.abs(v)<5e-5) v=0;
+  var s=(Math.round(v*100)/100).toString();
+  return s.replace(".",",");
+}
+function measureChrome(){
+  var h=document.querySelector("header.top"), ft=document.querySelector("footer.nav");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+  if(ft) document.documentElement.style.setProperty("--footH", ft.offsetHeight+"px");
+}
+window.addEventListener("resize",measureChrome);
+window.addEventListener("orientationchange",function(){ setTimeout(measureChrome,250); });
+
+/* =========================================================
+   Kurvenmodell (wie in I.2a)
+   f besteht aus Sinus-Halbbögen. Ein Bogen der Breite w mit der
+   Amplitude (π/2)·w hat exakt den Flächeninhalt w². Die Steigung an
+   jeder Nullstelle beträgt π²/2, die Kurve ist daher knickfrei.
+
+   f:  [0;3] oberhalb (Fläche 9) | [3;5] unterhalb (Fläche 4) | [5;8] oberhalb (Fläche 9)
+   ========================================================= */
+var SEGS=[{x0:0,x1:3,s:1},{x0:3,x1:5,s:-1},{x0:5,x1:8,s:1}];
+var XMIN=0, XMAX=8;
+function f(t){
+  for(var i=0;i<SEGS.length;i++){
+    var g=SEGS[i], w=g.x1-g.x0;
+    if(t>=g.x0-1e-9 && t<=g.x1+1e-9)
+      return g.s*(Math.PI/2)*w*Math.sin(Math.PI*(t-g.x0)/w);
+  }
+  return 0;
+}
+/* Aufsummierte Flächenbilanz ab dem linken Rand – reine Rechenhilfe.
+   Geschlossene Form je Bogen: s·(w²/2)·(1 − cos(π(t−x0)/w)). */
+function bilanzAb0(X){
+  var sum=0;
+  for(var i=0;i<SEGS.length;i++){
+    var g=SEGS[i], w=g.x1-g.x0;
+    if(X<=g.x0) break;
+    var t=Math.min(X,g.x1);
+    sum += g.s*(w*w/2)*(1-Math.cos(Math.PI*(t-g.x0)/w));
+  }
+  return sum;
+}
+/* Integralfunktion: exakt, gilt auch für x < a */
+function Ia(x,a){ return bilanzAb0(x)-bilanzAb0(a); }
+
+var A_STD = 1.5;                 /* Standard-Untergrenze */
+var NST1 = 3, NST2 = 5;          /* Nullstellen von f mit Vorzeichenwechsel */
+
+/* =========================================================
+   SVG-Werkzeuge
+   ========================================================= */
+var NS="http://www.w3.org/2000/svg";
+function el(name,attrs){
+  var e=document.createElementNS(NS,name);
+  for(var k in attrs){ if(attrs.hasOwnProperty(k)) e.setAttribute(k,attrs[k]); }
+  return e;
+}
+function clear(g){ while(g && g.firstChild) g.removeChild(g.firstChild); }
+
+/* Koordinatensystem. Alle Systeme benutzen dasselbe waagrechte Raster,
+   damit gleiche x-Werte exakt übereinander liegen. */
+function Board(host,opt){
+  var W=opt.w||640, H=opt.h||230;
+  var pad={l:46,r:26,t:opt.padT||18,b:opt.padB||30};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",opt.label||"Koordinatensystem");
+
+  var defs=el("defs");
+  function pat(id,bg,stroke,rot){
+    var p=el("pattern",{id:id,width:8,height:8,patternUnits:"userSpaceOnUse",patternTransform:"rotate("+rot+")"});
+    p.appendChild(el("rect",{width:8,height:8,fill:bg}));
+    p.appendChild(el("line",{x1:0,y1:0,x2:0,y2:8,stroke:stroke,"stroke-width":2}));
+    return p;
+  }
+  defs.appendChild(pat(opt.uid+"-pp","#dceaf6","#1f6fb2",45));
+  defs.appendChild(pat(opt.uid+"-pn","#fbeadb","#b45309",-45));
+  svg.appendChild(defs);
+
+  var xmin=opt.xmin,xmax=opt.xmax,ymin=opt.ymin,ymax=opt.ymax;
+  function X(x){ return pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r); }
+  function Y(y){ return H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b); }
+  var api={svg:svg,X:X,Y:Y,uid:opt.uid,W:W,H:H,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax};
+
+  /* Gitter */
+  var g=el("g",{});
+  var i;
+  if(opt.gridx) for(i=Math.ceil(xmin/opt.gridx)*opt.gridx;i<=xmax+1e-9;i+=opt.gridx)
+    g.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#eef1f5","stroke-width":1}));
+  if(opt.gridy) for(i=Math.ceil(ymin/opt.gridy)*opt.gridy;i<=ymax+1e-9;i+=opt.gridy)
+    g.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#eef1f5","stroke-width":1}));
+  svg.appendChild(g);
+
+  api.content=(function(){ var l=el("g",{}); svg.appendChild(l); return l; })();
+  api.over=function(){ var l=el("g",{}); svg.appendChild(l); return l; };
+
+  api.axes=function(){
+    var a=el("g",{}), i;
+    a.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:"#334155","stroke-width":1.8}));
+    a.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-10)+","+(Y(0)-5)+" "+(X(xmax)-10)+","+(Y(0)+5),fill:"#334155"}));
+    a.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:"#334155","stroke-width":1.8}));
+    a.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-5)+","+(Y(ymax)+10)+" "+(X(0)+5)+","+(Y(ymax)+10),fill:"#334155"}));
+    /* Bezifferung waagrecht */
+    if(opt.tickx) for(i=Math.ceil(xmin/opt.tickx)*opt.tickx;i<=xmax-0.3;i+=opt.tickx){
+      if(Math.abs(i)<1e-9) continue;
+      a.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:"#334155","stroke-width":1.3}));
+      var t=el("text",{x:X(i),y:Y(0)+18,"text-anchor":"middle","font-size":12.5,fill:"#475569",
+        "font-family":"Segoe UI,system-ui,sans-serif"});
+      t.textContent=fmtS(i); a.appendChild(t);
+    }
+    /* Bezifferung senkrecht */
+    if(opt.ticky) for(i=Math.ceil(ymin/opt.ticky)*opt.ticky;i<=ymax-0.2;i+=opt.ticky){
+      if(Math.abs(i)<1e-9) continue;
+      a.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:"#334155","stroke-width":1.3}));
+      var t2=el("text",{x:X(0)-8,y:Y(i)+4.5,"text-anchor":"end","font-size":12.5,fill:"#475569",
+        "font-family":"Segoe UI,system-ui,sans-serif"});
+      t2.textContent=fmtS(i); a.appendChild(t2);
+    }
+    /* Achsennamen, mit Abstand außerhalb des Kurvenbereichs */
+    var lx=el("text",{x:X(xmax)-3,y:Y(0)-13,"text-anchor":"end","font-size":15,fill:"#334155",
+      "font-style":"italic","font-family":"Georgia,serif"});
+    lx.textContent=opt.nameX||"x"; a.appendChild(lx);
+    var ly=el("text",{x:X(0)+10,y:Y(ymax)+14,"text-anchor":"start","font-size":15,fill:"#334155",
+      "font-style":"italic","font-family":"Georgia,serif"});
+    ly.textContent=opt.nameY||"y"; a.appendChild(ly);
+    svg.appendChild(a);
+  };
+  api.curve=function(fn,x0,x1,color,width,dash){
+    var pts=[],N=420,i;
+    for(i=0;i<=N;i++){ var x=x0+(x1-x0)*i/N; pts.push(X(x)+","+Y(fn(x))); }
+    var at={points:pts.join(" "),fill:"none",stroke:color||"#0f172a","stroke-width":width||2.6,
+      "stroke-linejoin":"round","stroke-linecap":"round"};
+    if(dash) at["stroke-dasharray"]=dash;
+    var p=el("polyline",at); svg.appendChild(p); return p;
+  };
+  api.markX=function(x,label,strong,layer,dy){
+    var tgt=layer||svg;
+    tgt.appendChild(el("line",{x1:X(x),y1:Y(0)-6,x2:X(x),y2:Y(0)+6,
+      stroke:strong?"#1f4e79":"#64748b","stroke-width":strong?2.2:1.5}));
+    var t=el("text",{x:X(x),y:Y(0)+(dy||26),"text-anchor":"middle",
+      "font-size":strong?16:13,fill:strong?"#1f4e79":"#64748b","font-family":"Georgia,serif",
+      "font-style":"italic","font-weight":strong?"700":"400"});
+    t.textContent=label; tgt.appendChild(t);
+  };
+  api.text=function(x,y,s,o){
+    o=o||{};
+    var t=el("text",{x:X(x),y:Y(y),"font-size":o.size||14,fill:o.fill||"#334155",
+      "text-anchor":o.anchor||"middle","font-family":o.family||"Segoe UI,system-ui,sans-serif",
+      "font-weight":o.weight||"400","font-style":o.italic?"italic":"normal"});
+    t.textContent=s; (o.layer||svg).appendChild(t); return t;
+  };
+  host.innerHTML=""; host.appendChild(svg);
+  return api;
+}
+
+/* Fläche von a bis X, an den Nullstellen von f geteilt gezeichnet */
+function fillArea(P,layer,a,X){
+  clear(layer);
+  var lo=Math.min(a,X), hi=Math.max(a,X);
+  if(hi-lo<1e-6) return;
+  for(var i=0;i<SEGS.length;i++){
+    var g=SEGS[i];
+    var s0=Math.max(lo,g.x0), s1=Math.min(hi,g.x1);
+    if(s1-s0<1e-6) continue;
+    var pts=[P.X(s0)+","+P.Y(0)], N=110, k;
+    for(k=0;k<=N;k++){ var t=s0+(s1-s0)*k/N; pts.push(P.X(t)+","+P.Y(f(t))); }
+    pts.push(P.X(s1)+","+P.Y(0));
+    layer.appendChild(el("polygon",{points:pts.join(" "),
+      fill:"url(#"+P.uid+(g.s>0?"-pp":"-pn")+")",
+      stroke:g.s>0?"#1f6fb2":"#b45309","stroke-width":1.5}));
+  }
+}
+/* Senkrechte Markierung der beweglichen Grenze */
+function markMobile(P,layer,x,label,toCurve){
+  var y = toCurve ? f(x) : P.ymax*0.92;
+  layer.appendChild(el("line",{x1:P.X(x),y1:P.Y(0),x2:P.X(x),y2:P.Y(y),stroke:"#1f4e79","stroke-width":2.6}));
+  layer.appendChild(el("circle",{cx:P.X(x),cy:P.Y(0),r:5,fill:"#1f4e79"}));
+  var above = y<0;
+  var t=el("text",{x:P.X(x),y:P.Y(0)+(above?-13:25),"text-anchor":"middle","font-size":16,
+    fill:"#1f4e79","font-family":"Georgia,serif","font-style":"italic","font-weight":"700"});
+  t.textContent=label||"x"; layer.appendChild(t);
+}
+
+/* =========================================================
+   Stationssteuerung (unverändert aus I.2a)
+   ========================================================= */
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var cur=0;
+var done=[]; for(var _i=0;_i<TOTAL;_i++) done.push(false);
+done[TOTAL-1]=true;
+var maxReached=0;
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", j<maxReached && j!==cur);
+    btns[j].disabled = j>maxReached;
+    btns[j].style.cursor = j>maxReached ? "default" : "pointer";
+  }
+  $("pos").textContent="Station "+(cur+1)+" von "+TOTAL;
+  $("barfill").style.width=((cur+1)/TOTAL*100)+"%";
+  $("prev").disabled=(cur===0);
+  $("next").style.visibility=(cur===TOTAL-1)?"hidden":"visible";
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+}
+function updateNext(){
+  var free=done[cur];
+  $("next").disabled=!free;
+  $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
+}
+function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i; if(cur>maxReached) maxReached=cur;
+  render();
+}
+$("prev").onclick=function(){ go(cur-1); };
+$("next").onclick=function(){ if(done[cur]) go(cur+1); };
+
+/* =========================================================
+   Multiple Choice mit gestuften Hilfen (unverändert aus I.2a)
+   ========================================================= */
+function mc(hostId,fbId,question,options,correctIdx,onSolved){
+  var host=$(hostId), fb=fbId?$(fbId):null, wrap=host;
+  if(question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=question; host.appendChild(qp);
+    wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+    if(!fb){ fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb); }
+  } else { wrap.className="opts"; }
+  var solved=false, wrongCount=0;
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display="none";
+  fb.parentNode.insertBefore(solBtn, fb);
+  function lockAll(){
+    var all=wrap.querySelectorAll(".opt");
+    for(var k=0;k<all.length;k++) all[k].disabled=true;
+  }
+  function finish(){ solved=true; solBtn.style.display="none"; lockAll(); if(onSolved) onSolved(); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+
+      (options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish();
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        fb.innerHTML="<strong>Denkhinweis:</strong> "+(o.no||"Überlege noch einmal.");
+        if(wrongCount>=2) solBtn.style.display="inline-block";
+      }
+    };
+    wrap.appendChild(b);
+  });
+}
+function addNote(fbId,txt){
+  var fb=$(fbId); if(!fb) return;
+  var s=document.createElement("span");
+  s.className="nextnote"; s.textContent=txt; fb.appendChild(s);
+}
+/* Skala unter einem Regler */
+function buildScale(hostId,marks,lo,hi){
+  var sc=$(hostId); if(!sc) return;
+  marks.forEach(function(m){
+    var pos=(m.x-lo)/(hi-lo);
+    var e=document.createElement("span");
+    e.style.left="calc(10px + "+(pos*100)+"% - "+(pos*20)+"px)";
+    e.textContent=m.t;
+    if(m.mark) e.className="mark";
+    sc.appendChild(e);
+  });
+}
+
+/* =========================================================
+   STATION 1 – Erinnerung an die bewegliche Grenze
+   ========================================================= */
+var S1=(function(){
+  var a=A_STD;
+  var P=Board($("svg1"),{uid:"s1",w:640,h:230,xmin:-0.5,xmax:8.7,ymin:-4.1,ymax:5.4,
+    gridx:1,tickx:1,nameX:"t",nameY:"y",
+    label:"Graph von f mit der Fläche von der festen Grenze a bis zur beweglichen Grenze x"});
+  var area=P.content, mark=P.over();
+  P.axes();
+  P.curve(f,XMIN,XMAX,"#0f172a",2.8);
+  P.markX(a,"a",true);
+  var seenPos=false, seenNeg=false;
+  function xOf(){ return a+Number($("sl1").value)*0.05; }
+  function update(){
+    var x=xOf();
+    fillArea(P,area,a,x); clear(mark); markMobile(P,mark,x,"x",true);
+    $("v1Int").textContent=fmt2(Ia(x,a));
+    $("v1X").textContent=fmt2(x);
+    if(!seenPos && x>=a+0.9){ seenPos=true; $("explore1").style.display="none"; $("wrapQ1a").style.display="block"; }
+    if(!seenNeg && x>=NST1+0.7){ seenNeg=true; tryQ1b(); }
+  }
+  var q1aDone=false;
+  function tryQ1b(){
+    if(!q1aDone || !seenNeg) return;
+    var e=$("explore1b"); if(e) e.style.display="none";
+    $("q1b").style.display="block";
+  }
+  $("sl1").addEventListener("input",update);
+  buildScale("scale1",[{x:a,t:"a",mark:true},{x:NST1,t:"3"},{x:NST2,t:"5"},{x:XMAX,t:"8",mark:true}],a,XMAX);
+  update();
+  return { armB:function(){ q1aDone=true; $("wrapQ1b").style.display="block"; tryQ1b(); },
+           seenNeg:function(){return seenNeg;} };
+})();
+
+/* richtige Antwort: B */
+mc("q1a",null,"Solange der Graph von <span class='m'>f</span> <strong>oberhalb</strong> der Achse liegt, wird der Integralwert …",[
+  {t:"kleiner.", no:"Schiebe <span class='m'>x</span> im linken Bereich noch einmal langsam nach rechts und lies den Wert mit."},
+  {t:"größer.", ok:"Fläche oberhalb der Achse liefert einen positiven Beitrag."},
+  {t:"gar nicht verändert.", no:"Vergleiche den Wert bei <span class='m'>x</span> = 2 mit dem bei <span class='m'>x</span> = 3."}
+],1,function(){ S1.armB(); });
+
+/* richtige Antwort: C */
+mc("q1b",null,"Und sobald der Graph von <span class='m'>f</span> <strong>unterhalb</strong> der Achse verläuft, wird der Integralwert …",[
+  {t:"größer.", no:"Vergleiche den Wert bei <span class='m'>x</span> = 3 mit dem bei <span class='m'>x</span> = 5."},
+  {t:"gar nicht verändert.", no:"Schiebe <span class='m'>x</span> noch einmal von 3 nach 5 und beobachte die Anzeige."},
+  {t:"kleiner.", ok:"Fläche unterhalb der Achse liefert einen negativen Beitrag – genau wie in I.2a."}
+],2,function(){ setDone(0); });
+
+/* =========================================================
+   STATION 2 – aus Integralwerten werden Punkte
+   ========================================================= */
+var PKT=[1.5,2,3,4,5,6.5,8];        /* Stellen zum Eintragen */
+var S2=(function(){
+  var a=A_STD;
+  var Pf=Board($("svg2f"),{uid:"s2f",w:640,h:200,xmin:-0.5,xmax:8.7,ymin:-4.1,ymax:5.4,
+    gridx:1,tickx:1,padT:14,padB:26,nameX:"t",nameY:"y",
+    label:"Graph von f mit der Fläche von a bis zur beweglichen Grenze x"});
+  var area=Pf.content, markF=Pf.over();
+  Pf.axes(); Pf.curve(f,XMIN,XMAX,"#0f172a",2.6); Pf.markX(a,"a",true);
+
+  var Pi=Board($("svg2i"),{uid:"s2i",w:640,h:250,xmin:-0.5,xmax:8.7,ymin:-1.6,ymax:10.8,
+    gridx:1,gridy:1,tickx:1,ticky:2,padT:16,padB:28,nameX:"x",nameY:"Wert",
+    label:"Zweites Koordinatensystem für die Wertepaare aus x und Integralwert"});
+  var dots=Pi.content, curveLayer=Pi.over(), markI=Pi.over();
+  Pi.axes();
+
+  var eingetragen=[], curveShown=false;
+  var TOL=0.08;                       /* Fangbereich für die Fingerbedienung */
+  /* Index des Zielwerts, in dessen Fangbereich der Regler steht.
+     Unabhängig davon, ob der Punkt schon eingetragen ist – sonst würde die
+     Anzeige nach dem Eintragen aus dem eingerasteten Wert herausspringen.
+     Die Zielwerte liegen mindestens 0,5 auseinander, ein Fangbereich von
+     ±0,08 kann daher nie zu zwei Zielen zugleich gehören. */
+  function snapIdx(xr){
+    var best=-1, bd=TOL;
+    for(var i=0;i<PKT.length;i++){
+      var d=Math.abs(PKT[i]-xr);
+      if(d<bd){ bd=d; best=i; }
+    }
+    return best;
+  }
+  function xRoh(){ return a+Number($("sl2").value)*0.05; }
+  /* Eingerasteter Wert: im Fangbereich rechnet und zeichnet die Station
+     durchgehend mit dem exakten Zielwert. */
+  function xOf(){
+    var xr=xRoh(), i=snapIdx(xr);
+    return (i>=0) ? PKT[i] : xr;
+  }
+  function drawZiele(){
+    /* offene Zielmarken auf der x-Achse des rechten Systems */
+    PKT.forEach(function(px,i){
+      if(eingetragen.indexOf(i)>=0) return;
+      markI.appendChild(el("line",{x1:Pi.X(px),y1:Pi.Y(0),x2:Pi.X(px),y2:Pi.Y(0.75),
+        stroke:"#94a3b8","stroke-width":1.6,"stroke-dasharray":"3 2"}));
+      markI.appendChild(el("circle",{cx:Pi.X(px),cy:Pi.Y(0.75),r:3.5,fill:"none",
+        stroke:"#94a3b8","stroke-width":1.6}));
+    });
+  }
+  function update(){
+    var xr=xRoh(), idxSnap=snapIdx(xr);
+    var x=(idxSnap>=0)?PKT[idxSnap]:xr;
+    /* Regler sichtbar auf den exakten Zielwert setzen */
+    if(idxSnap>=0){
+      var soll=Math.round((PKT[idxSnap]-a)/0.05);
+      if(Number($("sl2").value)!==soll) $("sl2").value=soll;
+    }
+    fillArea(Pf,area,a,x); clear(markF); markMobile(Pf,markF,x,"x",true);
+    $("v2Int").textContent=fmt2(Ia(x,a));
+    $("v2X").textContent=fmt2(x);
+    clear(markI);
+    markI.appendChild(el("line",{x1:Pi.X(x),y1:Pi.Y(Pi.ymin),x2:Pi.X(x),y2:Pi.Y(Pi.ymax),
+      stroke:"#cbd5e1","stroke-width":1.6,"stroke-dasharray":"5 4"}));
+    drawZiele();
+    /* Der Knopf gilt nur für einen noch offenen Zielpunkt. Beschriftung und
+       eingetragener Punkt beziehen sich beide auf denselben exakten Zielwert. */
+    var offen = (idxSnap>=0 && eingetragen.indexOf(idxSnap)<0);
+    var b=$("btnPunkt");
+    b.disabled = !offen;
+    b.textContent = offen
+      ? "Punkt (" + fmtS(PKT[idxSnap]) + " | " + fmtS(Ia(PKT[idxSnap],a)) + ") eintragen"
+      : "Punkt eintragen";
+  }
+  function eintragen(){
+    var idx=snapIdx(xRoh());
+    if(idx<0 || eingetragen.indexOf(idx)>=0) return;
+    var y=Ia(PKT[idx],a);
+    dots.appendChild(el("circle",{cx:Pi.X(PKT[idx]),cy:Pi.Y(y),r:6,fill:"#1f4e79"}));
+    var t=el("text",{x:Pi.X(PKT[idx]),y:Pi.Y(y)-12,"text-anchor":"middle","font-size":12.5,
+      fill:"#1f4e79","font-family":"Segoe UI,system-ui,sans-serif","font-weight":"650"});
+    t.textContent=fmtS(y); dots.appendChild(t);
+    eingetragen.push(idx);
+    $("cnt2").innerHTML="eingetragen: <b>"+eingetragen.length+"</b> von "+PKT.length;
+    var fb=$("fb2set");
+    fb.className="fb ok show";
+    fb.innerHTML="Zum Wert <span class='m'>x</span> = "+fmtS(PKT[idx])+" gehört der Integralwert "+
+      fmtS(y)+". Der Punkt ist eingetragen.";
+    if(eingetragen.length>=PKT.length){
+      fb.innerHTML="<strong>Alle sieben Wertepaare sind eingetragen.</strong>";
+      $("wrapQ2").style.display="block";
+    }
+    update();
+  }
+  $("btnPunkt").addEventListener("click",eintragen);
+  $("sl2").addEventListener("input",update);
+  buildScale("scale2",[{x:1.5,t:"a",mark:true},{x:3,t:"3"},{x:5,t:"5"},{x:8,t:"8",mark:true}],1.5,8);
+  update();
+  return {
+    zeigeKurve:function(){
+      if(curveShown) return; curveShown=true;
+      var pts=[],N=400,i;
+      for(i=0;i<=N;i++){ var x=a+(XMAX-a)*i/N; pts.push(Pi.X(x)+","+Pi.Y(Ia(x,a))); }
+      var pl=el("polyline",{points:pts.join(" "),fill:"none",stroke:"#1f4e79","stroke-width":2.8,
+        "stroke-linejoin":"round","opacity":"0"});
+      curveLayer.appendChild(pl);
+      /* weiches Einblenden – zeigt, dass die Kurve aus den Punkten hervorgeht */
+      var t0=null;
+      function step(ts){
+        if(!t0) t0=ts;
+        var p=Math.min(1,(ts-t0)/700);
+        pl.setAttribute("opacity",String(p));
+        if(p<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  };
+})();
+
+/* richtige Antwort: D */
+mc("q2",null,"Sieh dir die eingetragenen Punkte an. Was hast du durch die Zuordnung „<span class='m'>x</span> → Integralwert“ erhalten?",[
+  {t:"Nur einzelne zufällige Flächeninhalte ohne Zusammenhang.",
+   no:"Die Punkte liegen nicht willkürlich verstreut. Sieh dir noch einmal an, wie sie angeordnet sind."},
+  {t:"Den Graphen von <span class='m'>f</span>&thinsp; selbst.",
+   no:"Vergleiche beide Koordinatensysteme: Wo <span class='m'>f</span>&thinsp; gerade fällt, steigen die Punkte teilweise noch."},
+  {t:"Eine neue Regel zum Berechnen von Integralen.",
+   no:"Gerechnet wurde nichts Neues – es wurden nur Werte zugeordnet und eingetragen."},
+  {t:"Eine Zuordnung, die jedem <span class='m'>x</span> genau einen Wert gibt.",
+   ok:"Damit haben wir eine <strong>Funktion</strong>."}
+],3,function(){
+  S2.zeigeKurve();
+  $("after2").style.display="block";
+  setDone(1);
+});
+
+/* =========================================================
+   STATION 3 – Begriff und Bezeichnungen
+   ========================================================= */
+var ZUORD3=[
+  {sym:"a",           txt:"feste untere Integralgrenze"},
+  {sym:"x",           txt:"variable obere Grenze und Argument"},
+  {sym:"t",           txt:"Integrationsvariable"},
+  {sym:"Iₐ(x)",  txt:"Flächenbilanz von a bis x"}
+];
+(function(){
+  var chips=$("chips3"), slots=$("slots3"), sel=null, filled=0;
+  [2,0,3,1].forEach(function(idx){
+    var c=document.createElement("button");
+    c.type="button"; c.className="chip"; c.textContent=ZUORD3[idx].txt; c.setAttribute("data-i",idx);
+    c.onclick=function(){
+      var all=chips.querySelectorAll(".chip");
+      for(var k=0;k<all.length;k++) all[k].classList.remove("sel");
+      if(sel===c){ sel=null; return; }
+      c.classList.add("sel"); sel=c;
+    };
+    chips.appendChild(c);
+  });
+  ZUORD3.forEach(function(z,i){
+    var s=document.createElement("button");
+    s.type="button"; s.className="slot";
+    s.innerHTML='<span class="sym">'+z.sym+'</span><span class="fill">hier zuordnen</span>';
+    s.onclick=function(){
+      var fb=$("fb3");
+      if(s.classList.contains("filled")) return;
+      if(!sel){ fb.className="fb hint show"; fb.innerHTML="Wähle zuerst oben einen Begriff aus."; return; }
+      var idx=Number(sel.getAttribute("data-i"));
+      if(idx===i){
+        s.classList.add("filled");
+        s.querySelector(".fill").textContent=ZUORD3[i].txt;
+        sel.classList.add("used"); sel.classList.remove("sel"); sel=null;
+        filled++;
+        fb.className="fb ok show"; fb.innerHTML="<strong>Richtig zugeordnet.</strong>";
+        if(filled===4){
+          fb.innerHTML="<strong>Alle Bezeichnungen richtig zugeordnet.</strong>";
+          $("bsp3").style.display="block";
+          $("heft3").style.display="block";
+          setDone(2);
+        }
+      } else {
+        s.classList.add("wrong");
+        setTimeout(function(){ s.classList.remove("wrong"); },900);
+        fb.className="fb hint show";
+        fb.innerHTML="<strong>Denkhinweis:</strong> "+
+          (i===0 ? "Diese Größe steht unter dem Integralzeichen und wird nicht verschoben."
+          : i===1 ? "Diese Größe steht über dem Integralzeichen und wird in die Klammer eingesetzt."
+          : i===2 ? "Diese Größe erscheint nur innerhalb des Integrals hinter dem <span class='m up'>d</span>."
+          : "Das ist der Funktionswert selbst.");
+      }
+    };
+    slots.appendChild(s);
+  });
+})();
+
+/* =========================================================
+   STATION 4 – a ist Nullstelle
+   ========================================================= */
+var S4=(function(){
+  var a=A_STD;
+  var P=Board($("svg4"),{uid:"s4",w:640,h:230,xmin:-0.5,xmax:8.7,ymin:-4.1,ymax:5.4,
+    gridx:1,tickx:1,nameX:"t",nameY:"y",
+    label:"Graph von f; die bewegliche Grenze x kann bis auf a geschoben werden"});
+  var area=P.content, mark=P.over();
+  P.axes(); P.curve(f,XMIN,XMAX,"#0f172a",2.8); P.markX(a,"a",true);
+  var atA=false;
+  function xOf(){ return a+Number($("sl4").value)*0.05; }
+  function update(){
+    var x=xOf();
+    fillArea(P,area,a,x); clear(mark); markMobile(P,mark,x,"x",true);
+    $("v4Int").textContent=fmt2(Ia(x,a));
+    $("v4X").textContent=fmt2(x);
+    if(!atA && Math.abs(x-a)<1e-9){
+      atA=true;
+      $("explore4").style.display="none";
+      $("wrapQ4").style.display="block";
+    }
+  }
+  $("sl4").addEventListener("input",update);
+  buildScale("scale4",[{x:a,t:"a",mark:true},{x:NST1,t:"3"},{x:NST2,t:"5"},{x:XMAX,t:"8",mark:true}],a,XMAX);
+  update();
+})();
+
+/* richtige Antwort: A */
+mc("q4",null,"Der Integralwert ist bei <span class='m'>x = a</span> gleich 0. Welcher Punkt liegt deshalb immer auf dem Graphen von <span class='m'>I<sub>a</sub></span>?",[
+  {t:"<span class='m'>(a | 0)</span>", ok:"Die Stelle <span class='m'>a</span> hat den Funktionswert 0."},
+  {t:"<span class='m'>(0 | a)</span>", no:"Achte auf die Reihenfolge: zuerst die Stelle, dann der Funktionswert."},
+  {t:"<span class='m'>(0 | 0)</span>", no:"Der Wert 0 wird an der Stelle <span class='m'>a</span> angenommen, nicht unbedingt an der Stelle 0."}
+],0,function(){
+  $("after4").style.display="block";
+  $("heft4").style.display="block";
+  setDone(3);
+});
+
+/* =========================================================
+   STATION 5 – f und I_a gekoppelt vergleichen
+   ========================================================= */
+var S5=(function(){
+  var a=A_STD;
+  var Pf=Board($("svg5f"),{uid:"s5f",w:640,h:195,xmin:-0.5,xmax:8.7,ymin:-4.1,ymax:5.4,
+    gridx:1,tickx:1,padT:12,padB:26,nameX:"t",nameY:"y",label:"Graph von f"});
+  var areaF=Pf.content, markF=Pf.over();
+  Pf.axes(); Pf.curve(f,XMIN,XMAX,"#0f172a",2.6); Pf.markX(a,"a",true);
+
+  var Pi=Board($("svg5i"),{uid:"s5i",w:640,h:225,xmin:-0.5,xmax:8.7,ymin:-1.6,ymax:10.8,
+    gridx:1,gridy:1,tickx:1,ticky:2,padT:14,padB:26,nameX:"x",nameY:"I",
+    label:"Graph der Integralfunktion I zur unteren Grenze a"});
+  var bandLayer=Pi.content, markI=Pi.over();
+  Pi.axes();
+  Pi.curve(function(x){return Ia(x,a);},a,XMAX,"#1f4e79",2.8);
+  /* Nullstelle a auch im unteren System kennzeichnen */
+  Pi.svg.appendChild(el("circle",{cx:Pi.X(a),cy:Pi.Y(0),r:5,fill:"#1f4e79"}));
+  Pi.markX(a,"a",true);
+
+  var seenPos=false, seenNeg=false, marked=false;
+  function xOf(){ return a+Number($("sl5").value)*0.05; }
+  function update(){
+    var x=xOf(), fv=f(x), iv=Ia(x,a);
+    fillArea(Pf,areaF,a,x);
+    clear(markF); clear(markI);
+    markF.appendChild(el("line",{x1:Pf.X(x),y1:Pf.Y(Pf.ymin),x2:Pf.X(x),y2:Pf.Y(Pf.ymax),
+      stroke:"#94a3b8","stroke-width":1.8,"stroke-dasharray":"5 4"}));
+    markF.appendChild(el("circle",{cx:Pf.X(x),cy:Pf.Y(fv),r:5,fill:"#0f172a"}));
+    /* Stelle x am oberen Rand beschriften – dort verläuft die Kurve nie */
+    var lx=el("text",{x:Pf.X(x)+9,y:Pf.Y(Pf.ymax)+13,"text-anchor":"start","font-size":15,
+      fill:"#1f4e79","font-family":"Georgia,serif","font-style":"italic","font-weight":"700"});
+    lx.textContent="x"; markF.appendChild(lx);
+    markI.appendChild(el("line",{x1:Pi.X(x),y1:Pi.Y(Pi.ymin),x2:Pi.X(x),y2:Pi.Y(Pi.ymax),
+      stroke:"#94a3b8","stroke-width":1.8,"stroke-dasharray":"5 4"}));
+    markI.appendChild(el("circle",{cx:Pi.X(x),cy:Pi.Y(iv),r:5,fill:"#1f4e79"}));
+    $("v5f").textContent=fmt2(fv);
+    $("v5i").textContent=fmt2(iv);
+    $("v5x").textContent=fmt2(x);
+    if(!seenPos && x>a+0.6 && x<NST1-0.2){ seenPos=true; check(); }
+    if(!seenNeg && x>NST1+0.4 && x<NST2-0.1){ seenNeg=true; check(); }
+  }
+  function check(){
+    if(seenPos && seenNeg){ $("explore5").style.display="none"; $("wrapQ5a").style.display="block"; }
+  }
+  $("sl5").addEventListener("input",update);
+  buildScale("scale5",[{x:a,t:"a",mark:true},{x:NST1,t:"3"},{x:NST2,t:"5"},{x:XMAX,t:"8",mark:true}],a,XMAX);
+  update();
+  return {
+    markiere:function(){
+      if(marked) return; marked=true;
+      /* Erst nach den Antworten: Bereiche im rechten System kennzeichnen */
+      function band(x0,x1,txt,col){
+        bandLayer.appendChild(el("rect",{x:Pi.X(x0),y:Pi.Y(Pi.ymax),
+          width:Pi.X(x1)-Pi.X(x0),height:Pi.Y(Pi.ymin)-Pi.Y(Pi.ymax),
+          fill:col,opacity:"0.5"}));
+        var t=el("text",{x:(Pi.X(x0)+Pi.X(x1))/2,y:Pi.Y(Pi.ymax)+18,"text-anchor":"middle",
+          "font-size":12.5,"font-family":"Segoe UI,system-ui,sans-serif","font-weight":"650",
+          fill:"#475569"});
+        t.textContent=txt; bandLayer.appendChild(t);
+      }
+      band(a,NST1,"I steigt","#e8f1f8");
+      band(NST1,NST2,"I fällt","#fbf0e4");
+      band(NST2,XMAX,"I steigt","#e8f1f8");
+    }
+  };
+})();
+
+/* richtige Antwort: C */
+mc("q5a",null,"<strong>A)</strong> In einem Bereich mit <span class='m'>f(x) &gt; 0</span> – was macht der Graph von <span class='m'>I<sub>a</sub></span> dort?",[
+  {t:"Er fällt.", no:"Bewege <span class='m'>x</span> noch einmal zwischen <span class='m'>a</span> und 3 und vergleiche beide Graphen."},
+  {t:"Er bleibt waagrecht.", no:"Sieh dir den Wert <span class='m'>I<sub>a</sub>(x)</span> an zwei Stellen dieses Bereichs an."},
+  {t:"Er steigt.", ok:"Solange <span class='m'>f</span>&thinsp; oberhalb der Achse liegt, kommt positive Bilanz hinzu."}
+],2,function(){ $("wrapQ5b").style.display="block"; });
+
+/* richtige Antwort: A */
+mc("q5b",null,"<strong>B)</strong> Und in einem Bereich mit <span class='m'>f(x) &lt; 0</span>?",[
+  {t:"Dort fällt der Graph von <span class='m'>I<sub>a</sub></span>.",
+   ok:"Zwischen 3 und 5 sinkt <span class='m'>I<sub>a</sub></span> von 4,50 auf 0,50."},
+  {t:"Dort steigt er weiter, nur langsamer.",
+   no:"Bewege <span class='m'>x</span> von 3 nach 5 und vergleiche die angezeigten Werte von <span class='m'>I<sub>a</sub>(x)</span>."},
+  {t:"Dort ist er nicht definiert.",
+   no:"Der Wert wird durchgehend angezeigt. Achte darauf, in welche Richtung er sich ändert."}
+],0,function(){ $("wrapQ5c").style.display="block"; });
+
+/* richtige Antwort: B */
+mc("q5c",null,"<strong>C)</strong> An der Stelle <span class='m'>x</span> = 3 wechselt <span class='m'>f</span>&thinsp; von + nach −. Was passiert dort mit <span class='m'>I<sub>a</sub></span>?",[
+  {t:"<span class='m'>I<sub>a</sub></span> hat dort eine Nullstelle.",
+   no:"Sieh im rechten System nach: Welchen Wert hat <span class='m'>I<sub>a</sub></span> bei <span class='m'>x</span> = 3? Er ist nicht 0."},
+  {t:"<span class='m'>I<sub>a</sub></span> geht dort vom Steigen ins Fallen über – ein Hochpunkt.",
+   ok:"Bei <span class='m'>x</span> = 3 hat <span class='m'>I<sub>a</sub></span> den größten Wert dieses Abschnitts: 4,50."},
+  {t:"<span class='m'>I<sub>a</sub></span> springt dort.",
+   no:"Der Graph von <span class='m'>I<sub>a</sub></span> verläuft ohne Sprung. Beobachte, wie er sich kurz vor und kurz nach 3 verhält."}
+],1,function(){ $("wrapQ5d").style.display="block"; });
+
+/* Beobachtung D – richtige Antwort: A */
+mc("q5d",null,"<strong>D)</strong> An der Stelle <span class='m'>x</span> = 5 wechselt <span class='m'>f</span>&thinsp; von − nach +. Was passiert dort mit <span class='m'>I<sub>a</sub></span>?",[
+  {t:"<span class='m'>I<sub>a</sub></span> geht dort vom Fallen ins Steigen über – ein Tiefpunkt.",
+   ok:"Bei <span class='m'>x</span> = 5 hat <span class='m'>I<sub>a</sub></span> mit 0,50 den kleinsten Wert dieses Abschnitts – ein lokales Minimum."},
+  {t:"<span class='m'>I<sub>a</sub></span> hat dort eine Nullstelle.",
+   no:"Sieh im unteren System nach, welchen Wert <span class='m'>I<sub>a</sub></span> bei <span class='m'>x</span> = 5 hat. Er ist nicht 0."},
+  {t:"<span class='m'>I<sub>a</sub></span> springt dort.",
+   no:"Bewege <span class='m'>x</span> langsam über die Stelle 5 und beobachte, wie sich der Wert ändert."}
+],0,function(){
+  S5.markiere();
+  $("heft5").style.display="block";
+  setDone(4);
+});
+
+/* =========================================================
+   STATION 6 – die untere Grenze verändern
+   ========================================================= */
+var A_LIST=[0,1.5,3];   /* Verschiebungen 0, -4,5 und -9 – klar unterscheidbar */
+var S6=(function(){
+  var Pf=Board($("svg6f"),{uid:"s6f",w:640,h:180,xmin:-0.5,xmax:8.7,ymin:-4.1,ymax:5.4,
+    gridx:1,tickx:1,padT:12,padB:26,nameX:"t",nameY:"y",label:"Graph von f"});
+  var markA=Pf.over();
+  Pf.axes(); Pf.curve(f,XMIN,XMAX,"#0f172a",2.6);
+
+  var Pi=Board($("svg6i"),{uid:"s6i",w:640,h:250,xmin:-0.5,xmax:8.7,ymin:-5.6,ymax:15.6,
+    gridx:1,gridy:2.5,tickx:1,ticky:5,padT:16,padB:30,nameX:"x",nameY:"I",
+    label:"Graphen der Integralfunktionen zu verschiedenen unteren Grenzen"});
+  var ghost=Pi.content, live=Pi.over();
+  Pi.axes();
+  var aktiv=live;
+  var gewaehlt=[], current=null;
+
+  function zeichne(a,isGhost){
+    var layer = isGhost ? ghost : aktiv;
+    var pts=[],N=400,i;
+    for(i=0;i<=N;i++){ var x=a+(XMAX-a)*i/N; pts.push(Pi.X(x)+","+Pi.Y(Ia(x,a))); }
+    layer.appendChild(el("polyline",{points:pts.join(" "),fill:"none",
+      stroke:isGhost?"#9db8cd":"#1f4e79","stroke-width":isGhost?1.8:2.8,
+      "stroke-linejoin":"round",opacity:isGhost?"0.55":"1"}));
+    layer.appendChild(el("circle",{cx:Pi.X(a),cy:Pi.Y(0),r:isGhost?4:6,
+      fill:isGhost?"#9db8cd":"#1f4e79"}));
+    if(!isGhost){
+      var t=el("text",{x:Pi.X(a),y:Pi.Y(0)+38,"text-anchor":"middle","font-size":15,
+        fill:"#1f4e79","font-family":"Georgia,serif","font-style":"italic","font-weight":"700"});
+      t.textContent="a"; layer.appendChild(t);
+    }
+  }
+  function waehle(a){
+    if(current!==null && current!==a){ zeichne(current,true); }
+    clear(aktiv);
+    current=a;
+    zeichne(a,false);
+    clear(markA); Pf.markX(a,"a",true,markA,42);
+    $("v6name").innerHTML="I<sub>"+fmtS(a)+"</sub>(x) = ";
+    $("v6a").textContent=fmtS(a);
+    $("v6null").innerHTML="<span class='m'>a</span> = "+fmtS(a)+" ist eine Nullstelle";
+    if(gewaehlt.indexOf(a)<0) gewaehlt.push(a);
+    var btns=$("achoice6").querySelectorAll("button");
+    for(var i=0;i<btns.length;i++) btns[i].classList.toggle("sel", Number(btns[i].getAttribute("data-a"))===a);
+    if(gewaehlt.length>=A_LIST.length){
+      $("explore6").style.display="none";
+      $("wrapQ6").style.display="block";
+    }
+  }
+  A_LIST.forEach(function(a){
+    var b=document.createElement("button");
+    b.type="button"; b.setAttribute("data-a",a);
+    b.innerHTML="a = "+fmtS(a);
+    b.onclick=function(){ waehle(a); };
+    $("achoice6").appendChild(b);
+  });
+  waehle(A_STD);
+})();
+
+/* richtige Antwort: C */
+mc("q6",null,"Was verändert sich beim Wechsel der unteren Grenze – und was bleibt gleich?",[
+  {t:"Der Graph ändert seine Form vollständig.",
+   no:"Vergleiche die Kurven im Bereich zwischen 5 und 8: Sie verlaufen dort gleich geformt."},
+  {t:"Der Graph bleibt völlig unverändert.",
+   no:"Achte auf die Stelle, an der der Graph die <span class='m'>x</span>-Achse schneidet: Sie liegt jeweils anders."},
+  {t:"Die Form bleibt erhalten, der Graph ist nach oben oder unten verschoben – <span class='m'>a</span> ist jeweils eine Nullstelle der Integralfunktion.",
+   ok:"Zu jeder unteren Grenze gehört eine eigene Integralfunktion."},
+  {t:"Der Graph wird nach links oder rechts verschoben.",
+   no:"Sieh dir an, wie sich die Kurven bei ein und derselben Stelle <span class='m'>x</span> unterscheiden: Sie liegen übereinander, nicht nebeneinander."}
+],2,function(){
+  $("heft6").style.display="block";
+  setDone(5);
+});
+
+/* =========================================================
+   STATION 7 – x links von a
+   ========================================================= */
+var S7=(function(){
+  var a=A_STD;
+  var P=Board($("svg7"),{uid:"s7",w:640,h:230,xmin:-0.5,xmax:8.7,ymin:-4.1,ymax:5.4,
+    gridx:1,tickx:1,nameX:"t",nameY:"y",
+    label:"Graph von f; die bewegliche Grenze x darf jetzt auch links von a liegen"});
+  var area=P.content, mark=P.over();
+  P.axes(); P.curve(f,XMIN,XMAX,"#0f172a",2.8); P.markX(a,"a",true);
+  var seenLeft=false;
+  function xOf(){ return Number($("sl7").value)*0.05; }
+  function update(){
+    var x=xOf();
+    fillArea(P,area,a,x); clear(mark); markMobile(P,mark,x,"x",true);
+    /* Richtungspfeil von a nach x – zeigt die Integrationsrichtung.
+       Er liegt unterhalb der Achse, wo in diesem Bereich keine Kurve verläuft. */
+    if(Math.abs(x-a)>0.15){
+      var yl=-3.0, x1=P.X(a), x2=P.X(x), dir=(x<a)?-1:1;
+      var col=(x<a)?"#b45309":"#1f6fb2";
+      mark.appendChild(el("line",{x1:x1,y1:P.Y(yl),x2:x2,y2:P.Y(yl),stroke:col,"stroke-width":2.2}));
+      var tip=x2, back=x2-dir*11;
+      mark.appendChild(el("polygon",{points:tip+","+P.Y(yl)+" "+back+","+(P.Y(yl)-5.5)+" "+back+","+(P.Y(yl)+5.5),fill:col}));
+      var tt=el("text",{x:(x1+x2)/2,y:P.Y(yl)+17,"text-anchor":"middle","font-size":13,fill:col,
+        "font-family":"Segoe UI,system-ui,sans-serif","font-weight":"600"});
+      tt.textContent=(x<a)?"von a nach links":"von a nach rechts";
+      mark.appendChild(tt);
+    }
+    $("v7Int").textContent=fmt2(Ia(x,a));
+    $("v7X").textContent=fmt2(x);
+    if(!seenLeft && x<=a-0.6){
+      seenLeft=true;
+      $("explore7").style.display="none";
+      $("beob7").style.display="block";   /* nur die Beobachtung – noch keine Erklärung */
+      $("wrapQ7").style.display="block";
+    }
+  }
+  $("sl7").addEventListener("input",update);
+  buildScale("scale7",[{x:0,t:"0"},{x:a,t:"a",mark:true},{x:NST1,t:"3"},{x:XMAX,t:"8",mark:true}],0,XMAX);
+  update();
+})();
+
+/* richtige Antwort: A */
+mc("q7",null,"Warum ist <span class='m'>I<sub>a</sub>(x)</span> hier negativ, obwohl die Fläche zwischen <span class='m'>x</span> und <span class='m'>a</span> oberhalb der Achse liegt?",[
+  {t:"Weil von <span class='m'>a</span> aus nach links integriert wird – die Integrationsrichtung ist umgekehrt.",
+   ok:"Das Vertauschen der Grenzen dreht das Vorzeichen um. Mit <span class='m'>f(t) &lt; 0</span> hat das nichts zu tun."},
+  {t:"Weil der Graph von <span class='m'>f</span>&thinsp; dort unterhalb der Achse liegt.",
+   no:"Sieh im linken Bereich genau hin: Der Graph verläuft dort <em>oberhalb</em> der Achse."},
+  {t:"Weil Flächen links der <span class='m'>y</span>-Achse immer negativ zählen.",
+   no:"Die Lage zur <span class='m'>y</span>-Achse spielt keine Rolle. Entscheidend ist, in welcher Reihenfolge die Grenzen stehen."}
+],0,function(){
+  $("erk7").style.display="block";      /* Formel erst jetzt */
+  $("unter7").style.display="block";
+  $("heft7").style.display="block";
+  setDone(6);
+});
+
+/* =========================================================
+   STATION 8 – Abschlusscheck
+   ========================================================= */
+/* richtige Antwort: B */
+mc("q8a",null,"<strong>1.</strong> Was bedeutet <span class='m'>I<sub>a</sub>(x) = </span><span class='intg sm'><span class='intsym'>∫</span><span class='intlim'><span class='o'>x</span><span class='u'>a</span></span><span class='m'>f(t)&nbsp;</span><span class='m up'>d</span><span class='m'>t</span></span>?",[
+  {t:"Den Flächeninhalt unter dem Graphen von <span class='m'>I<sub>a</sub></span>.",
+   no:"Integriert wird <span class='m'>f</span>, nicht <span class='m'>I<sub>a</sub></span>."},
+  {t:"Die Flächenbilanz zwischen dem Graphen von <span class='m'>f</span>&thinsp; und der Achse von <span class='m'>a</span> bis <span class='m'>x</span>.",
+   ok:"Genau das ist der Funktionswert von <span class='m'>I<sub>a</sub></span> an der Stelle <span class='m'>x</span>."},
+  {t:"Die Steigung von <span class='m'>f</span>&thinsp; an der Stelle <span class='m'>x</span>.",
+   no:"Steigungen gehören zur Differentialrechnung. Hier geht es um eine Flächenbilanz."}
+],1,function(){ $("w8b").style.display="block"; });
+
+/* richtige Antwort: D */
+mc("q8b",null,"<strong>2.</strong> Warum gilt immer <span class='m'>I<sub>a</sub>(a) = 0</span>?",[
+  {t:"Weil <span class='m'>f(a) = 0</span> ist.",
+   no:"Der Funktionswert von <span class='m'>f</span>&thinsp; an der Stelle <span class='m'>a</span> darf beliebig sein."},
+  {t:"Weil <span class='m'>a</span> immer 0 ist.",
+   no:"<span class='m'>a</span> kann jeden Wert haben – in Station 6 waren es 0, dann 1,5, dann 3."},
+  {t:"Weil sich positive und negative Beiträge dort aufheben.",
+   no:"Das ist ein anderer Fall. Hier liegt zwischen den Grenzen überhaupt keine Fläche."},
+  {t:"Weil untere und obere Grenze zusammenfallen und das Intervall die Breite 0 hat.",
+   ok:"Deshalb ist <span class='m'>a</span> stets eine Nullstelle von <span class='m'>I<sub>a</sub></span>."}
+],3,function(){ $("w8c").style.display="block"; });
+
+/* richtige Antwort: C */
+mc("q8c",null,"<strong>3.</strong> Wie verläuft <span class='m'>I<sub>a</sub></span> in einem Bereich mit <span class='m'>f &gt; 0</span>?",[
+  {t:"Er fällt.", no:"Vergleiche noch einmal die beiden Graphen aus Station 5 zwischen <span class='m'>a</span> und 3."},
+  {t:"Er verläuft waagrecht.", no:"Waagrecht bliebe er nur, wenn keine Bilanz hinzukäme."},
+  {t:"Er steigt.", ok:"Es kommt positive Flächenbilanz hinzu."}
+],2,function(){ $("w8d").style.display="block"; });
+
+/* richtige Antwort: A */
+mc("q8d",null,"<strong>4.</strong> Und in einem Bereich mit <span class='m'>f &lt; 0</span>?",[
+  {t:"Er fällt.", ok:"Es kommt negative Flächenbilanz hinzu."},
+  {t:"Er steigt.", no:"Steigen würde er nur bei positiven Beiträgen."},
+  {t:"Er wird negativ.", no:"Vorsicht: <span class='m'>I<sub>a</sub></span> kann dabei durchaus positiv bleiben – in Station 5 fiel er von 4,50 nur auf 0,50."}
+],0,function(){ $("w8e").style.display="block"; });
+
+/* richtige Antwort: B */
+mc("q8e",null,"<strong>5.</strong> Was gilt für <span class='m'>x &lt; a</span>?",[
+  {t:"Dann ist <span class='m'>I<sub>a</sub>(x)</span> nicht definiert.",
+   no:"In Station 7 wurde durchgehend ein Wert angezeigt."},
+  {t:"Es wird in umgekehrter Richtung integriert: <span class='m'>I<sub>a</sub>(x) = −</span><span class='intg sm'><span class='intsym'>∫</span><span class='intlim'><span class='o'>a</span><span class='u'>x</span></span><span class='m'>f(t)&nbsp;</span><span class='m up'>d</span><span class='m'>t</span></span>",
+   ok:"Das Vertauschen der Grenzen dreht das Vorzeichen um."},
+  {t:"Der Wert ist dann immer positiv.",
+   no:"In Station 7 war der Wert links von <span class='m'>a</span> negativ, obwohl die Fläche oberhalb der Achse lag."}
+],1,function(){ $("ende").style.display="block"; });
+
+/* =========================================================
+   Start
+   ========================================================= */
+buildSteps();
+render();
+measureChrome();
+</script>
+</body>
+</html>
