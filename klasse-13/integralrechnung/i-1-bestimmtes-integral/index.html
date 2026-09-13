@@ -52,6 +52,15 @@ header.top{
 .top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
 .kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
 .titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+
+/* Lehrermodus-Hinweis */
+.tmode{
+  display:none;margin-left:10px;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:1px 9px 2px;vertical-align:middle;white-space:nowrap;
+  font-family:"Segoe UI",system-ui,sans-serif;
+}
+.tmode.on{display:inline-block}
 .steps{display:flex;gap:6px;list-style:none;margin:0;padding:0 0 6px}
 .steps li{flex:1;display:flex}
 .steps button{
@@ -311,7 +320,7 @@ footer.nav{
 <header class="top">
   <div class="top-inner">
     <div class="kapitel">I. Flächeninhalt und bestimmtes Integral</div>
-    <div class="titel">I.1 Das bestimmte Integral</div>
+    <div class="titel">I.1 Das bestimmte Integral<span class="tmode" id="tmode">Lehrermodus</span></div>
     <ul class="steps stepsbar" id="steps"></ul>
   </div>
 </header>
@@ -868,6 +877,14 @@ function areaPath(P,fn,a,b,fill,stroke){
 /* =========================================================
    Stationssteuerung
    ========================================================= */
+/* =========================================================
+   Lehrermodus (nur ueber den URL-Parameter ?teacher=1)
+   Hebt ausschliesslich die Navigationssperre auf. Die Aufgaben
+   selbst verhalten sich unveraendert; nichts wird vorgeloest.
+   ========================================================= */
+var TEACHER=/(^|[?&])teacher=1(&|$)/.test(window.location.search);
+if(TEACHER){ var tm=document.getElementById("tmode"); if(tm) tm.classList.add("on"); }
+
 var sections = document.querySelectorAll(".station");
 var TOTAL = sections.length;
 var cur = 0;
@@ -884,7 +901,7 @@ function buildSteps(){
       var b = document.createElement("button");
       b.setAttribute("data-nr",(i+1));
       b.setAttribute("aria-label","Station "+(i+1));
-      b.onclick = function(){ if(i<=maxReached) go(i); };
+      b.onclick=function(){ if(TEACHER || i<=maxReached) go(i); };
       li.appendChild(b); ul.appendChild(li);
     })(i);
   }
@@ -898,8 +915,8 @@ function render(){
   for(var j=0;j<btns.length;j++){
     btns[j].classList.toggle("active", j===cur);
     btns[j].classList.toggle("done", j<maxReached && j!==cur);
-    btns[j].disabled = j>maxReached;
-    btns[j].style.cursor = j>maxReached ? "default" : "pointer";
+    btns[j].disabled = !TEACHER && j>maxReached;
+    btns[j].style.cursor = (!TEACHER && j>maxReached) ? "default" : "pointer";
   }
   $("pos").textContent = "Station "+(cur+1)+" von "+TOTAL;
   $("barfill").style.width = ((cur+1)/TOTAL*100)+"%";
@@ -910,7 +927,7 @@ function render(){
   window.scrollTo(0,0);
 }
 function updateNext(){
-  var free = done[cur];
+  var free = TEACHER || done[cur];
   $("next").disabled = !free;
   $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
 }
@@ -921,11 +938,12 @@ function setDone(i){
 function go(i){
   if(i<0||i>=TOTAL) return;
   cur=i;
-  if(cur>maxReached) maxReached=cur;
+  /* Nur die Schuelernavigation schiebt den Fortschritt weiter. */
+  if(!TEACHER && cur>maxReached) maxReached=cur;
   render();
 }
 $("prev").onclick=function(){ go(cur-1); };
-$("next").onclick=function(){ if(done[cur]) go(cur+1); };
+$("next").onclick=function(){ if(TEACHER || done[cur]) go(cur+1); };
 
 /* =========================================================
    Multiple-Choice-Baustein
