@@ -1,1 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Mathematik – Klasse 7</title>
+
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #1b2430;
+      --text-soft: #5b6573;
+      --accent: #1f4e79;
+      --accent-soft: #eaf1f8;
+      --border: #dde2e9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+                   "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--accent);
+      font-size: clamp(1.7rem, 4vw, 2.3rem);
+    }
+
+    .subtitle {
+      margin-top: 5px;
+      color: var(--text-soft);
+      font-size: 1rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .chapter {
+      margin-bottom: 32px;
+    }
+
+    .chapter-title {
+      font-size: 1.25rem;
+      margin: 0 0 14px;
+      color: var(--text);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      color: inherit;
+      text-decoration: none;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #b9c9d8;
+      box-shadow: 0 6px 20px rgba(31, 78, 121, 0.08);
+    }
+
+    .number {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 1.15rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+    }
+
+    .arrow {
+      display: inline-block;
+      margin-top: 16px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    footer {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px 30px;
+      color: var(--text-soft);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      .header-inner {
+        padding: 20px 16px;
+      }
+
+      main {
+        padding: 24px 16px 50px;
+      }
+
+      footer {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="back" href="../">← Alle Jahrgangsstufen</a>
+
+    <h1>Mathematik · Klasse 7</h1>
+
+    <div class="subtitle">
+      Interaktive Lernpfade zum selbstständigen Üben und Entdecken
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="chapter">
+    <h2 class="chapter-title">1. Terme mit Variablen</h2>
+
+    <div class="cards">
+
+      <a class="card"
+         href="terme-mit-variablen/1-1a-terme-und-termwerte/">
+
+        <span class="number">1.1a</span>
+
+        <h3>Terme und Termwerte</h3>
+
+        <p>
+          Vom Würfelturm zum Term: Variablen verstehen,
+          Termwerte berechnen und mit mehreren Variablen arbeiten.
+        </p>
+
+        <span class="arrow">Lernpfad öffnen →</span>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Weitere Lernpfade werden nach und nach ergänzt.
+</footer>
+
+</body>
+</html>
