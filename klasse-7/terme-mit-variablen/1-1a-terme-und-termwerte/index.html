@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1.1a Terme und Termwerte – Lernpfad</title>
+<style>
+
+/* ============ Grundlagen ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;
+  --accent-soft:#eaf1f8;
+  --seite:#1f6fb2;          /* Seitenflächen / Variable x */
+  --seite-bg:#dceaf6;
+  --deckel:#b45309;         /* Deckfläche / Variable y */
+  --deckel-bg:#fbeadb;
+  --vz:#6b21a8;             /* Variable z */
+  --vz-bg:#f0e7fa;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+.steps{display:flex;gap:6px;list-style:none;margin:-11px 0 0;padding:0 0 2px}
+.steps li{flex:1;display:flex}
+.steps button{
+  width:100%;border:0;background:transparent;padding:14px 0 19px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:23px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:4px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+.gap{margin-top:14px}
+ul.can{margin:.4em 0 .2em;padding-left:1.25em}
+ul.can li{margin:.24em 0}
+
+/* ============ Arbeitsansicht ============ */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:900px){
+  .work{grid-template-columns:1fr;gap:10px}
+}
+@media(min-width:901px) and (min-height:640px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 10px)}
+}
+
+/* ============ Mathematik-Satz ============ */
+.m{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:italic}
+.mf{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:normal}
+.mf i{font-style:italic}
+.m,.mf{text-transform:none}
+.mblock{
+  text-align:center;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.big{font-size:clamp(1.12rem,3vw,1.4rem)}
+sub,sup{font-size:.68em}
+
+/* farbige Hervorhebungen in Termen */
+.hl{border-radius:5px;padding:0 .24em;font-weight:700}
+.hl.s{background:var(--seite-bg);color:#14456e}
+.hl.d{background:var(--deckel-bg);color:#7a3907}
+.vx{color:var(--seite)} .vy{color:var(--deckel)} .vzc{color:var(--vz)}
+.slot{
+  display:inline-block;min-width:1.15em;text-align:center;
+  border-bottom:2px dotted #9bb2c6;padding:0 .1em;font-style:italic;
+  transition:background .25s,transform .25s;
+}
+.slot.filled{
+  border-bottom-color:transparent;font-style:normal;font-weight:700;
+  border-radius:5px;padding:0 .26em;transform:scale(1.06);
+}
+.slot.filled.x{background:var(--seite-bg);color:#14456e}
+.slot.filled.y{background:var(--deckel-bg);color:#7a3907}
+.slot.filled.z{background:var(--vz-bg);color:#4c1d95}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.zchip:focus-visible,
+.zslot:focus-visible,.rfb:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rückmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:120px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+.unit{font-size:.95rem;color:var(--ink-soft)}
+
+/* Sicherungs-Box */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:920px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.2em 0}
+.heft .duo{display:grid;grid-template-columns:1fr;gap:12px;margin-top:9px}
+@media(min-width:720px){.heft .duo{grid-template-columns:1fr 1fr}}
+.duo .box{background:#fff;border:1px solid #c9dcec;border-radius:8px;padding:10px 13px}
+.duo .box.s{border-left:4px solid var(--seite)}
+.duo .box.d{border-left:4px solid var(--deckel)}
+.duo .box .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.duo .box.s .t{color:var(--seite)}
+.duo .box.d .t{color:var(--deckel)}
+.duo .box p{margin:.22em 0;font-size:.97rem}
+
+/* ============ Tabelle ============ */
+.tblscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.wt{
+  display:grid;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:8px;overflow:hidden;font-size:.95rem;font-variant-numeric:tabular-nums;
+  min-width:380px;
+}
+.wt>div{background:#fff;padding:7px 4px;text-align:center;line-height:1.25;
+  display:flex;align-items:center;justify-content:center}
+.wt .lab{justify-content:flex-start;padding-left:9px;font-weight:600;background:#f5f8fb;
+  font-size:.86rem;text-align:left}
+.wt .hd{background:#f5f8fb;font-weight:600}
+.wt input[type=text]{width:100%;min-width:0;max-width:76px;padding:8px 4px;text-align:center;font-size:1rem}
+
+/* Zahlenfolge Station 2 */
+.seq{display:flex;align-items:flex-end;justify-content:center;min-width:440px;padding:4px 0 2px}
+.sqcell{
+  flex:0 0 56px;border:1.5px solid var(--line);border-radius:8px;background:#fff;
+  padding:5px 2px;text-align:center;
+}
+.sqcell .sx{font-size:.74rem;color:var(--ink-soft)}
+.sqcell .sv{font-size:1.18rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.sarr{
+  flex:0 0 38px;text-align:center;font-size:.82rem;font-weight:700;
+  color:var(--seite);position:relative;padding-bottom:14px;
+}
+.sarr::after{content:"→";display:block;position:absolute;left:0;right:0;bottom:-2px;
+  font-size:1rem;color:#9bb2c6;font-weight:400}
+/* Die Pfeile bleiben im Layout, werden aber erst nach der Entdeckung sichtbar.
+   visibility statt display verhindert einen Sprung der Zahlenfolge. */
+.sarr{visibility:hidden;transition:visibility 0s}
+.sarr.on{visibility:visible}
+
+/* ============ Würfelturm ============ */
+.turmsvg{display:block;margin:0 auto;width:100%;max-width:360px;height:auto}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:6px 0 2px;
+  color:var(--ink-soft);justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:20px;height:13px;border:1.5px solid;display:inline-block;flex:0 0 auto;border-radius:2px}
+.sw-s{border-color:var(--seite);background:#cfe3f3}
+.sw-d{border-color:var(--deckel);background:#f7d9b6}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:5px;line-height:1.4}
+
+/* Schieberegler */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:26px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.76rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{content:"";display:block;width:1.5px;height:7px;background:#94a3b8;margin:0 auto 3px}
+.scale span.mark{font-weight:700;color:var(--accent);font-size:.84rem}
+.scale span.mark::before{background:var(--accent);height:9px}
+
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:8px 14px;background:#fff;
+}
+.valbox .vlabel{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vnum{font-size:1.4rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* Abwicklung */
+.abw{display:flex;flex-direction:column;gap:5px;margin:8px 0 2px}
+.abwrow{display:flex;align-items:center;gap:9px;flex-wrap:nowrap}
+.abwlab{flex:0 0 8.6em;font-size:.84rem;color:var(--ink-soft)}
+.sqs{display:flex;gap:4px;flex:1 1 auto}
+.sq{width:20px;height:20px;border-radius:3px;display:inline-block;flex:0 0 auto}
+.sq.s{background:#cfe3f3;border:1.5px solid var(--seite)}
+.sq.d{background:#f7d9b6;border:1.5px solid var(--deckel)}
+.abwval{flex:0 0 1.6em;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.abwrow.tp .abwval{color:var(--deckel)}
+.abwrow.st .abwval{color:var(--seite)}
+
+/* Kurzschreibweise Station 4 */
+.kurzrow{
+  display:flex;align-items:center;justify-content:center;gap:.55em;flex-wrap:wrap;
+  font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  font-size:clamp(1.1rem,3vw,1.35rem);margin:11px 0;
+}
+.kurzrow .lhs,.kurzrow .rhs{white-space:nowrap}
+.arrw{color:#9bb2c6}
+/* Zustandswechsel 4 · x + 1  →  4x + 1:
+   Beide Ausdrücke werden vollständig gesetzt und übereinandergelegt,
+   damit der Malpunkt exakt vom Textsatz positioniert wird. */
+.swap{
+  position:relative;text-align:center;margin:14px 0 10px;
+  font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  font-size:clamp(1.25rem,4vw,1.7rem);min-height:2.1em;
+}
+.swap .swapitem{
+  position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+  opacity:0;transition:opacity .45s ease;text-align:center;
+}
+.swap .swapitem.on{opacity:1}
+
+/* Zuordnung Station 3 */
+.zpool{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 12px}
+.zchip{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+  padding:9px 15px;cursor:pointer;font-weight:650;min-height:44px;
+  -webkit-tap-highlight-color:transparent;
+}
+.zchip.sel{background:var(--accent);color:#fff}
+.zchip.used{display:none}
+.zrow{
+  display:flex;align-items:center;gap:11px;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin:7px 0;background:#fff;
+}
+.zrow.done{border-color:var(--ok);background:var(--ok-bg)}
+.ztxt{flex:1 1 210px;min-width:0}
+.ztxt .zt1{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.14rem;font-weight:700}
+.ztxt .zt2{font-size:.86rem;color:var(--ink-soft);line-height:1.35}
+.zslot{
+  flex:0 0 auto;min-width:118px;min-height:44px;border:2px dashed #9bb2c6;background:#fbfcfe;
+  border-radius:8px;color:var(--ink-soft);font-weight:600;cursor:pointer;padding:8px 12px;
+  -webkit-tap-highlight-color:transparent;
+}
+.zslot.filled{border-style:solid;border-color:var(--ok);background:#fff;color:var(--ok)}
+.zslot.bad{border-color:#c0392b;background:#fbeceb}
+
+/* Richtig/Falsch Station 4 */
+.rfrow{border:1px solid var(--line);border-radius:8px;padding:10px 13px;margin:8px 0;background:#fff}
+.rfrow.done{border-color:var(--ok);background:var(--ok-bg)}
+.rftop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rfstat{flex:1 1 200px;font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.14rem;min-width:0}
+.rfbtns{display:flex;gap:8px;flex:0 0 auto}
+.rfb{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:9px 14px;
+  min-height:44px;min-width:80px;cursor:pointer;font-weight:600;color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.rfb:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.rfb.ok{border-color:var(--ok);background:var(--ok-bg);color:#14603c}
+.rfb.no{border-color:#c0392b;background:#fbeceb}
+.rfb:disabled{cursor:default}
+.rfb.ok:disabled{opacity:1}
+.rfmsg{font-size:.9rem;margin-top:8px;display:none}
+.rfmsg.show{display:block}
+.counter{font-size:.88rem;color:var(--ink-soft);margin:6px 0 0}
+.counter b{color:var(--accent)}
+
+/* Lehrermodus-Hinweis */
+.tmode{
+  display:none;margin-left:10px;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:#7a3907;background:var(--deckel-bg);border:1px solid #e3c19c;
+  border-radius:20px;padding:1px 9px 2px;vertical-align:middle;white-space:nowrap;
+  font-family:"Segoe UI",system-ui,sans-serif;
+}
+.tmode.on{display:inline-block}
+
+/* Rechenschritte */
+.calc{
+  font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline;
+  font-size:clamp(1rem,2.6vw,1.16rem);margin:8px 0 4px;overflow-wrap:break-word;
+}
+.calc .lhs{text-align:right;white-space:nowrap}
+.calc .rhs{min-width:0}
+.calc .step{opacity:0;transition:opacity .35s}
+.calc .step.on{opacity:1}
+.calc .res{font-weight:700;color:var(--accent)}
+
+/* ============ Fußnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.locknote{font-size:.82rem;color:var(--hint);text-align:center;padding:0 12px 7px;display:none}
+.locknote.show{display:block}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+  .abwlab{flex:0 0 7.2em;font-size:.78rem}
+  .zslot{min-width:104px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{padding-bottom:5px;font-size:.79rem}
+  .steps{padding-bottom:0}
+}
+@media print{footer.nav,header.top{position:static}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">1. Terme mit Variablen</div>
+    <div class="titel">1.1a Terme und Termwerte<span class="tmode" id="tmode">Lehrermodus</span></div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Wie viele Quadrate liegen außen frei?</h2>
+  <div class="meta">Station 1 von 7 · etwa 6 Minuten</div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl1">Anzahl <span class="m">x</span> der Stockwerke:</label>
+          <input type="range" id="sl1" min="1" max="10" step="1" value="1"
+                 aria-label="Anzahl x der Stockwerke einstellen">
+          <div class="scale" id="scale1"></div>
+        </div>
+        <div id="turm1"></div>
+        <div class="figcap">Verdeckte Kanten sind <strong>gestrichelt</strong> gezeichnet – dort geht der
+          Turm nach hinten weiter. Die Zeichnung zeigt nur eine Ansicht; die Rückseite musst du dir
+          dazudenken.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">eingestellt</div>
+          <div><span class="mf" style="font-size:1.15rem"><i>x</i>&nbsp;=&nbsp;</span><span class="vnum" id="v1x">1</span>
+            <span class="small" id="v1w">Stockwerk</span></div>
+        </div>
+
+        <p class="lead gap">Ein Turm aus Würfeln steht auf dem Tisch. Stell dir vor, du gehst einmal
+          um den Turm herum. Gezählt werden alle <strong>quadratischen Würfelflächen, die außen frei
+          liegen</strong> – auch die auf der Rückseite. Die Fläche, auf der der Turm steht, zählt
+          nicht mit.</p>
+
+        <div id="explorewrap">
+          <div class="fb hint show" id="explore1">Schiebe den Regler zuerst nach rechts und beobachte,
+            wie der Turm wächst – mindestens bis <span class="m">x</span>&thinsp;=&nbsp;5.</div>
+          <div id="go1wrap" style="display:none">
+            <button class="btn" id="btnGo1">Weiter zu den Aufgaben</button>
+          </div>
+        </div>
+
+        <div id="w1a" style="display:none"><div id="q1a"></div></div>
+        <div id="w1b" style="display:none" class="gap"><div id="q1b"></div></div>
+        <div id="w1c" style="display:none" class="gap"><div id="q1c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="c1tab" style="display:none">
+    <h3>Trage die fehlenden Werte ein</h3>
+    <div class="tblscroll"><div id="tab1"></div></div>
+    <div id="tab1ui"></div>
+  </div>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Das Muster hinter dem Turm</h2>
+  <div class="meta">Station 2 von 7 · etwa 7 Minuten · die Kernstation</div>
+
+  <div class="card narrow">
+    <p class="lead">Das sind deine Werte aus Station 1:</p>
+    <div class="tblscroll"><div class="seq" id="seq2"></div></div>
+    <div id="q2a" class="gap"></div>
+    <div id="w2b" style="display:none" class="gap"><div id="q2b"></div></div>
+  </div>
+
+  <div class="card" id="c2viz" style="display:none">
+    <h3>Woher kommen die Quadrate?</h3>
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl2">Anzahl <span class="m">x</span> der Stockwerke:</label>
+          <input type="range" id="sl2" min="1" max="6" step="1" value="3"
+                 aria-label="Anzahl x der Stockwerke einstellen">
+          <div class="scale" id="scale2"></div>
+        </div>
+        <div id="turm2"></div>
+        <div class="legend" id="leg2" style="display:none">
+          <span><i class="swatch sw-s"></i>Seitenflächen</span>
+          <span><i class="swatch sw-d"></i>Fläche oben</span>
+        </div>
+        <div class="figcap">Jeder Würfel hat rundherum <strong>vier</strong> außen liegende
+          Seitenflächen. Zwei davon sieht man in der Zeichnung direkt, zwei liegen auf der Rückseite.</div>
+      </div>
+      <div class="task">
+        <div id="abw2"></div>
+        <div id="form2"></div>
+        <div class="btnrow">
+          <button class="btn" id="btnStage2">Zerlegung zeigen</button>
+        </div>
+        <div id="w2c" style="display:none" class="gap"><div id="q2c"></div></div>
+        <div id="w2d" style="display:none" class="gap"><div id="q2d"></div></div>
+        <div id="w2e" style="display:none" class="gap"><div id="q2e"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Variable – Term – Termwert</h2>
+  <div class="meta">Station 3 von 7 · etwa 6 Minuten</div>
+
+  <div class="card narrow">
+    <p class="lead">Du hast die Rechnung für den Turm allgemein aufgeschrieben:</p>
+    <p class="mblock big mf" style="font-weight:700"><i>T</i>(<i>x</i>) = 4 · <i>x</i> + 1</p>
+    <p>Diese Bausteine haben eigene Namen.</p>
+
+    <div class="heft" style="margin-top:10px">
+      <p><span class="mf" style="font-size:1.1rem"><i>x</i></span> ist ein <strong>Platzhalter</strong>.
+        Man kann verschiedene Stockwerkzahlen einsetzen. Ein solcher Platzhalter heißt
+        <strong>Variable</strong>.</p>
+      <p><span class="mf" style="font-size:1.1rem">4 · <i>x</i> + 1</span> beschreibt die Rechnung
+        <strong>allgemein</strong>. Eine solche Rechenvorschrift heißt <strong>Term</strong>.</p>
+      <p>Mit <span class="mf" style="font-size:1.1rem"><i>T</i>(<i>x</i>)</span> (sprich „<span class="m">T</span> von
+        <span class="m">x</span>“) gibt man an, dass der Term <span class="m">T</span> von
+        <span class="m">x</span> abhängt.</p>
+      <p>Setzt man <span class="mf"><i>x</i> = 3</span> ein, so ergibt sich
+        <span class="mf" style="font-size:1.1rem"><i>T</i>(3) = 4 · 3 + 1 = 13</span>.
+        Die Zahl <strong>13</strong> heißt <strong>Termwert</strong>.</p>
+    </div>
+  </div>
+
+  <div class="card narrow">
+    <h3>Ordne die drei Begriffe zu</h3>
+    <div id="zuord3"></div>
+  </div>
+
+  <div class="card narrow" id="c3g" style="display:none">
+    <h3>Welche Zahlen darf man einsetzen?</h3>
+    <p>In den Term <span class="mf">4 · <i>x</i> + 1</span> könnte man rechnerisch viele verschiedene
+      Zahlen einsetzen. Für den Würfelturm sind aber nur ganze positive Stockwerkzahlen sinnvoll.</p>
+    <div id="q3g"></div>
+    <div class="fb sol" id="fb3g">Die Menge der Zahlen, die man sinnvoll einsetzen darf, heißt
+      <strong>Grundmenge</strong> <span class="m">G</span>. Beim Würfelturm ist
+      <span class="mf"><i>G</i> = {1; 2; 3; …}</span>.</div>
+  </div>
+
+  <div class="heft" id="heft3" style="display:none">
+    <div class="h">📝 SICHERUNG · VARIABLE – TERM – TERMWERT</div>
+    <p><strong>Variablen</strong> sind Platzhalter für Zahlen.</p>
+    <p>Ein <strong>Term</strong> kann Zahlen, Rechenzeichen, Klammern und Variablen enthalten.</p>
+    <p>Mit <span class="mf"><i>T</i>(<i>x</i>)</span> gibt man an, dass der Term
+      <span class="m">T</span> von <span class="m">x</span> abhängt.</p>
+    <div class="duo">
+      <div class="box s">
+        <div class="t">Term zum Würfelturm</div>
+        <p class="mf" style="font-size:1.12rem"><i>T</i>(<i>x</i>) = 4 · <i>x</i> + 1</p>
+      </div>
+      <div class="box d">
+        <div class="t">Termwert für <span class="m">x</span> = 3</div>
+        <p class="mf" style="font-size:1.12rem"><i>T</i>(3) = 4 · 3 + 1 = 13</p>
+        <p class="small">13 ist der zugehörige Termwert.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Mathematiker schreiben kürzer</h2>
+  <div class="meta">Station 4 von 7 · etwa 5 Minuten</div>
+
+  <div class="card narrow">
+    <p class="lead">Bei einer Multiplikation <strong>mit einer Variablen</strong> darf der Malpunkt
+      weggelassen werden.</p>
+
+    <div class="swap" id="swap4">
+      <span class="swapitem mf on" id="swapA">4 · <i>x</i> + 1</span>
+      <span class="swapitem mf" id="swapB">4<i>x</i> + 1</span>
+    </div>
+    <div class="btnrow" style="justify-content:center">
+      <button class="btn" id="btnKurz">Malpunkt weglassen</button>
+    </div>
+
+    <div id="kurz4" style="display:none">
+      <p class="mblock big mf" style="font-weight:700"><i>T</i>(<i>x</i>) = 4<i>x</i> + 1</p>
+      <p>So schreibt man es ab jetzt. Weitere Beispiele:</p>
+      <div class="kurzrow"><span class="lhs">4 · <i class="m">x</i></span><span class="arrw">=</span><span class="rhs">4<i class="m">x</i></span></div>
+      <div class="kurzrow"><span class="lhs">2 · (<i class="m">x</i> + 3)</span><span class="arrw">=</span><span class="rhs">2(<i class="m">x</i> + 3)</span></div>
+      <div class="kurzrow"><span class="lhs"><i class="m">a</i> · <i class="m">b</i></span><span class="arrw">=</span><span class="rhs"><i class="m">a</i><i class="m">b</i></span></div>
+      <div class="fb hint show">Man darf zwar auch (<span class="m">x</span> + 3) · 2 = (<span class="m">x</span> + 3)2
+        schreiben. <strong>Üblich ist aber, die Zahl vorne zu notieren:</strong>
+        2(<span class="m">x</span> + 3).</div>
+    </div>
+  </div>
+
+  <div class="card narrow" id="c4rf" style="display:none">
+    <h3>Welche Schreibweisen sind korrekt?</h3>
+    <p class="small">Entscheide für jede Zeile.</p>
+    <div id="rf4"></div>
+    <p class="counter" id="cnt4">gelöst: <b>0</b> von 4</p>
+  </div>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2>Einen Termwert berechnen</h2>
+  <div class="meta">Station 5 von 7 · etwa 7 Minuten</div>
+
+  <div class="card narrow">
+    <h3>A · Zurück zum Würfelturm</h3>
+    <p>Wie viele Quadrate liegen bei einem Turm aus <strong>6</strong> Stockwerken außen frei?</p>
+    <div class="calc" id="calc5a">
+      <div class="lhs mf"><i>T</i>(<i>x</i>) =</div><div class="rhs mf">4<i>x</i> + 1</div>
+      <div class="lhs mf step" id="s5a1l"><i>T</i>(6) =</div>
+      <div class="rhs mf step" id="s5a1r">4 · <span class="slot x" id="sl5a">x</span> + 1</div>
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btn5a"><span class="m">x</span>&thinsp; durch 6 ersetzen</button>
+    </div>
+    <div class="fb hint" id="note5a">Achtung: Aus 4<span class="m">x</span> wird
+      <strong>4 · 6</strong> – der Malpunkt kommt beim Einsetzen einer Zahl wieder zurück.
+      Sonst stünde dort die Zahl 46.</div>
+    <div id="w5a" style="display:none" class="gap"><div id="q5a"></div></div>
+  </div>
+
+  <div class="card narrow" id="c5b" style="display:none">
+    <h3>B · Ein anderer Term</h3>
+    <p class="mblock big mf"><i>A</i>(<i>x</i>) = 3<i>x</i> − 5</p>
+    <div id="q5b"></div>
+  </div>
+
+  <div class="card narrow" id="c5c" style="display:none">
+    <h3>C · Eine negative Zahl einsetzen</h3>
+    <p class="mblock big mf"><i>B</i>(<i>x</i>) = 2<i>x</i> − <i>x</i><sup>2</sup></p>
+    <p>Gesucht ist <span class="mf"><i>B</i>(−2)</span>. Hier kommt <span class="m">x</span> zweimal vor.</p>
+    <div id="q5c1"></div>
+    <div id="w5c2" style="display:none" class="gap">
+      <div class="calc">
+        <div class="lhs mf"><i>B</i>(−2) =</div><div class="rhs mf">2 · (−2) − (−2)<sup>2</sup></div>
+        <div class="lhs mf">=</div><div class="rhs mf">−4 − 4</div>
+      </div>
+      <div id="q5c2"></div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft5" style="display:none">
+    <div class="h">📝 MERKEN</div>
+    <p>Kommt eine Variable <strong>mehrfach</strong> vor, wird überall <strong>derselbe</strong> Wert eingesetzt.</p>
+    <p><strong>Negative Zahlen</strong> setzt man beim Einsetzen zur Sicherheit in <strong>Klammern</strong>:
+      <span class="mf">(−2)<sup>2</sup> = 4</span>, aber <span class="mf">−2<sup>2</sup> = −4</span>.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>Mehrere Variablen</h2>
+  <div class="meta">Station 6 von 7 · etwa 6 Minuten</div>
+
+  <div class="card narrow">
+    <p class="lead">Ein Term kann von <strong>mehreren</strong> Variablen abhängen.</p>
+    <p class="mblock big mf"><i>T</i>(<i>x</i>;<i>y</i>) = 2<i>x</i> − 5<i>y</i></p>
+    <p class="small">Zwischen den Variablen steht ein <strong>Semikolon</strong>. Ein Komma wäre hier
+      missverständlich, denn im Deutschen trennt das Komma die Dezimalstellen.</p>
+  </div>
+
+  <div class="card narrow">
+    <h3>A · <span class="mf"><i>T</i>(−3;4)</span> berechnen</h3>
+    <p>Setze <span class="mf"><i class="vx">x</i> = −3</span> und
+      <span class="mf"><i class="vy">y</i> = 4</span> ein.</p>
+    <div class="calc" id="calc6a">
+      <div class="lhs mf"><i>T</i>(<i class="vx">x</i>;<i class="vy">y</i>) =</div>
+      <div class="rhs mf">2<i class="vx">x</i> − 5<i class="vy">y</i></div>
+      <div class="lhs mf step" id="s6a1l"><i>T</i>(−3;4) =</div>
+      <div class="rhs mf step" id="s6a1r">2 · <span class="slot x" data-s6a>x</span> − 5 · <span class="slot y" data-s6a>y</span></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btn6a">Werte einsetzen</button>
+    </div>
+    <div id="w6a1" style="display:none" class="gap"><div id="q6a1"></div></div>
+    <div id="w6a2" style="display:none" class="gap"><div id="q6a2"></div></div>
+  </div>
+
+  <div class="card narrow" id="c6b" style="display:none">
+    <h3>B · Drei Variablen</h3>
+    <p class="mblock big mf"><i>M</i>(<i>x</i>;<i>y</i>;<i>z</i>) = 2<i>z</i>(<i>x</i> + 4<i>y</i>)</p>
+    <p>Setze <span class="mf"><i class="vx">x</i> = 2</span>,
+      <span class="mf"><i class="vy">y</i> = 2</span> und
+      <span class="mf"><i class="vzc">z</i> = 1</span> ein.</p>
+    <div class="calc" id="calc6b">
+      <div class="lhs mf"><i>M</i>(2;2;1) =</div>
+      <div class="rhs mf">2 · <span class="slot z" data-s6b>z</span> · (<span class="slot x" data-s6b>x</span> + 4 · <span class="slot y" data-s6b>y</span>)</div>
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btn6b">Werte einsetzen</button>
+    </div>
+    <div id="w6b1" style="display:none" class="gap"><div id="q6b1"></div></div>
+    <div id="w6b2" style="display:none" class="gap"><div id="q6b2"></div></div>
+  </div>
+
+  <div class="heft" id="heft6" style="display:none">
+    <div class="h">📝 SICHERUNG</div>
+    <div class="duo">
+      <div class="box s">
+        <div class="t">Malpunkte bei Variablen</div>
+        <p class="mf" style="font-size:1.08rem">4 · <i>x</i> = 4<i>x</i></p>
+        <p class="mf" style="font-size:1.08rem">2 · (<i>x</i> + 3) = 2(<i>x</i> + 3)</p>
+      </div>
+      <div class="box d">
+        <div class="t">Mehrere Variablen</div>
+        <p class="mf" style="font-size:1.08rem"><i>T</i>(<i>x</i>;<i>y</i>) = 2<i>x</i> − 5<i>y</i></p>
+        <p class="mf" style="font-size:1.02rem"><i>T</i>(−3;4) = 2 · (−3) − 5 · 4 = −26</p>
+      </div>
+    </div>
+    <p style="margin-top:10px">Terme können mehrere Variablen enthalten. Man notiert sie in Klammern,
+      getrennt durch <strong>Semikolon</strong>.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 7 ================= -->
+<section class="station" data-nr="7">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 7 von 7 · etwa 6 Minuten</div>
+
+  <div class="card narrow"><div id="q7a"></div></div>
+  <div class="card narrow" id="w7b" style="display:none"><div id="q7b"></div></div>
+  <div class="card narrow" id="w7c" style="display:none"><div id="q7c"></div></div>
+  <div class="card narrow" id="w7d" style="display:none"><div id="q7d"></div></div>
+
+  <div class="card narrow" id="ende" style="display:none;border-left:5px solid var(--accent)">
+    <h3 style="font-size:1.18rem">Du kannst jetzt …</h3>
+    <ul class="can">
+      <li>erklären, was <strong>Variable</strong>, <strong>Term</strong> und <strong>Termwert</strong> bedeuten,</li>
+      <li>einen Termwert durch <strong>Einsetzen</strong> berechnen – auch mit negativen Zahlen,</li>
+      <li>Produkte mit Variablen <strong>verkürzt</strong> schreiben,</li>
+      <li>mit Termen arbeiten, die <strong>mehrere Variablen</strong> enthalten.</li>
+    </ul>
+    <p style="margin-top:14px"><strong>Ausblick:</strong> Als Nächstes untersuchst du, wann verschiedene
+      Terme dieselben Werte liefern und wie man kompliziertere Terme gliedern kann.</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn ghost" id="prev">←<span class="lbl"> Zurück</span></button>
+    <div class="nav-mid">
+      <div class="pos" id="pos">Station 1 von 7</div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <button class="btn" id="next"><span class="lbl">Weiter </span>→</button>
+  </div>
+  <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+function $(id){return document.getElementById(id);}
+
+/* Deutsche Zahlschreibweise */
+function num(v,dec){
+  if(dec===undefined) dec=4;
+  if(Math.abs(v)<5e-10) v=0;
+  var s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){ s=s.replace(/0+$/,""); s=s.replace(/\.$/,""); }
+  return s.replace(".",",");
+}
+/* Eingabe in eine Zahl verwandeln: Komma und Punkt erlaubt,
+   auch das typografische Minus wird akzeptiert. */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/[−–—]/g,"-").replace(",",".");
+  if(s==="") return NaN;
+  if(!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+function measureChrome(){
+  var h=document.querySelector("header.top"), ft=document.querySelector("footer.nav");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+  if(ft) document.documentElement.style.setProperty("--footH", ft.offsetHeight+"px");
+}
+window.addEventListener("resize",measureChrome);
+window.addEventListener("orientationchange",function(){ setTimeout(measureChrome,250); });
+
+/* Skala unter einem Regler */
+function buildScale(hostId,marks,lo,hi){
+  var sc=$(hostId); if(!sc) return;
+  sc.innerHTML="";
+  marks.forEach(function(m){
+    var pos=(m.x-lo)/(hi-lo);
+    var e=document.createElement("span");
+    e.style.left="calc(10px + "+(pos*100)+"% - "+(pos*20)+"px)";
+    e.innerHTML=m.t;
+    if(m.mark) e.className="mark";
+    sc.appendChild(e);
+  });
+}
+
+/* =========================================================
+   Lehrermodus (nur über den URL-Parameter ?teacher=1)
+   Hebt ausschließlich die Navigationssperre auf. Die Aufgaben
+   selbst verhalten sich unverändert; nichts wird vorgelöst.
+   ========================================================= */
+var TEACHER=/(^|[?&])teacher=1(&|$)/.test(window.location.search);
+if(TEACHER){ var tm=document.getElementById("tmode"); if(tm) tm.classList.add("on"); }
+
+/* =========================================================
+   Stationssteuerung
+   ========================================================= */
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var cur=0;
+var done=[]; for(var _i=0;_i<TOTAL;_i++) done.push(false);
+done[TOTAL-1]=true;
+var maxReached=0;
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(TEACHER || i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", j<maxReached && j!==cur);
+    btns[j].disabled = !TEACHER && j>maxReached;
+    btns[j].style.cursor = (!TEACHER && j>maxReached) ? "default" : "pointer";
+  }
+  $("pos").textContent="Station "+(cur+1)+" von "+TOTAL;
+  $("barfill").style.width=((cur+1)/TOTAL*100)+"%";
+  $("prev").disabled=(cur===0);
+  $("next").style.visibility=(cur===TOTAL-1)?"hidden":"visible";
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+}
+function updateNext(){
+  var free=TEACHER || done[cur];
+  $("next").disabled=!free;
+  $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
+}
+function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i;
+  /* Nur die Schülernavigation schiebt den Fortschritt weiter. Ein Sprung im
+     Lehrermodus soll frühere Stationen nicht als bearbeitet erscheinen lassen. */
+  if(!TEACHER && cur>maxReached) maxReached=cur;
+  render();
+}
+$("prev").onclick=function(){ go(cur-1); };
+$("next").onclick=function(){ if(TEACHER || done[cur]) go(cur+1); };
+
+/* =========================================================
+   Multiple Choice mit gestuften Hilfen
+   ========================================================= */
+function mc(hostId,question,options,correctIdx,hint2,onSolved){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=question; host.appendChild(qp);
+  }
+  var wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display="none";
+  host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var solved=false, wrongCount=0;
+  function lockAll(){
+    var all=wrap.querySelectorAll(".opt");
+    for(var k=0;k<all.length;k++) all[k].disabled=true;
+  }
+  function finish(){ solved=true; solBtn.style.display="none"; lockAll();
+    if(onSolved) onSolved(); measureChrome(); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+
+      (options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish();
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        if(wrongCount===1){
+          fb.innerHTML="<strong>Denkhinweis:</strong> "+(o.no||"Überlege noch einmal.");
+        } else {
+          fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hint2||o.no||"Überlege noch einmal.");
+          solBtn.style.display="inline-block";
+        }
+        measureChrome();
+      }
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* =========================================================
+   Zahleneingabe mit gestuften Hilfen
+   ========================================================= */
+function numTask(hostId,cfg){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(cfg.question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=cfg.question; host.appendChild(qp);
+  }
+  var row=document.createElement("div"); row.className="answer";
+  if(cfg.pre){ var pe=document.createElement("span"); pe.className="mf"; pe.style.fontSize="1.08rem";
+    pe.innerHTML=cfg.pre; row.appendChild(pe); }
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("inputmode","text");
+  inp.setAttribute("aria-label",cfg.aria||"Antwort eingeben");
+  if(cfg.placeholder) inp.placeholder=cfg.placeholder;
+  row.appendChild(inp);
+  if(cfg.unit){ var u=document.createElement("span"); u.className="unit"; u.innerHTML=cfg.unit; row.appendChild(u); }
+  var btn=document.createElement("button"); btn.className="btn"; btn.type="button"; btn.textContent="Prüfen";
+  row.appendChild(btn);
+  host.appendChild(row);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display="none"; host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var solved=false, wrong=0;
+  var hints=cfg.hints||[];
+  function finish(){
+    solved=true; inp.disabled=true; btn.disabled=true; solBtn.style.display="none";
+    inp.classList.remove("no"); inp.classList.add("ok");
+    if(cfg.onSolved) cfg.onSolved(); measureChrome();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    inp.value=num(cfg.correct,0);
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+(cfg.solution||num(cfg.correct,0));
+    finish();
+  };
+  function check(){
+    if(solved) return;
+    var v=parseNum(inp.value);
+    if(isNaN(v)){
+      fb.className="fb hint show";
+      fb.innerHTML="Gib eine Zahl ein. Dezimalzahlen kannst du mit Komma schreiben.";
+      measureChrome(); return;
+    }
+    if(Math.abs(v-cfg.correct)<1e-9){
+      fb.className="fb ok show";
+      fb.innerHTML="<strong>Richtig.</strong> "+(cfg.ok||"");
+      finish();
+    } else {
+      wrong++; inp.classList.add("no");
+      fb.className="fb hint show";
+      if(wrong===1){
+        fb.innerHTML="<strong>Denkhinweis:</strong> "+(hints[0]||"Prüfe deine Rechnung noch einmal.");
+      } else {
+        fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hints[1]||hints[0]||"Prüfe deine Rechnung noch einmal.");
+        solBtn.style.display="inline-block";
+      }
+      measureChrome();
+    }
+  }
+  btn.onclick=check;
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+  return inp;
+}
+
+/* =========================================================
+   Würfelturm als eingebettetes SVG
+   Aufbau je Würfel: obere Fläche, linke und rechte Seitenfläche.
+   stage 0 = neutral, 1 = Seitenflächen hervorgehoben,
+   2 und 3 = zusätzlich die obere Fläche hervorgehoben.
+   ========================================================= */
+function poly(p,fill,stroke,sw){
+  var s="";
+  for(var i=0;i<p.length;i++){ s+=(i?" ":"")+p[i][0].toFixed(1)+","+p[i][1].toFixed(1); }
+  return '<polygon points="'+s+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+
+         '" stroke-linejoin="round"/>';
+}
+function dline(x1,y1,x2,y2,col){
+  return '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+
+         '" stroke="'+col+'" stroke-width="1.4" stroke-dasharray="6 5" opacity="0.5" stroke-linecap="round"/>';
+}
+function turmSVG(x,stage){
+  stage=stage||0;
+  var W=360,H=400;
+  var s=Math.min(1.95, 376/(48+48.4*x));
+  var a=42*s, b=24*s, h=48.4*s;
+  var cx=(stage>0)?140:180;
+  var GY=392-b;                       /* Mittelpunkt der unteren Würfelfläche */
+  var sw=Math.max(1,1.25*s).toFixed(2);
+
+  var sideHi=stage>=1, topHi=stage>=2;
+  var leftF = sideHi?"#a9cde8":"#8fb3cf";
+  var rightF= sideHi?"#d9ecf8":"#bbd5e7";
+  var sideS = sideHi?"#1f6fb2":"#35618a";
+  var topF  = topHi ?"#f7d9b6":"#e7f0f7";
+  var topS  = topHi ?"#b45309":"#35618a";
+
+  var o=[];
+  o.push('<svg class="turmsvg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" '+
+         'aria-label="Würfelturm mit '+x+(x===1?" Stockwerk":" Stockwerken")+'">');
+  /* Schatten am Boden */
+  o.push('<ellipse cx="'+cx+'" cy="'+GY.toFixed(1)+'" rx="'+(a*1.18).toFixed(1)+'" ry="'+
+         (b*1.12).toFixed(1)+'" fill="#e2e8ee"/>');
+
+  var i,cyT,T,R,B,L,T2,R2,L2,B2;
+  for(i=0;i<x;i++){
+    cyT = GY-(i+1)*h;
+    T=[cx,cyT-b]; R=[cx+a,cyT]; B=[cx,cyT+b]; L=[cx-a,cyT];
+    T2=[cx,cyT+h-b]; R2=[cx+a,cyT+h]; L2=[cx-a,cyT+h]; B2=[cx,cyT+h+b];
+    if(i===x-1) o.push(poly([T,R,B,L],topF,topS,sw));
+    o.push(poly([L,B,B2,L2],leftF,sideS,sw));
+    o.push(poly([R,B,B2,R2],rightF,sideS,sw));
+  }
+  /* verdeckte Kanten */
+  var topY=GY-x*h;
+  o.push(dline(cx,topY-b,cx,GY-b,sideS));
+  o.push(dline(cx,GY-b,cx-a,GY,sideS));
+  o.push(dline(cx,GY-b,cx+a,GY,sideS));
+
+  /* Markierungen */
+  if(stage>=1){
+    var bx=244,bw=38,bh=24,my;
+    for(i=0;i<x;i++){
+      cyT=GY-(i+1)*h; my=cyT+h/2;
+      o.push('<line x1="'+(cx+a).toFixed(1)+'" y1="'+my.toFixed(1)+'" x2="'+bx+'" y2="'+my.toFixed(1)+
+             '" stroke="#1f6fb2" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>');
+      o.push('<rect x="'+bx+'" y="'+(my-bh/2).toFixed(1)+'" width="'+bw+'" height="'+bh+
+             '" rx="7" fill="#ffffff" stroke="#1f6fb2" stroke-width="1.6"/>');
+      o.push('<text x="'+(bx+bw/2)+'" y="'+(my+5.5).toFixed(1)+'" text-anchor="middle" font-size="15" '+
+             'font-weight="700" fill="#1f6fb2" font-family="Segoe UI,system-ui,sans-serif">4</text>');
+    }
+  }
+  if(stage>=2){
+    var ty=GY-x*h, bx2=244,bw2=38,bh2=24;
+    o.push('<line x1="'+(cx+a).toFixed(1)+'" y1="'+ty.toFixed(1)+'" x2="'+bx2+'" y2="'+ty.toFixed(1)+
+           '" stroke="#b45309" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>');
+    o.push('<rect x="'+bx2+'" y="'+(ty-bh2/2).toFixed(1)+'" width="'+bw2+'" height="'+bh2+
+           '" rx="7" fill="#ffffff" stroke="#b45309" stroke-width="1.6"/>');
+    o.push('<text x="'+(bx2+bw2/2)+'" y="'+(ty+5.5).toFixed(1)+'" text-anchor="middle" font-size="15" '+
+           'font-weight="700" fill="#b45309" font-family="Segoe UI,system-ui,sans-serif">1</text>');
+  }
+  o.push("</svg>");
+  return o.join("");
+}
+
+/* =========================================================
+   STATION 1 – Wie viele Quadrate siehst du?
+   ========================================================= */
+(function(){
+  var sl=$("sl1"), seenHigh=false;
+  function draw(){
+    var x=+sl.value;
+    $("turm1").innerHTML=turmSVG(x,0);
+    $("v1x").textContent=x;
+    $("v1w").textContent=(x===1?"Stockwerk":"Stockwerke");
+    if(!seenHigh && x>=5){
+      seenHigh=true;
+      $("explore1").innerHTML="Gut. Du hast gesehen, wie der Turm wächst.";
+      $("explore1").className="fb ok show";
+      $("go1wrap").style.display="block";
+      measureChrome();
+    }
+  }
+  sl.addEventListener("input",draw);
+  buildScale("scale1",[
+    {x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3",mark:true},{x:4,t:"4"},{x:5,t:"5",mark:true},
+    {x:6,t:"6"},{x:7,t:"7"},{x:8,t:"8"},{x:9,t:"9"},{x:10,t:"10"}
+  ],1,10);
+  draw();
+
+  function setX(v){ sl.value=v; draw(); }
+
+  $("btnGo1").onclick=function(){
+    $("explorewrap").style.display="none";
+    setX(1);
+    $("w1a").style.display="block";
+    measureChrome();
+  };
+
+  /* Aufgabe A: x = 1 */
+  numTask("q1a",{
+    question:"Der Regler steht jetzt auf <span class='m'>x</span>&thinsp;=&nbsp;1. "+
+      "Wie viele quadratische Flächen des Würfels liegen außen frei?",
+    correct:5,
+    aria:"Anzahl der außen liegenden Quadrate bei einem Stockwerk",
+    hints:[
+      "Ein Würfel hat insgesamt 6 quadratische Flächen.",
+      "Eine der 6 Flächen liegt unten auf dem Tisch und zählt deshalb nicht mit."
+    ],
+    ok:"Vier Seitenflächen und die Fläche oben – die Bodenfläche zählt nicht mit.",
+    solution:"5 außen liegende Quadrate (6 Flächen − 1 Bodenfläche).",
+    onSolved:function(){ setX(3); $("w1b").style.display="block"; }
+  });
+
+  /* Aufgabe B: x = 3 */
+  numTask("q1b",{
+    question:"Jetzt steht der Regler auf <span class='m'>x</span>&thinsp;=&nbsp;3. "+
+      "Wie viele Quadrate liegen hier außen frei?",
+    correct:13,
+    aria:"Anzahl der außen liegenden Quadrate bei drei Stockwerken",
+    hints:[
+      "Zähle stockwerkweise. Wie viele Seitenflächen liegen bei jedem Stockwerk rundherum außen frei?",
+      "3 Stockwerke mit je 4 Seitenflächen, dazu die eine Fläche ganz oben."
+    ],
+    ok:"3 · 4 Seitenflächen und 1 Fläche oben.",
+    solution:"13 außen liegende Quadrate.",
+    onSolved:function(){ setX(5); $("w1c").style.display="block"; }
+  });
+
+  /* Aufgabe C: x = 5 */
+  numTask("q1c",{
+    question:"Und bei <span class='m'>x</span>&thinsp;=&nbsp;5?",
+    correct:21,
+    aria:"Anzahl der außen liegenden Quadrate bei fünf Stockwerken",
+    hints:[
+      "Von 3 auf 5 Stockwerke kommen zwei Stockwerke dazu.",
+      "5 Stockwerke mit je 4 Seitenflächen, dazu die Fläche oben."
+    ],
+    ok:"5 · 4 Seitenflächen und 1 Fläche oben.",
+    solution:"21 außen liegende Quadrate.",
+    onSolved:function(){ $("c1tab").style.display="block"; measureChrome(); }
+  });
+
+  /* Tabelle mit zwei Lücken */
+  (function(){
+    var host=$("tab1");
+    var d=document.createElement("div");
+    d.className="wt";
+    d.style.gridTemplateColumns="9.2em repeat(5,minmax(0,1fr))";
+    d.innerHTML=
+      '<div class="lab hd"><span>Stockwerke <span class="m">x</span></span></div>'+
+      '<div class="hd">1</div><div class="hd">2</div><div class="hd">3</div>'+
+      '<div class="hd">4</div><div class="hd">5</div>'+
+      '<div class="lab">außen liegende Quadrate</div>'+
+      '<div>5</div><div id="t1c2"></div><div>13</div><div id="t1c4"></div><div>21</div>';
+    host.innerHTML=""; host.appendChild(d);
+
+    function mkInput(cellId,aria){
+      var inp=document.createElement("input");
+      inp.type="text"; inp.setAttribute("inputmode","numeric");
+      inp.setAttribute("aria-label",aria);
+      $(cellId).appendChild(inp);
+      return inp;
+    }
+    var i2=mkInput("t1c2","außen liegende Quadrate bei zwei Stockwerken");
+    var i4=mkInput("t1c4","außen liegende Quadrate bei vier Stockwerken");
+
+    var ui=$("tab1ui");
+    ui.innerHTML='<div class="btnrow"><button class="btn" type="button" id="btnTab1">Prüfen</button>'+
+      '<button class="btn ghost" type="button" id="solTab1" style="display:none">Lösung anzeigen</button></div>'+
+      '<div class="fb" id="fbTab1"></div>';
+    var fb=$("fbTab1"), wrong=0, solved=false;
+
+    function finish(){
+      solved=true;
+      i2.disabled=true; i4.disabled=true;
+      $("btnTab1").disabled=true; $("solTab1").style.display="none";
+      i2.classList.remove("no"); i4.classList.remove("no");
+      i2.classList.add("ok"); i4.classList.add("ok");
+      setDone(0); measureChrome();
+    }
+    function check(){
+      if(solved) return;
+      var v2=parseNum(i2.value), v4=parseNum(i4.value);
+      var ok2=(v2===9), ok4=(v4===17);
+      i2.classList.toggle("no",!ok2); i4.classList.toggle("no",!ok4);
+      if(ok2&&ok4){
+        i2.value="9"; i4.value="17";
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> Von Spalte zu Spalte kommen immer 4 dazu.";
+        finish(); return;
+      }
+      wrong++;
+      fb.className="fb hint show";
+      if(wrong===1){
+        fb.innerHTML="<strong>Denkhinweis:</strong> Schau dir an, wie sich die Zahlen 5, 13 und 21 "+
+          "unterscheiden. Was passiert von einem Stockwerk zum nächsten?";
+      } else {
+        fb.innerHTML="<strong>Noch ein Hinweis:</strong> Jedes zusätzliche Stockwerk bringt "+
+          "<strong>4</strong> neue Seitenflächen. Von 5 aus also 5 + 4, dann 13 + 4.";
+        $("solTab1").style.display="inline-block";
+      }
+      measureChrome();
+    }
+    $("btnTab1").onclick=check;
+    $("solTab1").onclick=function(){
+      if(solved) return;
+      i2.value="9"; i4.value="17";
+      fb.className="fb sol show";
+      fb.innerHTML="<strong>Lösung:</strong> 5 · &nbsp;9 · 13 · 17 · 21 – es kommen jeweils 4 dazu.";
+      finish();
+    };
+    [i2,i4].forEach(function(inp){
+      inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+    });
+  })();
+})();
+
+/* =========================================================
+   STATION 2 – Das Muster hinter dem Turm
+   ========================================================= */
+(function(){
+  /* Zahlenfolge */
+  var vals=[5,9,13,17,21], html="", i;
+  for(i=0;i<vals.length;i++){
+    html+='<div class="sqcell"><div class="sx"><span class="m">x</span> = '+(i+1)+
+          '</div><div class="sv">'+vals[i]+'</div></div>';
+    if(i<vals.length-1) html+='<div class="sarr">+ 4</div>';
+  }
+  $("seq2").innerHTML=html;
+  /* Die „+ 4“ bleiben verborgen, bis die Entdeckungsfrage beantwortet ist. */
+  function zeigePfeile(){
+    var a=$("seq2").querySelectorAll(".sarr");
+    for(var k=0;k<a.length;k++) a[k].classList.add("on");
+  }
+
+  /* richtige Antwort: B */
+  mc("q2a","Schau dir die Zahlenreihe an. Was passiert mit der Anzahl der außen liegenden Quadrate, wenn <strong>ein Stockwerk dazukommt</strong>?",[
+    {t:"Die Anzahl verdoppelt sich.",
+     no:"Prüfe an den Zahlen: Ist 9 doppelt so groß wie 5?"},
+    {t:"Es kommen immer 4 Quadrate dazu.",
+     ok:"9 − 5 = 4, 13 − 9 = 4, 17 − 13 = 4, 21 − 17 = 4."},
+    {t:"Es kommen immer 5 Quadrate dazu.",
+     no:"Rechne 9 − 5 aus. Kommt 5 heraus?"}
+  ],1,"Bilde die Differenzen: 9 − 5, dann 13 − 9. Kommt zweimal dasselbe heraus?",
+  function(){ zeigePfeile(); $("w2b").style.display="block"; measureChrome(); });
+
+  /* richtige Antwort: C */
+  mc("q2b","Ein Turm hat <strong>100 Stockwerke</strong>. Wie kommst du am schnellsten an die Anzahl der außen liegenden Quadrate?",[
+    {t:"Von 21 aus immer weiter 4 addieren, bis 100 Stockwerke erreicht sind.",
+     no:"Das geht zwar, dauert aber 95 Rechenschritte. Geht es kürzer?"},
+    {t:"Gar nicht – so große Türme kann man nicht berechnen.",
+     no:"Doch, das geht. Überlege, woher die 4 in jedem Schritt kommt."},
+    {t:"Eine allgemeine Rechenvorschrift aufstellen, in die man jede Stockwerkzahl einsetzen kann.",
+     ok:"Genau darum geht es jetzt. Statt zu zählen, beschreiben wir die Rechnung allgemein."}
+  ],2,"Weiterzählen ist mühsam. Besser ist eine Rechnung, die für <em>jede</em> Stockwerkzahl funktioniert.",
+  function(){ $("c2viz").style.display="block"; S2.draw(); measureChrome(); });
+
+  /* Visualisierung mit Zerlegung */
+  var S2=(function(){
+    var sl=$("sl2"), stage=0;
+    function rep(s,n){ var r=""; for(var k=0;k<n;k++) r+=s; return r; }
+    function abwHTML(x){
+      if(stage<1) return '<p class="small" style="margin:0 0 4px">Tippe auf „Zerlegung zeigen“, '+
+        'um zu sehen, woraus sich die Quadrate zusammensetzen.</p>';
+      var h='<div class="abw">',i;
+      for(i=1;i<=x;i++){
+        h+='<div class="abwrow st"><span class="abwlab">Stockwerk '+i+'</span>'+
+           '<span class="sqs">'+rep('<i class="sq s"></i>',4)+'</span>'+
+           '<span class="abwval">4</span></div>';
+      }
+      if(stage>=2){
+        h+='<div class="abwrow tp"><span class="abwlab">Fläche oben</span>'+
+           '<span class="sqs"><i class="sq d"></i></span><span class="abwval">1</span></div>';
+      }
+      h+="</div>";
+      return h;
+    }
+    function formHTML(x){
+      if(stage<1) return "";
+      var parts=[],i;
+      for(i=0;i<x;i++) parts.push('<span class="hl s">4</span>');
+      var out='<p class="mblock big mf">'+parts.join(" + ");
+      if(stage>=2) out+=' + <span class="hl d">1</span>';
+      out+=' = '+(stage>=2 ? (4*x+1) : (4*x))+'</p>';
+      if(stage>=2){
+        out+='<p class="small" style="text-align:center;margin-top:-4px">'+x+'-mal die '+
+             '<span class="hl s">4</span>, dazu die <span class="hl d">1</span> für die Fläche oben.</p>';
+      }
+      if(stage>=3){
+        out+='<p class="mblock big mf"><span class="hl s">4</span> · <i>x</i> + <span class="hl d">1</span></p>'+
+             '<p class="mblock big mf" style="font-weight:700"><i>T</i>(<i>x</i>) = 4 · <i>x</i> + 1</p>'+
+             '<div class="fb sol show">Jetzt können wir die Frage von vorhin beantworten:'+
+             '<p class="mblock mf" style="font-size:1.12rem;margin:6px 0">'+
+             '4 · 100 + 1 = 401</p>'+
+             'Ein Turm mit 100 Stockwerken hat also <strong>401</strong> außen liegende '+
+             'quadratische Flächen – ganz ohne Weiterzählen.</div>';
+      }
+      return out;
+    }
+    function draw(){
+      var x=+sl.value;
+      $("turm2").innerHTML=turmSVG(x,stage);
+      $("abw2").innerHTML=abwHTML(x);
+      $("form2").innerHTML=formHTML(x);
+      $("leg2").style.display=(stage>=1?"flex":"none");
+      measureChrome();
+    }
+    sl.addEventListener("input",draw);
+    buildScale("scale2",[
+      {x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3",mark:true},{x:4,t:"4"},{x:5,t:"5"},{x:6,t:"6",mark:true}
+    ],1,6);
+
+    var labels=["Zerlegung zeigen","Und die Fläche oben?","Allgemein schreiben"];
+    $("btnStage2").textContent=labels[0];
+    $("btnStage2").onclick=function(){
+      if(stage>=3) return;
+      stage++;
+      draw();
+      if(stage<3){ $("btnStage2").textContent=labels[stage]; }
+      else {
+        $("btnStage2").style.display="none";
+        $("w2c").style.display="block";
+        measureChrome();
+      }
+    };
+    return {draw:draw};
+  })();
+
+  /* Verständnisfragen – richtige Antworten: C, A, B */
+  mc("q2c","Im Term <span class='mf'>4 · <i>x</i> + 1</span>: Was bedeutet die <strong>4</strong>?",[
+    {t:"Die Anzahl der Stockwerke.",
+     no:"Die Anzahl der Stockwerke ändert sich, wenn du den Regler bewegst. Bleibt die 4 dabei gleich?"},
+    {t:"Die Fläche ganz oben auf dem Turm.",
+     no:"Die Fläche oben gibt es nur einmal. Die 4 steht für etwas, das in jedem Stockwerk vorkommt."},
+    {t:"Die Anzahl der Seitenflächen pro Stockwerk.",
+     ok:"Jeder Würfel hat rundherum vier außen liegende Seitenflächen."}
+  ],2,"Schau in die Zerlegung: In jeder Zeile „Stockwerk …“ stehen vier Quadrate.",
+  function(){ $("w2d").style.display="block"; measureChrome(); });
+
+  mc("q2d","Und was bedeutet das <span class='m'>x</span>?",[
+    {t:"Die Anzahl der Stockwerke.",
+     ok:"Für <span class='m'>x</span> setzt man ein, wie viele Stockwerke der Turm hat."},
+    {t:"Die Anzahl aller außen liegenden Quadrate.",
+     no:"Die Anzahl aller außen liegenden Quadrate ist das <em>Ergebnis</em> der Rechnung, nicht ihr Ausgangswert."},
+    {t:"Eine feste Zahl, die immer gleich bleibt.",
+     no:"Bewege den Regler: Was ändert sich dabei am Turm?"}
+  ],0,"<span class='m'>x</span> ist der Wert, den du mit dem Regler einstellst.",
+  function(){ $("w2e").style.display="block"; measureChrome(); });
+
+  mc("q2e","Warum steht am Ende noch <strong>+ 1</strong>?",[
+    {t:"Weil man beim Zählen immer eins dazuzählt.",
+     no:"Es gibt einen ganz konkreten Grund am Turm. Schau dir die oberste Fläche an."},
+    {t:"Weil ganz oben genau eine Quadratfläche außen frei liegt.",
+     ok:"Die Deckfläche des obersten Würfels wird nur einmal gezählt – egal wie hoch der Turm ist."},
+    {t:"Weil der unterste Würfel auf dem Tisch steht.",
+     no:"Die Fläche auf dem Tisch liegt gerade <em>nicht</em> außen frei und wird deshalb nicht mitgezählt."}
+  ],1,"Die 4 · <span class='m'>x</span> erfassen alle Seitenflächen. Welche Fläche fehlt dann noch?",
+  function(){ setDone(1); });
+})();
+
+/* =========================================================
+   STATION 3 – Variable, Term, Termwert
+   ========================================================= */
+(function(){
+  var items=[
+    {t1:'<i class="m">x</i>', t2:'Platzhalter für die Anzahl der Stockwerke', a:"Variable"},
+    {t1:'4 · <i class="m">x</i> + 1', t2:'die Rechenvorschrift, allgemein aufgeschrieben', a:"Term"},
+    {t1:'13', t2:'das Ergebnis, wenn man <span class="m">x</span>&thinsp; = 3 einsetzt', a:"Termwert"}
+  ];
+  var begriffe=["Term","Termwert","Variable"];
+  var host=$("zuord3");
+  var h='<div class="zpool" id="zpool">';
+  begriffe.forEach(function(b,i){
+    h+='<button type="button" class="zchip" data-b="'+b+'" id="zc'+i+'">'+b+'</button>';
+  });
+  h+='</div>';
+  items.forEach(function(it,i){
+    h+='<div class="zrow" id="zr'+i+'"><div class="ztxt"><div class="zt1 mf">'+it.t1+
+       '</div><div class="zt2">'+it.t2+'</div></div>'+
+       '<button type="button" class="zslot" id="zs'+i+'" aria-label="Begriff hier einsetzen">?</button></div>';
+  });
+  h+='<div class="btnrow"><button class="btn ghost" type="button" id="zsol" style="display:none">Lösung anzeigen</button></div>'+
+     '<div class="fb" id="zfb"></div>';
+  host.innerHTML=h;
+
+  var sel=null, wrong=0, okCount=0, finished=false;
+  var fb=$("zfb");
+
+  function selectChip(btn){
+    if(finished) return;
+    var chips=host.querySelectorAll(".zchip");
+    for(var k=0;k<chips.length;k++) chips[k].classList.remove("sel");
+    if(sel===btn){ sel=null; return; }
+    btn.classList.add("sel"); sel=btn;
+  }
+  function placeAll(){
+    items.forEach(function(it,i){
+      var slot=$("zs"+i);
+      if(!slot.classList.contains("filled")){
+        slot.textContent=it.a; slot.classList.remove("bad"); slot.classList.add("filled");
+        $("zr"+i).classList.add("done");
+      }
+    });
+    var chips=host.querySelectorAll(".zchip");
+    for(var k=0;k<chips.length;k++) chips[k].classList.add("used");
+    finished=true; $("zsol").style.display="none";
+    $("c3g").style.display="block"; measureChrome();
+  }
+  host.querySelectorAll(".zchip").forEach(function(btn){
+    btn.onclick=function(){ selectChip(btn); };
+  });
+  items.forEach(function(it,i){
+    var slot=$("zs"+i);
+    slot.onclick=function(){
+      if(finished || slot.classList.contains("filled")) return;
+      if(!sel){
+        fb.className="fb hint show";
+        fb.innerHTML="Tippe zuerst oben auf einen Begriff und dann auf das Feld, in das er gehört.";
+        measureChrome(); return;
+      }
+      var b=sel.getAttribute("data-b");
+      if(b===it.a){
+        slot.textContent=b; slot.classList.remove("bad"); slot.classList.add("filled");
+        $("zr"+i).classList.add("done");
+        sel.classList.add("used"); sel.classList.remove("sel"); sel=null;
+        okCount++;
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(
+          b==="Variable" ? "Ein Platzhalter für Zahlen heißt Variable." :
+          b==="Term" ? "Ein Term kann Zahlen, Rechenzeichen, Klammern und Variablen enthalten." :
+          "Der Termwert ist das Ergebnis nach dem Einsetzen.");
+        if(okCount===items.length){ placeAll(); }
+        measureChrome();
+      } else {
+        wrong++;
+        slot.classList.add("bad");
+        setTimeout(function(){ slot.classList.remove("bad"); },900);
+        sel.classList.remove("sel"); sel=null;
+        fb.className="fb hint show";
+        if(wrong===1){
+          fb.innerHTML="<strong>Denkhinweis:</strong> Frage dich: Ist das ein <em>Platzhalter</em>, "+
+            "eine ganze <em>Rechenvorschrift</em> oder ein <em>Ergebnis</em>?";
+        } else {
+          fb.innerHTML="<strong>Noch ein Hinweis:</strong> <span class='m'>x</span> ist der Platzhalter, "+
+            "4 · <span class='m'>x</span> + 1 ist die Rechenvorschrift, 13 ist das Ergebnis für "+
+            "<span class='m'>x</span>&thinsp; = 3.";
+          $("zsol").style.display="inline-block";
+        }
+        measureChrome();
+      }
+    };
+  });
+  $("zsol").onclick=function(){
+    if(finished) return;
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> <span class='m'>x</span> ist die <strong>Variable</strong>, "+
+      "4 · <span class='m'>x</span> + 1 ist der <strong>Term</strong>, 13 ist der <strong>Termwert</strong>.";
+    placeAll();
+  };
+
+  /* Grundmenge – richtige Antwort: B */
+  mc("q3g","Welche Werte kann man beim Würfelturm sinnvoll für <span class='m'>x</span> einsetzen?",[
+    {t:"Alle Zahlen, also auch −2 oder 0,5.",
+     no:"Kann ein Turm aus −2 Würfeln bestehen? Oder aus einem halben Würfel?"},
+    {t:"Nur die Zahlen 1; 2; 3; …",
+     ok:"Ein Turm besteht aus ganzen Würfeln, und mindestens einer muss es sein."},
+    {t:"Nur die Zahlen 1 bis 10, weil der Regler dort endet.",
+     no:"Der Regler endet bei 10, ein echter Turm könnte aber auch 40 Stockwerke haben."}
+  ],1,"Überlege, welche Stockwerkzahlen es in Wirklichkeit geben kann.",
+  function(){
+    $("fb3g").classList.add("show");
+    $("heft3").style.display="block";
+    setDone(2); measureChrome();
+  });
+})();
+
+/* =========================================================
+   STATION 4 – Mathematiker schreiben kürzer
+   ========================================================= */
+(function(){
+  /* Zustandswechsel statt Einzelzeichen-Animation: Beide Ausdrücke sind
+     vollständig gesetzt und liegen deckungsgleich übereinander. */
+  $("btnKurz").onclick=function(){
+    $("swapA").classList.remove("on");
+    $("swapB").classList.add("on");
+    $("btnKurz").disabled=true;
+    setTimeout(function(){
+      $("kurz4").style.display="block";
+      $("c4rf").style.display="block";
+      measureChrome();
+    },520);
+  };
+
+  var items=[
+    {html:'2 · 3 = 23', ok:false,
+     yes:"23 ist die Zahl dreiundzwanzig. 2 · 3 ergibt aber 6.",
+     no:"Zwischen zwei <em>Zahlen</em> muss der Malpunkt stehen bleiben – sonst entsteht eine neue Zahl."},
+    {html:'5 · <i class="m">x</i> = 5<i class="m">x</i>', ok:true,
+     yes:"Bei der Multiplikation mit einer Variablen darf der Malpunkt wegfallen.",
+     no:"Hier wird eine Zahl mit einer <em>Variablen</em> multipliziert. Da ist die Kurzschreibweise erlaubt."},
+    {html:'<i class="m">a</i> · <i class="m">b</i> = <i class="m">ab</i>', ok:true,
+     yes:"Zwei Variablen werden einfach nebeneinandergeschrieben.",
+     no:"Hier stehen zwei <em>Variablen</em>. Entsteht dabei eine missverständliche Zahl?"},
+    {html:'2 · (<i class="m">x</i> + 4) = 2(<i class="m">x</i> + 4)', ok:true,
+     yes:"Auch vor einer Klammer darf der Malpunkt wegfallen.",
+     no:"Vor einer Klammer ist die Kurzschreibweise ebenfalls erlaubt."}
+  ];
+  var host=$("rf4"), solved=0;
+  items.forEach(function(it,i){
+    var row=document.createElement("div");
+    row.className="rfrow";
+    row.innerHTML='<div class="rftop"><div class="rfstat">'+it.html+'</div>'+
+      '<div class="rfbtns"><button type="button" class="rfb" data-v="1">korrekt</button>'+
+      '<button type="button" class="rfb" data-v="0">falsch</button></div></div>'+
+      '<div class="rfmsg"></div>';
+    host.appendChild(row);
+    var btns=row.querySelectorAll(".rfb");
+    var msg=row.querySelector(".rfmsg");
+    var fertig=false;
+    for(var k=0;k<btns.length;k++){
+      (function(btn){
+        btn.onclick=function(){
+          if(fertig) return;
+          var chose=(btn.getAttribute("data-v")==="1");
+          if(chose===it.ok){
+            btn.classList.add("ok"); fertig=true;
+            for(var j=0;j<btns.length;j++) btns[j].disabled=true;
+            row.classList.add("done");
+            msg.className="rfmsg show";
+            msg.innerHTML="<strong>Richtig.</strong> "+it.yes;
+            solved++;
+            $("cnt4").innerHTML="gelöst: <b>"+solved+"</b> von "+items.length;
+            if(solved===items.length){ setDone(3); }
+            measureChrome();
+          } else {
+            btn.classList.add("no"); btn.disabled=true;
+            msg.className="rfmsg show";
+            msg.innerHTML="<strong>Denkhinweis:</strong> "+it.no;
+            measureChrome();
+          }
+        };
+      })(btns[k]);
+    }
+  });
+})();
+
+/* =========================================================
+   STATION 5 – Einen Termwert berechnen
+   ========================================================= */
+(function(){
+  /* A: T(6) */
+  $("btn5a").onclick=function(){
+    $("s5a1l").classList.add("on");
+    $("s5a1r").classList.add("on");
+    var sl=$("sl5a");
+    sl.textContent="6"; sl.classList.add("filled");
+    $("note5a").classList.add("show");
+    $("btn5a").disabled=true;
+    $("w5a").style.display="block";
+    measureChrome();
+  };
+  numTask("q5a",{
+    question:"Berechne nun den Termwert.",
+    pre:'<i>T</i>(6) = ',
+    correct:25,
+    aria:"Termwert T von 6",
+    hints:["Rechne zuerst 4 · 6 und addiere dann 1.",
+           "4 · 6 = 24, und 24 + 1 = ?"],
+    ok:"<span class='mf'><i>T</i>(6) = 4 · 6 + 1 = 25</span>. Ein Turm aus 6 Würfeln hat 25 außen liegende quadratische Flächen.",
+    solution:"<span class='mf'><i>T</i>(6) = 4 · 6 + 1 = 25</span>",
+    onSolved:function(){ $("c5b").style.display="block"; measureChrome(); }
+  });
+
+  /* B: A(4) */
+  numTask("q5b",{
+    question:"Berechne <span class='mf'><i>A</i>(4)</span>, setze also <span class='mf'><i>x</i> = 4</span> ein.",
+    pre:'<i>A</i>(4) = ',
+    correct:7,
+    aria:"Termwert A von 4",
+    hints:["Setze für <span class='m'>x</span> die 4 ein: 3 · 4 − 5.",
+           "3 · 4 = 12. Was ergibt 12 − 5?"],
+    ok:"<span class='mf'><i>A</i>(4) = 3 · 4 − 5 = 12 − 5 = 7</span>",
+    solution:"<span class='mf'><i>A</i>(4) = 3 · 4 − 5 = 7</span>",
+    onSolved:function(){ $("c5c").style.display="block"; measureChrome(); }
+  });
+
+  /* C: negative Zahl – richtige Antwort: B */
+  mc("q5c1","Wie setzt man <span class='mf'><i>x</i> = −2</span> richtig ein?",[
+    {t:"<span class='mf'><i>B</i>(−2) = 2 · (−2) − 2<sup>2</sup></span>",
+     no:"Im zweiten Teil steht <span class='m'>x</span><sup>2</sup>. Dort muss ebenfalls −2 eingesetzt werden, nicht 2."},
+    {t:"<span class='mf'><i>B</i>(−2) = 2 · (−2) − (−2)<sup>2</sup></span>",
+     ok:"Beide <span class='m'>x</span> werden durch (−2) ersetzt, und die negative Zahl steht in Klammern."},
+    {t:"<span class='mf'><i>B</i>(−2) = 2 · (−2) − −2<sup>2</sup></span>",
+     no:"Ohne Klammern wäre unklar, ob die −2 oder nur die 2 quadriert wird. Deshalb Klammern setzen."}
+  ],1,"Zwei Regeln helfen: Kommt <span class='m'>x</span> mehrfach vor, wird überall derselbe Wert eingesetzt. Und negative Zahlen setzt man in Klammern.",
+  function(){ $("w5c2").style.display="block"; measureChrome(); });
+
+  numTask("q5c2",{
+    question:"Berechne jetzt den Termwert.",
+    pre:'<i>B</i>(−2) = ',
+    correct:-8,
+    aria:"Termwert B von minus 2",
+    placeholder:"z. B. -8",
+    hints:["Es gilt (−2)<sup>2</sup> = (−2) · (−2) = 4 und 2 · (−2) = −4.",
+           "Rechne −4 − 4."],
+    ok:"<span class='mf'><i>B</i>(−2) = 2 · (−2) − (−2)<sup>2</sup> = −4 − 4 = −8</span>",
+    solution:"<span class='mf'><i>B</i>(−2) = −4 − 4 = −8</span>",
+    onSolved:function(){ $("heft5").style.display="block"; setDone(4); measureChrome(); }
+  });
+})();
+
+/* =========================================================
+   STATION 6 – Mehrere Variablen
+   ========================================================= */
+(function(){
+  function fill(sel,map){
+    var nodes=document.querySelectorAll(sel);
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i];
+      var key=n.classList.contains("x")?"x":(n.classList.contains("y")?"y":"z");
+      if(map[key]!==undefined){ n.innerHTML=map[key]; n.classList.add("filled"); }
+    }
+  }
+  $("btn6a").onclick=function(){
+    $("s6a1l").classList.add("on"); $("s6a1r").classList.add("on");
+    fill(".station[data-nr='6'] [data-s6a]",{x:"(−3)",y:"4"});
+    $("btn6a").disabled=true;
+    $("w6a1").style.display="block";
+    measureChrome();
+  };
+  numTask("q6a1",{
+    question:"Rechne zuerst den ersten Teil aus:",
+    pre:'2 · (−3) = ',
+    correct:-6,
+    aria:"Ergebnis von 2 mal minus 3",
+    placeholder:"z. B. -6",
+    hints:["Eine positive Zahl mal eine negative Zahl ergibt eine negative Zahl.",
+           "2 · 3 = 6, also ist 2 · (−3) = −6."],
+    ok:"Und 5 · 4 = 20.",
+    solution:"2 · (−3) = −6",
+    onSolved:function(){ $("w6a2").style.display="block"; measureChrome(); }
+  });
+  numTask("q6a2",{
+    question:"Wie lautet der ganze Termwert?",
+    pre:'<i>T</i>(−3;4) = ',
+    correct:-26,
+    aria:"Termwert T von minus 3 und 4",
+    placeholder:"z. B. -26",
+    hints:["Der Term lautet jetzt −6 − 20.",
+           "Von −6 werden 20 abgezogen. Das Ergebnis ist kleiner als −6."],
+    ok:"<span class='mf'><i>T</i>(−3;4) = 2 · (−3) − 5 · 4 = −6 − 20 = −26</span>",
+    solution:"<span class='mf'><i>T</i>(−3;4) = −6 − 20 = −26</span>",
+    onSolved:function(){ $("c6b").style.display="block"; measureChrome(); }
+  });
+
+  $("btn6b").onclick=function(){
+    fill(".station[data-nr='6'] [data-s6b]",{x:"2",y:"2",z:"1"});
+    $("btn6b").disabled=true;
+    $("w6b1").style.display="block";
+    measureChrome();
+  };
+  numTask("q6b1",{
+    question:"Rechne zuerst die Klammer aus:",
+    pre:'2 + 4 · 2 = ',
+    correct:10,
+    aria:"Ergebnis der Klammer",
+    hints:["Punkt vor Strich: Rechne zuerst 4 · 2.",
+           "4 · 2 = 8, dazu die 2."],
+    ok:"In der Klammer steht also 10.",
+    solution:"2 + 4 · 2 = 2 + 8 = 10",
+    onSolved:function(){ $("w6b2").style.display="block"; measureChrome(); }
+  });
+  numTask("q6b2",{
+    question:"Und nun der ganze Termwert:",
+    pre:'<i>M</i>(2;2;1) = ',
+    correct:20,
+    aria:"Termwert M von 2, 2 und 1",
+    hints:["Es bleibt 2 · 1 · 10.",
+           "2 · 1 = 2, und 2 · 10 = ?"],
+    ok:"<span class='mf'><i>M</i>(2;2;1) = 2 · 1 · (2 + 4 · 2) = 2 · 10 = 20</span>",
+    solution:"<span class='mf'><i>M</i>(2;2;1) = 2 · 10 = 20</span>",
+    onSolved:function(){ $("heft6").style.display="block"; setDone(5); measureChrome(); }
+  });
+})();
+
+/* =========================================================
+   STATION 7 – Abschlusscheck
+   ========================================================= */
+(function(){
+  /* richtige Antwort: C */
+  mc("q7a","<strong>1.</strong> Im Term <span class='mf'><i>T</i>(<i>x</i>) = 5<i>x</i> + 2</span> ist <span class='m'>x</span> …",[
+    {t:"ein Termwert.",
+     no:"Ein Termwert ist eine Zahl, die beim Einsetzen herauskommt. Ist <span class='m'>x</span> eine feste Zahl?"},
+    {t:"ein Term.",
+     no:"Der ganze Ausdruck 5<span class='m'>x</span> + 2 ist der Term. Und was ist das <span class='m'>x</span> darin?"},
+    {t:"eine Variable.",
+     ok:"<span class='m'>x</span> ist ein Platzhalter, für den man Zahlen einsetzen kann."}
+  ],2,"Platzhalter für Zahlen heißen Variablen.",
+  function(){ $("w7b").style.display="block"; measureChrome(); });
+
+  numTask("q7b",{
+    question:"<strong>2.</strong> Würfelturm: <span class='mf'><i>T</i>(<i>x</i>) = 4<i>x</i> + 1</span>. Berechne <span class='mf'><i>T</i>(8)</span>.",
+    pre:'<i>T</i>(8) = ',
+    correct:33,
+    aria:"Termwert T von 8",
+    hints:["Setze für <span class='m'>x</span> die 8 ein: 4 · 8 + 1.",
+           "4 · 8 = 32."],
+    ok:"<span class='mf'><i>T</i>(8) = 4 · 8 + 1 = 33</span>",
+    solution:"<span class='mf'><i>T</i>(8) = 4 · 8 + 1 = 33</span>",
+    onSolved:function(){ $("w7c").style.display="block"; measureChrome(); }
+  });
+
+  /* richtige Antwort: B */
+  mc("q7c","<strong>3.</strong> Welche Kurzschreibweise ist korrekt?",[
+    {t:"<span class='mf'>3 · (<i>a</i> + 2) = 3<i>a</i> + 2</span>",
+     no:"Hier wurde die Klammer weggelassen. Dann wird nur noch das <span class='m'>a</span> mit 3 multipliziert."},
+    {t:"<span class='mf'>3 · (<i>a</i> + 2) = 3(<i>a</i> + 2)</span>",
+     ok:"Vor einer Klammer darf der Malpunkt weggelassen werden. Die Klammer bleibt stehen."},
+    {t:"<span class='mf'>3 · (<i>a</i> + 2) = 32(<i>a</i>)</span>",
+     no:"Aus der 3 und der 2 darf keine neue Zahl entstehen."}
+  ],1,"Der Malpunkt darf verschwinden – sonst ändert sich am Term nichts.",
+  function(){ $("w7d").style.display="block"; measureChrome(); });
+
+  numTask("q7d",{
+    question:"<strong>4.</strong> Berechne <span class='mf'><i>T</i>(2;−4)</span> für <span class='mf'><i>T</i>(<i>x</i>;<i>y</i>) = 3<i>x</i> − <i>y</i></span>.",
+    pre:'<i>T</i>(2;−4) = ',
+    correct:10,
+    aria:"Termwert T von 2 und minus 4",
+    hints:["Setze ein: 3 · 2 − (−4).",
+           "Eine negative Zahl abzuziehen bedeutet, sie zu addieren: 6 − (−4) = 6 + 4."],
+    ok:"<span class='mf'><i>T</i>(2;−4) = 3 · 2 − (−4) = 6 + 4 = 10</span>",
+    solution:"<span class='mf'><i>T</i>(2;−4) = 6 + 4 = 10</span>",
+    onSolved:function(){ $("ende").style.display="block"; measureChrome(); }
+  });
+})();
+
+/* =========================================================
+   Start
+   ========================================================= */
+buildSteps();
+render();
+measureChrome();
+</script>
+</body>
+</html>
