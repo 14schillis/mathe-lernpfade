@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I.2 Exponentialfunktionen – Lernpfad</title>
+<style>
+
+/* ============ Grundlagen (aus MASTER I.1) ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;        /* Hefteintrag-Blau */
+  --accent-soft:#eaf1f8;
+  --pos:#1f6fb2;           /* Graph von f bzw. h */
+  --pos-bg:#dceaf6;
+  --neg:#b45309;           /* zweiter Graph */
+  --neg-bg:#fbeadb;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+  --ui:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+/* overflow-x:clip statt hidden – hidden wuerde einen Scroll-Container erzeugen
+   und damit position:sticky der Visualisierungen ausser Kraft setzen. */
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+
+/* Lehrermodus-Hinweis */
+.tmode{
+  display:none;margin-left:10px;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:1px 9px 2px;vertical-align:middle;white-space:nowrap;
+  font-family:var(--ui);
+}
+.tmode.on{display:inline-block}
+.steps{display:flex;gap:6px;list-style:none;margin:-11px 0 0;padding:0 0 2px}
+.steps li{flex:1;display:flex}
+.steps button{
+  width:100%;border:0;background:transparent;padding:14px 0 19px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:23px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:4px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+.card h3.sub{margin-top:4px;color:var(--accent)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+.gap{margin-top:14px}
+
+/* ============ Arbeitsansicht ============
+   Zweispaltig bereits ab Tablet-Hochformat: Der Graph muss beim Bearbeiten
+   der rechten Spalte sichtbar bleiben. Einspaltig erst unterhalb von 700 px. */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:700px){
+  .work{grid-template-columns:1fr;gap:10px}
+  .work .viz svg{max-width:560px}
+}
+/* Tablet: Visualisierung etwas breiter als die Aufgabenspalte */
+@media(min-width:701px) and (max-width:1000px){
+  .work{grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}
+}
+/* Sticky bereits im Tabletbereich, sofern die Hoehe ausreicht */
+@media(min-width:701px) and (min-height:620px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 8px)}
+}
+
+/* ============ Mathematik-Satz ============
+   Bewusst dieselbe Schriftfamilie wie der Fliesstext: Variablen kursiv,
+   Zahlen, Rechenzeichen und Klammern aufrecht. Keine externen Fonts. */
+.m,.mf,.mblock{font-family:var(--ui);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal}
+.mf i{font-style:italic;padding-right:.04em}
+.mf b{font-weight:700}
+.mblock{
+  text-align:center;font-style:normal;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.mblock i{font-style:italic;padding-right:.04em}
+.big{font-size:clamp(1.1rem,3vw,1.34rem)}
+sub,sup{font-size:.7em}
+.mf sup,.mblock sup{padding-left:.02em}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.modebtn:focus-visible,
+.minipick:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rueckmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:120px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+.unit{font-size:.95rem;color:var(--ink-soft)}
+
+/* Sicherungs-Box */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:920px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.18em 0}
+.heft .duo{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+@media(min-width:720px){.heft .duo{grid-template-columns:1fr 1fr}}
+.duo .box{background:#fff;border:1px solid #c9dcec;border-radius:8px;padding:10px 13px}
+.duo .box.up{border-left:4px solid var(--pos)}
+.duo .box.down{border-left:4px solid var(--neg)}
+.duo .box .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.duo .box.up .t{color:var(--pos)}
+.duo .box.down .t{color:var(--neg)}
+.duo .box p{margin:.22em 0;font-size:.97rem}
+/* kompakte Vierfeldtafel zur Monotonie */
+.mono4{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
+@media(min-width:620px){.mono4{grid-template-columns:1fr 1fr}}
+.mono4 div{background:#fff;border:1px solid #c9dcec;border-radius:7px;padding:6px 11px;font-size:.94rem}
+
+/* Schieberegler */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:28px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.76rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{
+  content:"";display:block;width:1.5px;height:7px;background:#94a3b8;margin:0 auto 3px;
+}
+.scale span.mark{font-weight:700;color:var(--accent);font-size:.83rem}
+.scale span.mark::before{background:var(--accent);height:9px}
+
+/* Anzeige-Box */
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:9px 13px;background:#fff;margin:4px 0 8px;
+}
+.valbox .vlabel{font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vrow{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:2px}
+.valbox .vnum{
+  font-size:1.42rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;display:inline-block;
+}
+.valbox .vsub{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Wertekacheln */
+.vals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.val{
+  border:1px solid var(--line);border-left-width:4px;border-left-color:var(--pos);
+  border-radius:8px;padding:6px 10px;background:#fff;
+  display:flex;align-items:baseline;gap:8px;flex:1 1 120px;
+}
+.val .k{font-size:.86rem;color:var(--ink-soft)}
+.val .v{font-size:1.05rem;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto;color:#14456e}
+
+/* Forschungsauftrag */
+.forsch{
+  border:1px solid #cfe0ef;border-left:4px solid var(--pos);background:#f7fbfe;
+  border-radius:8px;padding:11px 14px;margin:10px 0;
+}
+.forsch .ft{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
+  color:var(--pos);margin-bottom:3px}
+.forsch p{margin:.2em 0}
+.forsch .btnrow{margin-top:10px}
+
+/* kompakter Erfolgsblock – ersetzt den erledigten Forschungsauftrag */
+.solved{
+  display:none;gap:9px;align-items:baseline;background:var(--ok-bg);
+  border:1px solid #bcdfcb;border-left:4px solid var(--ok);border-radius:8px;
+  padding:8px 13px;margin:8px 0;font-size:.93rem;color:#14603c;font-weight:600;line-height:1.45;
+}
+.solved.on{display:flex}
+.tick{font-weight:700;color:var(--ok);flex:0 0 auto}
+
+/* Protokoll der geprueften Faelle – bleibt nach dem Einklappen stehen */
+.prot{display:flex;flex-direction:column;gap:5px;margin:8px 0 2px}
+.prot:empty{margin:0}
+.protline{
+  font-size:.9rem;background:#fff;border:1px solid var(--line);border-left:3px solid var(--ok);
+  border-radius:7px;padding:5px 10px;font-variant-numeric:tabular-nums;
+}
+
+/* Legende */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:4px 0 2px;color:var(--ink-soft)}
+/* nur die direkten Kinder sind Flex-Zeilen – sonst wuerde der Zeichenabstand
+   innerhalb der Formeln auseinandergezogen */
+.legend>span{display:inline-flex;align-items:center;gap:7px}
+.legend>span>span{display:inline}
+.swatch{width:22px;height:0;border-top-width:3.4px;border-top-style:solid;display:inline-block;flex:0 0 auto}
+.sw-f{border-top-color:var(--pos)}
+.sw-g{border-top-color:var(--neg)}
+.sw-ref{border-top-color:#94a3b8;border-top-style:dashed}
+
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.83rem;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+
+/* Modusknoepfe */
+.modes{display:flex;flex-wrap:wrap;gap:9px;margin:4px 0 12px}
+.modebtn{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+  padding:9px 16px;cursor:pointer;font-weight:650;min-height:44px;
+  -webkit-tap-highlight-color:transparent;flex:1 1 auto;
+}
+.modebtn.sel{background:var(--accent);color:#fff}
+.modebtn .cnt{font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Vier kleine Graphen (Station 7, Modus B)
+   Querformat / breite Displays: alle vier nebeneinander, damit nicht gescrollt
+   werden muss. Tablet-Hochformat und mittlere Breiten: 2x2. Sehr schmal: 1x4. */
+.minigrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0 2px}
+@media(min-width:1000px){.minigrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}}
+@media(max-width:430px){.minigrid{grid-template-columns:1fr}}
+.minipick{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 5px 7px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;
+}
+@media(hover:hover){.minipick:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.minipick .mk{display:block;font-weight:700;font-size:.88rem;color:var(--ink-soft);margin-bottom:1px}
+/* Minigraphen bleiben klein – sonst entsteht unnoetiges Scrollen */
+.minipick svg{max-width:380px}
+@media(min-width:1000px){.minipick{padding:4px 3px 6px}.minipick .mk{font-size:.82rem}}
+.minipick.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.minipick.chosen-ok .mk{color:#14603c}
+.minipick.chosen-no{border-color:#c0392b;background:#fbeceb}
+.minipick:disabled{cursor:default}
+
+/* Schrittliste im Generator */
+.gstep{border-top:1px dashed var(--line);padding-top:10px;margin-top:10px}
+.gstep:first-child{border-top:0;padding-top:0;margin-top:0}
+.gnr{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.ptlist{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.pt{border:1px solid #a8c9e2;background:var(--pos-bg);color:#14456e;border-radius:8px;
+  padding:4px 10px;font-family:var(--ui);font-size:.95rem}
+
+/* ============ Fussnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.locknote{font-size:.82rem;color:var(--hint);text-align:center;padding:0 12px 7px;display:none}
+.locknote.show{display:block}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{padding-bottom:5px;font-size:.79rem}
+  .steps{padding-bottom:0}
+}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .bar i{transition:none}
+}
+@media print{footer.nav,header.top{position:static}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">I. Exponentielles Wachstum und Logarithmus</div>
+    <div class="titel">I.2 Exponentialfunktionen<span class="tmode" id="tmode">Lehrermodus</span></div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Vom Wachstumsprozess zur Funktion</h2>
+  <div class="meta">Station 1 von 8 · etwa 5 Minuten</div>
+
+  <div class="card">
+    <div class="work">
+      <div class="viz">
+        <div id="svg1a"></div>
+        <div class="figcap">Im bisherigen Modell betrachten wir zunächst die ganzen Zeitschritte
+          <span class="mf"><i>t</i> = 0, 1, 2, 3, …</span></div>
+      </div>
+      <div class="task">
+        <p class="lead">Aus I.1 kennst du das Wachstumsmodell
+          <span class="mf"><i>B</i>(<i>t</i>) = <i>B</i>(0) · <i>a</i><sup><i>t</i></sup></span>.</p>
+        <p>Eine Bakterienkultur startet mit <strong>1</strong> Mengeneinheit und
+          <strong>verdoppelt</strong> sich in jedem Zeitschritt:</p>
+        <p class="mblock big mf"><i>B</i>(<i>t</i>) = 2<sup><i>t</i></sup>
+          &nbsp;&nbsp;mit&nbsp;&nbsp; <i>t</i> = 0, 1, 2, 3, …</p>
+        <p>Im bisherigen Modell betrachten wir zunächst die <strong>ganzen Zeitschritte</strong>
+          <span class="mf"><i>t</i> = 0, 1, 2, 3, …</span></p>
+        <div class="btnrow">
+          <button class="btn" id="btnStep1">Vom Zeitmodell zur Funktion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="c1f" style="display:none">
+    <p class="lead">Nun erweitern wir diese Sicht zu einer <strong>mathematischen Funktion</strong>:</p>
+    <p class="mblock big mf"><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup>
+      &nbsp;&nbsp;mit&nbsp;&nbsp; <i>x</i> ∈ ℝ</p>
+    <p class="small">Damit darf <span class="m">x</span> jetzt auch <strong>negativ</strong> und
+      <strong>nicht ganzzahlig</strong> sein. Untersuche, welche Werte dann entstehen.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl1"><span class="m">x</span> frei einstellen:</label>
+          <input type="range" id="sl1" min="-2" max="3" step="0.1" value="0"
+                 aria-label="x-Wert zwischen minus 2 und 3 einstellen, Schrittweite 0,1">
+          <div class="scale" id="scale1"></div>
+        </div>
+        <div id="svg1"></div>
+        <div class="figcap">Blau: die bekannten Werte aus dem Zeitmodell
+          (<span class="mf"><i>x</i> = 0, 1, 2, 3</span>). Rot: dein eingestellter Punkt.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Dein eingestellter Wert</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem"><i>x</i>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v1x">0</span></div>
+          <div class="vrow" style="margin-top:2px">
+            <span class="mf" style="font-size:1.1rem">2<sup><i>x</i></sup>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v1y">1</span></div>
+          <div class="vsub" id="v1sub">Ein ganzzahliger Wert.</div>
+        </div>
+        <div class="forsch" id="f1">
+          <div class="ft">Forschungsauftrag</div>
+          <p id="instr1"></p>
+          <div class="btnrow"><button class="btn" id="chk1">Einstellung prüfen</button></div>
+          <div class="fb" id="fb1"></div>
+        </div>
+        <div class="prot" id="prot1"></div>
+        <div class="solved" id="sv1"></div>
+        <div id="wrapBtn1" style="display:none">
+          <div class="btnrow"><button class="btn" id="btnCurve1">Alle Zwischenwerte anzeigen</button></div>
+        </div>
+        <div class="fb sol" id="fb1curve">Aus den einzelnen Punkten wird eine
+          <strong>durchgehende Kurve</strong>: Zu <em>jeder</em> reellen Zahl
+          <span class="m">x</span> gehört genau ein Funktionswert.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="def1" style="display:none">
+    <div class="h">📝 DEFINITION</div>
+    <p>Eine Funktion</p>
+    <p class="mblock big mf"><i>f</i>: <i>x</i> ↦ <i>a</i><sup><i>x</i></sup>,
+      &nbsp; <i>x</i> ∈ ℝ</p>
+    <p>heißt <strong>Exponentialfunktion</strong>. Die Zahl <span class="m">a</span> heißt
+      <strong>Wachstumsfaktor</strong> oder <strong>Basis</strong>; es gilt
+      <span class="mf"><i>a</i> &gt; 0</span> und <span class="mf"><i>a</i> ≠ 1</span>.</p>
+    <p class="small" style="margin-top:8px">Das Entscheidende: Die Variable <span class="m">x</span>
+      steht im <strong>Exponenten</strong> – nicht in der Basis.
+      Warum <span class="mf"><i>a</i> ≠ 1</span> gefordert wird, untersuchst du in Station 2.</p>
+  </div>
+
+  <div class="card narrow" id="c1mc" style="display:none"><div id="q1"></div></div>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Das Basis-Labor: Was macht <span class="m">a</span>?</h2>
+  <div class="meta">Station 2 von 8 · etwa 6 Minuten · Forschungsstation</div>
+
+  <div class="card">
+    <p class="lead">Hier siehst du den Graphen von
+      <span class="mf"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>.
+      Mit dem Regler änderst du die Basis <span class="m">a</span>. Der Graph reagiert sofort –
+      Fortschritt entsteht aber erst, wenn du eine Einstellung bewusst <strong>prüfen</strong> lässt.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl2">Basis <span class="m">a</span> einstellen:</label>
+          <input type="range" id="sl2" min="0.2" max="3" step="0.1" value="2"
+                 aria-label="Basis a zwischen 0,2 und 3 einstellen, Schrittweite 0,1">
+          <div class="scale" id="scale2"></div>
+        </div>
+        <div id="svg2"></div>
+        <div class="figcap" id="cap2"></div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Eingestellte Basis</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem"><i>a</i>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v2a">2</span></div>
+        </div>
+        <div class="vals">
+          <div class="val"><span class="k mf"><i>f</i>(−1)</span><span class="v" id="v2m1">0,5</span></div>
+          <div class="val"><span class="k mf"><i>f</i>(0)</span><span class="v" id="v2z">1</span></div>
+          <div class="val"><span class="k mf"><i>f</i>(1)</span><span class="v" id="v2p1">2</span></div>
+        </div>
+        <div class="fb hint" id="warn2" style="display:none"></div>
+
+        <div class="forsch" id="f2a">
+          <div class="ft">Forschungsauftrag A</div>
+          <p>Stelle die Basis <span class="m">a</span> so ein, dass der Graph von links nach rechts
+            <strong>fällt</strong>.</p>
+          <div class="btnrow"><button class="btn" id="chk2a">Einstellung prüfen</button></div>
+          <div class="fb" id="fb2a"></div>
+        </div>
+        <div class="solved" id="sv2a"></div>
+
+        <div class="forsch" id="f2b" style="display:none">
+          <div class="ft">Forschungsauftrag B</div>
+          <p>Stelle die Basis <span class="m">a</span> so ein, dass der Graph von links nach rechts
+            <strong>steigt</strong>.</p>
+          <div class="btnrow"><button class="btn" id="chk2b">Einstellung prüfen</button></div>
+          <div class="fb" id="fb2b"></div>
+        </div>
+        <div class="solved" id="sv2b"></div>
+
+        <div id="wrapQ2" style="display:none" class="gap"><div id="q2"></div></div>
+
+        <div class="forsch" id="f2c" style="display:none">
+          <div class="ft">Forschungsauftrag C</div>
+          <p>Finde den <strong>Grenzfall</strong>, bei dem der Graph weder steigt noch fällt.</p>
+          <div class="btnrow"><button class="btn" id="chk2c">Einstellung prüfen</button></div>
+          <div class="fb" id="fb2c"></div>
+        </div>
+        <div class="solved" id="sv2c"></div>
+
+        <div id="wrapQ2c" style="display:none" class="gap"><div id="q2c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft2" style="display:none">
+    <div class="h">📝 SICHERUNG 1</div>
+    <p class="mblock big mf"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup>
+      &nbsp;&nbsp;mit&nbsp;&nbsp; <i>D</i> = ℝ, &nbsp; <i>a</i> &gt; 0, &nbsp; <i>a</i> ≠ 1</p>
+    <div class="duo">
+      <div class="box up">
+        <div class="t">Fall <span class="mf"><i>a</i> &gt; 1</span></div>
+        <p>Der Graph ist <strong>streng monoton steigend</strong>.</p>
+        <p class="small">exponentielle Zunahme</p>
+      </div>
+      <div class="box down">
+        <div class="t">Fall <span class="mf">0 &lt; <i>a</i> &lt; 1</span></div>
+        <p>Der Graph ist <strong>streng monoton fallend</strong>.</p>
+        <p class="small">exponentielle Abnahme</p>
+      </div>
+    </div>
+    <p style="margin-top:10px"><span class="mf"><i>a</i> = 1</span> ergäbe
+      <span class="mf"><i>f</i>(<i>x</i>) = 1</span> – eine konstante Funktion.
+      Deshalb wird <span class="mf"><i>a</i> = 1</span> ausgeschlossen.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Was haben alle Exponentialfunktionen gemeinsam?</h2>
+  <div class="meta">Station 3 von 8 · etwa 7 Minuten · Forschungsstation</div>
+
+  <div class="card">
+    <h3 class="sub">Experiment A · Schnittpunkt mit der <span class="m">y</span>-Achse</h3>
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl3a">Basis <span class="m">a</span> einstellen:</label>
+          <input type="range" id="sl3a" min="0.2" max="3" step="0.1" value="2"
+                 aria-label="Basis a zwischen 0,2 und 3 einstellen">
+          <div class="scale" id="scale3a"></div>
+        </div>
+        <div id="svg3a"></div>
+        <div class="figcap">Der markierte Punkt ist der Schnittpunkt des Graphen mit der
+          <span class="m">y</span>-Achse.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Aktuelle Einstellung</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem"><i>a</i>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v3aa">2</span></div>
+          <div class="vsub" id="v3asub"><span class="mf">S(0 | 1)</span></div>
+        </div>
+        <div class="forsch" id="f3a">
+          <div class="ft">Forschungsauftrag A</div>
+          <p id="instr3a"></p>
+          <div class="btnrow"><button class="btn" id="chk3a">Schnittpunkt prüfen</button></div>
+          <div class="fb" id="fb3a"></div>
+        </div>
+        <div class="prot" id="prot3a"></div>
+        <div class="solved" id="sv3a"></div>
+        <div id="wrapQ3a" style="display:none"><div id="q3a"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="c3b" style="display:none">
+    <h3 class="sub">Experiment B · Geht es unter die <span class="m">x</span>-Achse?</h3>
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl3b1">Basis <span class="m">a</span>:</label>
+          <input type="range" id="sl3b1" min="0.2" max="3" step="0.1" value="2"
+                 aria-label="Basis a zwischen 0,2 und 3 einstellen">
+          <div class="scale" id="scale3b1"></div>
+        </div>
+        <div class="sliderbox">
+          <label class="slabel" for="sl3b2">Stelle <span class="m">x</span>:</label>
+          <input type="range" id="sl3b2" min="-4" max="4" step="0.2" value="1"
+                 aria-label="x-Wert zwischen minus 4 und 4 einstellen">
+          <div class="scale" id="scale3b2"></div>
+        </div>
+        <div id="svg3b"></div>
+        <div class="figcap">Der rote Punkt zeigt
+          <span class="mf"><i>P</i>(<i>x</i> | <i>a</i><sup><i>x</i></sup>)</span>.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Aktueller Funktionswert</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem" id="v3blab"><i>f</i>(1)&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v3bval">2</span></div>
+          <div class="vsub" id="v3bsub">Der Wert ist positiv.</div>
+        </div>
+        <div class="forsch" id="f3b">
+          <div class="ft">Forschungsauftrag B</div>
+          <p>Untersuche systematisch <strong>vier Fälle</strong>. Stelle jeweils passende Werte ein
+            und lass sie prüfen.</p>
+          <p id="instr3b"></p>
+          <div class="btnrow"><button class="btn" id="chk3b">Fall prüfen</button></div>
+          <div class="fb" id="fb3b"></div>
+        </div>
+        <div class="prot" id="prot3b"></div>
+        <div class="solved" id="sv3b"></div>
+        <div id="wrapQ3b" style="display:none"><div id="q3b"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="c3c" style="display:none">
+    <h3 class="sub">Experiment C · Wie nah kommt der Graph der <span class="m">x</span>-Achse?</h3>
+    <p>Erster Fall: <span class="mf"><i>a</i> &gt; 1</span>, hier
+      <span class="mf"><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup></span>.
+      Wandere mit dem Punkt weit nach <strong>links</strong>.</p>
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl3c">Stelle <span class="m">x</span> (nach links wandern):</label>
+          <input type="range" id="sl3c" min="-10" max="3" step="0.25" value="3"
+                 aria-label="x-Wert zwischen minus 10 und 3 einstellen">
+          <div class="scale" id="scale3c"></div>
+        </div>
+        <div id="svg3c"></div>
+        <div class="figcap">Ausschnitt −10 ≤ <span class="m">x</span> ≤ 3.
+          Beobachte den Abstand zur <span class="m">x</span>-Achse.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Funktionswert</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem" id="v3clab">2<sup>3</sup>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v3cval">8</span></div>
+          <div class="vsub" id="v3csub">Wandere nach links.</div>
+        </div>
+        <div class="forsch" id="f3c">
+          <div class="ft">Forschungsauftrag C1</div>
+          <p>Gehe mindestens bis <span class="mf"><i>x</i> = −8</span> und prüfe dann deine
+            Beobachtung: Wird der Funktionswert dabei irgendwann <strong>0</strong>?</p>
+          <div class="btnrow"><button class="btn" id="chk3c">Beobachtung prüfen</button></div>
+          <div class="fb" id="fb3c"></div>
+        </div>
+        <div class="solved" id="sv3c"></div>
+        <div id="wrapQ3c" style="display:none"><div id="q3c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="c3d" style="display:none">
+    <h3 class="sub">Experiment C · Und bei <span class="mf">0 &lt; <i>a</i> &lt; 1</span>?</h3>
+    <p>Zweiter Fall: <span class="mf"><i>f</i>(<i>x</i>) = 0,5<sup><i>x</i></sup></span>.
+      In welcher Richtung nähert sich dieser Graph jetzt der <span class="m">x</span>-Achse?</p>
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl3d">Stelle <span class="m">x</span>:</label>
+          <input type="range" id="sl3d" min="-3" max="10" step="0.25" value="-3"
+                 aria-label="x-Wert zwischen minus 3 und 10 einstellen">
+          <div class="scale" id="scale3d"></div>
+        </div>
+        <div id="svg3d"></div>
+        <div class="figcap">Ausschnitt −3 ≤ <span class="m">x</span> ≤ 10.</div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Funktionswert</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem" id="v3dlab">0,5<sup>−3</sup>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v3dval">8</span></div>
+          <div class="vsub" id="v3dsub">Wandere nach rechts.</div>
+        </div>
+        <div class="forsch" id="f3d">
+          <div class="ft">Forschungsauftrag C2</div>
+          <p>Gehe hier mindestens bis <span class="mf"><i>x</i> = 8</span> und prüfe dann deine
+            Beobachtung.</p>
+          <div class="btnrow"><button class="btn" id="chk3d">Beobachtung prüfen</button></div>
+          <div class="fb" id="fb3d"></div>
+        </div>
+        <div class="solved" id="sv3d"></div>
+        <div class="fb sol" id="fb3dins">Bei <span class="mf">0 &lt; <i>a</i> &lt; 1</span> geschieht
+          die Annäherung an die <span class="m">x</span>-Achse in der <strong>anderen</strong>
+          Richtung – für <span class="mf"><i>x</i> → +∞</span>.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft3" style="display:none">
+    <div class="h">📝 SICHERUNG 2A</div>
+    <p>Für <span class="mf"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span> gilt immer:</p>
+    <p>• <span class="mf"><i>f</i>(0) = <i>a</i><sup>0</sup> = 1</span> – jeder Graph verläuft durch
+      <span class="mf"><i>P</i>(0 | 1)</span>.</p>
+    <p>• <span class="mf"><i>a</i><sup><i>x</i></sup> &gt; 0</span> für alle
+      <span class="mf"><i>x</i> ∈ ℝ</span> – der Graph liegt vollständig oberhalb der
+      <span class="m">x</span>-Achse und hat <strong>keine Nullstelle</strong>.</p>
+    <p>• Beim Durchlaufen aller reellen <span class="m">x</span> nimmt der Graph alle positiven
+      Werte an. Deshalb ist die Wertemenge</p>
+    <p class="mblock big mf"><i>W</i> = ]0; ∞[</p>
+    <p class="small">(gleichbedeutend mit <span class="mf">ℝ<sup>+</sup> = ]0; ∞[</span> – die Null
+      gehört <strong>nicht</strong> dazu).</p>
+    <p style="margin-top:8px">• Die <span class="m">x</span>-Achse ist <strong>waagrechte
+      Asymptote</strong>:</p>
+    <div class="duo">
+      <div class="box up">
+        <div class="t">Fall <span class="mf"><i>a</i> &gt; 1</span></div>
+        <p class="mf"><i>f</i>(<i>x</i>) → 0 für <i>x</i> → −∞</p>
+      </div>
+      <div class="box down">
+        <div class="t">Fall <span class="mf">0 &lt; <i>a</i> &lt; 1</span></div>
+        <p class="mf"><i>f</i>(<i>x</i>) → 0 für <i>x</i> → +∞</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Kehrwertbasen – Spiegelbilder</h2>
+  <div class="meta">Station 4 von 8 · etwa 5 Minuten</div>
+
+  <div class="card">
+    <p class="lead">Zwei Funktionen gleichzeitig:
+      <span class="mf" style="color:#1f6fb2"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>
+      und
+      <span class="mf" style="color:#b45309"><i>g</i>(<i>x</i>) = (1/<i>a</i>)<sup><i>x</i></sup></span>.
+      Die Basen sind <strong>Kehrwerte</strong> voneinander.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl4">Basis <span class="m">a</span> einstellen:</label>
+          <input type="range" id="sl4" min="1.2" max="3" step="0.1" value="2"
+                 aria-label="Basis a zwischen 1,2 und 3 einstellen">
+          <div class="scale" id="scale4"></div>
+        </div>
+        <div id="svg4"></div>
+        <div class="legend" style="justify-content:center">
+          <span><i class="swatch sw-f"></i><span class="mf"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span></span>
+          <span><i class="swatch sw-g"></i><span class="mf"><i>g</i>(<i>x</i>) = (1/<i>a</i>)<sup><i>x</i></sup></span></span>
+        </div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Eingestellt</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem"><i>a</i>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v4a">2</span>
+            <span class="vsub" style="margin-left:14px">Kehrwert 1/<span class="m">a</span> = <span id="v4inv">0,5</span></span>
+          </div>
+        </div>
+        <div class="forsch" id="f4">
+          <div class="ft">Forschungsauftrag</div>
+          <p id="instr4"></p>
+          <div class="btnrow"><button class="btn" id="chk4">Punktpaar untersuchen</button></div>
+          <div class="fb" id="fb4"></div>
+        </div>
+        <div class="prot" id="prot4"></div>
+        <div class="solved" id="sv4"></div>
+        <div id="wrapQ4" style="display:none" class="gap"><div id="q4"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card narrow" id="herl4" style="display:none">
+    <h3>Warum ist das so?</h3>
+    <p>Nach den Potenzgesetzen gilt:</p>
+    <p class="mblock big mf">(1/<i>a</i>)<sup><i>x</i></sup>
+      = (<i>a</i><sup>−1</sup>)<sup><i>x</i></sup>
+      = <i>a</i><sup>−<i>x</i></sup>
+      = <i>f</i>(−<i>x</i>)</p>
+    <p><span class="mf"><i>g</i></span> nimmt an der Stelle <span class="m">x</span> also genau den
+      Wert an, den <span class="mf"><i>f</i></span> an der Stelle <span class="mf">−<i>x</i></span>
+      hat. Genau das bedeutet Spiegelung an der <span class="m">y</span>-Achse.</p>
+  </div>
+
+  <div class="heft" id="heft4" style="display:none">
+    <div class="h">📝 SICHERUNG 2B</div>
+    <p>Die Graphen von <span class="mf"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span> und
+      <span class="mf"><i>g</i>(<i>x</i>) = (1/<i>a</i>)<sup><i>x</i></sup> = <i>a</i><sup>−<i>x</i></sup></span>
+      liegen <strong>achsensymmetrisch bezüglich der <span class="m">y</span>-Achse</strong>.</p>
+  </div>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2>Das <span class="m">b</span>-Labor: <span class="mf"><i>h</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span></h2>
+  <div class="meta">Station 5 von 8 · etwa 6 Minuten · Forschungsstation</div>
+
+  <div class="card">
+    <p class="lead">In Sachzusammenhängen ist der Anfangswert häufig nicht 1. Deshalb kommt ein
+      zweiter Parameter dazu. Die Basis bleibt hier fest bei <span class="mf"><i>a</i> = 2</span>:
+      <span class="mf"><i>h</i>(<i>x</i>) = <i>b</i> · 2<sup><i>x</i></sup></span>.
+      Gestrichelt siehst du dauerhaft den <strong>Referenzgraphen</strong>
+      <span class="mf"><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup></span>.</p>
+
+    <div class="work stick">
+      <div class="viz">
+        <div class="sliderbox">
+          <label class="slabel" for="sl5">Parameter <span class="m">b</span> wählen:</label>
+          <input type="range" id="sl5" min="0" max="7" step="1" value="5"
+                 aria-label="Parameter b aus den Werten minus 3, minus 2, minus 1, minus 0,5, 0,5, 1, 2, 3 wählen">
+          <div class="scale" id="scale5"></div>
+        </div>
+        <div id="svg5"></div>
+        <div class="legend" style="justify-content:center">
+          <span><i class="swatch sw-ref"></i><span class="mf"><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup> (Referenz)</span></span>
+          <span><i class="swatch sw-f"></i><span class="mf"><i>h</i>(<i>x</i>) = <i>b</i> · 2<sup><i>x</i></sup></span></span>
+        </div>
+      </div>
+      <div class="task">
+        <div class="valbox">
+          <div class="vlabel">Eingestellt</div>
+          <div class="vrow"><span class="mf" style="font-size:1.1rem"><i>b</i>&nbsp;=&nbsp;</span>
+            <span class="vnum" id="v5b">1</span>
+            <span class="vsub" style="margin-left:14px"><span class="mf"><i>h</i>(0) = <span id="v5h0">1</span></span></span>
+          </div>
+          <div class="vsub" id="v5sub"></div>
+        </div>
+
+        <div class="forsch" id="f5a">
+          <div class="ft">Forschung A</div>
+          <p id="instr5a"></p>
+          <div class="btnrow"><button class="btn" id="chk5a">Einstellung prüfen</button></div>
+          <div class="fb" id="fb5a"></div>
+        </div>
+        <div class="prot" id="prot5a"></div>
+        <div class="solved" id="sv5a"></div>
+        <div id="wrapQ5a" style="display:none"><div id="q5a"></div></div>
+
+        <div class="forsch" id="f5b" style="display:none">
+          <div class="ft">Forschung B</div>
+          <p id="instr5b"></p>
+          <div class="btnrow"><button class="btn" id="chk5b">Einstellung prüfen</button></div>
+          <div class="fb" id="fb5b"></div>
+        </div>
+        <div class="prot" id="prot5b"></div>
+        <div class="solved" id="sv5b"></div>
+        <div id="wrapQ5b" style="display:none" class="gap"><div id="q5b"></div></div>
+        <div id="wrapQ5c" style="display:none" class="gap"><div id="q5c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heft" id="heft5" style="display:none">
+    <div class="h">📝 SICHERUNG 3</div>
+    <p>Allgemeine Exponentialfunktion:</p>
+    <p class="mblock big mf"><i>h</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup>
+      &nbsp;&nbsp;mit&nbsp;&nbsp; <i>a</i> &gt; 0, &nbsp; <i>a</i> ≠ 1, &nbsp; <i>b</i> ≠ 0</p>
+    <p>• <span class="mf"><i>h</i>(0) = <i>b</i> · <i>a</i><sup>0</sup> = <i>b</i></span> –
+      der Graph verläuft durch <span class="mf"><i>P</i>(0 | <i>b</i>)</span>.</p>
+    <div class="duo">
+      <div class="box up">
+        <div class="t">| <span class="m">b</span> | &gt; 1</div>
+        <p><strong>Streckung</strong> in <span class="m">y</span>-Richtung</p>
+      </div>
+      <div class="box down">
+        <div class="t">0 &lt; | <span class="m">b</span> | &lt; 1</div>
+        <p><strong>Stauchung</strong> in <span class="m">y</span>-Richtung</p>
+      </div>
+    </div>
+    <p style="margin-top:10px">• Ist <span class="mf"><i>b</i> &lt; 0</span>, so wird der gestreckte
+      bzw. gestauchte Graph <strong>zusätzlich an der <span class="m">x</span>-Achse gespiegelt</strong>.
+      Dadurch <strong>kehrt sich auch das Monotonieverhalten um</strong>:</p>
+    <div class="mono4">
+      <div><span class="mf"><i>b</i> &gt; 0</span> und <span class="mf"><i>a</i> &gt; 1</span>:
+        streng monoton <strong>steigend</strong></div>
+      <div><span class="mf"><i>b</i> &gt; 0</span> und <span class="mf">0 &lt; <i>a</i> &lt; 1</span>:
+        streng monoton <strong>fallend</strong></div>
+      <div><span class="mf"><i>b</i> &lt; 0</span> und <span class="mf"><i>a</i> &gt; 1</span>:
+        streng monoton <strong>fallend</strong></div>
+      <div><span class="mf"><i>b</i> &lt; 0</span> und <span class="mf">0 &lt; <i>a</i> &lt; 1</span>:
+        streng monoton <strong>steigend</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>Vom Graphen zur Funktionsgleichung</h2>
+  <div class="meta">Station 6 von 8 · etwa 7 Minuten</div>
+
+  <div class="card narrow">
+    <p class="lead">Jetzt umgekehrt: Du siehst nur den <strong>Graphen</strong> und bestimmst daraus
+      den Funktionsterm <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>.</p>
+    <p class="small">Strategie: <span class="mf"><i>b</i> = <i>f</i>(0)</span> am Schnittpunkt mit der
+      <span class="m">y</span>-Achse ablesen, dann
+      <span class="mf"><i>a</i> = <i>f</i>(1) : <i>f</i>(0)</span>. Das funktioniert auch bei
+      negativem <span class="m">b</span>.</p>
+    <p class="prog" id="prog6" style="font-size:.9rem;color:var(--ink-soft)">gelöst: <b>0</b> von 3</p>
+  </div>
+
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div id="svg6"></div>
+        <div class="figcap" id="cap6">Die markierten Punkte liegen bei
+          <span class="mf"><i>x</i> = 0</span> und <span class="mf"><i>x</i> = 1</span>.</div>
+      </div>
+      <div class="task">
+        <div class="gstep"><div id="g6s1"></div></div>
+        <div class="gstep" id="g6w2" style="display:none"><div id="g6s2"></div></div>
+        <div class="gstep" id="g6w3" style="display:none"><div id="g6s3"></div></div>
+        <div id="g6done" style="display:none">
+          <div class="fb ok show" id="fb6done"></div>
+          <div class="btnrow"><button class="btn" id="btnNew6">Neue Aufgabe</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 7 ================= -->
+<section class="station" data-nr="7">
+  <h2>Graphen- und Termtrainer</h2>
+  <div class="meta">Station 7 von 8 · etwa 6 Minuten</div>
+
+  <div class="card narrow">
+    <p class="lead">Zwei Übungsrichtungen. Löse in <strong>jedem</strong> Modus mindestens
+      <strong>zwei</strong> Aufgaben richtig.</p>
+    <div class="modes">
+      <button class="modebtn sel" id="m7a">Graph → Term <span class="cnt" id="c7a">0/2</span></button>
+      <button class="modebtn" id="m7b">Term → Graph <span class="cnt" id="c7b">0/2</span></button>
+    </div>
+    <p class="small" id="strat7"></p>
+  </div>
+
+  <!-- Modus A -->
+  <div class="card" id="box7a">
+    <div class="work stick">
+      <div class="viz">
+        <div id="svg7a"></div>
+        <div class="figcap">Markiert sind die Punkte bei <span class="mf"><i>x</i> = 0</span>
+          und <span class="mf"><i>x</i> = 1</span>.</div>
+      </div>
+      <div class="task"><div id="q7a"></div>
+        <div class="btnrow" id="next7a" style="display:none">
+          <button class="btn" id="btnNew7a">Neue Aufgabe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modus B -->
+  <div class="card" id="box7b" style="display:none">
+    <p class="q" id="term7b"></p>
+    <p class="small">Welches der vier Koordinatensysteme zeigt diesen Graphen?</p>
+    <div class="minigrid" id="mini7b"></div>
+    <div class="fb" id="fb7b"></div>
+    <div class="btnrow" id="next7b" style="display:none">
+      <button class="btn" id="btnNew7b">Neue Aufgabe</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 8 ================= -->
+<section class="station" data-nr="8">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 8 von 8 · etwa 5 Minuten</div>
+
+  <div class="card narrow"><div id="q8a"></div></div>
+  <div class="card narrow" id="w8b" style="display:none"><div id="q8b"></div></div>
+  <div class="card narrow" id="w8c" style="display:none"><div id="q8c"></div></div>
+  <div class="card narrow" id="w8d" style="display:none"><div id="q8d"></div></div>
+  <div class="card narrow" id="w8e" style="display:none">
+    <div class="work">
+      <div class="viz"><div id="svg8"></div>
+        <div class="figcap">Markiert sind <span class="mf"><i>P</i>(0 | 2)</span> und
+          <span class="mf"><i>Q</i>(1 | 6)</span>.</div>
+      </div>
+      <div class="task"><div id="q8e"></div></div>
+    </div>
+  </div>
+
+  <div class="card narrow" id="ende" style="display:none;border-left:5px solid var(--accent)">
+    <h3 style="font-size:1.18rem">Du kannst jetzt …</h3>
+    <p>• Exponentialfunktionen erkennen und von Potenzfunktionen unterscheiden,</p>
+    <p>• erklären, welchen Einfluss die Basis <span class="m">a</span> hat,</p>
+    <p>• das Monotonieverhalten bestimmen,</p>
+    <p>• die gemeinsamen Eigenschaften von <span class="mf"><i>a</i><sup><i>x</i></sup></span>
+      beschreiben (Punkt <span class="mf"><i>P</i>(0 | 1)</span>,
+      <span class="mf"><i>W</i> = ]0; ∞[</span>, Asymptote),</p>
+    <p>• die Spiegelung bei Kehrwertbasen erklären,</p>
+    <p>• den Einfluss von <span class="m">b</span> bei
+      <span class="mf"><i>b</i> · <i>a</i><sup><i>x</i></sup></span> beschreiben,</p>
+    <p>• einfache Funktionsterme aus Graphen bestimmen,</p>
+    <p>• Graphen und Funktionsterme einander zuordnen.</p>
+    <div class="fb hint show" style="margin-top:14px">
+      <strong>Ausblick:</strong> Bisher war der Exponent immer bekannt. Im nächsten Abschnitt geht es
+      um die umgekehrte Frage: Wie bestimmt man aus einer Gleichung wie
+      <span class="mf">2<sup><i>x</i></sup> = 20</span> den <strong>Exponenten</strong>?
+    </div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn ghost" id="prev">←<span class="lbl"> Zurück</span></button>
+    <div class="nav-mid">
+      <div class="pos" id="pos">Station 1 von 8</div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <button class="btn" id="next"><span class="lbl">Weiter </span>→</button>
+  </div>
+  <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+function $(id){return document.getElementById(id);}
+
+/* Deutsche Zahlschreibweise, hoechstens dec Nachkommastellen,
+   ueberfluessige Nullen werden entfernt. */
+function num(v,dec){
+  if(dec===undefined) dec=4;
+  if(!isFinite(v)) return "—";
+  if(Math.abs(v)<5e-10) v=0;
+  var s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){ s=s.replace(/0+$/,""); s=s.replace(/\.$/,""); }
+  if(s==="-0") s="0";
+  return s.replace(".",",");
+}
+/* Eingabe des Schuelers in eine Zahl verwandeln: Komma und Punkt erlaubt. */
+/* Anzeige-Variante: echtes Minuszeichen statt Bindestrich */
+function mnum(v,dec){ return num(v,dec).replace("-","−"); }
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-").replace(",",".");
+  if(s==="") return NaN;
+  if(!/^[-+]?[0-9]*\.?[0-9]+$/.test(s)) return NaN;
+  return Number(s);
+}
+/* Potenz a^x, immer endlich und ohne NaN fuer a > 0 */
+function pw(a,x){
+  if(!(a>0)) return NaN;
+  var v=Math.pow(a,x);
+  return isFinite(v)?v:(v>0?1e12:-1e12);
+}
+function measureChrome(){
+  var h=document.querySelector("header.top"), ft=document.querySelector("footer.nav");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+  if(ft) document.documentElement.style.setProperty("--footH", ft.offsetHeight+"px");
+}
+window.addEventListener("resize",measureChrome);
+window.addEventListener("orientationchange",function(){ setTimeout(measureChrome,250); });
+
+/* =========================================================
+   SVG-Werkzeuge (Board-Technik aus dem MASTER, erweitert um
+   Clipping und dynamisches Neuzeichnen)
+   ========================================================= */
+var NS="http://www.w3.org/2000/svg";
+var BOARDN=0;
+function el(name,attrs){
+  var e=document.createElementNS(NS,name);
+  for(var k in attrs){ if(attrs.hasOwnProperty(k)) e.setAttribute(k,attrs[k]); }
+  return e;
+}
+function clear(g){ while(g && g.firstChild) g.removeChild(g.firstChild); }
+
+function Board(host,opt){
+  var W=opt.w||600, H=opt.h||330;
+  var fs=opt.fs||14;
+  var pad={l:(opt.padL!==undefined?opt.padL:46),r:(opt.padR!==undefined?opt.padR:24),
+           t:(opt.padT!==undefined?opt.padT:16),b:(opt.padB!==undefined?opt.padB:34)};
+  var xmin=opt.xmin,xmax=opt.xmax,ymin=opt.ymin,ymax=opt.ymax;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",opt.label||"Koordinatensystem");
+  function X(x){ return pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r); }
+  function Y(y){ return H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b); }
+
+  var cid="pltclip"+(++BOARDN);
+  var defs=el("defs",{});
+  var cp=el("clipPath",{id:cid});
+  cp.appendChild(el("rect",{x:X(xmin),y:Y(ymax),width:X(xmax)-X(xmin),height:Y(ymin)-Y(ymax)}));
+  defs.appendChild(cp); svg.appendChild(defs);
+
+  /* Gitter */
+  var grid=el("g",{}); var i;
+  if(opt.gridx) for(i=Math.ceil(xmin/opt.gridx-1e-9)*opt.gridx;i<=xmax+1e-9;i+=opt.gridx)
+    grid.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#eef1f5","stroke-width":1}));
+  if(opt.gridy) for(i=Math.ceil(ymin/opt.gridy-1e-9)*opt.gridy;i<=ymax+1e-9;i+=opt.gridy)
+    grid.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#eef1f5","stroke-width":1}));
+  svg.appendChild(grid);
+
+  var curves=el("g",{"clip-path":"url(#"+cid+")"}); svg.appendChild(curves);
+  var axg=el("g",{}); svg.appendChild(axg);
+  var dots=el("g",{"clip-path":"url(#"+cid+")"}); svg.appendChild(dots);
+  var lbls=el("g",{}); svg.appendChild(lbls);
+
+  /* Achsen */
+  (function(){
+    var i,t;
+    axg.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:"#334155","stroke-width":1.8}));
+    axg.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-9)+","+(Y(0)-4.5)+" "+(X(xmax)-9)+","+(Y(0)+4.5),fill:"#334155"}));
+    axg.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:"#334155","stroke-width":1.8}));
+    axg.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-4.5)+","+(Y(ymax)+9)+" "+(X(0)+4.5)+","+(Y(ymax)+9),fill:"#334155"}));
+    if(opt.tickx) for(i=Math.ceil(xmin/opt.tickx-1e-9)*opt.tickx;i<=xmax-0.15*(xmax-xmin)/6;i+=opt.tickx){
+      if(Math.abs(i)<1e-9) continue;
+      axg.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:"#334155","stroke-width":1.3}));
+      t=el("text",{x:X(i),y:Y(0)+fs+4,"text-anchor":"middle","font-size":fs,fill:"#475569",
+        "font-family":"Segoe UI,system-ui,sans-serif",stroke:"#ffffff","stroke-width":3,
+        "paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2); axg.appendChild(t);
+    }
+    if(opt.ticky) for(i=Math.ceil(ymin/opt.ticky-1e-9)*opt.ticky;i<=ymax-0.12*(ymax-ymin);i+=opt.ticky){
+      if(Math.abs(i)<1e-9) continue;
+      axg.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:"#334155","stroke-width":1.3}));
+      t=el("text",{x:X(0)-8,y:Y(i)+fs*0.34,"text-anchor":"end","font-size":fs,fill:"#475569",
+        "font-family":"Segoe UI,system-ui,sans-serif",stroke:"#ffffff","stroke-width":3,
+        "paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2); axg.appendChild(t);
+    }
+    var lx=el("text",{x:X(xmax)-2,y:Y(0)+2*fs+4,"text-anchor":"end","font-size":fs+1,fill:"#334155",
+      "font-family":"Segoe UI,system-ui,sans-serif","font-style":"italic"});
+    lx.textContent=opt.nameX||"x"; axg.appendChild(lx);
+    var ly=el("text",{x:X(0)+8,y:Y(ymax)+fs*0.9,"text-anchor":"start","font-size":fs+1,fill:"#334155",
+      "font-family":"Segoe UI,system-ui,sans-serif","font-style":"italic"});
+    ly.textContent=opt.nameY||"y"; axg.appendChild(ly);
+  })();
+
+  var YLO=ymin-3*(ymax-ymin), YHI=ymax+3*(ymax-ymin);
+  var api={svg:svg,X:X,Y:Y,W:W,H:H,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,
+           curves:curves,dots:dots,lbls:lbls};
+
+  api.reset=function(){ clear(curves); clear(dots); clear(lbls); };
+
+  /* Kurve: nicht darstellbare oder extrem grosse Werte brechen den Streckenzug
+     ab bzw. werden weit ausserhalb des Sichtfensters begrenzt. Zusammen mit dem
+     clipPath entstehen so keine Linien quer durch das Diagramm. */
+  api.curve=function(fn,x0,x1,o){
+    o=o||{};
+    var N=o.n||420, d="", pen=false, i, x, y;
+    for(i=0;i<=N;i++){
+      x=x0+(x1-x0)*i/N;
+      y=fn(x);
+      if(typeof y!=="number" || !isFinite(y)){ pen=false; continue; }
+      if(y<YLO) y=YLO; else if(y>YHI) y=YHI;
+      d+=(pen?"L":"M")+X(x).toFixed(2)+" "+Y(y).toFixed(2)+" ";
+      pen=true;
+    }
+    if(d==="") return null;
+    var at={d:d,fill:"none",stroke:o.color||"#1f6fb2","stroke-width":o.w||2.8,
+      "stroke-linejoin":"round","stroke-linecap":"round"};
+    if(o.dash) at["stroke-dasharray"]=o.dash;
+    if(o.opacity!==undefined) at["opacity"]=o.opacity;
+    var p=el("path",at); (o.layer||curves).appendChild(p); return p;
+  };
+  api.dot=function(x,y,o){
+    o=o||{};
+    if(!isFinite(y)) return null;
+    var c=el("circle",{cx:X(x),cy:Y(Math.max(YLO,Math.min(YHI,y))),r:o.r||5.5,
+      fill:o.color||"#1f4e79",stroke:o.ring||"#ffffff","stroke-width":o.rw||1.8});
+    (o.layer||dots).appendChild(c); return c;
+  };
+  api.seg=function(x0,y0,x1,y1,o){
+    o=o||{};
+    var l=el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1),stroke:o.color||"#94a3b8",
+      "stroke-width":o.w||1.5});
+    if(o.dash) l.setAttribute("stroke-dasharray",o.dash);
+    (o.layer||dots).appendChild(l); return l;
+  };
+  api.text=function(x,y,s,o){
+    o=o||{};
+    var t=el("text",{x:X(x)+(o.dx||0),y:Y(y)+(o.dy||0),"font-size":o.size||fs,
+      fill:o.fill||"#334155","text-anchor":o.anchor||"middle",
+      "font-family":o.family||"Segoe UI,system-ui,sans-serif",
+      "font-weight":o.weight||"600",
+      stroke:"#ffffff","stroke-width":o.halo===false?0:3.4,"paint-order":"stroke",
+      "stroke-linejoin":"round"});
+    t.textContent=s; (o.layer||lbls).appendChild(t); return t;
+  };
+  host.innerHTML=""; host.appendChild(svg);
+  return api;
+}
+
+/* Skala unter einem Regler (aus MASTER) */
+function buildScale(hostId,marks,lo,hi){
+  var sc=$(hostId); if(!sc) return;
+  sc.innerHTML="";
+  marks.forEach(function(m){
+    var pos=(m.x-lo)/(hi-lo);
+    var e=document.createElement("span");
+    e.style.left="calc(10px + "+(pos*100)+"% - "+(pos*20)+"px)";
+    e.innerHTML=m.t;
+    if(m.mark) e.className="mark";
+    sc.appendChild(e);
+  });
+}
+
+/* =========================================================
+   Forschungsbloecke mit bewusster Pruefung
+   =========================================================
+   Grundregel dieses Lernpfads: Das blosse Bewegen eines Reglers
+   erzeugt KEINEN Fortschritt. Der Schueler stellt bewusst einen Wert
+   ein und laesst ihn ueber einen Knopf pruefen. Erst eine mathematisch
+   passende Einstellung schaltet weiter. Erledigte Auftraege klappen zu
+   einer kompakten gruenen Erfolgszeile zusammen.
+   ========================================================= */
+function stufenBlock(cfg){
+  /* cfg: {forsch, instr, btn, fb, prot, solved, steps:[{txt, test}], summary, onDone}
+     test() liefert {ok:true, line:"…", msg:"…"} oder {ok:false, msg:"…"} */
+  var i=0, falsch=0, fertig=false, zeilen=[];
+  function zeigeAuftrag(){
+    if(!cfg.instr) return;
+    var pre = (cfg.steps.length>1)
+      ? "<strong>Schritt "+(i+1)+" von "+cfg.steps.length+":</strong> " : "";
+    $(cfg.instr).innerHTML = pre + cfg.steps[i].txt;
+  }
+  function protokoll(line){
+    if(!cfg.prot || !line) return;
+    var d=document.createElement("div");
+    d.className="protline";
+    d.innerHTML='<span class="tick">✓</span> '+line;
+    $(cfg.prot).appendChild(d);
+  }
+  function abschliessen(letzteZeile){
+    fertig=true;
+    var fb=$(cfg.fb); fb.className="fb"; fb.innerHTML="";
+    $(cfg.forsch).style.display="none";
+    var sv=$(cfg.solved);
+    var txt = cfg.summary ? cfg.summary(zeilen) : letzteZeile;
+    sv.innerHTML='<span class="tick">✓</span><span>'+txt+'</span>';
+    sv.className="solved on";
+    if(cfg.onDone) cfg.onDone(zeilen);
+  }
+  $(cfg.btn).onclick=function(){
+    if(fertig) return;
+    var r=cfg.steps[i].test();
+    var fb=$(cfg.fb);
+    if(r.ok){
+      falsch=0;
+      if(r.line){ zeilen.push(r.line); protokoll(r.line); }
+      i++;
+      if(i>=cfg.steps.length){
+        abschliessen(r.line||"");
+      } else {
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Passt.</strong> "+(r.msg||"");
+        zeigeAuftrag();
+      }
+    } else {
+      falsch++;
+      fb.className="fb hint show";
+      fb.innerHTML="<strong>"+(falsch===1?"Noch nicht":"Noch ein Hinweis")+":</strong> "+r.msg;
+    }
+    measureChrome();
+  };
+  zeigeAuftrag();
+  return {fertig:function(){return fertig;}};
+}
+
+/* =========================================================
+   Monotonie von h(x) = b · a^x – zentrale Stelle fuer ALLE
+   Rueckmeldungen. Das Vorzeichen von b kehrt das Verhalten um.
+   b > 0, a > 1        : steigend
+   b > 0, 0 < a < 1    : fallend
+   b < 0, a > 1        : fallend
+   b < 0, 0 < a < 1    : steigend
+   ========================================================= */
+function monotonie(a,b){
+  if(!(a>0) || a===1 || b===0) return "";
+  var steigend = (b>0) === (a>1);
+  return steigend ? "steigend" : "fallend";
+}
+function monoSatz(a,b){
+  return "streng monoton "+monotonie(a,b);
+}
+function lageSatz(b){
+  return (b>0 ? "oberhalb" : "unterhalb")+" der <span class='m'>x</span>-Achse";
+}
+/* Vollstaendige, immer korrekte Beschreibung eines Graphen b · a^x */
+function monoErklaerung(a,b){
+  var s="Der Graph liegt "+lageSatz(b)+" und ist <strong>"+monoSatz(a,b)+"</strong>.";
+  if(b<0) s+=" Wegen <span class='mf'><i>b</i> &lt; 0</span> kehrt sich das Monotonieverhalten "+
+    "gegenüber <span class='mf'>"+(a>1?"<i>a</i> &gt; 1":"0 &lt; <i>a</i> &lt; 1")+"</span> um.";
+  return s;
+}
+
+/* =========================================================
+   Stationssteuerung (aus MASTER)
+   =========================================================
+   Lehrermodus ausschliesslich ueber ?teacher=1. Er hebt nur die
+   Navigationssperre auf; Aufgaben bleiben ungeloest, es wird nichts
+   automatisch aufgedeckt und blosses Springen veraendert maxReached nicht.
+   ========================================================= */
+var TEACHER=/(^|[?&])teacher=1(&|$)/.test(window.location.search);
+if(TEACHER){ var tm=document.getElementById("tmode"); if(tm) tm.classList.add("on"); }
+
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var cur=0;
+var done=[]; for(var _i=0;_i<TOTAL;_i++) done.push(false);
+done[TOTAL-1]=true;
+var maxReached=0;
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(TEACHER || i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", j<maxReached && j!==cur);
+    btns[j].disabled = !TEACHER && j>maxReached;
+    btns[j].style.cursor = (!TEACHER && j>maxReached) ? "default" : "pointer";
+  }
+  $("pos").textContent="Station "+(cur+1)+" von "+TOTAL;
+  $("barfill").style.width=((cur+1)/TOTAL*100)+"%";
+  $("prev").disabled=(cur===0);
+  $("next").style.visibility=(cur===TOTAL-1)?"hidden":"visible";
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+}
+function updateNext(){
+  var free = TEACHER || done[cur];
+  $("next").disabled=!free;
+  $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
+}
+function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i; /* Nur die Schuelernavigation schiebt den Fortschritt weiter. */
+  if(!TEACHER && cur>maxReached) maxReached=cur;
+  render();
+}
+$("prev").onclick=function(){ go(cur-1); };
+$("next").onclick=function(){ if(TEACHER || done[cur]) go(cur+1); };
+
+/* =========================================================
+   Multiple Choice mit gestuften Hilfen (aus MASTER)
+   Stufe 1: Denkhinweis zur gewaehlten Antwort
+   Stufe 2: konkreterer Hinweis
+   Stufe 3: Loesung auf Wunsch
+   ========================================================= */
+function mc(hostId,question,options,correctIdx,hint2,onSolved){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=question; host.appendChild(qp);
+  }
+  var wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display="none";
+  host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var solved=false, wrongCount=0;
+  function lockAll(){
+    var all=wrap.querySelectorAll(".opt");
+    for(var k=0;k<all.length;k++) all[k].disabled=true;
+  }
+  function finish(selbst){ solved=true; solBtn.style.display="none"; lockAll(); if(onSolved) onSolved(!!selbst); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+
+      (options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish(false); measureChrome();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish(true);
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        if(wrongCount===1){
+          fb.innerHTML="<strong>Denkhinweis:</strong> "+(o.no||"Überlege noch einmal.");
+        } else {
+          fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hint2||o.no||"Überlege noch einmal.");
+          solBtn.style.display="inline-block";
+        }
+      }
+      measureChrome();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* =========================================================
+   Zahleneingabe mit gestuften Hilfen (aus MASTER)
+   ========================================================= */
+function numTask(hostId,cfg){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(cfg.pre){
+    var pp=document.createElement("div"); pp.innerHTML=cfg.pre; host.appendChild(pp);
+  }
+  if(cfg.question){
+    var qp=document.createElement("p");
+    qp.className="q"; qp.innerHTML=cfg.question; host.appendChild(qp);
+  }
+  var row=document.createElement("div"); row.className="answer";
+  if(cfg.lead){ var lw=document.createElement("span"); lw.className="mf";
+    lw.style.fontSize="1.1rem"; lw.innerHTML=cfg.lead; row.appendChild(lw); }
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("inputmode","decimal");
+  inp.setAttribute("aria-label",cfg.aria||"Antwort eingeben");
+  if(cfg.placeholder) inp.placeholder=cfg.placeholder;
+  row.appendChild(inp);
+  if(cfg.unit){ var u=document.createElement("span"); u.className="unit"; u.innerHTML=cfg.unit; row.appendChild(u); }
+  var btn=document.createElement("button"); btn.className="btn"; btn.type="button"; btn.textContent="Prüfen";
+  row.appendChild(btn);
+  host.appendChild(row);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display="none"; host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+
+  var solved=false, wrong=0;
+  var hints=cfg.hints||[];
+  function istRichtig(v){
+    if(cfg.dec!==undefined){
+      var f=Math.pow(10,cfg.dec);
+      return Math.round(v*f)/f === Math.round(cfg.correct*f)/f;
+    }
+    return Math.abs(v-cfg.correct)<=(cfg.tol||1e-9);
+  }
+  function finish(selbst){
+    solved=true; inp.disabled=true; btn.disabled=true; solBtn.style.display="none";
+    inp.classList.remove("no"); inp.classList.add("ok");
+    if(cfg.onSolved) cfg.onSolved(!!selbst);
+    measureChrome();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    inp.value=num(cfg.correct,cfg.dec!==undefined?cfg.dec:4);
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+(cfg.solution||num(cfg.correct,4));
+    finish(false);
+  };
+  function check(){
+    if(solved) return;
+    var v=parseNum(inp.value);
+    if(isNaN(v)){
+      fb.className="fb hint show";
+      fb.innerHTML="Gib eine Zahl ein. Dezimalzahlen kannst du mit Komma oder Punkt schreiben.";
+      measureChrome(); return;
+    }
+    if(istRichtig(v)){
+      fb.className="fb ok show";
+      fb.innerHTML="<strong>Richtig.</strong> "+(cfg.ok||"");
+      finish(true);
+    } else {
+      wrong++; inp.classList.add("no");
+      fb.className="fb hint show";
+      if(wrong===1){
+        fb.innerHTML="<strong>Denkhinweis:</strong> "+(hints[0]||"Prüfe deine Überlegung noch einmal.");
+      } else {
+        fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hints[1]||hints[0]||"Prüfe deine Überlegung noch einmal.");
+        solBtn.style.display="inline-block";
+      }
+      measureChrome();
+    }
+  }
+  btn.onclick=check;
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+  return {focus:function(){ try{inp.focus();}catch(e){} }};
+}
+
+/* Term b * a^x als HTML */
+function termHTML(b,a){
+  var bs;
+  if(b===1) bs="";
+  else if(b===-1) bs="−";
+  else bs=mnum(b,4)+" · ";
+  return '<span class="mf">'+bs+mnum(a,4)+"<sup><i>x</i></sup></span>";
+}
+
+/* =========================================================
+   STATION 1 – Vom Wachstumsprozess zur Funktion
+   Erst das Zeitmodell B(t) mit ganzen Zeitschritten,
+   dann der bewusste Uebergang zur Funktion f(x) auf ganz R.
+   ========================================================= */
+var S1 = (function(){
+  /* Zeitmodell: nur t = 0, 1, 2, 3 */
+  var BA=Board($("svg1a"),{w:480,h:300,xmin:-0.7,xmax:3.7,ymin:-1.0,ymax:9.3,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"t",nameY:"B",
+    label:"Koordinatensystem mit vier Punkten des Wachstumsmodells B von t gleich 2 hoch t"});
+  (function(){
+    var t;
+    for(t=0;t<=3;t++){
+      BA.dot(t,pw(2,t),{color:"#1f6fb2",r:6});
+      BA.text(t,pw(2,t),"("+t+" | "+pw(2,t)+")",{dy:-13,fill:"#14456e",size:13.5});
+    }
+  })();
+
+  /* Funktionssicht */
+  var B=Board($("svg1"),{w:480,h:300,xmin:-2.7,xmax:3.7,ymin:-1.1,ymax:9.3,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Koordinatensystem mit den bekannten Punkten von 2 hoch x fuer x gleich 0 bis 3 und einem beweglichen Punkt"});
+  /* Nur die aus dem Zeitmodell bekannten Stellen sind vorgegeben.
+     Negative und nicht ganzzahlige Werte werden mit dem roten Punkt erkundet. */
+  var INT=[0,1,2,3];
+  var showCurve=false;
+
+  function xw(){ return Math.round(Number($("sl1").value)*10)/10; }
+
+  function draw(){
+    B.reset();
+    if(showCurve) B.curve(function(x){return pw(2,x);},B.xmin,B.xmax,{color:"#1f6fb2",w:2.8});
+    var i;
+    for(i=0;i<INT.length;i++) B.dot(INT[i],pw(2,INT[i]),{color:"#1f6fb2",r:5});
+    var x=xw(), y=pw(2,x);
+    B.seg(x,0,x,y,{dash:"4 4",color:"#c0392b",w:1.4});
+    B.seg(0,y,x,y,{dash:"4 4",color:"#c0392b",w:1.4});
+    B.dot(x,y,{color:"#c0392b",r:6.5});
+    var tx=Math.min(Math.max(x,B.xmin+1.2),B.xmax-1.2);
+    var ty=Math.min(y,B.ymax-0.7);
+    B.text(tx,ty,"P("+mnum(x,1)+" | "+mnum(y,2)+")",{dy:-13,fill:"#9b2c1f",size:14});
+    $("v1x").textContent=mnum(x,1);
+    $("v1y").textContent=mnum(y,3);
+    $("v1sub").innerHTML = (Math.abs(x-Math.round(x))<1e-9)
+      ? "Ein ganzzahliger Wert."
+      : "Ein Zwischenwert: <span class='mf'>2<sup>"+mnum(x,1)+"</sup> ≈ "+mnum(y,2)+"</span>";
+  }
+
+  $("sl1").addEventListener("input",draw);
+
+  $("btnStep1").onclick=function(){
+    $("btnStep1").parentNode.style.display="none";
+    $("c1f").style.display="block";
+    measureChrome();
+  };
+
+  stufenBlock({
+    forsch:"f1", instr:"instr1", btn:"chk1", fb:"fb1", prot:"prot1", solved:"sv1",
+    steps:[
+      {txt:"Stelle <span class='mf'><i>x</i> = 0,5</span> ein und prüfe den Funktionswert.",
+       test:function(){
+         var x=xw();
+         if(Math.abs(x-0.5)<1e-9)
+           return {ok:true,
+             line:"<span class='mf'><i>x</i> = 0,5 &nbsp;→&nbsp; 2<sup>0,5</sup> ≈ "+mnum(pw(2,0.5),3)+"</span>",
+             msg:"Zwischen <span class='mf'>2<sup>0</sup> = 1</span> und <span class='mf'>2<sup>1</sup> = 2</span> liegt tatsächlich ein Wert."};
+         return {ok:false,msg:"Du hast gerade <span class='mf'><i>x</i> = "+mnum(x,1)+
+           "</span> eingestellt. Gesucht ist genau <span class='mf'><i>x</i> = 0,5</span> – genau zwischen 0 und 1."};
+       }},
+      {txt:"Stelle nun einen <strong>negativen</strong> Wert für <span class='m'>x</span> ein, der <strong>keine ganze Zahl</strong> ist, und bestätige ihn.",
+       test:function(){
+         var x=xw(), y=pw(2,x);
+         if(x<0 && Math.abs(x-Math.round(x))>1e-9)
+           return {ok:true,
+             line:"<span class='mf'><i>x</i> = "+mnum(x,1)+" &nbsp;→&nbsp; 2<sup>"+mnum(x,1)+"</sup> ≈ "+mnum(y,3)+"</span>"};
+         if(x>=0) return {ok:false,msg:"Dein Wert <span class='mf'><i>x</i> = "+mnum(x,1)+
+           "</span> ist nicht negativ. Schiebe den Regler nach links über die Null hinaus."};
+         return {ok:false,msg:"<span class='mf'><i>x</i> = "+mnum(x,1)+
+           "</span> ist eine ganze Zahl. Gesucht ist ein Zwischenwert wie <span class='mf'>−0,4</span>."};
+       }}
+    ],
+    summary:function(){ return "Zwischenwerte und negative Werte geprüft – beide liefern Funktionswerte."; },
+    onDone:function(){ $("wrapBtn1").style.display="block"; }
+  });
+
+  $("btnCurve1").onclick=function(){
+    showCurve=true; draw();
+    $("btnCurve1").parentNode.style.display="none";
+    $("fb1curve").classList.add("show");
+    $("def1").style.display="block";
+    $("c1mc").style.display="block";
+    measureChrome();
+  };
+
+  buildScale("scale1",[{x:-2,t:"−2"},{x:-1,t:"−1"},{x:0,t:"0",mark:true},{x:1,t:"1"},
+    {x:2,t:"2"},{x:3,t:"3"}],-2,3);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: B */
+mc("q1","Welche dieser Funktionen ist eine <strong>Exponentialfunktion</strong>?",[
+  {t:"<span class='mf'><i>f</i>(<i>x</i>) = <i>x</i><sup>3</sup></span>",
+   no:"Hier steht die Variable in der <em>Basis</em> und der feste Wert 3 im Exponenten. Das ist eine Potenzfunktion."},
+  {t:"<span class='mf'><i>f</i>(<i>x</i>) = 3<sup><i>x</i></sup></span>",
+   ok:"Die Basis 3 ist fest, die Variable <span class='m'>x</span> steht im <strong>Exponenten</strong>."},
+  {t:"<span class='mf'><i>f</i>(<i>x</i>) = 3<i>x</i></span>",
+   no:"Das ist eine lineare Funktion – <span class='m'>x</span> wird nur mit 3 multipliziert."}
+],1,"Entscheidend ist, <em>wo</em> die Variable steht: In einer Exponentialfunktion steht sie im Exponenten, in einer Potenzfunktion wie <span class='mf'><i>x</i><sup>3</sup></span> in der Basis.",
+function(){ setDone(0); });
+
+/* =========================================================
+   STATION 2 – Das Basis-Labor
+   Fortschritt nur ueber bewusst geprueste Einstellungen.
+   ========================================================= */
+var S2=(function(){
+  var B=Board($("svg2"),{w:480,h:300,xmin:-3.3,xmax:3.3,ymin:-1.0,ymax:8.4,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Koordinatensystem mit dem Graphen von a hoch x, die Basis a ist einstellbar"});
+
+  function av(){ return Math.round(Number($("sl2").value)*10)/10; }
+
+  function draw(){
+    var a=av();
+    B.reset();
+    B.curve(function(x){return pw(a,x);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    var pts=[-1,0,1], i;
+    for(i=0;i<pts.length;i++) B.dot(pts[i],pw(a,pts[i]),{color:"#1f4e79",r:5});
+    $("v2a").textContent=mnum(a,1);
+    $("v2m1").textContent=mnum(pw(a,-1),3);
+    $("v2z").textContent=mnum(pw(a,0),3);
+    $("v2p1").textContent=mnum(pw(a,1),3);
+    var w=$("warn2");
+    if(Math.abs(a-1)<1e-9){
+      w.className="fb hint show"; w.style.display="block";
+      w.innerHTML="<strong>Sonderfall <span class='mf'><i>a</i> = 1</span>:</strong> "+
+        "<span class='mf'><i>f</i>(<i>x</i>) = 1</span> ist eine <strong>konstante Funktion</strong> "+
+        "und wird <em>nicht</em> zu den Exponentialfunktionen gezählt.";
+      $("cap2").innerHTML="Der Graph ist eine waagrechte Gerade auf der Höhe 1.";
+    } else {
+      w.style.display="none";
+      $("cap2").innerHTML="Markiert sind die Punkte bei <span class='mf'><i>x</i> = −1, 0, 1</span>.";
+    }
+  }
+  $("sl2").addEventListener("input",draw);
+
+  /* Auftrag A: fallender Graph */
+  stufenBlock({
+    forsch:"f2a", btn:"chk2a", fb:"fb2a", solved:"sv2a",
+    steps:[{txt:"",test:function(){
+      var a=av();
+      if(a>0 && a<1) return {ok:true,
+        line:"Fallender Graph gefunden: <span class='mf'><i>a</i> = "+mnum(a,1)+"</span>"};
+      if(Math.abs(a-1)<1e-9) return {ok:false,
+        msg:"<span class='mf'><i>a</i> = 1</span> ergibt eine <em>konstante</em> Funktion – der Graph fällt nicht."};
+      return {ok:false,msg:"Bei <span class='mf'><i>a</i> = "+mnum(a,1)+
+        "</span> steigt der Graph von links nach rechts. Vergleiche <span class='mf'><i>f</i>(−1)</span> und <span class='mf'><i>f</i>(1)</span> und probiere eine <strong>kleinere</strong> Basis."};
+    }}],
+    onDone:function(){ $("f2b").style.display="block"; }
+  });
+
+  /* Auftrag B: steigender Graph */
+  stufenBlock({
+    forsch:"f2b", btn:"chk2b", fb:"fb2b", solved:"sv2b",
+    steps:[{txt:"",test:function(){
+      var a=av();
+      if(a>1) return {ok:true,
+        line:"Steigender Graph gefunden: <span class='mf'><i>a</i> = "+mnum(a,1)+"</span>"};
+      if(Math.abs(a-1)<1e-9) return {ok:false,
+        msg:"<span class='mf'><i>a</i> = 1</span> ergibt eine konstante Funktion – der Graph steigt nicht."};
+      return {ok:false,msg:"Bei <span class='mf'><i>a</i> = "+mnum(a,1)+
+        "</span> fällt der Graph. Probiere eine Basis <strong>größer als 1</strong>."};
+    }}],
+    onDone:function(){ $("wrapQ2").style.display="block"; }
+  });
+
+  /* Auftrag C: Grenzfall */
+  stufenBlock({
+    forsch:"f2c", btn:"chk2c", fb:"fb2c", solved:"sv2c",
+    steps:[{txt:"",test:function(){
+      var a=av();
+      if(Math.abs(a-1)<1e-9) return {ok:true,
+        line:"Grenzfall gefunden: <span class='mf'><i>a</i> = 1</span> ergibt <span class='mf'><i>f</i>(<i>x</i>) = 1</span>"};
+      return {ok:false,msg:"Bei <span class='mf'><i>a</i> = "+mnum(a,1)+"</span> "+
+        (a>1?"steigt":"fällt")+" der Graph noch. Gesucht ist genau die Basis, bei der sich gar nichts mehr ändert."};
+    }}],
+    onDone:function(){ $("wrapQ2c").style.display="block"; }
+  });
+
+  buildScale("scale2",[{x:0.2,t:"0,2"},{x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3"}],0.2,3);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: C */
+mc("q2","Fasse deine beiden Einstellungen zusammen: Was gilt für <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>?",[
+  {t:"Der Graph steigt für <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> und fällt für <span class='mf'><i>a</i> &gt; 1</span>.",
+   no:"Das ist genau vertauscht. Sieh dir noch einmal an, welche Basis du für den fallenden Graphen gebraucht hast."},
+  {t:"Der Graph steigt immer, nur unterschiedlich steil.",
+   no:"Stelle <span class='mf'><i>a</i> = 0,4</span> ein und vergleiche <span class='mf'><i>f</i>(−1)</span> mit <span class='mf'><i>f</i>(1)</span>."},
+  {t:"Für <span class='mf'><i>a</i> &gt; 1</span> steigt der Graph, für <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> fällt er.",
+   ok:"<span class='mf'><i>a</i> &gt; 1</span> bedeutet <strong>streng monoton steigend</strong>, <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> bedeutet <strong>streng monoton fallend</strong>."}
+],2,"Vergleiche für eine feste Basis die drei angezeigten Werte <span class='mf'><i>f</i>(−1)</span>, <span class='mf'><i>f</i>(0)</span>, <span class='mf'><i>f</i>(1)</span>: Werden sie von links nach rechts größer oder kleiner?",
+function(){ $("f2c").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: A */
+mc("q2c","Warum wird der Grenzfall <span class='mf'><i>a</i> = 1</span> bei Exponentialfunktionen ausgeschlossen?",[
+  {t:"Weil <span class='mf'>1<sup><i>x</i></sup> = 1</span> für jedes <span class='m'>x</span> gilt – es entsteht eine konstante Funktion.",
+   ok:"Es gibt weder Zunahme noch Abnahme. Deshalb fordert man <span class='mf'><i>a</i> ≠ 1</span>."},
+  {t:"Weil <span class='mf'>1<sup><i>x</i></sup></span> nicht definiert ist.",
+   no:"Rechne nach: <span class='mf'>1<sup>2</sup> = 1</span>, <span class='mf'>1<sup>−3</sup> = 1</span>. Der Wert ist sehr wohl definiert."},
+  {t:"Weil der Graph dann die <span class='m'>x</span>-Achse schneiden würde.",
+   no:"Sieh dir den Graphen an: Er liegt als waagrechte Gerade auf der Höhe 1 – also gar nicht auf der <span class='m'>x</span>-Achse."}
+],0,"Berechne <span class='mf'>1<sup>0</sup></span>, <span class='mf'>1<sup>1</sup></span> und <span class='mf'>1<sup>5</sup></span>. Was fällt dir auf?",
+function(){ $("heft2").style.display="block"; setDone(1); measureChrome(); });
+
+/* =========================================================
+   STATION 3 – Gemeinsame Eigenschaften
+   ========================================================= */
+/* ---- Experiment A: Schnittpunkt mit der y-Achse ---- */
+var S3A=(function(){
+  var B=Board($("svg3a"),{w:480,h:300,xmin:-3.3,xmax:3.3,ymin:-1.0,ymax:8.4,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Graph von a hoch x mit markiertem Schnittpunkt mit der y-Achse"});
+  function av(){ return Math.round(Number($("sl3a").value)*10)/10; }
+  function draw(){
+    var a=av();
+    B.reset();
+    B.curve(function(x){return pw(a,x);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    B.dot(0,1,{color:"#c0392b",r:7});
+    B.text(1.15,1,"S(0 | 1)",{dy:-14,fill:"#9b2c1f",size:14});
+    $("v3aa").textContent=mnum(a,1);
+    $("v3asub").innerHTML="<span class='mf'>S(0 | "+mnum(pw(a,0),2)+")</span>";
+  }
+  $("sl3a").addEventListener("input",draw);
+
+  stufenBlock({
+    forsch:"f3a", instr:"instr3a", btn:"chk3a", fb:"fb3a", prot:"prot3a", solved:"sv3a",
+    steps:[
+      {txt:"Wähle eine Basis mit <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> und prüfe den Schnittpunkt.",
+       test:function(){
+         var a=av();
+         if(a>0 && a<1) return {ok:true,
+           line:"<span class='mf'><i>a</i> = "+mnum(a,1)+" &nbsp;→&nbsp; S(0 | 1)</span>",
+           msg:"Merke dir diesen Schnittpunkt."};
+         return {ok:false,msg:"<span class='mf'><i>a</i> = "+mnum(a,1)+
+           "</span> liegt nicht zwischen 0 und 1. Schiebe den Regler nach links unter die 1."};
+       }},
+      {txt:"Wähle nun eine Basis mit <span class='mf'><i>a</i> &gt; 1</span> und prüfe erneut.",
+       test:function(){
+         var a=av();
+         if(a>1) return {ok:true,
+           line:"<span class='mf'><i>a</i> = "+mnum(a,1)+" &nbsp;→&nbsp; S(0 | 1)</span>"};
+         return {ok:false,msg:"<span class='mf'><i>a</i> = "+mnum(a,1)+
+           "</span> ist nicht größer als 1. Schiebe den Regler nach rechts über die 1."};
+       }}
+    ],
+    summary:function(){ return "Beide Fälle geprüft – der Schnittpunkt bleibt <span class='mf'>S(0 | 1)</span>."; },
+    onDone:function(){ $("wrapQ3a").style.display="block"; }
+  });
+
+  buildScale("scale3a",[{x:0.2,t:"0,2"},{x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3"}],0.2,3);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: B */
+mc("q3a","Du hast zwei ganz verschiedene Basen geprüft. Was gilt für den Schnittpunkt mit der <span class='m'>y</span>-Achse?",[
+  {t:"Er hängt von <span class='m'>a</span> ab: Je größer <span class='m'>a</span>, desto höher liegt er.",
+   no:"Vergleiche deine beiden Protokollzeilen: Stand dort zweimal dasselbe oder zweimal etwas anderes?"},
+  {t:"Er ist immer <span class='mf'><i>P</i>(0 | 1)</span>, denn <span class='mf'><i>a</i><sup>0</sup> = 1</span>.",
+   ok:"Jede Potenz mit dem Exponenten 0 ergibt 1. Deshalb verlaufen <em>alle</em> Graphen von <span class='mf'><i>a</i><sup><i>x</i></sup></span> durch diesen einen Punkt."},
+  {t:"Er liegt bei <span class='mf'><i>P</i>(1 | 0)</span>.",
+   no:"Achte auf die Reihenfolge der Koordinaten: Der Schnittpunkt mit der <span class='m'>y</span>-Achse hat immer die <span class='m'>x</span>-Koordinate 0."}
+],1,"Setze <span class='mf'><i>x</i> = 0</span> in <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span> ein. Was ergibt <span class='mf'><i>a</i><sup>0</sup></span> – egal welche Basis?",
+function(){ $("c3b").style.display="block"; measureChrome(); });
+
+/* ---- Experiment B: Positivitaet systematisch ---- */
+var S3B=(function(){
+  var B=Board($("svg3b"),{w:480,h:310,xmin:-3.3,xmax:3.3,ymin:-3.3,ymax:8.4,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Graph von a hoch x mit beweglichem Punkt, auch der Bereich unterhalb der x-Achse ist sichtbar"});
+  function av(){ return Math.round(Number($("sl3b1").value)*10)/10; }
+  function xv(){ return Math.round(Number($("sl3b2").value)*10)/10; }
+  function draw(){
+    var a=av(), x=xv(), y=pw(a,x);
+    B.reset();
+    B.curve(function(t){return pw(a,t);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    B.seg(x,0,x,y,{dash:"4 4",color:"#c0392b",w:1.4});
+    B.dot(x,y,{color:"#c0392b",r:6.5});
+    var tx=Math.min(Math.max(x,B.xmin+1.0),B.xmax-1.0);
+    var ty=Math.min(y,B.ymax-0.7);
+    B.text(tx,ty,mnum(y,3),{dy:-13,fill:"#9b2c1f",size:14});
+    $("v3blab").innerHTML="<i>f</i>("+mnum(x,1)+")&nbsp;=&nbsp;";
+    $("v3bval").textContent=mnum(y,4);
+    $("v3bsub").innerHTML = "Basis <span class='mf'><i>a</i> = "+mnum(a,1)+"</span> · "+
+      (y>0?"Der Wert ist positiv.":"…");
+  }
+  $("sl3b1").addEventListener("input",draw);
+  $("sl3b2").addEventListener("input",draw);
+
+  function fall(bedA,bedX,txtA,txtX){
+    return {txt:"Stelle ein: <strong>"+txtA+"</strong> und <strong>"+txtX+"</strong>.",
+      test:function(){
+        var a=av(), x=xv(), y=pw(a,x);
+        if(!bedA(a)) return {ok:false,msg:"Die Basis <span class='mf'><i>a</i> = "+mnum(a,1)+
+          "</span> passt noch nicht. Gefordert ist "+txtA+"."};
+        if(!bedX(x)) return {ok:false,msg:"Die Stelle <span class='mf'><i>x</i> = "+mnum(x,1)+
+          "</span> passt noch nicht. Gefordert ist "+txtX+"."};
+        return {ok:true,
+          line:"<span class='mf'><i>a</i> = "+mnum(a,1)+", <i>x</i> = "+mnum(x,1)+
+               " &nbsp;→&nbsp; <i>f</i>(<i>x</i>) = "+mnum(y,4)+" &gt; 0</span>"};
+      }};
+  }
+
+  stufenBlock({
+    forsch:"f3b", instr:"instr3b", btn:"chk3b", fb:"fb3b", prot:"prot3b", solved:"sv3b",
+    steps:[
+      fall(function(a){return a>1;},function(x){return x>0;},
+        "<span class='mf'><i>a</i> &gt; 1</span>","<span class='mf'><i>x</i> &gt; 0</span>"),
+      fall(function(a){return a>1;},function(x){return x<0;},
+        "<span class='mf'><i>a</i> &gt; 1</span>","<span class='mf'><i>x</i> &lt; 0</span>"),
+      fall(function(a){return a>0&&a<1;},function(x){return x>0;},
+        "<span class='mf'>0 &lt; <i>a</i> &lt; 1</span>","<span class='mf'><i>x</i> &gt; 0</span>"),
+      fall(function(a){return a>0&&a<1;},function(x){return x<0;},
+        "<span class='mf'>0 &lt; <i>a</i> &lt; 1</span>","<span class='mf'><i>x</i> &lt; 0</span>")
+    ],
+    summary:function(){ return "Alle vier Fälle geprüft – jeder Funktionswert war positiv."; },
+    onDone:function(){ $("wrapQ3b").style.display="block"; }
+  });
+
+  buildScale("scale3b1",[{x:0.2,t:"0,2"},{x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3"}],0.2,3);
+  buildScale("scale3b2",[{x:-4,t:"−4"},{x:-2,t:"−2"},{x:0,t:"0",mark:true},{x:2,t:"2"},{x:4,t:"4"}],-4,4);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: C */
+mc("q3b","In allen vier Fällen war der Funktionswert positiv. Welche Aussage folgt daraus für <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>?",[
+  {t:"Für große negative <span class='m'>x</span> wird <span class='mf'><i>f</i>(<i>x</i>)</span> negativ.",
+   no:"Genau das hast du in Fall 2 und Fall 4 geprüft – dort war der Wert klein, aber positiv."},
+  {t:"Es gibt genau eine Nullstelle.",
+   no:"Eine Nullstelle hieße <span class='mf'><i>f</i>(<i>x</i>) = 0</span>. In keinem deiner vier Fälle stand dort 0."},
+  {t:"Es gilt <span class='mf'><i>a</i><sup><i>x</i></sup> &gt; 0</span> für jede zulässige Basis und jedes <span class='mf'><i>x</i> ∈ ℝ</span>; der Graph hat keine Nullstelle.",
+   ok:"Alle von dir untersuchten Funktionswerte waren positiv, und allgemein ist eine Potenz mit positiver Basis immer positiv: <span class='mf'><i>a</i><sup><i>x</i></sup> &gt; 0</span>. Der Graph liegt also vollständig oberhalb der <span class='m'>x</span>-Achse und hat <strong>keine Nullstelle</strong>."}
+],2,"Die Basis <span class='m'>a</span> ist positiv. Ein Produkt aus lauter positiven Faktoren – und auch dessen Kehrwert – kann nie negativ oder null werden.",
+function(){ $("c3c").style.display="block"; measureChrome(); });
+
+/* ---- Experiment C1: Asymptote bei a > 1 ---- */
+var S3C=(function(){
+  var B=Board($("svg3c"),{w:480,h:280,xmin:-10.6,xmax:3.4,ymin:-0.8,ymax:4.6,
+    gridx:1,gridy:1,tickx:2,ticky:1,nameX:"x",nameY:"y",
+    label:"Graph von 2 hoch x von minus 10 bis 3, der Punkt wandert nach links"});
+  function xv(){ return Math.round(Number($("sl3c").value)*100)/100; }
+  function draw(){
+    var x=xv(), y=pw(2,x);
+    B.reset();
+    B.curve(function(t){return pw(2,t);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    B.seg(x,0,x,y,{dash:"4 4",color:"#c0392b",w:1.4});
+    B.dot(x,y,{color:"#c0392b",r:6});
+    $("v3clab").innerHTML="2<sup>"+mnum(x,2)+"</sup>&nbsp;=&nbsp;";
+    $("v3cval").textContent=mnum(y,6);
+    $("v3csub").textContent = x<=-8 ? "Sehr klein – aber immer noch größer als 0."
+      : (x<0 ? "Wandere noch weiter nach links." : "Wandere nach links.");
+  }
+  $("sl3c").addEventListener("input",draw);
+
+  stufenBlock({
+    forsch:"f3c", btn:"chk3c", fb:"fb3c", solved:"sv3c",
+    steps:[{txt:"",test:function(){
+      var x=xv();
+      if(x<=-8) return {ok:true,
+        line:"Bis <span class='mf'><i>x</i> = "+mnum(x,2)+"</span> gewandert: <span class='mf'>2<sup>"+
+             mnum(x,2)+"</sup> ≈ "+mnum(pw(2,x),6)+" &gt; 0</span>"};
+      return {ok:false,msg:"Du bist erst bei <span class='mf'><i>x</i> = "+mnum(x,2)+
+        "</span>. Schiebe den Regler weiter nach links, mindestens bis <span class='mf'><i>x</i> = −8</span>."};
+    }}],
+    onDone:function(){ $("wrapQ3c").style.display="block"; }
+  });
+
+  buildScale("scale3c",[{x:-10,t:"−10"},{x:-6,t:"−6"},{x:-2,t:"−2"},{x:0,t:"0",mark:true},{x:3,t:"3"}],-10,3);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: A */
+mc("q3c","Wie verhält sich der Graph von <span class='mf'><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup></span> weit links?",[
+  {t:"Er nähert sich der <span class='m'>x</span>-Achse beliebig nah an, erreicht sie aber nie.",
+   ok:"Die Werte werden beliebig klein, bleiben aber positiv. Man sagt: Die <span class='m'>x</span>-Achse ist <strong>waagrechte Asymptote</strong>."},
+  {t:"Er trifft die <span class='m'>x</span>-Achse bei etwa <span class='mf'><i>x</i> = −10</span>.",
+   no:"Lies den angezeigten Funktionswert bei <span class='mf'><i>x</i> = −10</span> genau ab. Steht dort wirklich 0?"},
+  {t:"Er wird ab einer Stelle negativ.",
+   no:"Alle angezeigten Werte sind positiv – nur eben sehr klein. Prüfe das noch einmal bei <span class='mf'><i>x</i> = −9</span>."}
+],0,"Vergleiche <span class='mf'>2<sup>−4</sup> = 0,0625</span> mit <span class='mf'>2<sup>−8</sup> ≈ 0,0039</span>: kleiner und kleiner, aber nie 0.",
+function(){ $("c3d").style.display="block"; measureChrome(); });
+
+/* ---- Experiment C2: zweite Richtung, verpflichtend ---- */
+var S3D=(function(){
+  var B=Board($("svg3d"),{w:480,h:280,xmin:-3.4,xmax:10.6,ymin:-0.8,ymax:4.6,
+    gridx:1,gridy:1,tickx:2,ticky:1,nameX:"x",nameY:"y",
+    label:"Graph von 0,5 hoch x von minus 3 bis 10, der Punkt wandert nach rechts"});
+  function xv(){ return Math.round(Number($("sl3d").value)*100)/100; }
+  function draw(){
+    var x=xv(), y=pw(0.5,x);
+    B.reset();
+    B.curve(function(t){return pw(0.5,t);},B.xmin,B.xmax,{color:"#b45309",w:3});
+    B.seg(x,0,x,y,{dash:"4 4",color:"#c0392b",w:1.4});
+    B.dot(x,y,{color:"#c0392b",r:6});
+    $("v3dlab").innerHTML="0,5<sup>"+mnum(x,2)+"</sup>&nbsp;=&nbsp;";
+    $("v3dval").textContent=mnum(y,6);
+    $("v3dsub").textContent = x>=8 ? "Sehr klein – aber immer noch größer als 0."
+      : "Wandere weiter nach rechts.";
+  }
+  $("sl3d").addEventListener("input",draw);
+
+  stufenBlock({
+    forsch:"f3d", btn:"chk3d", fb:"fb3d", solved:"sv3d",
+    steps:[{txt:"",test:function(){
+      var x=xv();
+      if(x>=8) return {ok:true,
+        line:"Bis <span class='mf'><i>x</i> = "+mnum(x,2)+"</span> gewandert: <span class='mf'>0,5<sup>"+
+             mnum(x,2)+"</sup> ≈ "+mnum(pw(0.5,x),6)+" &gt; 0</span>"};
+      return {ok:false,msg:"Du bist erst bei <span class='mf'><i>x</i> = "+mnum(x,2)+
+        "</span>. Schiebe den Regler weiter nach rechts, mindestens bis <span class='mf'><i>x</i> = 8</span>."};
+    }}],
+    onDone:function(){
+      $("fb3dins").classList.add("show");
+      $("heft3").style.display="block";
+      setDone(2);
+    }
+  });
+
+  buildScale("scale3d",[{x:-3,t:"−3"},{x:0,t:"0",mark:true},{x:4,t:"4"},{x:8,t:"8"},{x:10,t:"10"}],-3,10);
+  draw();
+  return {};
+})();
+
+/* =========================================================
+   STATION 4 – Kehrwertbasen
+   ========================================================= */
+var S4=(function(){
+  var B=Board($("svg4"),{w:480,h:330,xmin:-3.3,xmax:3.3,ymin:-1.1,ymax:9.7,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Zwei Graphen: a hoch x in Blau und die Kehrwertbasis in Orange"});
+  /* Im Graphen wird immer nur das Punktpaar der AKTUELL eingestellten Basis
+     gezeigt. Sobald die Basis veraendert wird, verschwindet es; die geprueften
+     Werte bleiben unveraendert im Protokoll stehen. */
+  var aktuell=null;    /* {x: Stelle, a: Basis zum Zeitpunkt der Pruefung} */
+  var ersteBasis=null;
+
+  function av(){ return Math.round(Number($("sl4").value)*10)/10; }
+
+  function draw(){
+    var a=av(), x, y, ty;
+    B.reset();
+    B.curve(function(t){return pw(a,t);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    B.curve(function(t){return pw(1/a,t);},B.xmin,B.xmax,{color:"#b45309",w:3});
+    /* nur zeichnen, wenn das Punktpaar zur eingestellten Basis gehoert */
+    if(aktuell && Math.abs(a-aktuell.a)<1e-9){
+      x=aktuell.x; y=pw(a,x); ty=Math.min(y,B.ymax-0.5);
+      B.seg(-x,y,x,y,{dash:"5 4",color:"#94a3b8",w:1.4});
+      B.dot(x,y,{color:"#1f6fb2",r:6.5});
+      B.dot(-x,y,{color:"#b45309",r:6.5});
+      B.text(x,ty,"P("+mnum(x,0)+" | "+mnum(y,2)+")",{dy:-13,fill:"#14456e",size:13.5});
+      B.text(-x,ty,"P′("+mnum(-x,0)+" | "+mnum(y,2)+")",{dy:-13,fill:"#7a3907",size:13.5});
+    }
+    $("v4a").textContent=mnum(a,1);
+    $("v4inv").textContent=mnum(1/a,4);
+  }
+  $("sl4").addEventListener("input",draw);
+
+  function paarZeile(a,x){
+    var y=pw(a,x);
+    return "<span class='mf'><i>a</i> = "+mnum(a,1)+": &nbsp; P("+mnum(x,0)+" | "+mnum(y,2)+
+           ") ↔ P′("+mnum(-x,0)+" | "+mnum(y,2)+")</span>";
+  }
+
+  stufenBlock({
+    forsch:"f4", instr:"instr4", btn:"chk4", fb:"fb4", prot:"prot4", solved:"sv4",
+    steps:[
+      {txt:"Wähle eine beliebige Basis <span class='m'>a</span> und lass ein Punktpaar untersuchen.",
+       test:function(){
+         var a=av();
+         ersteBasis=a; aktuell={x:2,a:a}; draw();
+         return {ok:true,line:paarZeile(a,2),
+           msg:"Beide Punkte liegen gleich hoch – nur die <span class='m'>x</span>-Koordinate hat das Vorzeichen gewechselt."};
+       }},
+      {txt:"Wähle jetzt eine <strong>deutlich andere</strong> Basis (mindestens 0,6 Unterschied) und untersuche ein zweites Punktpaar.",
+       test:function(){
+         var a=av(), d=Math.abs(a-ersteBasis);
+         if(d<0.6-1e-9) return {ok:false,
+           msg:"Deine Basis unterscheidet sich nur um <span class='mf'>"+mnum(d,1)+
+               "</span> von der ersten (<span class='mf'><i>a</i> = "+mnum(ersteBasis,1)+
+               "</span>). Wähle eine Basis, die sich um mindestens <span class='mf'>0,6</span> unterscheidet."};
+         aktuell={x:1,a:a}; draw();
+         return {ok:true,line:paarZeile(a,1)};
+       }}
+    ],
+    summary:function(){ return "Zwei Punktpaare untersucht – jedes Mal <span class='mf'>(<i>x</i> | <i>y</i>) ↔ (−<i>x</i> | <i>y</i>)</span>."; },
+    onDone:function(){
+      $("herl4").style.display="block";
+      $("wrapQ4").style.display="block";
+    }
+  });
+
+  buildScale("scale4",[{x:1.2,t:"1,2"},{x:2,t:"2",mark:true},{x:2.5,t:"2,5"},{x:3,t:"3"}],1.2,3);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: C */
+mc("q4","Wie liegen die Graphen von <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span> und <span class='mf'><i>g</i>(<i>x</i>) = (1/<i>a</i>)<sup><i>x</i></sup></span> zueinander?",[
+  {t:"Sie sind punktsymmetrisch zum Ursprung.",
+   no:"Bei Punktsymmetrie zum Ursprung müsste einer der Graphen unterhalb der <span class='m'>x</span>-Achse liegen. Tut er das?"},
+  {t:"Sie sind achsensymmetrisch bezüglich der <span class='m'>x</span>-Achse.",
+   no:"Dann läge <span class='mf'><i>g</i></span> unterhalb der <span class='m'>x</span>-Achse. Beide Graphen liegen aber oberhalb."},
+  {t:"Sie sind achsensymmetrisch bezüglich der <span class='m'>y</span>-Achse, denn <span class='mf'>(1/<i>a</i>)<sup><i>x</i></sup> = <i>a</i><sup>−<i>x</i></sup> = <i>f</i>(−<i>x</i>)</span>.",
+   ok:"Zu jedem Punkt <span class='mf'>P(<i>x</i> | <i>y</i>)</span> auf <span class='mf'><i>f</i></span> gehört der Punkt <span class='mf'>P′(−<i>x</i> | <i>y</i>)</span> auf <span class='mf'><i>g</i></span>."}
+],2,"Sieh dir deine beiden Protokollzeilen an: Die <span class='m'>y</span>-Koordinate bleibt gleich, nur das Vorzeichen der <span class='m'>x</span>-Koordinate dreht sich um. Welche Achse ist dann die Spiegelachse?",
+function(){ $("heft4").style.display="block"; setDone(3); measureChrome(); });
+
+/* =========================================================
+   STATION 5 – Das b-Labor
+   Referenzgraph f(x) = 2^x ist dauerhaft gestrichelt sichtbar.
+   Die Auftraege verlangen eine gezielte Einstellung, die geprueft wird.
+   ========================================================= */
+var B5VALS=[-3,-2,-1,-0.5,0.5,1,2,3];
+var S5=(function(){
+  var B=Board($("svg5"),{w:480,h:340,xmin:-3.3,xmax:3.3,ymin:-8.6,ymax:8.6,
+    gridx:1,gridy:1,tickx:1,ticky:2,nameX:"x",nameY:"y",
+    label:"Graph von h von x gleich b mal 2 hoch x mit gestricheltem Referenzgraphen 2 hoch x"});
+
+  function bv(){ return B5VALS[Number($("sl5").value)]; }
+
+  function draw(){
+    var b=bv();
+    B.reset();
+    /* Referenzgraph bleibt immer sichtbar */
+    B.curve(function(x){return pw(2,x);},B.xmin,B.xmax,{color:"#94a3b8",w:2.4,dash:"7 5"});
+    B.curve(function(x){return b*pw(2,x);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    /* Vergleichspunkte bei x = 1 */
+    B.seg(1,pw(2,1),1,b*pw(2,1),{dash:"4 4",color:"#94a3b8",w:1.4});
+    B.dot(1,pw(2,1),{color:"#94a3b8",r:5});
+    B.dot(1,b*pw(2,1),{color:"#1f6fb2",r:5.5});
+    B.dot(0,b,{color:"#c0392b",r:6.5});
+    B.text(0,Math.min(b,B.ymax-0.6),"P(0 | "+mnum(b,1)+")",
+      {dx:12,dy:(b>=0?-13:20),anchor:"start",fill:"#9b2c1f",size:14});
+    $("v5b").textContent=mnum(b,1);
+    $("v5h0").textContent=mnum(b,1);
+    $("v5sub").innerHTML="Vergleich bei <span class='mf'><i>x</i> = 1</span>: &nbsp;"+
+      "<span class='mf'><i>f</i>(1) = 2</span>, &nbsp;<span class='mf'><i>h</i>(1) = "+mnum(b*2,2)+"</span>";
+  }
+  $("sl5").addEventListener("input",draw);
+
+  function fehlText(b,ziel){
+    return "Mit <span class='mf'><i>b</i> = "+mnum(b,1)+"</span> gilt <span class='mf'><i>h</i>(1) = "+
+      mnum(b*2,2)+"</span>, der Referenzgraph liefert dort <span class='mf'><i>f</i>(1) = 2</span>. "+ziel;
+  }
+
+  /* ---- Forschung A: Streckung und Stauchung ---- */
+  stufenBlock({
+    forsch:"f5a", instr:"instr5a", btn:"chk5a", fb:"fb5a", prot:"prot5a", solved:"sv5a",
+    steps:[
+      {txt:"Stelle <span class='m'>b</span> so ein, dass <strong>alle Funktionswerte doppelt so groß</strong> sind wie beim Referenzgraphen <span class='mf'><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup></span>.",
+       test:function(){
+         var b=bv();
+         if(b===2) return {ok:true,
+           line:"doppelt so groß: <span class='mf'><i>b</i> = 2</span> &nbsp;→&nbsp; <span class='mf'><i>h</i>(1) = 4 = 2 · 2</span>",
+           msg:"Jeder Funktionswert wurde mit 2 multipliziert."};
+         return {ok:false,msg:fehlText(b,"Gesucht ist ein <span class='m'>b</span>, für das <span class='mf'><i>h</i>(1) = 4</span> herauskommt.")};
+       }},
+      {txt:"Stelle <span class='m'>b</span> jetzt so ein, dass alle Funktionswerte <strong>halb so groß</strong> sind wie beim Referenzgraphen.",
+       test:function(){
+         var b=bv();
+         if(b===0.5) return {ok:true,
+           line:"halb so groß: <span class='mf'><i>b</i> = 0,5</span> &nbsp;→&nbsp; <span class='mf'><i>h</i>(1) = 1 = 2 : 2</span>"};
+         return {ok:false,msg:fehlText(b,"Gesucht ist ein <span class='m'>b</span>, für das <span class='mf'><i>h</i>(1) = 1</span> herauskommt.")};
+       }}
+    ],
+    summary:function(){ return "Streckung und Stauchung erzeugt: <span class='mf'><i>b</i> = 2</span> und <span class='mf'><i>b</i> = 0,5</span>."; },
+    onDone:function(){ $("wrapQ5a").style.display="block"; }
+  });
+
+  /* ---- Forschung B: Spiegelung ---- */
+  stufenBlock({
+    forsch:"f5b", instr:"instr5b", btn:"chk5b", fb:"fb5b", prot:"prot5b", solved:"sv5b",
+    steps:[
+      {txt:"Stelle <span class='m'>b</span> so ein, dass der Graph genau das <strong>Spiegelbild</strong> des Referenzgraphen <span class='mf'>2<sup><i>x</i></sup></span> an der <span class='m'>x</span>-Achse ist.",
+       test:function(){
+         var b=bv();
+         if(b===-1) return {ok:true,
+           line:"Spiegelung erzeugt: <span class='mf'><i>b</i> = −1</span> &nbsp;→&nbsp; <span class='mf'><i>h</i>(1) = −2</span>",
+           msg:"Gleiche Höhe, andere Seite der <span class='m'>x</span>-Achse."};
+         if(b>0) return {ok:false,msg:"Mit <span class='mf'><i>b</i> = "+mnum(b,1)+
+           "</span> liegt der Graph noch oberhalb der <span class='m'>x</span>-Achse. Ein Spiegelbild muss <em>unterhalb</em> liegen."};
+         return {ok:false,msg:fehlText(b,"Beim Spiegelbild gehört zu <span class='mf'><i>f</i>(1) = 2</span> der Wert <span class='mf'><i>h</i>(1) = −2</span>.")};
+       }},
+      {txt:"Stelle nun einen gespiegelten Graphen ein, dessen Funktionswerte <strong>betragsmäßig doppelt so groß</strong> sind.",
+       test:function(){
+         var b=bv();
+         if(b===-2) return {ok:true,
+           line:"gespiegelt und gestreckt: <span class='mf'><i>b</i> = −2</span> &nbsp;→&nbsp; <span class='mf'><i>h</i>(1) = −4</span>"};
+         if(b>0) return {ok:false,msg:"Mit <span class='mf'><i>b</i> = "+mnum(b,1)+
+           "</span> ist der Graph nicht gespiegelt. Gesucht ist ein <strong>negatives</strong> <span class='m'>b</span>."};
+         return {ok:false,msg:fehlText(b,"Gesucht ist <span class='mf'><i>h</i>(1) = −4</span>.")};
+       }}
+    ],
+    summary:function(){ return "Spiegelung geprüft: <span class='mf'><i>b</i> = −1</span> und <span class='mf'><i>b</i> = −2</span>."; },
+    onDone:function(){ $("wrapQ5b").style.display="block"; }
+  });
+
+  buildScale("scale5",[{x:0,t:"−3"},{x:1,t:"−2"},{x:2,t:"−1"},{x:3,t:"−0,5"},
+    {x:4,t:"0,5"},{x:5,t:"1",mark:true},{x:6,t:"2"},{x:7,t:"3"}],0,7);
+  draw();
+  return {};
+})();
+
+/* richtige Antwort: A */
+mc("q5a","Welche Wirkung hat der Betrag <span class='mf'>| <i>b</i> |</span>?",[
+  {t:"<span class='mf'>| <i>b</i> |</span> bestimmt die Streckung bzw. Stauchung in <span class='m'>y</span>-Richtung: <span class='mf'>| <i>b</i> | &gt; 1</span> → Streckung, <span class='mf'>0 &lt; | <i>b</i> | &lt; 1</span> → Stauchung.",
+   ok:"Der Faktor <span class='m'>b</span> multipliziert zwar alle Funktionswerte; für Streckung bzw. Stauchung ist jedoch der Betrag <span class='mf'>| <i>b</i> |</span> entscheidend."},
+  {t:"Der Graph wird um <span class='m'>b</span> nach oben bzw. unten verschoben.",
+   no:"Vergleiche bei <span class='mf'><i>x</i> = 2</span>: Aus 4 wird mit <span class='mf'><i>b</i> = 2</span> der Wert 8. Das ist ein Unterschied von 4, nicht von 2."},
+  {t:"Die Basis ändert sich von 2 auf <span class='m'>b</span>.",
+   no:"Die Basis bleibt fest bei 2. Sieh dir den Term <span class='mf'><i>h</i>(<i>x</i>) = <i>b</i> · 2<sup><i>x</i></sup></span> genau an."}
+],0,"Vergleiche bei <span class='mf'><i>x</i> = 2</span> den Abstand zur <span class='m'>x</span>-Achse: aus 4 wird mit <span class='mf'><i>b</i> = 2</span> der Wert 8, mit <span class='mf'><i>b</i> = 0,5</span> der Wert 2. Entscheidend für Streckung und Stauchung ist der Betrag von <span class='m'>b</span>.",
+function(){ $("f5b").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: B */
+mc("q5b","Was bewirkt ein <strong>negatives</strong> <span class='m'>b</span>?",[
+  {t:"Der Graph wird an der <span class='m'>y</span>-Achse gespiegelt.",
+   no:"Bei einer Spiegelung an der <span class='m'>y</span>-Achse bliebe der Graph oberhalb der <span class='m'>x</span>-Achse. Wo liegt er jetzt?"},
+  {t:"Der Graph wird zusätzlich an der <span class='m'>x</span>-Achse gespiegelt; dadurch kehrt sich auch das Monotonieverhalten um.",
+   ok:"Aus jedem Funktionswert <span class='m'>y</span> wird <span class='mf'>−<i>y</i></span>. <span class='mf'>2<sup><i>x</i></sup></span> steigt, <span class='mf'>−2<sup><i>x</i></sup></span> fällt."},
+  {t:"Es gibt keinen Graphen, weil <span class='mf'>2<sup><i>x</i></sup></span> nie negativ wird.",
+   no:"<span class='mf'>2<sup><i>x</i></sup></span> ist tatsächlich immer positiv – aber der Faktor <span class='m'>b</span> darf negativ sein. Das Produkt wird dann negativ."}
+],1,"Vergleiche <span class='mf'><i>b</i> = 2</span> und <span class='mf'><i>b</i> = −2</span> bei <span class='mf'><i>x</i> = 1</span>: 4 und −4. Gleich weit von der <span class='m'>x</span>-Achse entfernt, nur auf der anderen Seite.",
+function(){ $("wrapQ5c").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("q5c","Woran erkennst du <span class='m'>b</span> direkt am Graphen?",[
+  {t:"An der Steilheit des Graphen.",
+   no:"Die Steilheit hängt auch von der Basis <span class='m'>a</span> ab. Gesucht ist eine Stelle, an der man <span class='m'>b</span> unmittelbar ablesen kann."},
+  {t:"Am Schnittpunkt mit der <span class='m'>x</span>-Achse.",
+   no:"Der Graph schneidet die <span class='m'>x</span>-Achse gar nicht – auch nicht für negatives <span class='m'>b</span>."},
+  {t:"Am Schnittpunkt mit der <span class='m'>y</span>-Achse, denn <span class='mf'><i>h</i>(0) = <i>b</i> · <i>a</i><sup>0</sup> = <i>b</i></span>.",
+   ok:"Der Graph verläuft durch <span class='mf'><i>P</i>(0 | <i>b</i>)</span>. Damit lässt sich <span class='m'>b</span> sofort ablesen."}
+],2,"Setze <span class='mf'><i>x</i> = 0</span> ein. Wegen <span class='mf'><i>a</i><sup>0</sup> = 1</span> bleibt nur noch <span class='m'>b</span> übrig.",
+function(){ $("heft5").style.display="block"; setDone(4); measureChrome(); });
+
+/* =========================================================
+   Gemeinsamer Antwortgenerator fuer Terme b · a^x
+   Distraktoren bilden gezielt typische Fehlvorstellungen ab:
+   Faktor und Basis vertauscht, falscher y-Achsenabschnitt,
+   anderes Monotonieverhalten, falsches Vorzeichen.
+   Alle Kombinationen stammen aus geprueften Aufgabenobjekten.
+   ========================================================= */
+var DIST_TXT={
+  swap:"Hier sind Faktor und Basis vertauscht. Lies zuerst den <span class='m'>y</span>-Achsenabschnitt ab – er ist der Faktor <span class='m'>b</span>.",
+  yab:"Prüfe den <span class='m'>y</span>-Achsenabschnitt: Welchen Wert hat <span class='mf'><i>f</i>(0)</span>?",
+  mono:"Prüfe, ob der Graph steigt oder fällt – und denke daran, dass auch das Vorzeichen von <span class='m'>b</span> darüber mitentscheidet.",
+  vz:"Prüfe das Vorzeichen von <span class='m'>b</span>: Liegt der Graph oberhalb oder unterhalb der <span class='m'>x</span>-Achse?"
+};
+function makeOptions(a,b,seed){
+  var ds=[];
+  if(b>0 && b!==1 && b!==a) ds.push({a:b,b:a,why:"swap"});
+  else ds.push({a:a,b:2*b,why:"yab"});
+  ds.push({a:(a>1?0.5:2),b:b,why:"mono"});
+  ds.push({a:a,b:-b,why:"vz"});
+  var pos=((seed%4)+4)%4, opts=[], di=0, i;
+  for(i=0;i<4;i++){
+    if(i===pos) opts.push({a:a,b:b,corr:true});
+    else { opts.push(ds[di]); di++; }
+  }
+  return {opts:opts,correctIdx:pos};
+}
+function optionObjects(a,b,seed){
+  var r=makeOptions(a,b,seed), out=[];
+  r.opts.forEach(function(o){
+    if(o.corr){
+      out.push({t:termHTML(b,a),
+        ok:"<span class='mf'><i>b</i> = <i>f</i>(0) = "+mnum(b,2)+"</span> und "+
+           "<span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0) = "+mnum(a*b,2)+" : "+mnum(b,2)+" = "+mnum(a,2)+
+           "</span>. "+monoErklaerung(a,b)});
+    } else {
+      out.push({t:termHTML(o.b,o.a),no:DIST_TXT[o.why]});
+    }
+  });
+  return {opts:out,correctIdx:r.correctIdx};
+}
+
+/* =========================================================
+   STATION 6 – Vom Graphen zur Funktionsgleichung
+   Kuratierter, vollstaendig geprüfter Aufgabenpool.
+   ========================================================= */
+var POOL6=[
+  {a:2,b:1},{a:2,b:2},{a:2,b:0.5},{a:2,b:-1},{a:2,b:-2},
+  {a:3,b:1},{a:3,b:2},{a:3,b:0.5},{a:3,b:-1},
+  {a:0.5,b:1},{a:0.5,b:2},{a:0.5,b:-2},
+  {a:1.5,b:1},{a:1.5,b:2},{a:1.5,b:-1},{a:1.5,b:-2}
+];
+var S6=(function(){
+  var B=Board($("svg6"),{w:480,h:340,xmin:-2.4,xmax:3.4,ymin:-5.3,ymax:7.3,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Koordinatensystem mit dem Graphen einer allgemeinen Exponentialfunktion"});
+  var last=-1, task=null, geloest=0, runde=0, verraten=false;
+
+  function drawTask(labels){
+    var a=task.a, b=task.b;
+    B.reset();
+    B.curve(function(x){return b*pw(a,x);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+    B.dot(0,b,{color:"#c0392b",r:6.5});
+    B.dot(1,a*b,{color:"#c0392b",r:6.5});
+    if(labels){
+      B.text(0,Math.min(b,B.ymax-0.5),"(0 | "+mnum(b,2)+")",
+        {dx:10,dy:(b>=0?-13:20),anchor:"start",fill:"#9b2c1f",size:14});
+      B.text(1,Math.min(a*b,B.ymax-0.5),"(1 | "+mnum(a*b,2)+")",
+        {dx:10,dy:(a*b>=0?-13:20),anchor:"start",fill:"#9b2c1f",size:14});
+    }
+  }
+
+  function neu(){
+    var i=Math.floor(Math.random()*POOL6.length);
+    if(POOL6.length>1){ while(i===last) i=Math.floor(Math.random()*POOL6.length); }
+    last=i; task=POOL6[i]; runde++; verraten=false;
+    $("g6w2").style.display="none";
+    $("g6w3").style.display="none";
+    $("g6done").style.display="none";
+    $("g6s2").innerHTML=""; $("g6s3").innerHTML="";
+    drawTask(false);
+    schritt1();
+    measureChrome();
+  }
+
+  function schritt1(){
+    numTask("g6s1",{
+      question:"<span class='gnr'>Schritt 1</span><br>Bestimme den Faktor <span class='m'>b</span>.",
+      lead:"<i>b</i>&nbsp;=&nbsp;",
+      aria:"Wert von b eingeben",
+      correct:task.b, tol:1e-6,
+      hints:["Betrachte den Schnittpunkt mit der <span class='m'>y</span>-Achse.",
+             "Es gilt <span class='mf'><i>b</i> = <i>f</i>(0)</span>. Lies ab, auf welcher Höhe der Graph die <span class='m'>y</span>-Achse schneidet – das Vorzeichen zählt mit."],
+      solution:"<span class='mf'><i>b</i> = <i>f</i>(0) = "+mnum(task.b,2)+"</span>",
+      ok:"<span class='mf'><i>f</i>(0) = "+mnum(task.b,2)+"</span> – das ist der Faktor <span class='m'>b</span>.",
+      onSolved:function(selbst){
+        if(!selbst) verraten=true;
+        drawTask(true);
+        $("g6w2").style.display="block";
+        schritt2();
+        measureChrome();
+      }
+    });
+  }
+
+  function schritt2(){
+    numTask("g6s2",{
+      pre:"<p class='small' style='margin:0 0 6px'>Markiert sind jetzt "+
+          "<span class='mf'><i>f</i>(0) = "+mnum(task.b,2)+"</span> und "+
+          "<span class='mf'><i>f</i>(1) = "+mnum(task.a*task.b,2)+"</span>.</p>",
+      question:"<span class='gnr'>Schritt 2</span><br>Bestimme die Basis <span class='m'>a</span>.",
+      lead:"<i>a</i>&nbsp;=&nbsp;",
+      aria:"Wert von a eingeben",
+      correct:task.a, tol:1e-6,
+      hints:["Von <span class='mf'><i>f</i>(0)</span> zu <span class='mf'><i>f</i>(1)</span> ist genau ein Schritt. Womit wird dabei multipliziert?",
+             "Rechne <span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0) = "+
+               mnum(task.a*task.b,2)+" : "+mnum(task.b,2)+"</span>."],
+      solution:"<span class='mf'><i>a</i> = "+mnum(task.a*task.b,2)+" : "+mnum(task.b,2)+" = "+mnum(task.a,2)+"</span>",
+      ok:"<span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0) = "+mnum(task.a,2)+"</span>.",
+      onSolved:function(selbst){
+        if(!selbst) verraten=true;
+        $("g6w3").style.display="block";
+        schritt3();
+        measureChrome();
+      }
+    });
+  }
+
+  function schritt3(){
+    var r=optionObjects(task.a,task.b,runde);
+    mc("g6s3","<span class='gnr'>Schritt 3</span><br>Wie lautet der Funktionsterm?",
+      r.opts,r.correctIdx,
+      "Setze deine Werte in <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> ein: "+
+      "<span class='m'>b</span> ist der Faktor vorne, <span class='m'>a</span> die Basis der Potenz.",
+      function(selbst){
+        /* Nur vollstaendig selbst geloeste Aufgaben zaehlen mit. */
+        var zaehlt = selbst && !verraten;
+        if(zaehlt) geloest++;
+        $("prog6").innerHTML="gelöst: <b>"+Math.min(geloest,3)+"</b> von 3";
+        $("g6done").style.display="block";
+        if(geloest>=3){
+          $("fb6done").innerHTML="<strong>3 von 3 geschafft</strong> – du kannst weiterüben "+
+            "oder zur nächsten Station gehen.";
+          setDone(5);
+        } else if(zaehlt){
+          $("fb6done").innerHTML="Aufgabe gelöst. Noch <strong>"+(3-geloest)+"</strong> bis zum Ziel.";
+        } else {
+          $("fb6done").innerHTML="Diese Aufgabe zählt nicht mit, weil eine Lösung angezeigt wurde. "+
+            "Versuche die nächste selbst.";
+        }
+        measureChrome();
+      });
+  }
+
+  $("btnNew6").onclick=neu;
+  neu();
+  return {};
+})();
+
+/* =========================================================
+   STATION 7 – Graphen- und Termtrainer (zwei Modi)
+   Saemtliche Rueckmeldungen nutzen monotonie(a,b) und
+   beruecksichtigen damit das Vorzeichen von b.
+   ========================================================= */
+var POOL7A=[
+  {a:3,b:2},{a:0.5,b:3},{a:2,b:-2},{a:1.5,b:2},
+  {a:2,b:0.5},{a:3,b:-1},{a:0.5,b:-2},{a:2,b:3}
+];
+var POOL7B=[
+  {a:0.5,b:2},{a:3,b:1},{a:2,b:-2},{a:3,b:0.5},
+  {a:2,b:1.5},{a:0.5,b:3},{a:1.5,b:-2},{a:1.5,b:2}
+];
+var STRAT_A="<strong>Strategie Graph → Term:</strong> 1. <span class='mf'><i>b</i> = <i>f</i>(0)</span> "+
+  "am <span class='m'>y</span>-Achsenabschnitt ablesen (mit Vorzeichen) &nbsp;·&nbsp; "+
+  "2. <span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0)</span> berechnen &nbsp;·&nbsp; "+
+  "3. in <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> einsetzen. "+
+  "Das funktioniert auch bei negativem <span class='m'>b</span>; die Monotonie dient nur als Kontrolle.";
+var STRAT_B="<strong>Strategie Term → Graph:</strong> 1. Vorzeichen von <span class='m'>b</span>: "+
+  "<span class='mf'><i>b</i> &gt; 0</span> → Graph oberhalb, <span class='mf'><i>b</i> &lt; 0</span> → "+
+  "unterhalb der <span class='m'>x</span>-Achse &nbsp;·&nbsp; 2. <span class='mf'><i>f</i>(0) = <i>b</i></span> "+
+  "als <span class='m'>y</span>-Achsenabschnitt &nbsp;·&nbsp; 3. Basis <span class='m'>a</span> betrachten "+
+  "&nbsp;·&nbsp; 4. Monotonie <em>unter Berücksichtigung von <span class='m'>b</span></em> beurteilen.";
+
+var S7=(function(){
+  var BA=Board($("svg7a"),{w:480,h:340,xmin:-2.4,xmax:3.4,ymin:-5.3,ymax:7.3,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Koordinatensystem mit dem Graphen einer Exponentialfunktion, der Term ist gesucht"});
+  var lastA=-1,lastB=-1,nA=0,nB=0,rundeA=0,rundeB=0,fertig=false,bReady=false;
+
+  function pruefeZiel(){
+    $("c7a").textContent=Math.min(nA,2)+"/2";
+    $("c7b").textContent=Math.min(nB,2)+"/2";
+    if(!fertig && nA>=2 && nB>=2){
+      fertig=true; setDone(6);
+      $("strat7").innerHTML="<strong>Geschafft:</strong> 2 von 2 in beiden Modi. "+
+        "Du kannst weiterüben oder zur nächsten Station gehen.";
+    }
+  }
+
+  /* ---------- Modus A: Graph → Term ---------- */
+  function neuA(){
+    var i=Math.floor(Math.random()*POOL7A.length);
+    while(i===lastA) i=Math.floor(Math.random()*POOL7A.length);
+    lastA=i; rundeA++;
+    var t=POOL7A[i];
+    BA.reset();
+    BA.curve(function(x){return t.b*pw(t.a,x);},BA.xmin,BA.xmax,{color:"#1f6fb2",w:3});
+    BA.dot(0,t.b,{color:"#c0392b",r:6.5});
+    BA.dot(1,t.a*t.b,{color:"#c0392b",r:6.5});
+    BA.text(0,Math.min(t.b,BA.ymax-0.5),"(0 | "+mnum(t.b,2)+")",
+      {dx:10,dy:(t.b>=0?-13:20),anchor:"start",fill:"#9b2c1f",size:14});
+    BA.text(1,Math.min(t.a*t.b,BA.ymax-0.5),"(1 | "+mnum(t.a*t.b,2)+")",
+      {dx:10,dy:(t.a*t.b>=0?-13:20),anchor:"start",fill:"#9b2c1f",size:14});
+    $("next7a").style.display="none";
+    var r=optionObjects(t.a,t.b,rundeA+2);
+    mc("q7a","Welcher Term gehört zu diesem Graphen?",r.opts,r.correctIdx,
+      "Arbeite mit den beiden markierten Punkten: <span class='mf'><i>b</i> = <i>f</i>(0)</span>, "+
+      "dann <span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0)</span>. "+
+      "Achte beim Ablesen von <span class='m'>b</span> auf das Vorzeichen.",
+      function(selbst){
+        if(selbst) nA++;
+        pruefeZiel();
+        $("next7a").style.display="flex";
+        measureChrome();
+      });
+    measureChrome();
+  }
+
+  /* ---------- Modus B: Term → Graph ---------- */
+  function neuB(){
+    var i=Math.floor(Math.random()*POOL7B.length);
+    while(i===lastB) i=Math.floor(Math.random()*POOL7B.length);
+    lastB=i; rundeB++;
+    var t=POOL7B[i];
+    var r=makeOptions(t.a,t.b,rundeB+1);
+    $("term7b").innerHTML="Gegeben ist <span class='mf' style='font-size:1.1rem'><i>f</i>(<i>x</i>) = </span>"+
+      termHTML(t.b,t.a)+" .";
+    var host=$("mini7b"); host.innerHTML="";
+    var fb=$("fb7b"); fb.className="fb"; fb.innerHTML="";
+    $("next7b").style.display="none";
+    var btns=[], erledigt=false, falsch=0;
+    r.opts.forEach(function(o,k){
+      var btn=document.createElement("button");
+      btn.type="button"; btn.className="minipick";
+      btn.setAttribute("aria-label","Koordinatensystem "+String.fromCharCode(65+k)+" auswählen");
+      var mk=document.createElement("span"); mk.className="mk";
+      mk.textContent=String.fromCharCode(65+k);
+      btn.appendChild(mk);
+      var bd=document.createElement("div"); btn.appendChild(bd);
+      var MB=Board(bd,{w:270,h:185,xmin:-2.4,xmax:2.4,ymin:-5.6,ymax:5.6,
+        gridx:1,gridy:1,tickx:2,ticky:2,fs:12,padL:24,padR:10,padT:8,padB:20,
+        nameX:"x",nameY:"y",label:"Koordinatensystem "+String.fromCharCode(65+k)});
+      MB.curve(function(x){return o.b*pw(o.a,x);},MB.xmin,MB.xmax,{color:"#1f6fb2",w:2.6});
+      MB.dot(0,o.b,{color:"#c0392b",r:4.5});
+      btn.onclick=function(){
+        if(erledigt) return;
+        if(k===r.correctIdx){
+          btn.classList.add("chosen-ok"); erledigt=true;
+          for(var z=0;z<btns.length;z++) btns[z].disabled=true;
+          fb.className="fb ok show";
+          fb.innerHTML="<strong>Richtig.</strong> Der <span class='m'>y</span>-Achsenabschnitt ist "+
+            "<span class='mf'>"+mnum(t.b,2)+"</span>. "+monoErklaerung(t.a,t.b);
+          nB++;
+          pruefeZiel();
+          $("next7b").style.display="flex";
+        } else {
+          btn.classList.add("chosen-no"); btn.disabled=true; falsch++;
+          fb.className="fb hint show";
+          if(falsch===1){
+            fb.innerHTML="<strong>Denkhinweis:</strong> Prüfe zuerst das Vorzeichen von "+
+              "<span class='m'>b</span> und den <span class='m'>y</span>-Achsenabschnitt: "+
+              "Der Graph muss "+lageSatz(t.b)+" liegen und die <span class='m'>y</span>-Achse bei "+
+              "<span class='mf'>"+mnum(t.b,2)+"</span> schneiden.";
+          } else {
+            fb.innerHTML="<strong>Noch ein Hinweis:</strong> Beurteile jetzt die Monotonie – "+
+              "<em>zusammen</em> mit dem Vorzeichen von <span class='m'>b</span>. "+
+              "Hier ist der gesuchte Graph <strong>"+monoSatz(t.a,t.b)+"</strong>.";
+          }
+        }
+        measureChrome();
+      };
+      btns.push(btn); host.appendChild(btn);
+    });
+    measureChrome();
+  }
+
+  $("btnNew7a").onclick=neuA;
+  $("btnNew7b").onclick=neuB;
+  $("m7a").onclick=function(){
+    $("m7a").classList.add("sel"); $("m7b").classList.remove("sel");
+    $("box7a").style.display="block"; $("box7b").style.display="none";
+    if(!fertig) $("strat7").innerHTML=STRAT_A;
+    measureChrome();
+  };
+  $("m7b").onclick=function(){
+    $("m7b").classList.add("sel"); $("m7a").classList.remove("sel");
+    $("box7b").style.display="block"; $("box7a").style.display="none";
+    if(!fertig) $("strat7").innerHTML=STRAT_B;
+    if(!bReady){ bReady=true; neuB(); }
+    measureChrome();
+  };
+  $("strat7").innerHTML=STRAT_A;
+  neuA();
+  return {};
+})();
+
+/* =========================================================
+   STATION 8 – Abschlusscheck
+   ========================================================= */
+/* richtige Antwort: B */
+mc("q8a","<strong>1.</strong> Welche Funktion ist eine <strong>Exponentialfunktion</strong>?",[
+  {t:"<span class='mf'><i>f</i>(<i>x</i>) = <i>x</i><sup>3</sup></span>",
+   no:"Hier steht die Variable in der Basis – das ist eine Potenzfunktion."},
+  {t:"<span class='mf'><i>f</i>(<i>x</i>) = 3<sup><i>x</i></sup></span>",
+   ok:"Die Variable steht im Exponenten, die Basis 3 ist fest."},
+  {t:"<span class='mf'><i>f</i>(<i>x</i>) = 3<i>x</i></span>",
+   no:"Das ist eine lineare Funktion."}
+],1,"Frage dich: Wo steht das <span class='m'>x</span> – in der Basis oder im Exponenten?",
+function(){ $("w8b").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("q8b","<strong>2.</strong> Gegeben ist <span class='mf'><i>f</i>(<i>x</i>) = 0,7<sup><i>x</i></sup></span>. Welche Aussage stimmt?",[
+  {t:"Der Graph ist streng monoton steigend, weil <span class='mf'>0,7 &gt; 0</span> ist.",
+   no:"Entscheidend ist nicht der Vergleich mit 0, sondern der Vergleich mit 1."},
+  {t:"Der Graph ist konstant.",
+   no:"Konstant wäre nur <span class='mf'>1<sup><i>x</i></sup></span>. Rechne <span class='mf'>0,7<sup>1</sup></span> und <span class='mf'>0,7<sup>2</sup></span> aus."},
+  {t:"Der Graph ist streng monoton fallend, weil <span class='mf'>0 &lt; 0,7 &lt; 1</span> ist.",
+   ok:"Die Basis liegt zwischen 0 und 1, und der Faktor vor der Potenz ist 1, also positiv – das bedeutet exponentielle Abnahme."}
+],2,"Vergleiche die Basis mit 1. Hier ist der Faktor <span class='mf'><i>b</i> = 1</span> positiv, deshalb entscheidet die Basis allein über die Monotonie.",
+function(){ $("w8c").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: A */
+mc("q8c","<strong>3.</strong> Welche Aussage gilt für <strong>jede</strong> Exponentialfunktion <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>?",[
+  {t:"<span class='mf'><i>f</i>(0) = 1</span>",
+   ok:"Wegen <span class='mf'><i>a</i><sup>0</sup> = 1</span> verläuft jeder Graph durch <span class='mf'><i>P</i>(0 | 1)</span>."},
+  {t:"Der Graph besitzt genau eine Nullstelle.",
+   no:"Alle Funktionswerte sind positiv – der Graph berührt die <span class='m'>x</span>-Achse nie."},
+  {t:"Der Graph verläuft durch <span class='mf'>(1 | 0)</span>.",
+   no:"Setze <span class='mf'><i>x</i> = 1</span> ein: <span class='mf'><i>a</i><sup>1</sup> = <i>a</i></span>. Das ist nicht 0."},
+  {t:"Alle Funktionswerte sind größer als 1.",
+   no:"Prüfe <span class='mf'>2<sup>−2</sup> = 0,25</span>. Positiv ja – aber größer als 1?"}
+],0,"Setze <span class='mf'><i>x</i> = 0</span> ein. Was ergibt <span class='mf'><i>a</i><sup>0</sup></span> für jede zulässige Basis?",
+function(){ $("w8d").style.display="block"; measureChrome(); });
+
+/* richtige Antwort: C */
+mc("q8d","<strong>4.</strong> Gegeben ist <span class='mf'><i>h</i>(<i>x</i>) = −3 · 2<sup><i>x</i></sup></span>. Was lässt sich direkt erkennen?",[
+  {t:"<span class='mf'><i>h</i>(0) = 2</span>, denn die Basis ist 2.",
+   no:"Setze <span class='mf'><i>x</i> = 0</span> ein: <span class='mf'>−3 · 2<sup>0</sup></span>. Was ergibt <span class='mf'>2<sup>0</sup></span>?"},
+  {t:"<span class='mf'><i>h</i>(0) = −6</span>, denn <span class='mf'>−3 · 2 = −6</span>.",
+   no:"Bei <span class='mf'><i>x</i> = 0</span> steht dort <span class='mf'>2<sup>0</sup></span>, nicht <span class='mf'>2<sup>1</sup></span>."},
+  {t:"<span class='mf'><i>h</i>(0) = −3</span>; wegen <span class='mf'><i>b</i> &lt; 0</span> ist der Graph an der <span class='m'>x</span>-Achse gespiegelt und liegt vollständig unterhalb.",
+   ok:"<span class='mf'><i>h</i>(0) = −3 · 2<sup>0</sup> = −3</span>. Durch das negative Vorzeichen liegt der Graph unterhalb der <span class='m'>x</span>-Achse und ist streng monoton <strong>fallend</strong> – obwohl die Basis größer als 1 ist."}
+],2,"Es gilt allgemein <span class='mf'><i>h</i>(0) = <i>b</i></span>. Ein negatives <span class='m'>b</span> bedeutet zusätzlich Spiegelung an der <span class='m'>x</span>-Achse.",
+function(){ $("w8e").style.display="block"; S8G(); measureChrome(); });
+
+/* kleiner Graph zu Aufgabe 5 */
+function S8G(){
+  var B=Board($("svg8"),{w:380,h:270,xmin:-1.6,xmax:2.6,ymin:-1.2,ymax:8.4,
+    gridx:1,gridy:1,tickx:1,ticky:1,nameX:"x",nameY:"y",
+    label:"Graph einer Exponentialfunktion durch die Punkte (0 | 2) und (1 | 6)"});
+  B.curve(function(x){return 2*pw(3,x);},B.xmin,B.xmax,{color:"#1f6fb2",w:3});
+  B.dot(0,2,{color:"#c0392b",r:6});
+  B.dot(1,6,{color:"#c0392b",r:6});
+  B.text(0,2,"P(0 | 2)",{dx:9,dy:-12,anchor:"start",fill:"#9b2c1f",size:13.5});
+  B.text(1,6,"Q(1 | 6)",{dx:9,dy:-12,anchor:"start",fill:"#9b2c1f",size:13.5});
+}
+
+/* richtige Antwort: B */
+mc("q8e","<strong>5.</strong> Der Graph gehört zu <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Wie lautet der Term?",[
+  {t:"<span class='mf'>3 · 2<sup><i>x</i></sup></span>",
+   no:"Hier sind Faktor und Basis vertauscht. Der <span class='m'>y</span>-Achsenabschnitt ist 2, nicht 3."},
+  {t:"<span class='mf'>2 · 3<sup><i>x</i></sup></span>",
+   ok:"<span class='mf'><i>b</i> = <i>f</i>(0) = 2</span> und <span class='mf'><i>a</i> = 6 : 2 = 3</span>."},
+  {t:"<span class='mf'>2 · 0,5<sup><i>x</i></sup></span>",
+   no:"Wegen <span class='mf'><i>b</i> &gt; 0</span> und <span class='mf'>0 &lt; 0,5 &lt; 1</span> wäre dieser Graph fallend. Der gezeigte Graph steigt."},
+  {t:"<span class='mf'>−2 · 3<sup><i>x</i></sup></span>",
+   no:"Mit negativem Faktor läge der Graph unterhalb der <span class='m'>x</span>-Achse und wäre fallend."}
+],1,"Erst <span class='mf'><i>b</i> = <i>f</i>(0)</span> ablesen, dann <span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0)</span> berechnen.",
+function(){ $("ende").style.display="block"; measureChrome(); });
+
+/* =========================================================
+   Start
+   ========================================================= */
+buildSteps();
+render();
+measureChrome();
+
+</script>
+</body>
+</html>
