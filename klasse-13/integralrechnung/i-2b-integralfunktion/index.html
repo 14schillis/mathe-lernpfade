@@ -330,6 +330,40 @@ footer.nav{
   .locknote{padding-bottom:5px;font-size:.79rem}
   .steps{padding-bottom:4px}
 }
+
+/* ============ Lokaler Lernfortschritt ============ */
+.resume-overlay{
+  position:fixed;inset:0;z-index:100;
+  display:none;place-items:center;
+  padding:20px;
+  background:rgba(27,36,48,.48);
+}
+.resume-overlay.on{display:grid}
+.resume-box{
+  width:min(520px,100%);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px;
+  box-shadow:0 18px 60px rgba(27,36,48,.22);
+}
+.resume-box h2{
+  margin:0 0 8px;
+  color:var(--accent);
+  font-size:1.25rem;
+}
+.resume-box p{margin:.45em 0}
+.resume-actions{
+  display:flex;flex-wrap:wrap;gap:10px;
+  margin-top:16px;
+}
+.resume-actions .btn{flex:1 1 180px}
+.resume-note{
+  margin-top:12px !important;
+  font-size:.84rem;
+  color:var(--ink-soft);
+}
+
 @media print{footer.nav,header.top{position:static}}
 
 /* ===== Ergänzungen für I.2b ===== */
@@ -811,6 +845,20 @@ footer.nav{
   <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
 </footer>
 
+
+<div class="resume-overlay" id="resumeOverlay">
+  <div class="resume-box" role="dialog" aria-modal="true" aria-labelledby="resumeTitle">
+    <h2 id="resumeTitle">Gespeicherten Stand fortsetzen?</h2>
+    <p id="resumeText">Auf diesem Gerät ist bereits ein Lernfortschritt gespeichert.</p>
+    <div class="resume-actions">
+      <button class="btn" id="resumeContinue" type="button">Fortsetzen</button>
+      <button class="btn ghost" id="resumeRestart" type="button">Von vorne beginnen</button>
+    </div>
+    <p class="resume-note">Der Fortschritt wird nur in diesem Browser auf diesem Gerät gespeichert.
+      Es werden keine Antworten oder personenbezogenen Daten übertragen.</p>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -1021,6 +1069,124 @@ var done=[]; for(var _i=0;_i<TOTAL;_i++) done.push(false);
 done[TOTAL-1]=true;
 var maxReached=0;
 
+/* =========================================================
+   Lokaler Lernfortschritt
+   Speichert nur den Stationsfortschritt im Browser:
+   - abgeschlossene Stationen
+   - freigeschaltete Stationen
+   - zuletzt geöffnete Station
+   Keine Antworten, Namen oder sonstigen personenbezogenen Daten.
+   Im Lehrermodus wird weder gelesen noch geschrieben.
+   ========================================================= */
+var SAVE_KEY="mathe-lernpfad:q13:i2b-integralfunktion:v1";
+
+function readProgress(){
+  if(TEACHER) return null;
+  try{
+    var raw=window.localStorage.getItem(SAVE_KEY);
+    if(!raw) return null;
+    var p=JSON.parse(raw);
+    if(!p || !Array.isArray(p.done) || p.done.length!==TOTAL) return null;
+    return p;
+  }catch(e){
+    return null;
+  }
+}
+
+function saveProgress(){
+  if(TEACHER) return;
+  try{
+    window.localStorage.setItem(SAVE_KEY,JSON.stringify({
+      done:done.slice(),
+      maxReached:maxReached,
+      cur:cur
+    }));
+  }catch(e){
+    /* Falls lokaler Speicher nicht verfügbar ist, läuft der Lernpfad normal weiter. */
+  }
+}
+
+function clearProgress(){
+  try{ window.localStorage.removeItem(SAVE_KEY); }catch(e){}
+}
+
+function firstUnfinishedStation(arr){
+  /* Die Abschlussstation hat absichtlich kein "Weiter". */
+  for(var i=0;i<TOTAL-1;i++){
+    if(!arr[i]) return i;
+  }
+  return TOTAL-1;
+}
+
+function meaningfulProgress(p){
+  if(!p) return false;
+  if(Number(p.maxReached)>0) return true;
+  for(var i=0;i<TOTAL-1;i++){
+    if(p.done[i]===true) return true;
+  }
+  return false;
+}
+
+function applyProgress(p){
+  var restored=[];
+  for(var i=0;i<TOTAL;i++) restored[i]=(p.done[i]===true);
+  restored[TOTAL-1]=true;
+  done=restored;
+
+  var target=firstUnfinishedStation(done);
+  var savedMax=Number(p.maxReached);
+  if(!isFinite(savedMax)) savedMax=0;
+  savedMax=Math.max(0,Math.min(TOTAL-1,Math.floor(savedMax)));
+
+  maxReached=Math.max(savedMax,target);
+  cur=target;
+}
+
+function initProgressResume(){
+  if(TEACHER){
+    render();
+    return;
+  }
+
+  var p=readProgress();
+  if(!meaningfulProgress(p)){
+    render();
+    return;
+  }
+
+  var target=firstUnfinishedStation(p.done);
+  var sec=sections[target];
+  var title="";
+  if(sec){
+    var h2=sec.querySelector("h2");
+    if(h2) title=h2.textContent.trim();
+  }
+
+  $("resumeText").innerHTML =
+    "Du hast diesen Lernpfad schon begonnen. Du kannst bei <strong>Station "+
+    (target+1)+(title?": "+title:"")+"</strong> weitermachen.";
+
+  $("resumeOverlay").classList.add("on");
+
+  $("resumeContinue").onclick=function(){
+    applyProgress(p);
+    $("resumeOverlay").classList.remove("on");
+    render();
+  };
+
+  $("resumeRestart").onclick=function(){
+    clearProgress();
+    cur=0;
+    maxReached=0;
+    done=[];
+    for(var i=0;i<TOTAL;i++) done.push(false);
+    done[TOTAL-1]=true;
+    $("resumeOverlay").classList.remove("on");
+    render();
+  };
+}
+
+
 function buildSteps(){
   var ul=$("steps");
   for(var i=0;i<TOTAL;i++){
@@ -1054,11 +1220,16 @@ function updateNext(){
   $("next").disabled=!free;
   $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
 }
-function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
+function setDone(i){
+  done[i]=true;
+  if(i===cur) updateNext();
+  saveProgress();
+}
 function go(i){
   if(i<0||i>=TOTAL) return;
   cur=i; /* Nur die Schuelernavigation schiebt den Fortschritt weiter. */
   if(!TEACHER && cur>maxReached) maxReached=cur;
+  saveProgress();
   render();
 }
 $("prev").onclick=function(){ go(cur-1); };
@@ -1707,7 +1878,7 @@ mc("q8e",null,"<strong>5.</strong> Was gilt für <span class='m'>x &lt; a</span>
    Start
    ========================================================= */
 buildSteps();
-render();
+initProgressResume();
 measureChrome();
 </script>
 </body>
