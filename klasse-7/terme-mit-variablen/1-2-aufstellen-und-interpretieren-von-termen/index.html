@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1.2 Termwerkstatt – Aufstellen und Interpretieren von Termen</title>
+<style>
+/* ============ Grundlagen (Gestaltung nach MASTER_Lernpfad) ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;
+  --accent-soft:#eaf1f8;
+  --rep:#1f6fb2;            /* wiederkehrender Anteil */
+  --rep-bg:#dceaf6;
+  --once:#b45309;           /* einmaliger Anteil */
+  --once-bg:#fbeadb;
+  --teal:#0f766e;
+  --teal-bg:#dcf1ee;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --no:#c0392b;
+  --no-bg:#fbeceb;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:64px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.55;-webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 clamp(12px,2vw,20px) 40px}
+[hidden]{display:none!important}
+
+/* ============ Kopf ============ */
+header.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.top-inner{max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;min-height:62px}
+.codebadge{flex:0 0 auto;min-width:52px;height:44px;border-radius:9px;background:var(--accent);color:#fff;
+  font-weight:800;font-size:1.3rem;display:flex;align-items:center;justify-content:center;
+  letter-spacing:.02em;padding:0 10px}
+.ttlbox{flex:1 1 auto;min-width:0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.titel{font-size:clamp(1rem,2.1vw,1.25rem);font-weight:700;color:var(--accent);line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.homebtn{flex:0 0 auto}
+@media(max-width:560px){ .homebtn .lbl{display:none} .kapitel{display:none} }
+
+/* ============ Karten & Text ============ */
+h2.tt{font-size:clamp(1.22rem,2.4vw,1.5rem);margin:clamp(14px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700}
+.meta{font-size:.84rem;color:var(--ink-soft);margin-bottom:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);margin:clamp(10px,1.4vh,14px) 0}
+.card h3{margin:0 0 8px;font-size:1.08rem;font-weight:650;color:var(--ink)}
+p{margin:.5em 0}
+.card p,.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.narrow{max-width:900px}
+.gap{margin-top:14px}
+ul.plain{margin:.4em 0;padding-left:1.25em} ul.plain li{margin:.25em 0}
+
+/* Medienleiste */
+.media{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.mchip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);
+  border-radius:20px;padding:4px 12px;font-size:.88rem;color:var(--ink-soft);font-weight:600}
+.mchip .ic{font-size:1.05rem}
+.ic{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}
+
+/* Stopp-Karte für Materialphasen */
+.stop{border:2px solid var(--once);background:#fffaf4;border-radius:12px;padding:16px 18px;margin:14px 0}
+.stop .sh{display:flex;align-items:center;gap:12px;font-size:clamp(1.15rem,3vw,1.4rem);font-weight:800;color:#7a3907}
+.stop .sh .ic{font-size:1.9rem}
+.todo{list-style:none;margin:10px 0 6px;padding:0}
+.todo li{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px dashed #ecd7c2}
+.todo li:first-child{border-top:0}
+.todo .ic{font-size:1.35rem;line-height:1.3;flex:0 0 1.7em;text-align:center}
+
+/* ============ Arbeitsansicht ============ */
+.work{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(14px,2vw,26px);align-items:start}
+.work>*{min-width:0}
+@media(max-width:900px){ .work{grid-template-columns:1fr;gap:10px} }
+@media(min-width:901px) and (min-height:640px){
+  .work>.viz{position:sticky;top:calc(var(--headH) + 12px)}
+}
+
+/* ============ Mathematik-Satz ============ */
+.mf{font-family:"Cambria Math",Cambria,"Latin Modern Math",Georgia,"Times New Roman",serif;font-style:normal;white-space:nowrap;font-size:1.08em}
+.mf i,i.v{font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-style:italic}
+.mblock{text-align:center;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;margin:10px 0;font-size:clamp(1.15rem,3vw,1.4rem)}
+.hl{border-radius:5px;padding:0 .22em;font-weight:700}
+.hl.r{background:var(--rep-bg);color:#14456e}
+.hl.o{background:var(--once-bg);color:#7a3907}
+.hl.t{background:var(--teal-bg);color:#0b5a53}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;text-decoration:none;line-height:1.25}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:8px 13px;font-size:.95rem}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.zchip:focus-visible,.zslot:focus-visible,
+.tile:focus-visible,.codechip:focus-visible,.mcard:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 2px}
+.helpbtn.pulse{animation:pulse 1.6s ease-in-out 2}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(214,146,32,0)}50%{box-shadow:0 0 0 6px rgba(214,146,32,.35)}}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{display:flex;gap:.6em;align-items:baseline;text-align:left;background:#fff;border:1.5px solid var(--line);
+  border-radius:8px;padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;width:100%}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:var(--no);background:var(--no-bg)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.opt .mk{font-weight:700;flex:0 0 auto}
+
+/* Rückmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.96rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+.soltag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--accent);color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+
+/* Hilfen */
+.help{margin-top:12px}
+.hintcard{background:var(--hint-bg);border:1px solid #f0d9ae;border-radius:8px;padding:9px 12px;margin:8px 0;font-size:.96rem}
+.hlab{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--hint);margin-right:6px}
+
+/* Schritte innerhalb einer Aufgabe (einklappbar) */
+.stepwrap{border-top:1px solid var(--line);padding-top:10px;margin-top:12px}
+.stepwrap:first-child{border-top:0;padding-top:0;margin-top:0}
+.stephead{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:4px 0;margin:0 0 4px;
+  text-align:left;font:inherit;font-weight:700;color:var(--accent);min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.stephead:disabled{cursor:default;opacity:1;color:var(--accent)}
+.stephead .st{flex:1 1 auto}
+.stephead .nr{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;border:1.5px solid #bcd3e8}
+.stepwrap.solved .stephead .nr{background:var(--ok);border-color:var(--ok);color:#fff}
+.stepwrap.solved .stephead .nr{font-size:0}
+.stepwrap.solved .stephead .nr::after{content:"✓";font-size:.95rem}
+.stephead .chev{flex:0 0 auto;color:var(--ink-soft);font-size:.8rem;font-weight:600}
+.stepwrap.solved:not(.cur) .stephead .chev::after{content:"schließen ▴"}
+.stepwrap.solved.collapsed .stephead .chev::after{content:"öffnen ▾"}
+.stepwrap.cur .stephead .chev{display:none}
+.stepsum{display:none;margin:-4px 0 2px 40px;font-size:.94rem;color:var(--ink);line-height:1.45}
+.stepsum .okh{color:var(--ok);font-weight:800}
+.stepwrap.collapsed .stepsum{display:block}
+.stepwrap.collapsed .stepbody{display:none}
+.stepwrap.collapsed{padding-top:4px;margin-top:4px}
+.stepwrap.collapsed .stephead{margin-bottom:0;min-height:40px}
+.stepwrap.collapsed .stephead .st{font-weight:600;font-size:.95rem}
+.stepwrap.solved:not(.collapsed):not(.cur) .stepsum{display:none}
+@media(hover:hover){.stepwrap.solved:not(.cur) .stephead:hover .st{text-decoration:underline}}
+
+/* Wertetabelle → Änderung → Zahl vor x → Rest */
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ani{animation:fadein .45s ease both}
+.zwbox,.vgbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0 8px}
+.zw{display:grid;align-items:center;row-gap:6px;font-variant-numeric:tabular-nums}
+.zw .zl{font-family:"Cambria Math",Cambria,Georgia,serif;font-weight:700;padding-right:10px;white-space:nowrap}
+.zw .zv{text-align:center;font-size:1.15rem;font-weight:700;min-height:34px;display:flex;align-items:center;justify-content:center}
+.zw .zx{color:var(--ink-soft);font-weight:600;font-size:1rem}
+.zw .zs{color:var(--accent);background:var(--accent-soft);border-radius:7px}
+.zw .za{display:flex;flex-direction:column;align-items:center;line-height:1.05}
+.zw .zx1{font-size:.72rem;color:#8a97a6}
+.zw .zd{font-size:.88rem;font-weight:800;color:#fff;background:var(--rep);border-radius:10px;padding:1px 6px}
+.zw .zarr{color:var(--rep);font-size:1.05rem}
+.zwtxt{margin:8px 0 0;font-weight:600}
+.vg{display:grid;gap:4px;align-items:center;font-variant-numeric:tabular-nums}
+.vg .vl{font-family:"Cambria Math",Cambria,Georgia,serif;font-weight:700;padding-right:10px;white-space:nowrap}
+.vg .vc{text-align:center;font-size:1.08rem;font-weight:600;min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.vg .vr{color:#14456e}
+.vg .vc.vr{background:var(--rep-bg)}
+.vg .vs{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.vg .vdiff{visibility:hidden}
+.vgbox.show .vg .vdiff{visibility:visible;animation:fadein .45s ease both}
+.vg .vd{font-family:"Segoe UI",system-ui,sans-serif;font-size:.78rem;font-weight:700;color:#7a3907;min-height:26px}
+.vg .vc.vd span{background:var(--once-bg);border-radius:10px;padding:1px 6px;font-size:.88rem;white-space:nowrap}
+.result{text-align:center;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:clamp(1.35rem,4vw,1.7rem);
+  border:2px solid var(--accent);border-radius:10px;background:#fff;padding:8px 12px;margin:8px 0}
+.hl.g{background:#fbeceb;color:#9b2c20}
+.serI{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-style:normal}
+
+/* Analysekarte für äquivalente Terme */
+.work.solo{grid-template-columns:1fr}
+.work.solo>.viz{display:none}
+.acard{border:2px solid var(--accent);border-radius:12px;background:#fff;padding:12px 14px;margin:6px 0}
+.ahint{font-size:.88rem;color:var(--ink-soft);font-weight:600;margin-bottom:6px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.segbtn{min-height:48px;border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:6px 4px;cursor:pointer;
+  font-size:1rem;-webkit-tap-highlight-color:transparent}
+.segbtn .mf{white-space:nowrap}
+.segbtn.on{background:var(--accent);color:#fff}
+.segbtn .segck{display:none;color:var(--ok);font-weight:800;font-family:"Segoe UI",system-ui,sans-serif}
+.segbtn.seen .segck{display:inline}
+.segbtn.on.seen .segck{color:#bff0d3}
+.aprog{margin:0}
+.abody{display:grid;grid-template-columns:1fr;gap:6px 18px;margin-top:10px;align-items:start}
+@media(min-width:700px){ .work.solo .abody{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)} }
+.afig .stepper.compact{justify-content:center;margin:4px 0 0}
+.afig .stepper.compact .sv{flex:0 0 auto;font-size:1rem}
+.afig .legend{margin-top:4px}
+.aterm{font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:clamp(1.3rem,3.6vw,1.6rem);text-align:center;
+  background:var(--note-bg);border-radius:8px;padding:6px 8px;margin-bottom:8px}
+.acap{font-size:.97rem;line-height:1.5}
+.acalc{text-align:center;font-size:1.12rem;margin-top:6px}
+.acalc .asub{font-size:.85rem;color:var(--ink-soft)}
+.afoot{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.figbox.nofig{} @media(max-width:900px){.figbox.nofig{display:none}}
+.vbox{display:flex;flex-direction:column;gap:10px}
+@media(min-width:901px){ .vbox .dock{order:2} }
+.memo{display:flex;align-items:center;gap:12px;border:2px solid #9fd3b6;background:#f3faf6;border-radius:10px;padding:8px 12px;max-height:132px;overflow:hidden}
+.memofig{flex:0 0 118px;width:118px}
+.memofig svg{width:100%;height:auto;max-height:80px}
+.memotxt{flex:1 1 auto;min-width:0}
+.memotop{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.memobig{font-size:1.6rem;font-weight:800;color:var(--ok);line-height:1.1}
+.memol{font-weight:700;font-size:.95rem;color:#14603c}
+.memos{font-size:.84rem;color:var(--ink-soft);margin-top:2px;line-height:1.35}
+.memo.snap{animation:snap .6s ease}
+@keyframes snap{0%{box-shadow:0 0 0 0 rgba(30,122,77,.45)}100%{box-shadow:0 0 0 10px rgba(30,122,77,0)}}
+.plusbox{border:2px solid #bfe3cf;background:#f6fbf8;border-radius:12px;padding:12px;margin:10px 0}
+.pbfigs{display:flex;align-items:flex-end;justify-content:center;gap:14px;flex-wrap:wrap}
+.pbfigs figure{margin:0;max-width:100%}
+.pbfigs figcaption{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:2px}
+.pbarr{font-size:1.6rem;color:var(--ok);align-self:center}
+.pbplus{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap;font-weight:600;text-align:center}
+.pbbig{font-size:2rem;font-weight:800;color:#fff;background:var(--ok);border-radius:10px;padding:0 12px;line-height:1.35}
+.pbgrid{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pbgrid span{background:#e6f4ec;color:#14603c;border-radius:12px;padding:2px 10px;font-size:.9rem}
+.flyghost{box-shadow:0 8px 24px rgba(0,0,0,.18);background:#f6fbf8}
+.stop.stopdone .todo,.stop.stopdone .figbox{display:none}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+input[type=text]{font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:120px;font-family:inherit;min-height:44px;background:#fff;color:var(--ink)}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:var(--no);background:var(--no-bg)}
+.unit{font-size:.95rem;color:var(--ink-soft)}
+
+/* Tabelle */
+.tblscroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.wt{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;
+  font-size:.95rem;font-variant-numeric:tabular-nums}
+.wt>div{background:#fff;padding:6px 4px;text-align:center;line-height:1.25;display:flex;align-items:center;justify-content:center;min-height:44px}
+.wt .lab{justify-content:flex-start;padding-left:9px;font-weight:600;background:#f5f8fb;font-size:.86rem;text-align:left}
+.wt .hd{background:#f5f8fb;font-weight:600}
+.wt input[type=text]{width:100%;min-width:0;max-width:70px;padding:8px 2px;text-align:center;font-size:1rem}
+
+/* Übersetzungsleiste (Bereich A) */
+.trans{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.trow{display:grid;grid-template-columns:8.2em 1fr;border-top:1px solid var(--line)}
+.trow:first-child{border-top:0}
+.trow>div{padding:9px 12px}
+.trow .tl{background:#f5f8fb;font-size:.82rem;font-weight:700;color:var(--ink-soft);letter-spacing:.02em}
+.trow .tv{min-height:44px}
+.trow .tv.empty{color:#9aa6b4;font-style:italic}
+.trow .tv.fill{animation:flash .9s ease}
+@keyframes flash{0%{background:#e6f4ec}100%{background:#fff}}
+.sitcard{font-size:1.02rem}
+@media(max-width:420px){ .trow{grid-template-columns:1fr} .trow .tl{padding-bottom:2px} }
+
+/* Termbaukasten */
+.tb{margin:8px 0}
+.tbdisp{display:flex;align-items:center;flex-wrap:wrap;gap:4px;min-height:58px;border:2px solid #bcd3e8;
+  border-radius:10px;background:#fbfdff;padding:8px 12px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;
+  font-size:clamp(1.25rem,3.6vw,1.55rem)}
+.tbdisp .pre{color:var(--ink-soft);margin-right:.35em;white-space:nowrap}
+.tbdisp .cur{display:inline-block;width:2px;height:1.2em;background:var(--accent);animation:blink 1s steps(2) infinite;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+.tbdisp.ok{border-color:var(--ok);background:var(--ok-bg)}
+.tbdisp.no{border-color:var(--no)}
+.tbdisp .ph{color:#9aa6b4;font-family:"Segoe UI",system-ui,sans-serif;font-size:.95rem;font-style:italic}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.tile{min-width:50px;min-height:50px;padding:6px 12px;border-radius:9px;border:1.5px solid #9fb8cd;background:#fff;
+  font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:1.3rem;cursor:pointer;color:var(--ink);
+  -webkit-tap-highlight-color:transparent}
+.tile.op{background:#f1f5f9}
+.tile.var{color:var(--accent);font-style:italic;font-weight:700;border-color:var(--accent)}
+.tile:disabled{opacity:.25;cursor:default}
+@media(hover:hover){.tile:hover:not(:disabled){background:var(--accent-soft)}}
+.tbctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+/* Zuordnen */
+.zpool{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 12px}
+.zchip{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:9px 13px;
+  cursor:pointer;font-weight:600;min-height:44px;text-align:left;line-height:1.3;-webkit-tap-highlight-color:transparent;max-width:100%}
+.zchip.sel{background:var(--accent);color:#fff}
+.zchip.used{display:none}
+.zrow{display:flex;align-items:center;gap:11px;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;
+  padding:9px 12px;margin:7px 0;background:#fff}
+.zrow.act{border-color:var(--accent);box-shadow:0 0 0 2px #cfe0f0}
+.zrow.done{border-color:var(--ok);background:var(--ok-bg)}
+.zrow.bad{border-color:var(--no);background:var(--no-bg)}
+.zterm{flex:0 0 7.5em;font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.2rem;font-weight:700}
+.zslot{flex:1 1 200px;min-height:44px;border:2px dashed #9bb2c6;background:#fbfcfe;border-radius:8px;color:var(--ink-soft);
+  font-weight:600;cursor:pointer;padding:8px 12px;text-align:left;-webkit-tap-highlight-color:transparent}
+.zslot.filled{border-style:solid;border-color:#9fb8cd;background:#fff;color:var(--ink)}
+.zmsg{flex:1 1 100%;font-size:.9rem;color:#8a2a1f}
+
+/* Figuren */
+.fig{display:block;width:100%;height:auto;margin:0 auto}
+.figbox{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.figcap{text-align:center;font-size:.86rem;color:var(--ink-soft);margin-top:6px;line-height:1.4}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.86rem;margin:8px 0 2px;color:var(--ink);justify-content:center}
+.legend>span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:22px;height:6px;border-radius:3px;display:inline-block;flex:0 0 auto}
+.stepper{display:flex;align-items:center;gap:10px;margin:0 0 8px;flex-wrap:wrap}
+.stepper .sv{font-weight:700;color:var(--accent);font-size:1.1rem;flex:1 1 100%}
+.stepper input[type=range]{flex:1 1 160px;height:44px;accent-color:var(--accent);margin:0}
+.countline{font-size:.95rem;margin-top:6px;text-align:center;min-height:1.5em}
+.lensbtns{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.lensbtns .btn{display:block;text-align:left}
+.lensbtns .btn.on{background:var(--accent);color:#fff}
+.lenscap{background:var(--note-bg);border-radius:8px;padding:10px 13px;margin-top:8px;font-size:.96rem}
+
+/* Modellkarten C2 */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;margin:10px 0}
+.mcard{border:2px solid var(--line);border-radius:10px;background:#fff;padding:10px;cursor:pointer;text-align:left;
+  color:var(--ink);-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;gap:6px;min-height:44px}
+.mcard .mh{font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mcard .box{width:26px;height:26px;border-radius:6px;border:2px solid #9fb8cd;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;flex:0 0 auto}
+.mcard.sel{border-color:var(--accent);box-shadow:0 0 0 2px #cfe0f0}
+.mcard.sel .box{background:var(--accent);border-color:var(--accent);color:#fff}
+.mcard.good{border-color:var(--ok);background:var(--ok-bg)}
+.mcard.bad{border-color:var(--no);background:var(--no-bg)}
+.mcard .md{font-size:.88rem;color:var(--ink-soft)}
+.mcard:disabled{cursor:default}
+
+/* Fehlerlabor */
+.speech{position:relative;background:#fff;border:1.5px solid #bcd3e8;border-radius:12px;padding:12px 15px;margin:6px 0 12px}
+.speech .who{font-weight:700;color:var(--accent);margin-bottom:2px}
+.cmp{display:grid;grid-template-columns:auto repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-variant-numeric:tabular-nums;margin:8px 0}
+.cmp>div{background:#fff;padding:7px 8px;text-align:center}
+.cmp .lab{background:#f5f8fb;font-weight:600;text-align:left}
+.cmp .bad{color:var(--no);font-weight:700}
+.cmp .good{color:var(--ok);font-weight:700}
+@keyframes draw{from{stroke-dashoffset:60}to{stroke-dashoffset:0}}
+.anim line.new{stroke-dasharray:60;animation:draw 1.1s ease-out .5s both}
+
+/* Übersicht */
+.hero{margin:clamp(14px,2.4vh,26px) 0 6px}
+.hero h1{font-size:clamp(1.45rem,3.6vw,2rem);color:var(--accent);margin:0;line-height:1.2}
+.hero .sub{color:var(--ink-soft);margin-top:4px}
+.continue{border:2px solid var(--accent);background:var(--note-bg)}
+.continue h2{margin:0 0 6px;color:var(--accent);font-size:1.2rem}
+.codeform{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:4px 0 12px}
+.codeform input[type=text]{width:9em;text-transform:uppercase;font-weight:700;letter-spacing:.05em}
+.codecols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:760px){.codecols{grid-template-columns:1fr}}
+.codecol .ch{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+.codechip{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1.5px solid #c9dcec;
+  border-radius:8px;padding:8px 10px;margin:0 0 7px;cursor:pointer;min-height:46px;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.codechip b{flex:0 0 auto;min-width:2.3em;height:30px;border-radius:6px;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.95rem}
+@media(hover:hover){.codechip:hover{border-color:var(--accent);background:#fbfdff}}
+.areas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
+@media(max-width:900px){.areas{grid-template-columns:1fr}}
+.area{background:#fff;border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.area .al{font-size:2rem;font-weight:800;color:var(--accent);line-height:1}
+.area h3{margin:0;font-size:1.15rem}
+.area .flow{font-size:1.25rem;letter-spacing:.05em}
+.area .btn{margin-top:auto;align-self:flex-start}
+.symlegend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.92rem;color:var(--ink-soft)}
+.symlegend span{display:inline-flex;gap:6px;align-items:center}
+.privacy{font-size:.85rem;color:var(--ink-soft);margin:16px 0 0}
+
+/* Abschlusskarte */
+.endcard{border:2px solid var(--ok);background:#f6fbf8}
+.nextcode{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.nextcode .big{font-size:2rem;font-weight:800;color:var(--accent);background:#fff;border:2px solid var(--accent);border-radius:10px;padding:2px 16px;letter-spacing:.03em}
+.usednote{background:var(--note-bg);border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;font-size:.92rem;margin-top:8px}
+
+/* Hefteintrag-artige Box */
+.heft{background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.86rem;text-transform:uppercase}
+
+/* Checkliste C4 */
+.check{display:flex;gap:12px;align-items:flex-start;padding:9px 4px;border-top:1px solid var(--line);cursor:pointer;min-height:44px}
+.check:first-child{border-top:0}
+.check input{width:24px;height:24px;flex:0 0 auto;margin-top:2px;accent-color:var(--ok)}
+
+/* Tagesleiste A4 */
+.days{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.day{width:30px;height:30px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+.day.f{background:var(--rep-bg);color:#14456e;border:1.5px solid var(--rep)}
+.day.p{background:var(--once-bg);color:#7a3907;border:1.5px solid var(--once)}
+
+/* Bauschritte nebeneinander */
+.srow{display:flex;gap:18px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.srow figure{margin:0;max-width:100%}
+.srow figcaption{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:4px}
+.msvg{min-height:60px;display:flex;align-items:flex-end}
+@media print{header.top{position:static}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="codebadge" id="hdCode" hidden>A1</div>
+    <div class="ttlbox">
+      <div class="kapitel" id="hdKap">1.2 Aufstellen und Interpretieren von Termen</div>
+      <div class="titel" id="hdTitle">Termwerkstatt</div>
+    </div>
+    <button type="button" class="btn ghost homebtn" id="hdHome" hidden><span aria-hidden="true">⌂</span><span class="lbl">Zur Übersicht</span></button>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<noscript><p style="padding:20px">Bitte JavaScript aktivieren, damit die Termwerkstatt funktioniert.</p></noscript>
+<script>
+"use strict";
+/* =========================================================
+   Termwerkstatt 1.2 – Aufstellen und Interpretieren von Termen
+   Standalone: keine externen Dateien, keine Speicherung
+   (kein localStorage, keine Cookies). Der Zustand lebt nur
+   im Arbeitsspeicher, solange die Seite geöffnet ist.
+   ========================================================= */
+
+function $(id){ return document.getElementById(id); }
+function el(tag,cls,html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+function btn(label,cls,fn){ var b=el("button",cls||"btn",label); b.type="button"; if(fn) b.onclick=fn; return b; }
+function num(v,dec){
+  if(dec===undefined) dec=2;
+  if(Math.abs(v)<5e-10) v=0;
+  var s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){ s=s.replace(/0+$/,""); s=s.replace(/\.$/,""); }
+  s=s.replace(".",",");
+  /* Tausenderpunkte ab 10 000 */
+  var parts=s.split(","); if(Math.abs(v)>=10000) parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,"."); return parts.join(",");
+}
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/[−–—]/g,"-").replace(",",".");
+  if(s==="") return NaN;
+  if(!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+function showFb(fb,kind,html){ fb.className="fb "+kind+" show"; fb.innerHTML=html; }
+function measureHead(){
+  var h=document.querySelector("header.top");
+  if(h) document.documentElement.style.setProperty("--headH",h.offsetHeight+"px");
+}
+window.addEventListener("resize",measureHead);
+window.addEventListener("orientationchange",function(){ setTimeout(measureHead,250); });
+function softScroll(node){
+  try{
+    var r=node.getBoundingClientRect(), vh=window.innerHeight||800;
+    if(r.top>vh-120){ window.scrollBy({top:r.top-vh*0.35,behavior:"smooth"}); }
+  }catch(e){}
+}
+/* Symbole – überall identisch (auch im Hefteintrag) */
+var IC={heft:"✏️",mat:"🧱",pad:"📱",team:"🤝",stop:"✋"};
+function ic(k){ return '<span class="ic" aria-hidden="true">'+IC[k]+'</span>'; }
+function X(){ return '<i class="v">x</i>'; }
+
+/* =========================================================
+   Aufgabenverwaltung und Direktlinks (#A1 … #C4)
+   ========================================================= */
+var TASKS={}, ORDER=[];
+var AREAS={
+  A:{name:"Situation → Term", flow:[IC.heft,IC.pad],
+     desc:"Sachsituationen in Terme übersetzen: Wofür steht "+X()+"? Was soll berechnet werden? Welcher Term passt?",
+     media:[["heft","Arbeitsblatt zuerst"],["pad","dann hier prüfen"]]},
+  B:{name:"Bauen mit System", flow:[IC.mat,IC.heft,IC.pad],
+     desc:"Erst mit Stäben bauen und im Heft vermuten – danach digital prüfen und Strukturen entdecken.",
+     media:[["mat","zuerst bauen"],["heft","Vermutung notieren"],["pad","dann prüfen"]]},
+  C:{name:"Termdetektiv", flow:[IC.pad,IC.team],
+     desc:"Terme deuten, passende Modelle finden, Fehler aufdecken und selbst ein Bausystem erfinden.",
+     media:[["pad","iPad"],["team","Partnerarbeit"]]}
+};
+function defTask(code,title,next,render,media){
+  TASKS[code]={code:code,area:code.charAt(0),title:title,next:next,render:render,media:media};
+  ORDER.push(code);
+}
+var S={code:null,usedSolution:false,done:false};
+function usedSolution(){ S.usedSolution=true; }
+
+function go(code){
+  var target=code?"#"+code:"#start";
+  if(location.hash===target) route(); else location.hash=target;
+}
+function route(){
+  var h=(location.hash||"").replace(/^#/,"").toUpperCase().replace(/\s/g,"");
+  if(TASKS[h]) openTask(h); else showOverview();
+}
+window.addEventListener("hashchange",route);
+
+function setHeader(code){
+  if(code){
+    var t=TASKS[code];
+    $("hdCode").hidden=false; $("hdCode").textContent=code;
+    $("hdKap").textContent="Termwerkstatt · "+t.area+" · "+AREAS[t.area].name;
+    $("hdTitle").textContent=t.title;
+    $("hdHome").hidden=false;
+    document.title=code+" · "+t.title+" – Termwerkstatt";
+  } else {
+    $("hdCode").hidden=true;
+    $("hdKap").textContent="1. Terme mit Variablen";
+    $("hdTitle").textContent="Termwerkstatt";
+    $("hdHome").hidden=true;
+    document.title="1.2 Termwerkstatt – Aufstellen und Interpretieren von Termen";
+  }
+  measureHead();
+}
+$("hdHome").onclick=function(){ go(null); };
+
+/* ---------------- Übersicht ---------------- */
+function showOverview(){
+  PLACE=null;
+  S={code:null,usedSolution:false,done:false};
+  setHeader(null);
+  var app=$("app"); app.innerHTML="";
+  var hero=el("div","hero",'<h1>Termwerkstatt – Aufstellen und Interpretieren von Termen</h1>'+
+    '<div class="sub">Drei Bereiche, frei wählbar. Jede Aufgabe hat einen Code – damit findest du beim nächsten Mal sofort wieder hinein.</div>');
+  app.appendChild(hero);
+
+  /* Wo arbeitest du weiter? */
+  var cont=el("section","card continue");
+  cont.innerHTML='<h2>Wo arbeitest du weiter?</h2><p class="small" style="margin-top:0">Gib den Code aus deinem Heft ein oder tippe direkt auf eine Aufgabe.</p>';
+  var form=el("div","codeform");
+  var inp=el("input"); inp.type="text"; inp.placeholder="z. B. B2"; inp.setAttribute("aria-label","Aufgabencode eingeben");
+  inp.setAttribute("autocapitalize","characters"); inp.setAttribute("autocomplete","off"); inp.setAttribute("spellcheck","false");
+  var fb=el("div","fb");
+  function openCode(){
+    var c=inp.value.toUpperCase().replace(/[\s·.\-]/g,"");
+    if(TASKS[c]) go(c);
+    else showFb(fb,"hint","Diesen Code gibt es nicht. Möglich sind A1 bis A6, B1, B2 und C1 bis C4.");
+  }
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); openCode(); } });
+  form.appendChild(inp); form.appendChild(btn("Öffnen","btn",openCode));
+  cont.appendChild(form); cont.appendChild(fb);
+  var cols=el("div","codecols");
+  ["A","B","C"].forEach(function(a){
+    var col=el("div","codecol"); col.appendChild(el("div","ch",a+" · "+AREAS[a].name));
+    ORDER.filter(function(c){return c.charAt(0)===a;}).forEach(function(c){
+      var b=btn("<b>"+c+"</b><span>"+TASKS[c].title+"</span>","codechip",function(){ go(c); });
+      b.setAttribute("aria-label","Aufgabe "+c+": "+TASKS[c].title);
+      col.appendChild(b);
+    });
+    cols.appendChild(col);
+  });
+  cont.appendChild(cols);
+
+  /* drei Bereiche */
+  var areas=el("div","areas");
+  ["A","B","C"].forEach(function(a){
+    var A=AREAS[a], first=ORDER.filter(function(c){return c.charAt(0)===a;})[0];
+    var d=el("section","area");
+    d.innerHTML='<div class="al">'+a+'</div><h3>'+A.name+'</h3><div class="flow ic" aria-hidden="true">'+A.flow.join(" → ")+'</div><p style="margin:.2em 0 .6em">'+A.desc+'</p>';
+    if(a==="B") d.appendChild(el("p","small",ic("stop")+" In Bereich B bleibt das iPad zuerst liegen."));
+    d.appendChild(btn("Bereich "+a+" beginnen ("+first+")","btn",function(){ go(first); }));
+    areas.appendChild(d);
+  });
+  app.appendChild(areas);
+  app.appendChild(cont);
+
+  var leg=el("section","card");
+  leg.innerHTML='<h3>Diese Zeichen zeigen dir, womit du gerade arbeitest</h3><div class="symlegend">'+
+    '<span>'+ic("heft")+' Papier / Heft</span><span>'+ic("mat")+' Material: Stäbe, Würfel</span><span>'+ic("pad")+' iPad</span><span>'+ic("team")+' Partnerarbeit</span></div>'+
+    '<p class="privacy">Die Termwerkstatt speichert nichts – keine Anmeldung, keine Cookies, kein Fortschritt auf dem Gerät. '+
+    'Notiere deshalb am Ende der Stunde deinen nächsten Einstiegscode im Heft.</p>';
+  app.appendChild(leg);
+  window.scrollTo(0,0);
+}
+
+/* ---------------- Aufgabe öffnen ---------------- */
+function openTask(code){
+  var t=TASKS[code];
+  PLACE=null;
+  S={code:code,usedSolution:false,done:false};
+  setHeader(code);
+  var app=$("app"); app.innerHTML="";
+  var h=el("h2","tt",code+" · "+t.title); app.appendChild(h);
+  var m=el("div","media");
+  (t.media||AREAS[t.area].media).forEach(function(x){ m.appendChild(el("span","mchip",ic(x[0])+" "+x[1])); });
+  app.appendChild(m);
+  var body=el("div"); app.appendChild(body);
+  var end=el("div"); end.id="taskEnd"; app.appendChild(end);
+  window.scrollTo(0,0);
+  t.render(body);
+  measureHead();
+}
+
+/* Abschluss einer Aufgabe: nächster Einstiegscode */
+function complete(extraHtml){
+  if(S.done) return; S.done=true;
+  var t=TASKS[S.code], end=$("taskEnd"); if(!end) return;
+  var c=el("section","card endcard");
+  var html="<h3>"+S.code+" ist abgeschlossen.</h3>";
+  if(extraHtml) html+="<p>"+extraHtml+"</p>";
+  if(t.next){
+    html+='<div class="nextcode"><span>Dein nächster Einstieg:</span><span class="big">'+t.next+'</span></div>'+
+      '<p class="small">'+ic("heft")+' Falls die Stunde jetzt endet: Notiere <b>'+t.next+'</b> im Heft unter „Mein nächster Einstieg“.</p>';
+    if(t.next.charAt(0)==="B") html+='<p class="small">'+ic("mat")+' Achtung: '+t.next+' beginnt mit Material – das iPad bleibt zuerst liegen.</p>';
+  } else {
+    html+='<p>Du hast alle Aufgaben der Termwerkstatt bearbeitet.</p>';
+  }
+  if(S.usedSolution) html+='<div class="usednote">Du hast in dieser Aufgabe eine <b>Lösung angezeigt</b>. Schau dir diesen Schritt im Heft noch einmal in Ruhe an.</div>';
+  c.innerHTML=html;
+  var row=el("div","btnrow");
+  if(t.next) row.appendChild(btn("Weiter mit "+t.next+" →","btn",function(){ go(t.next); }));
+  row.appendChild(btn("Zur Übersicht","btn ghost",function(){ go(null); }));
+  c.appendChild(row);
+  end.appendChild(c);
+  setTimeout(function(){ softScroll(c); },60);
+}
+
+/* =========================================================
+   Bausteine: Schritte, Multiple Choice, Hilfen, Zahlen
+   ========================================================= */
+/* Auf schmalen Geräten wandert die Visualisierung direkt über den aktuellen Schritt */
+var PLACE=null;
+window.addEventListener("resize",function(){ if(PLACE) PLACE(); });
+function makeAnchor(node,home){
+  var host=null;
+  function place(){
+    if(window.innerWidth<=900&&host&&host.parentNode){
+      if(node.parentNode!==host.parentNode||node.nextSibling!==host) host.parentNode.insertBefore(node,host);
+    } else if(node.parentNode!==home) home.insertBefore(node,home.firstChild);
+  }
+  PLACE=place;
+  return function(h){ host=h; place(); };
+}
+/* Schritte nacheinander aufdecken (innerhalb einer Aufgabe).
+   Ein gelöster Schritt klappt ein, sobald der nächste erscheint: sichtbar bleiben
+   Haken, Titel und eine kurze mathematische Zusammenfassung. Antippen öffnet/schließt. */
+var REDUCED=false, FOCUS_INSTANT=false;
+try{ REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+function headH(){ var h=document.querySelector("header.top"); return h?h.offsetHeight:60; }
+function focusStep(w){
+  try{
+    var r=w.getBoundingClientRect(), vh=window.innerHeight||800, hh=headH();
+    if(Math.abs(r.top-(hh+12))>30) window.scrollBy({top:r.top-hh-12,behavior:(REDUCED||FOCUS_INSTANT)?"auto":"smooth"});
+  }catch(e){}
+}
+function steps(host,list,onAll,onStep){
+  var i=0, all=[];
+  function setOpen(w,open){
+    w.classList.toggle("collapsed",!open);
+    w._head.setAttribute("aria-expanded",open?"true":"false");
+  }
+  function next(){
+    if(i>=list.length){ if(onAll) onAll(); return; }
+    var s=list[i++], nr=s.nr||i;
+    var w=el("div","stepwrap cur");
+    var head=btn('<span class="nr">'+nr+'</span><span class="st">'+s.title+'</span><span class="chev" aria-hidden="true"></span>',"stephead");
+    head.disabled=true; w._head=head;
+    var sum=el("div","stepsum");
+    var inner=el("div","stepbody");
+    w.appendChild(head); w.appendChild(sum); w.appendChild(inner);
+    host.appendChild(w); all.push(w);
+    if(onStep) onStep(inner,s);
+    var finished=false;
+    s.run(inner,function(summary){
+      if(finished) return; finished=true;
+      w.classList.add("solved");
+      var txt=summary||(typeof s.sum==="function"?s.sum():s.sum)||s.title;
+      sum.innerHTML='<span class="okh">✓</span> '+txt;
+      head.disabled=false;
+      head.onclick=function(){ if(!w.classList.contains("cur")) setOpen(w,w.classList.contains("collapsed")); };
+      if(i>=list.length){ w.classList.remove("cur"); head.setAttribute("aria-expanded","true"); if(onAll) onAll(); return; }
+      setTimeout(function(){
+        if(!w.isConnected) return;
+        var top=w.getBoundingClientRect().top;
+        all.forEach(function(x){ if(x.classList.contains("solved")){ x.classList.remove("cur"); setOpen(x,false); } });
+        var d=w.getBoundingClientRect().top-top;
+        if(Math.abs(d)>1) window.scrollBy(0,d);
+        next();
+      },s.delay!=null?s.delay:1100);
+    });
+    if(i>1) setTimeout(function(){ focusStep(w); },40);
+  }
+  next();
+}
+
+/* Multiple Choice mit diagnostischer Rückmeldung.
+   opts: [{t:"…", ok:true|false, fb:"…"}] */
+function mc(host,cfg){
+  var box=el("div"); host.appendChild(box);
+  if(cfg.q) box.appendChild(el("p","q",cfg.q));
+  if(cfg.pre) box.appendChild(el("div","",cfg.pre));
+  var wrap=el("div","opts"); box.appendChild(wrap);
+  var fb=el("div","fb"); box.appendChild(fb);
+  var sol=btn("Lösung anzeigen","btn ghost sm"); sol.hidden=true; box.appendChild(sol);
+  var solved=false, wrong=0, bs=[];
+  function finish(){ solved=true; sol.hidden=true; bs.forEach(function(b){ b.disabled=true; }); if(cfg.onDone) cfg.onDone(); }
+  cfg.opts.forEach(function(o,i){
+    var b=btn('<span class="mk">'+String.fromCharCode(65+i)+'</span><span>'+o.t+'</span>',"opt");
+    b.onclick=function(){
+      if(solved) return;
+      if(o.ok){ b.classList.add("chosen-ok"); showFb(fb,"ok","<strong>Richtig.</strong> "+(o.fb||"")); finish(); }
+      else {
+        b.classList.add("chosen-no"); b.disabled=true; wrong++;
+        showFb(fb,"hint","<strong>Noch nicht.</strong> "+(o.fb||"Überlege noch einmal."));
+        if(wrong>=(cfg.solAfter||2)) sol.hidden=false;
+      }
+    };
+    wrap.appendChild(b); bs.push(b);
+  });
+  sol.onclick=function(){
+    if(solved) return; usedSolution();
+    var k=0; cfg.opts.forEach(function(o,i){ if(o.ok){ k=i; bs[i].classList.add("chosen-ok"); } });
+    showFb(fb,"sol",'<span class="soltag">Lösung angezeigt</span>'+cfg.opts[k].t+(cfg.opts[k].fb?"<br>"+cfg.opts[k].fb:""));
+    finish();
+  };
+  return box;
+}
+
+/* Gestufte Hilfen: Hilfe 1 → 2 → 3 → erst dann „Lösung anzeigen“ */
+function helpLadder(host,cfg){
+  var box=el("div","help"); host.appendChild(box);
+  var list=el("div"); box.appendChild(list);
+  var row=el("div","btnrow"); box.appendChild(row);
+  var n=cfg.levels.length, lvl=0, closed=false;
+  var hb=btn("Ich brauche eine Hilfe","btn ghost helpbtn"); row.appendChild(hb);
+  var sb=btn("Lösung anzeigen","btn ghost"); sb.hidden=true; row.appendChild(sb);
+  hb.onclick=function(){
+    if(closed||lvl>=n) return;
+    var L=cfg.levels[lvl];
+    list.appendChild(el("div","hintcard",'<span class="hlab">Hilfe '+(lvl+1)+'</span>'+L.t));
+    if(L.act) L.act();
+    lvl++;
+    hb.classList.remove("pulse");
+    if(lvl>=n){ hb.hidden=true; if(cfg.onSolution) sb.hidden=false; }
+    else hb.textContent="Weitere Hilfe ("+(lvl+1)+" von "+n+")";
+  };
+  sb.onclick=function(){ if(closed) return; usedSolution(); api.close(); cfg.onSolution(); };
+  var api={
+    close:function(){ closed=true; hb.hidden=true; sb.hidden=true; },
+    nudge:function(){ if(!closed&&lvl<n){ hb.classList.remove("pulse"); void hb.offsetWidth; hb.classList.add("pulse"); } },
+    level:function(){ return lvl; }
+  };
+  return api;
+}
+
+/* Zahleneingabe */
+function numAsk(host,cfg){
+  var box=el("div"); host.appendChild(box);
+  if(cfg.q) box.appendChild(el("p","q",cfg.q));
+  var row=el("div","answer"); box.appendChild(row);
+  if(cfg.pre) row.appendChild(el("span","mf",cfg.pre));
+  var inp=el("input"); inp.type="text"; inp.setAttribute("inputmode","decimal"); inp.setAttribute("aria-label",cfg.aria||"Antwort");
+  inp.setAttribute("autocomplete","off"); row.appendChild(inp);
+  if(cfg.unit) row.appendChild(el("span","unit",cfg.unit));
+  var cb=btn("Prüfen","btn"); row.appendChild(cb);
+  var fb=el("div","fb"); box.appendChild(fb);
+  var sol=btn("Lösung anzeigen","btn ghost sm"); sol.hidden=true; box.appendChild(sol);
+  var solved=false, wrong=0;
+  function finish(){ solved=true; inp.disabled=true; cb.disabled=true; sol.hidden=true; inp.classList.remove("no"); inp.classList.add("ok"); if(cfg.onDone) cfg.onDone(); }
+  function check(){
+    if(solved) return;
+    var v=parseNum(inp.value);
+    if(isNaN(v)){ showFb(fb,"hint","Gib eine Zahl ein."); return; }
+    if(Math.abs(v-cfg.correct)<1e-9){ showFb(fb,"ok","<strong>Richtig.</strong> "+(cfg.ok||"")); finish(); }
+    else {
+      wrong++; inp.classList.add("no");
+      var msg=(cfg.diag&&cfg.diag(v))||cfg.hint||"Rechne noch einmal nach.";
+      showFb(fb,"hint","<strong>Noch nicht.</strong> "+msg);
+      if(wrong>=2) sol.hidden=false;
+    }
+  }
+  cb.onclick=check;
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+  sol.onclick=function(){ if(solved) return; usedSolution(); inp.value=num(cfg.correct); showFb(fb,"sol",'<span class="soltag">Lösung angezeigt</span>'+(cfg.solution||num(cfg.correct))); finish(); };
+  return box;
+}
+
+/* Wertetabelle prüfen */
+function tableAsk(host,cfg){
+  var box=el("div"); host.appendChild(box);
+  if(cfg.q) box.appendChild(el("p","q",cfg.q));
+  var sc=el("div","tblscroll"); box.appendChild(sc);
+  var n=cfg.xs.length;
+  var g=el("div","wt"); g.style.gridTemplateColumns="minmax(5.6em,auto) repeat("+n+",minmax(44px,1fr))";
+  g.style.minWidth=Math.min(560,92+n*46)+"px";
+  g.appendChild(el("div","lab","<span>"+cfg.xLabel+"</span>"));
+  cfg.xs.forEach(function(x){ g.appendChild(el("div","hd","<span>"+x+"</span>")); });
+  g.appendChild(el("div","lab","<span>"+cfg.yLabel+"</span>"));
+  var inps=[];
+  cfg.vals.forEach(function(v,i){
+    var c=el("div");
+    if(cfg.given&&cfg.given.indexOf(i)>=0){ c.innerHTML="<b>"+v+"</b>"; inps.push(null); }
+    else { var inp=el("input"); inp.type="text"; inp.setAttribute("inputmode","numeric"); inp.setAttribute("aria-label",cfg.yLabel+" bei "+cfg.xLabel+" "+cfg.xs[i]); c.appendChild(inp); inps.push(inp); }
+    g.appendChild(c);
+  });
+  sc.appendChild(g);
+  var row=el("div","btnrow"); box.appendChild(row);
+  var cb=btn("Prüfen","btn"); row.appendChild(cb);
+  var sol=btn("Werte anzeigen","btn ghost"); sol.hidden=true; row.appendChild(sol);
+  var fb=el("div","fb"); box.appendChild(fb);
+  var solved=false, wrong=0;
+  function finish(){ solved=true; cb.disabled=true; sol.hidden=true; inps.forEach(function(i){ if(i){ i.disabled=true; i.classList.remove("no"); i.classList.add("ok"); } }); if(cfg.onDone) cfg.onDone(); }
+  cb.onclick=function(){
+    if(solved) return;
+    var bad=[], empty=false;
+    inps.forEach(function(inp,i){
+      if(!inp) return;
+      var v=parseNum(inp.value);
+      if(isNaN(v)){ empty=true; inp.classList.remove("ok"); return; }
+      if(v===cfg.vals[i]){ inp.classList.remove("no"); inp.classList.add("ok"); }
+      else { inp.classList.remove("ok"); inp.classList.add("no"); bad.push(cfg.xs[i]); }
+    });
+    if(empty&&!bad.length){ showFb(fb,"hint","Fülle zuerst alle Felder aus."); return; }
+    if(!bad.length&&!empty){ showFb(fb,"ok","<strong>Richtig.</strong> "+(cfg.ok||"")); finish(); return; }
+    wrong++;
+    showFb(fb,"hint","<strong>Noch nicht.</strong> "+(cfg.badMsg?cfg.badMsg(bad):"Prüfe noch einmal: "+bad.join(", ")));
+    if(wrong>=2) sol.hidden=false;
+  };
+  sol.onclick=function(){ if(solved) return; usedSolution(); inps.forEach(function(inp,i){ if(inp) inp.value=cfg.vals[i]; }); showFb(fb,"sol",'<span class="soltag">Lösung angezeigt</span>'+(cfg.solution||"")); finish(); };
+  return box;
+}
+
+/* =========================================================
+   Termbaukasten: Terme aus Bausteinen zusammensetzen
+   Gleichwertige (äquivalente) Terme werden als richtig erkannt.
+   ========================================================= */
+function isNumTok(t){ return /^\d+$/.test(t); }
+function parseTerm(tokens){
+  var p=0;
+  function peek(){ return tokens[p]; }
+  function expr(){
+    var a=term();
+    while(peek()==="+"||peek()==="−"){
+      var op=tokens[p++], b=term();
+      a=(function(a,b,op){ return op==="+"?function(x){return a(x)+b(x);}:function(x){return a(x)-b(x);}; })(a,b,op);
+    }
+    return a;
+  }
+  function term(){
+    var a=factor();
+    for(;;){
+      var t=peek();
+      if(t==="·"||t===":"){
+        p++; var b=factor();
+        a=(function(a,b,t){ return t==="·"?function(x){return a(x)*b(x);}:function(x){return a(x)/b(x);}; })(a,b,t);
+      } else if(t!==undefined&&(t==="x"||t==="("||isNumTok(t))){
+        if(isNumTok(t)&&isNumTok(tokens[p-1])) throw new Error("Zwei Zahlen stehen direkt nebeneinander. Setze ein Rechenzeichen dazwischen.");
+        var c=factor();
+        a=(function(a,c){ return function(x){ return a(x)*c(x); }; })(a,c);
+      } else break;
+    }
+    return a;
+  }
+  function factor(){
+    var t=tokens[p];
+    if(t===undefined) throw new Error("Der Term ist noch nicht vollständig – am Ende fehlt noch etwas.");
+    if(isNumTok(t)){ p++; var v=Number(t); return function(){ return v; }; }
+    if(t==="x"){ p++; return function(x){ return x; }; }
+    if(t==="("){
+      p++; var e=expr();
+      if(tokens[p]!==")") throw new Error("Eine Klammer wird geöffnet, aber nicht geschlossen.");
+      p++; return e;
+    }
+    if(t==="−"){ p++; var f=factor(); return function(x){ return -f(x); }; }
+    if(t===")") throw new Error("Vor einer schließenden Klammer fehlt etwas.");
+    throw new Error("Nach einem Rechenzeichen muss eine Zahl, "+"x oder eine Klammer folgen.");
+  }
+  var f=expr();
+  if(p<tokens.length) throw new Error(tokens[p]===")"?"Es wird eine Klammer geschlossen, die nie geöffnet wurde.":"Der Term lässt sich so nicht lesen.");
+  return f;
+}
+var TESTX=[1,2,3,4,5,7,10,12];
+function sameF(f,g){
+  for(var i=0;i<TESTX.length;i++){
+    var a=f(TESTX[i]), b=g(TESTX[i]);
+    if(!isFinite(a)||!isFinite(b)) return false;
+    if(Math.abs(a-b)>1e-9*Math.max(1,Math.abs(b))) return false;
+  }
+  return true;
+}
+function tokHtml(tokens){
+  var s="";
+  tokens.forEach(function(t,i){
+    var prev=tokens[i-1];
+    if(t==="x") s+='<i>x</i>';
+    else if(t==="+"||t==="−"||t==="·"||t===":") s+="&thinsp;"+t+"&thinsp;";
+    else s+=t;
+    void prev;
+  });
+  return s;
+}
+function termBuilder(host,cfg){
+  var box=el("div","tb"); host.appendChild(box);
+  if(cfg.q) box.appendChild(el("p","q",cfg.q));
+  var disp=el("div","tbdisp"); box.appendChild(disp);
+  var tiles=el("div","tiles"); box.appendChild(tiles);
+  var ctl=el("div","tbctl"); box.appendChild(ctl);
+  var fb=el("div","fb"); box.appendChild(fb);
+  var toks=[], used=[], solved=false, wrong=0, tbtn=[];
+  var ops={"+":1,"−":1,"·":1,":":1,"(":1,")":1};
+  function render(){
+    disp.innerHTML='<span class="pre">'+(cfg.prefix||"Term:")+'</span>'+
+      (toks.length?'<span>'+tokHtml(toks.map(function(t){return t.s;}))+'</span>':'<span class="ph">Tippe unten auf die Bausteine.</span>')+
+      (solved?"":'<span class="cur"></span>');
+    if(cfg.once) tbtn.forEach(function(b,i){ b.disabled=solved||used[i]; });
+    else tbtn.forEach(function(b){ b.disabled=solved; });
+  }
+  cfg.tiles.forEach(function(t,i){
+    var cls="tile"+(ops[t]?" op":"")+(t==="x"?" var":"");
+    var b=btn(t==="x"?"x":t,cls);
+    b.setAttribute("aria-label","Baustein "+t);
+    b.onclick=function(){
+      if(solved) return;
+      disp.classList.remove("no"); fb.className="fb";
+      var last=toks[toks.length-1];
+      if(cfg.digits&&/^\d$/.test(t)&&last&&/^\d+$/.test(last.s)&&last.s.length<4&&!cfg.once){ last.s+=t; last.idx.push(i); }
+      else toks.push({s:t,idx:[i]});
+      if(cfg.once) used[i]=true;
+      render();
+    };
+    tiles.appendChild(b); tbtn.push(b); used.push(false);
+  });
+  var bBack=btn("⌫ Zurück","btn ghost sm",function(){
+    if(solved||!toks.length) return;
+    var last=toks[toks.length-1];
+    if(cfg.digits&&last.s.length>1){ last.s=last.s.slice(0,-1); last.idx.pop(); }
+    else { toks.pop(); if(cfg.once) last.idx.forEach(function(k){ used[k]=false; }); }
+    disp.classList.remove("no"); render();
+  });
+  var bClr=btn("Leeren","btn ghost sm",function(){ if(solved) return; toks=[]; used=used.map(function(){return false;}); disp.classList.remove("no"); fb.className="fb"; render(); });
+  var bChk=btn("Prüfen","btn",check);
+  ctl.appendChild(bBack); ctl.appendChild(bClr); ctl.appendChild(bChk);
+  var help=null;
+  if(cfg.help){
+    help=helpLadder(box,{levels:cfg.help,onSolution:function(){
+      toks=cfg.solution.tokens.map(function(s){ return {s:s,idx:[]}; });
+      solved=true; disp.classList.add("ok"); render(); lock();
+      showFb(fb,"sol",'<span class="soltag">Lösung angezeigt</span>'+cfg.solution.text);
+      if(cfg.onDone) cfg.onDone(toks.map(function(t){return t.s;}),true);
+    }});
+  }
+  box.appendChild(fb);
+  function lock(){ bBack.disabled=bClr.disabled=bChk.disabled=true; }
+  function check(){
+    if(solved) return;
+    var ts=toks.map(function(t){ return t.s; });
+    if(!ts.length){ showFb(fb,"hint","Baue zuerst einen Term aus den Bausteinen."); return; }
+    var f;
+    try{ f=parseTerm(ts); }catch(e){ disp.classList.add("no"); showFb(fb,"hint",e.message); return; }
+    if(ts.indexOf("x")<0){
+      wrong++; disp.classList.add("no");
+      showFb(fb,"hint","<strong>Noch nicht.</strong> "+(cfg.noX||"Dein Term enthält kein "+X()+". Dann hätte er immer denselben Wert – egal, was sich in der Situation verändert."));
+      if(help) help.nudge(); return;
+    }
+    if(sameF(f,cfg.target)){
+      solved=true; disp.classList.add("ok"); render(); lock(); if(help) help.close();
+      var extra=cfg.okNote?cfg.okNote(ts):"";
+      showFb(fb,"ok","<strong>Richtig.</strong> "+(cfg.ok||"")+(extra?" "+extra:""));
+      if(cfg.onDone) cfg.onDone(ts,false);
+      return;
+    }
+    wrong++; disp.classList.add("no");
+    var msg=null;
+    (cfg.known||[]).some(function(k){ if(sameF(f,k.f)){ msg=k.msg; return true; } return false; });
+    if(!msg&&cfg.generic) msg=cfg.generic(f);
+    showFb(fb,"hint","<strong>Noch nicht.</strong> "+(msg||"Dieser Term passt nicht zur Situation."));
+    if(help) help.nudge();
+  }
+  render();
+  return {fb:fb};
+}
+
+/* =========================================================
+   Zuordnen: Termteil ↔ Bedeutung
+   ========================================================= */
+function matcher(host,cfg){
+  var box=el("div"); host.appendChild(box);
+  if(cfg.q) box.appendChild(el("p","q",cfg.q));
+  var hintP=box.appendChild(el("p","small","Das blau umrandete Feld ist ausgewählt – tippe auf die passende Bedeutung. Durch Antippen wählst du ein anderes Feld aus oder leerst ein belegtes Feld."));
+  var pool=el("div","zpool"); box.appendChild(pool);
+  var rowsBox=el("div"); box.appendChild(rowsBox);
+  var ctl=el("div","btnrow"); box.appendChild(ctl);
+  var fb=el("div","fb"); box.appendChild(fb);
+  var assign=cfg.rows.map(function(){ return null; });
+  var selChip=null, actRow=-1, solved=false, wrong=0;
+  var chips={}, rowEls=[], slots=[], msgs=[];
+  var chk=btn("Prüfen","btn"); ctl.appendChild(chk);
+  var sol=btn("Lösung anzeigen","btn ghost"); sol.hidden=true; ctl.appendChild(sol);
+  function meaning(id){ var m=null; cfg.pool.forEach(function(p){ if(p.id===id) m=p; }); return m; }
+  function refresh(){
+    cfg.pool.forEach(function(p){
+      chips[p.id].classList.toggle("used",assign.indexOf(p.id)>=0);
+      chips[p.id].classList.toggle("sel",selChip===p.id);
+    });
+    rowEls.forEach(function(r,i){
+      r.classList.toggle("act",actRow===i&&!solved);
+      var a=assign[i];
+      slots[i].className="zslot"+(a?" filled":"");
+      slots[i].innerHTML=a?meaning(a).t:"Bedeutung hier einsetzen";
+    });
+  }
+  function put(i,id){
+    assign[i]=id; selChip=null; rowEls[i].classList.remove("bad"); msgs[i].innerHTML="";
+    actRow=assign.indexOf(null); refresh();
+  }
+  cfg.pool.forEach(function(p){
+    var c=btn(p.t,"zchip");
+    c.onclick=function(){
+      if(solved) return;
+      if(actRow>=0&&assign[actRow]===null){ put(actRow,p.id); return; }
+      selChip=(selChip===p.id)?null:p.id; refresh();
+    };
+    chips[p.id]=c; pool.appendChild(c);
+  });
+  cfg.rows.forEach(function(r,i){
+    var row=el("div","zrow");
+    row.appendChild(el("div","zterm",r.html));
+    var s=btn("","zslot");
+    s.onclick=function(){
+      if(solved) return;
+      if(assign[i]!==null&&!selChip){ assign[i]=null; row.classList.remove("bad"); msgs[i].innerHTML=""; actRow=i; refresh(); return; }
+      if(selChip){ put(i,selChip); return; }
+      actRow=i; refresh();
+    };
+    row.appendChild(s);
+    var m=el("div","zmsg"); row.appendChild(m);
+    rowsBox.appendChild(row); rowEls.push(row); slots.push(s); msgs.push(m);
+  });
+  actRow=0;
+  function finish(){ solved=true; chk.disabled=true; sol.hidden=true; pool.hidden=true; hintP.hidden=true; rowEls.forEach(function(r){ r.classList.remove("bad","act"); r.classList.add("done"); }); msgs.forEach(function(m){ m.innerHTML=""; }); refresh(); if(cfg.onDone) cfg.onDone(); }
+  chk.onclick=function(){
+    if(solved) return;
+    if(assign.indexOf(null)>=0){ showFb(fb,"hint","Ordne zuerst jedem Termteil eine Bedeutung zu."); return; }
+    var bad=0;
+    cfg.rows.forEach(function(r,i){
+      if(assign[i]===r.ans){ rowEls[i].classList.remove("bad"); rowEls[i].classList.add("done"); msgs[i].innerHTML=""; }
+      else { bad++; rowEls[i].classList.remove("done"); rowEls[i].classList.add("bad");
+        msgs[i].innerHTML=(r.no&&r.no[assign[i]])||cfg.defaultNo||"Diese Bedeutung gehört zu einem anderen Teil des Terms."; }
+    });
+    if(!bad){ showFb(fb,"ok","<strong>Alles richtig zugeordnet.</strong> "+(cfg.ok||"")); finish(); return; }
+    wrong++;
+    showFb(fb,"hint","<strong>"+bad+(bad===1?" Zuordnung passt":" Zuordnungen passen")+" noch nicht.</strong> Tippe auf ein rot markiertes Feld, um es zu leeren.");
+    if(wrong>=2) sol.hidden=false;
+  };
+  sol.onclick=function(){ if(solved) return; usedSolution(); cfg.rows.forEach(function(r,i){ assign[i]=r.ans; }); showFb(fb,"sol",'<span class="soltag">Lösung angezeigt</span>So gehören Termteile und Bedeutungen zusammen.'); finish(); };
+  refresh();
+  return box;
+}
+
+/* Kleiner Schalter „Ich habe notiert“ für analoge Phasen */
+function analogStep(host,html,label,onDone){
+  host.appendChild(el("div","",html));
+  var b=btn(label||"Erledigt – weiter","btn",function(){ b.disabled=true; if(onDone) onDone(); });
+  var r=el("div","btnrow"); r.appendChild(b); host.appendChild(r);
+  return b;
+}
+</script>
+<script>
+"use strict";
+/* =========================================================
+   Eigene schematische Zeichnungen (inline SVG)
+   ========================================================= */
+var COL={stick:"#5b6b7d", rep:"#1f6fb2", rep2:"#62a1d6", teal:"#0f766e", once:"#c2570c", ghost:"#c0392b", neu:"#1e7a4d",
+  bgA:"#e3eef8", bgB:"#eef5fb", bgO:"#fbeadb", stone:"#d9e3ec", stoneS:"#5b6b7d"};
+var FONT='font-family="Segoe UI,system-ui,-apple-system,sans-serif"';
+function f1(v){ return (Math.round(v*10)/10).toString(); }
+/* Stab: Linie, an beiden Enden leicht gekürzt, damit einzelne Stäbe erkennbar bleiben */
+function stickLine(a,b,col,w,opt){
+  opt=opt||{};
+  var dx=b[0]-a[0], dy=b[1]-a[1], L=Math.sqrt(dx*dx+dy*dy), sh=opt.sh!=null?opt.sh:3.4;
+  var ux=dx/L, uy=dy/L;
+  var x1=a[0]+ux*sh, y1=a[1]+uy*sh, x2=b[0]-ux*sh, y2=b[1]-uy*sh;
+  return '<line'+(opt.cls?' class="'+opt.cls+'"':'')+' x1="'+f1(x1)+'" y1="'+f1(y1)+'" x2="'+f1(x2)+'" y2="'+f1(y2)+
+    '" stroke="'+col+'" stroke-width="'+(w||5)+'" stroke-linecap="round"'+(opt.dash?' stroke-dasharray="4 5" opacity=".85"':'')+'/>';
+}
+function txt(x,y,s,col,size,bold){
+  return '<text x="'+f1(x)+'" y="'+f1(y)+'" text-anchor="middle" font-size="'+(size||13)+'" '+(bold===false?'':'font-weight="700" ')+'fill="'+(col||"#1b2430")+'" '+FONT+'>'+s+'</text>';
+}
+function svgWrap(W,H,inner,label,maxW){
+  return '<svg class="fig" viewBox="0 0 '+f1(W)+' '+f1(H)+'" style="max-width:'+(maxW||W*1.6)+'px" role="img" aria-label="'+label+'">'+inner+'</svg>';
+}
+
+/* ---------------- Eisenbahnbrücke ----------------
+   Bauschritt n besteht aus n Dreiecken im Zickzack.
+   Knoten Z0 … Z(n+1); schräge Stäbe Z(j)Z(j+1) für j = 0 … n  (n+1 Stück),
+   waagrechte Stäbe Z(i-1)Z(i+1) für i = 1 … n  (n Stück).  Summe 2n+1.
+   Modi: plain | r21 (2x+1) | rxx1 (x+x+1) | r32 (3+2(x−1)) | diff (neu in Schritt n) */
+function bridgeSticks(n){
+  var s=[];
+  for(var j=0;j<=n;j++) s.push({k:"d",j:j});
+  for(var i=1;i<=n;i++) s.push({k:"h",i:i});
+  return s;
+}
+function bridgeSVG(n,mode,o){
+  o=o||{};
+  var sd=56, h=48.5, m=16, lab=(mode==="r21"||mode==="r32")?20:0;
+  var N=Math.max(n,o.minN||n);
+  var W=2*m+(N+1)*sd/2, H=2*m+h+lab;
+  var off=(W-(2*m+(n+1)*sd/2))/2;
+  function Z(j){ return [off+m+j*sd/2,(j%2===1)?m:m+h]; }
+  var out=[], sticks=bridgeSticks(n);
+  sticks.forEach(function(st){
+    var a,b,col=COL.stick,cls="";
+    if(st.k==="d"){ a=Z(st.j); b=Z(st.j+1); } else { a=Z(st.i-1); b=Z(st.i+1); }
+    var g;
+    if(mode==="r21"){
+      if(st.k==="d"&&st.j===0) col=COL.once;
+      else { g=(st.k==="d")?st.j:st.i; col=(g%2)?COL.rep:COL.rep2; }
+    } else if(mode==="rxx1"){
+      if(st.k==="h") col=COL.rep; else if(st.j===0) col=COL.once; else col=COL.teal;
+    } else if(mode==="r32"){
+      g=(st.k==="d")?Math.max(st.j,1):st.i;
+      col=(g===1)?COL.once:((g%2)?COL.rep2:COL.rep);
+    } else if(mode==="diff"){
+      var isNew=(n===1)||(st.k==="h"&&st.i===n)||(st.k==="d"&&st.j===n);
+      col=isNew?COL.neu:COL.stick; if(isNew&&o.anim) cls="new";
+    }
+    st.col=col;
+    out.push(stickLine(a,b,col,5,{cls:cls}));
+  });
+  /* Beschriftung der Gruppen */
+  if(mode==="r21"||mode==="r32"){
+    var ly=m+h+lab-3;
+    for(var i=1;i<=n;i++){
+      var cx=(Z(i-1)[0]+Z(i+1)[0])/2;
+      if(mode==="r21") out.push(txt(cx+sd*0.12,ly,"2",(i%2)?COL.rep:COL.rep2,13));
+      else if(i>1) out.push(txt(cx+sd*0.12,ly,"2",(i%2)?COL.rep2:COL.rep,13));
+      else out.push(txt(cx,ly,"3",COL.once,13));
+    }
+    if(mode==="r21") out.push(txt(Z(0)[0]+4,ly,"1",COL.once,13));
+  }
+  return svgWrap(W,H,out.join(""),"Eisenbahnbrücke, Bauschritt "+n+", "+(2*n+1)+" Stäbe",o.maxW);
+}
+function bridgeCount(n){ return 2*n+1; }
+
+/* ---------------- Hohlkammerprofil ----------------
+   Bauschritt n: oben und unten je 2n waagrechte Stäbe (Segmente 0 … 2n−1),
+   senkrechte Stäbe an den inneren Stellen 1 … 2n−1.  Summe 4n + 2n − 1 = 6n − 1.
+   Modi: plain | l6 (6x−1) | l5 (5x+(x−1)) | l56 (5+6(x−1)) | mia (5x+x, zu viele Verbinder) */
+function profileSVG(n,mode,o){
+  o=o||{};
+  var L=34, Hh=40, m=16, labTop=(mode&&mode!=="plain"&&!o.noLab)?20:0, labBot=((mode==="l5"||mode==="mia"||mode==="pdiff")&&!o.noLab)?18:0;
+  var N=Math.max(n,o.minN||n);
+  var W=2*m+2*N*L, top=m+labTop, bot=top+Hh, H=bot+m+labBot;
+  var off=(W-(2*m+2*n*L))/2;
+  function Xp(j){ return off+m+j*L; }
+  var out=[], k, j, g, col;
+  function bg(x0,x1,fill){ out.push('<rect x="'+f1(x0)+'" y="'+f1(top-7)+'" width="'+f1(x1-x0)+'" height="'+f1(Hh+14)+'" rx="6" fill="'+fill+'"/>'); }
+  function shade(g){ return (g%2)?COL.rep2:COL.rep; }
+  /* Hintergründe */
+  if(mode==="l6"||mode==="l56"){
+    for(g=0;g<n;g++) bg(Xp(2*g)+2,Xp(2*g+2)-2,(mode==="l56"&&g===0)?COL.bgO:((g%2)?COL.bgB:COL.bgA));
+  } else if(mode==="l5"||mode==="mia"){
+    for(g=0;g<n;g++) bg(Xp(2*g)+6,Xp(2*g+2)-6,(g%2)?COL.bgB:COL.bgA);
+  }
+  /* waagrechte Stäbe */
+  for(k=0;k<2*n;k++){
+    g=Math.floor(k/2); col=COL.stick;
+    if(mode==="l6"||mode==="l5"||mode==="mia") col=shade(g);
+    else if(mode==="l56") col=(g===0)?COL.once:shade(g);
+    var nw=(mode==="pdiff"&&k>=2*n-2);
+    if(nw) col=COL.neu;
+    out.push(stickLine([Xp(k),top],[Xp(k+1),top],col,5,{cls:nw&&o.anim?"new":""}));
+    out.push(stickLine([Xp(k),bot],[Xp(k+1),bot],col,5,{cls:nw&&o.anim?"new":""}));
+  }
+  /* senkrechte Stäbe */
+  for(j=1;j<=2*n-1;j++){
+    col=COL.stick;
+    if(mode==="l6") col=shade(Math.floor(j/2));
+    else if(mode==="l5"||mode==="mia") col=(j%2)?shade((j-1)/2):COL.once;
+    else if(mode==="l56"){ g=Math.floor(j/2); col=(g===0)?COL.once:shade(g); }
+    var nv=(mode==="pdiff"&&j>=2*n-2);
+    if(nv) col=COL.neu;
+    out.push(stickLine([Xp(j),top],[Xp(j),bot],col,5,{cls:nv&&o.anim?"new":""}));
+  }
+  /* Beschriftungen */
+  if(mode==="l6"){
+    out.push(stickLine([Xp(0),top],[Xp(0),bot],COL.ghost,4,{dash:true}));
+    out.push(txt(Xp(0),top-8,"−1",COL.ghost,13));
+    for(g=0;g<n;g++) out.push(txt((Xp(2*g)+Xp(2*g+2))/2+6,top-8,"6",shade(g),13));
+  } else if(mode==="l5"||mode==="mia"){
+    for(g=0;g<n;g++) out.push(txt((Xp(2*g)+Xp(2*g+2))/2,top-8,"5",shade(g),13));
+    for(g=1;g<n;g++) out.push(txt(Xp(2*g),bot+19,"1",COL.once,13));
+    if(mode==="mia"){
+      out.push(stickLine([Xp(2*n)+10,top],[Xp(2*n)+10,bot],COL.ghost,4,{dash:true}));
+      out.push(txt(Xp(2*n)+10,bot+19,"?",COL.ghost,14));
+    }
+  } else if(mode==="pdiff"&&!o.noLab&&n>=2){
+    out.push(txt(Xp(2*n-1),top-8,"2 oben",COL.neu,12));
+    out.push(txt(Xp(2*n-1),bot+17,"2 unten",COL.neu,12));
+    out.push(txt((Xp(2*n-2)+Xp(2*n-1))/2,(top+bot)/2+5,"2",COL.neu,13));
+  } else if(mode==="l56"){
+    out.push(txt((Xp(0)+Xp(2))/2,top-8,"5",COL.once,13));
+    for(g=1;g<n;g++) out.push(txt((Xp(2*g)+Xp(2*g+2))/2,top-8,"6",shade(g),13));
+  }
+  var W2=W+(mode==="mia"?20:0);
+  return svgWrap(W2,H,out.join(""),"Hohlkammerprofil, Bauschritt "+n+", "+(6*n-1)+" Stäbe",o.maxW);
+}
+function profileCount(n){ return 6*n-1; }
+
+/* ---------------- Modelle für C2 (je Bauschritt 1, 2, 3) ----------------
+   Jede Funktion liefert {w,h,s} mit Ursprung oben links. */
+function mSquares(n,ex){      /* Quadratreihe: 3n+1 Stäbe */
+  var a=24, s=[], i, h=a+8;
+  function L(p,q,col){ s.push(stickLine([p[0]+4,p[1]+4],[q[0]+4,q[1]+4],col,3.6,{sh:2.4})); }
+  L([0,0],[0,a],ex?COL.once:COL.stick);
+  for(i=0;i<n;i++){
+    var c=ex?((i%2)?COL.rep2:COL.rep):COL.stick;
+    L([i*a,0],[(i+1)*a,0],c); L([i*a,a],[(i+1)*a,a],c); L([(i+1)*a,0],[(i+1)*a,a],c);
+  }
+  return {w:n*a+8,h:h,s:s.join("")};
+}
+function mSepSquares(n){      /* einzelne Quadrate: 4n Stäbe */
+  var a=22, gap=8, s=[], i;
+  for(i=0;i<n;i++){
+    var x=4+i*(a+gap), y=4;
+    s.push(stickLine([x,y],[x+a,y],COL.stick,3.6,{sh:2.4})); s.push(stickLine([x,y+a],[x+a,y+a],COL.stick,3.6,{sh:2.4}));
+    s.push(stickLine([x,y],[x,y+a],COL.stick,3.6,{sh:2.4})); s.push(stickLine([x+a,y],[x+a,y+a],COL.stick,3.6,{sh:2.4}));
+  }
+  return {w:n*(a+gap)-gap+8,h:a+8,s:s.join("")};
+}
+function mSepTri(n){          /* einzelne Dreiecke: 3n Stäbe */
+  var a=26, hh=22.5, gap=7, s=[], i;
+  for(i=0;i<n;i++){
+    var x=4+i*(a+gap), y=4;
+    var A=[x,y+hh], B=[x+a,y+hh], C=[x+a/2,y];
+    s.push(stickLine(A,B,COL.stick,3.6,{sh:2.4})); s.push(stickLine(B,C,COL.stick,3.6,{sh:2.4})); s.push(stickLine(C,A,COL.stick,3.6,{sh:2.4}));
+  }
+  return {w:n*(a+gap)-gap+8,h:hh+8,s:s.join("")};
+}
+function stone(x,y,w,h,fill,stroke){ return '<rect x="'+f1(x)+'" y="'+f1(y)+'" width="'+w+'" height="'+h+'" rx="2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.4"/>'; }
+function mTower(n,ex){        /* Turm: je Stockwerk 3 Steine, oben 1 Dachstein: 3n+1 */
+  var w=15, h=11, s=[], i, k, H=(n+1)*h+4, W=3*w+4;
+  for(i=0;i<n;i++){
+    var y=H-2-(i+1)*h;
+    var f=ex?((i%2)?"#cfe3f3":"#a9cde8"):COL.stone, st=ex?COL.rep:COL.stoneS;
+    for(k=0;k<3;k++) s.push(stone(2+k*w,y,w,h,f,st));
+  }
+  s.push(stone(2+w,H-2-(n+1)*h,w,h,ex?"#f7d9b6":COL.stone,ex?COL.once:COL.stoneS));
+  return {w:W,h:H,s:s.join("")};
+}
+function mStar(n,ex){         /* Mittelstein mit drei Armen (links, rechts, oben): 3n+1 */
+  var a=12, s=[], k, W=(2*n+1)*a+4, H=(n+1)*a+4;
+  var cx=2+n*a, cy=H-2-a;
+  s.push(stone(cx,cy,a,a,ex?"#f7d9b6":COL.stone,ex?COL.once:COL.stoneS));
+  for(k=1;k<=n;k++){
+    var f=ex?((k%2)?"#a9cde8":"#cfe3f3"):COL.stone, st=ex?COL.rep:COL.stoneS;
+    s.push(stone(cx-k*a,cy,a,a,f,st)); s.push(stone(cx+k*a,cy,a,a,f,st)); s.push(stone(cx,cy-k*a,a,a,f,st));
+  }
+  return {w:W,h:H,s:s.join("")};
+}
+/* drei Bauschritte nebeneinander, unten bündig */
+function seriesSVG(fn,ex,label){
+  var parts=[1,2,3].map(function(n){ return fn(n,ex); });
+  var gap=22, W=0, H=0;
+  parts.forEach(function(p){ W+=p.w; H=Math.max(H,p.h); });
+  W+=gap*2; var x=0, out=[];
+  parts.forEach(function(p,i){
+    out.push('<g transform="translate('+f1(x)+','+f1(H-p.h)+')">'+p.s+'</g>');
+    out.push(txt(x+p.w/2,H+16,String(i+1),"#4a5566",12,false));
+    x+=p.w+gap;
+  });
+  return svgWrap(W,H+20,out.join(""),label,W*1.9);
+}
+</script>
+<script>
+"use strict";
+/* =========================================================
+   BEREICH A · SITUATION → TERM
+   Grundlage: Arbeitsblatt „Terme aufstellen“ (Tabelle Aufgabe 2)
+   ========================================================= */
+var MA=[["heft","zuerst Arbeitsblatt „Terme aufstellen“"],["pad","dann hier prüfen"]];
+
+/* Übersetzungsleiste: Situation | x steht für | Der Term berechnet | Term */
+function aLayout(body,sitHtml,pre){
+  pre=pre||{};
+  var card=el("section","card"); body.appendChild(card);
+  var w=el("div","work"); card.appendChild(w);
+  var viz=el("div","viz"), task=el("div","task"); w.appendChild(viz); w.appendChild(task);
+  var t=el("div","trans"); viz.appendChild(t);
+  var cells={};
+  [["sit","Situation"],["x",X()+" steht für"],["ber","Der Term berechnet"],["term","Term"]].forEach(function(r){
+    var row=el("div","trow"); row.appendChild(el("div","tl",r[1]));
+    var v=el("div","tv"); row.appendChild(v); t.appendChild(row); cells[r[0]]=v;
+  });
+  cells.sit.innerHTML='<span class="sitcard">'+sitHtml+'</span>';
+  ["x","ber","term"].forEach(function(k){
+    if(pre[k]){ cells[k].innerHTML=pre[k]; }
+    else { cells[k].className="tv empty"; cells[k].textContent="… noch offen"; }
+  });
+  var extra=el("div"); viz.appendChild(extra);
+  return {
+    steps:task, extra:extra, anchor:makeAnchor(t,viz),
+    set:function(k,html){ cells[k].className="tv fill"; cells[k].innerHTML=html; }
+  };
+}
+function mfs(s){ return '<span class="mf">'+s+'</span>'; }
+
+/* ---------------- A1 · Taxifahrt ---------------- */
+defTask("A1","Taxifahrt","A2",function(body){
+  var L=aLayout(body,"Jede Taxifahrt kostet eine <b>Grundgebühr von 3 €</b>. Pro gefahrenem Kilometer kommen noch <b>2 €</b> Fahrpreis dazu.");
+  steps(L.steps,[
+    {title:"Wofür steht "+X()+"?",sum:""+X()+" steht für die Anzahl der gefahrenen Kilometer.",run:function(h,done){
+      mc(h,{q:"Was verändert sich von Fahrt zu Fahrt? Dafür steht die Variable "+X()+".",opts:[
+        {t:"der Preis pro Kilometer",fb:"Der Preis pro Kilometer ist fest – immer 2 €. Eine Variable brauchst du für eine Größe, die sich von Fahrt zu Fahrt ändert."},
+        {t:"die Anzahl der gefahrenen Kilometer",ok:true,fb:"Die Strecke ist bei jeder Fahrt anders."},
+        {t:"der Gesamtpreis der Fahrt",fb:"Den Gesamtpreis willst du mit dem Term erst ausrechnen. "+X()+" ist die Größe, die du einsetzt."},
+        {t:"die Grundgebühr",fb:"Die Grundgebühr ist bei jeder Fahrt gleich: 3 €."}
+      ],onDone:function(){ L.set("x","die Anzahl der gefahrenen Kilometer"); done(); }});
+    }},
+    {title:"Was soll berechnet werden?",sum:"Gesucht ist der Gesamtpreis der Taxifahrt in €.",run:function(h,done){
+      mc(h,{q:"Was soll der Term berechnen?",opts:[
+        {t:"den Gesamtpreis der Taxifahrt in €",ok:true,fb:"Bezahlt wird die ganze Fahrt – Grundgebühr und Kilometer."},
+        {t:"nur den Preis für die gefahrenen Kilometer",fb:"Dann würde die Grundgebühr fehlen. Bezahlt wird aber die ganze Fahrt."},
+        {t:"die Anzahl der gefahrenen Kilometer",fb:"Die Kilometerzahl ist "+X()+" – die setzt du ein, die musst du nicht berechnen."}
+      ],onDone:function(){ L.set("ber","den Gesamtpreis der Taxifahrt in €"); done(); }});
+    }},
+    {title:"Welcher Term beschreibt die Situation?",run:function(h,done){
+      termBuilder(h,{
+        q:"Baue den Term aus den Bausteinen. Jeder Baustein darf mehrfach verwendet werden.",
+        prefix:'<i>K</i>(<i>x</i>) =',
+        tiles:["3","2","x","+","−","·",":","(",")"],
+        target:function(x){ return 3+2*x; },
+        ok:"Einmal 3 € Grundgebühr, dazu 2 € für jeden der "+X()+" Kilometer.",
+        okNote:function(ts){ return ts.join("").indexOf("2·x")>=0||ts.join("").indexOf("x·2")>=0?"Kürzer schreibt man 2"+X()+" statt 2 · "+X()+".":""; },
+        known:[
+          {f:function(x){return 3*x+2;},msg:"Dieser Term würde <b>3 € pro Kilometer</b> und eine Grundgebühr von <b>2 €</b> berechnen. Hier ist es umgekehrt: 3 € einmal, 2 € für jeden Kilometer."},
+          {f:function(x){return 5*x;},msg:"Dieser Term würde für <b>jeden Kilometer 5 €</b> berechnen – die Grundgebühr würde bei jedem Kilometer erneut bezahlt. Sie fällt aber nur einmal pro Fahrt an."},
+          {f:function(x){return 2*x;},msg:"Dieser Term berechnet nur den Fahrpreis für die Kilometer. Die Grundgebühr von 3 € fehlt."},
+          {f:function(x){return 3*x;},msg:"Dieser Term würde 3 € pro Kilometer berechnen – und die Grundgebühr fehlt."},
+          {f:function(x){return 3+x;},msg:"Dieser Term würde nur 1 € pro Kilometer berechnen. Jeder Kilometer kostet aber 2 €."}
+        ],
+        generic:function(f){ return "Probe mit 10 km: Dein Term ergibt "+num(f(10))+" €. Die Fahrt kostet aber 3 € + 10 · 2 € = 23 €."; },
+        help:[
+          {t:"Was bezahlst du bei jeder Fahrt genau <b>einmal</b> – und was bezahlst du für <b>jeden</b> Kilometer?"},
+          {t:"Rechne zuerst mit Zahlen: 1 km kostet 3 + 2 · 1 Euro, 2 km kosten 3 + 2 · 2 Euro, 5 km kosten 3 + 2 · 5 Euro. Was bleibt gleich, was ändert sich?"},
+          {t:'<div class="mf" style="line-height:1.9;white-space:normal">1 km: <span class="hl o">3</span> + <span class="hl r">2 · 1</span> = 5 €<br>2 km: <span class="hl o">3</span> + <span class="hl r">2 · 2</span> = 7 €<br>5 km: <span class="hl o">3</span> + <span class="hl r">2 · 5</span> = 13 €<br><i>x</i> km: <span class="hl o">3</span> + <span class="hl r">2 · ?</span></div><span class="small">Orange: fällt einmal an. Blau: hängt von der Strecke ab.</span>'}
+        ],
+        solution:{tokens:["3","+","2","x"],text:mfs("<i>K</i>(<i>x</i>) = 3 + 2<i>x</i>")+": 3 € Grundgebühr einmal, dazu 2 € für jeden der "+X()+" Kilometer."},
+        onDone:function(ts){ L.set("term",mfs("<i>K</i>(<i>x</i>) = 3 + 2<i>x</i>")); done("Term: "+mfs("<i>K</i>(<i>x</i>) = "+tokHtml(ts))); }
+      });
+    }},
+    {title:"Was bedeutet der Teil 2"+X()+"?",sum:""+mfs("2<i>x</i>")+" ist der Fahrpreis für die gefahrenen Kilometer.",run:function(h,done){
+      mc(h,{q:"Im Term "+mfs("3 + 2<i>x</i>")+" steht der Teil "+mfs("2<i>x</i>")+". Was gibt er an?",opts:[
+        {t:"die Grundgebühr",fb:"Die Grundgebühr ist die 3 – sie fällt einmal an."},
+        {t:"den Gesamtpreis der Fahrt",fb:"Zum Gesamtpreis gehört auch die Grundgebühr: "+mfs("3 + 2<i>x</i>")+"."},
+        {t:"den Fahrpreis für die gefahrenen Kilometer in €",ok:true,fb:"2 € für jeden der "+X()+" Kilometer."}
+      ],onDone:done});
+    }}
+  ],function(){ complete(); },L.anchor);
+},MA);
+
+/* ---------------- A2 · Tankfüllung ---------------- */
+defTask("A2","Tankfüllung","A3",function(body){
+  var L=aLayout(body,"In den Tank eines Autos passen <b>60 Liter</b>. Der Literpreis für Benzin ändert sich ständig. Der leere Tank wird einmal ganz vollgetankt.");
+  steps(L.steps,[
+    {title:"Wofür steht "+X()+"?",sum:""+X()+" steht für den Preis eines Liters Benzin.",run:function(h,done){
+      mc(h,{q:"Welche Größe verändert sich hier? Dafür steht "+X()+".",opts:[
+        {t:"die Anzahl der getankten Liter",fb:"Die Literzahl ändert sich hier nicht: Der Tank fasst immer 60 Liter."},
+        {t:"der Preis für eine volle Tankfüllung",fb:"Diesen Preis soll der Term berechnen. "+X()+" ist die Größe, die sich ändert und die du einsetzt."},
+        {t:"der Preis eines Liters Benzin in €",ok:true,fb:"Der Literpreis ändert sich ständig – deshalb steht dafür eine Variable."}
+      ],onDone:function(){ L.set("x","den Preis eines Liters Benzin in €"); done(); }});
+    }},
+    {title:"Was soll berechnet werden?",sum:"Gesucht ist der Preis einer vollen Tankfüllung.",run:function(h,done){
+      mc(h,{q:"Was soll mit dem Term berechnet werden?",opts:[
+        {t:"wie viele Liter in den Tank passen",fb:"Das ist bekannt: 60 Liter."},
+        {t:"wie viel eine volle Tankfüllung kostet",ok:true},
+        {t:"wie viel ein Liter Benzin kostet",fb:"Das ist "+X()+" – den Literpreis setzt du ein."},
+        {t:"wie weit man mit einer Tankfüllung fahren kann",fb:"Dazu enthält die Situation keine Angaben."}
+      ],onDone:function(){ L.set("ber","wie viel eine volle Tankfüllung kostet (in €)"); done(); }});
+    }},
+    {title:"Erst mit einer Zahl rechnen",sum:"Bei 1,80 € pro Liter: 60 · 1,80 € = 108 €.",run:function(h,done){
+      numAsk(h,{q:"Angenommen, ein Liter kostet 1,80 €. Was kostet die volle Tankfüllung?",correct:108,unit:"€",aria:"Preis der Tankfüllung in Euro",
+        diag:function(v){
+          if(Math.abs(v-61.8)<1e-6) return "Du hast 60 + 1,80 gerechnet. Bezahlt wird aber <b>jeder</b> der 60 Liter.";
+          if(Math.abs(v-33.33)<0.01) return "Du hast 60 : 1,80 gerechnet – das wäre die Literzahl, die man für 60 € bekommt.";
+          return "Jeder der 60 Liter kostet 1,80 €.";
+        },
+        ok:"60 · 1,80 € = 108 €.",solution:"60 · 1,80 € = 108 €",onDone:done});
+    }},
+    {title:"Welcher Term beschreibt die Situation?",sum:"Term: "+mfs("60<i>x</i>")+" – 60 Liter zu je "+X()+" €.",run:function(h,done){
+      mc(h,{q:"Welcher Term berechnet den Preis einer vollen Tankfüllung, wenn ein Liter "+X()+" € kostet?",opts:[
+        {t:mfs("60 + <i>x</i>"),fb:"Mit "+X()+" = 1,80 ergäbe "+mfs("60 + <i>x</i>")+" nur 61,80 €. Der Literpreis würde nur einmal bezahlt – nicht für jeden der 60 Liter."},
+        {t:mfs("60 : <i>x</i>"),fb:mfs("60 : <i>x</i>")+" würde berechnen, wie viele Liter man für 60 € bekommt (bei 1,80 € etwa 33 Liter). Gesucht ist aber ein Preis."},
+        {t:mfs("<i>x</i> : 60"),fb:mfs("<i>x</i> : 60")+" würde den Literpreis auf 60 Teile aufteilen – bei 1,80 € wären das 3 Cent. Gesucht ist der Preis für 60 Liter."},
+        {t:mfs("60 · <i>x</i>")+" &nbsp;bzw.&nbsp; "+mfs("60<i>x</i>"),ok:true,fb:"60 Liter, jeder kostet "+X()+" €. Probe: 60 · 1,80 = 108."}
+      ],onDone:function(){ L.set("term",mfs("60<i>x</i>")); done(); }});
+    }}
+  ],function(){ complete(); },L.anchor);
+},MA);
+
+/* ---------------- A3 · Fahrradtour ---------------- */
+defTask("A3","Fahrradtour","A4",function(body){
+  var L=aLayout(body,"Die Fahrradtour von Fulda nach Bremen ist insgesamt <b>320 km</b> lang. "+X()+" steht für die Anzahl der Kilometer, die wir <b>durchschnittlich pro Tag</b> fahren.",
+    {x:"die Anzahl der Kilometer, die wir durchschnittlich pro Tag fahren"});
+  steps(L.steps,[
+    {title:"Die Variable verstehen",sum:""+mfs("<i>x</i> = 40")+" bedeutet: im Durchschnitt 40 km pro Tag.",run:function(h,done){
+      mc(h,{q:"Was bedeutet "+mfs("<i>x</i> = 40")+"?",opts:[
+        {t:"Wir fahren im Durchschnitt 40 km pro Tag.",ok:true},
+        {t:"Wir sind 40 Tage unterwegs.",fb:X()+" ist keine Anzahl von Tagen, sondern eine Strecke pro Tag."},
+        {t:"Die ganze Tour ist 40 km lang.",fb:"Die ganze Tour ist 320 km lang – das ändert sich nicht."}
+      ],onDone:done});
+    }},
+    {title:"Was soll berechnet werden?",sum:"Gesucht ist die Anzahl der Tage.",run:function(h,done){
+      mc(h,{q:"Mit dem Term soll berechnet werden, …",opts:[
+        {t:"… wie lang die ganze Tour ist.",fb:"Die Länge ist bekannt: 320 km."},
+        {t:"… wie viele Kilometer wir pro Tag fahren.",fb:"Das ist "+X()+" – das setzt du ein."},
+        {t:"… wie viele Tage die Tour dauert.",ok:true}
+      ],onDone:function(){ L.set("ber","wie viele Tage die Fahrradtour dauert"); done(); }});
+    }},
+    {title:"Probieren mit Zahlen",sum:"40 km pro Tag → 8 Tage, 64 → 5 Tage, 80 → 4 Tage.",run:function(h,done){
+      tableAsk(h,{q:"Wie viele Tage dauert die Tour?",xLabel:"km pro Tag",yLabel:"Tage",xs:[40,64,80],vals:[8,5,4],
+        badMsg:function(){ return "Überlege: Wie oft passt die Tagesstrecke in 320 km?"; },
+        ok:"320 : 40 = 8, &nbsp;320 : 64 = 5, &nbsp;320 : 80 = 4.",solution:"320 : 40 = 8, 320 : 64 = 5, 320 : 80 = 4",onDone:done});
+    }},
+    {title:"Mehr Kilometer pro Tag – was passiert?",sum:"Mehr Kilometer pro Tag → weniger Tage.",run:function(h,done){
+      mc(h,{q:"Wir fahren pro Tag mehr Kilometer. Was passiert mit der Anzahl der Tage?",opts:[
+        {t:"Sie wird kleiner.",ok:true,fb:"Mehr Kilometer pro Tag – weniger Tage. Das muss auch der Term zeigen."},
+        {t:"Sie wird größer.",fb:"Schau in deine Tabelle: 40 km pro Tag → 8 Tage, 80 km pro Tag → 4 Tage."},
+        {t:"Sie bleibt gleich.",fb:"Schau in deine Tabelle: Die Zahl der Tage ändert sich."}
+      ],onDone:done});
+    }},
+    {title:"Welcher Term beschreibt die Situation?",sum:"Term: "+mfs("320 : <i>x</i>")+".",run:function(h,done){
+      mc(h,{q:"Welcher Term berechnet die Anzahl der Tage?",opts:[
+        {t:mfs("320 · <i>x</i>"),fb:mfs("320 · <i>x</i>")+" ergäbe bei 40 km pro Tag 12.800 – und mit mehr Kilometern pro Tag würde der Wert sogar größer. Die Zahl der Tage muss aber kleiner werden."},
+        {t:mfs("320 : <i>x</i>"),ok:true,fb:"Wie oft passen "+X()+" km in 320 km? Das berechnet die Division. Probe: 320 : 40 = 8."},
+        {t:mfs("<i>x</i> : 320"),fb:mfs("<i>x</i> : 320")+" ergäbe bei 40 km pro Tag nur 0,125. Das ist der Anteil der Strecke, der an einem Tag geschafft wird – nicht die Zahl der Tage."},
+        {t:mfs("320 − <i>x</i>"),fb:mfs("320 − <i>x</i>")+" ergäbe bei 40 km pro Tag 280. Das ist die Reststrecke nach dem ersten Tag, nicht die Zahl der Tage."}
+      ],onDone:function(){ L.set("term",mfs("320 : <i>x</i>")); done(); }});
+    }}
+  ],function(){ complete(); },L.anchor);
+},MA);
+
+/* ---------------- A4 · Fahrradtour + Pausentage ---------------- */
+defTask("A4","Fahrradtour + Pausentage","A5",function(body){
+  var L=aLayout(body,"Die Fahrradtour von Fulda nach Bremen ist 320 km lang. Wir planen zusätzlich <b>2 Pausentage</b> ein. "+X()+" steht wieder für die Kilometer, die wir durchschnittlich pro Fahrtag fahren.");
+  function daysViz(){
+    var s='<div class="days" aria-label="8 Fahrtage und 2 Pausentage">';
+    for(var i=0;i<8;i++) s+='<span class="day f">F</span>';
+    s+='<span class="day p">P</span><span class="day p">P</span></div>';
+    return s;
+  }
+  steps(L.steps,[
+    {title:"Wofür steht "+X()+"?",sum:""+X()+" bleibt die Strecke pro Fahrtag.",run:function(h,done){
+      mc(h,{q:"Hat sich die Bedeutung von "+X()+" gegenüber A3 verändert?",opts:[
+        {t:"Ja – "+X()+" steht jetzt für die Anzahl der Pausentage.",fb:"Die Pausentage stehen fest: genau 2. Dafür braucht man keine Variable."},
+        {t:"Nein – "+X()+" steht weiterhin für die durchschnittliche Strecke pro Fahrtag.",ok:true},
+        {t:"Ja – "+X()+" steht jetzt für die Anzahl aller Tage.",fb:"Die Anzahl aller Tage soll der Term berechnen."}
+      ],onDone:function(){ L.set("x","die Kilometer, die wir durchschnittlich pro Fahrtag fahren"); done(); }});
+    }},
+    {title:"Was soll berechnet werden?",sum:"Gesucht sind alle Tage: Fahrtage und Pausentage.",run:function(h,done){
+      mc(h,{q:"Was soll der Term jetzt berechnen?",opts:[
+        {t:"die Anzahl aller Tage der Tour – Fahrtage und Pausentage",ok:true},
+        {t:"nur die Anzahl der Fahrtage",fb:"Das war die Frage in A3. Jetzt zählen die Pausentage mit."},
+        {t:"die Strecke pro Tag",fb:"Das ist "+X()+"."}
+      ],onDone:function(){ L.set("ber","wie viele Tage wir insgesamt für die Tour brauchen"); done(); }});
+    }},
+    {title:"Welcher Term beschreibt die Situation?",run:function(h,done){
+      termBuilder(h,{
+        q:"Setze die Bausteine in eine passende Reihenfolge. Jeder Baustein kann nur einmal verwendet werden, nicht jeder wird gebraucht.",
+        prefix:'<i>T</i>(<i>x</i>) =', once:true,
+        tiles:["320",":","x","+","2","(",")","·"],
+        target:function(x){ return 320/x+2; },
+        ok:"320 : "+X()+" sind die Fahrtage, + 2 die Pausentage.",
+        okNote:function(ts){ return ts.indexOf("(")>=0?"Die Klammer ist nicht nötig, denn Punkt geht vor Strich: "+mfs("320 : <i>x</i> + 2")+".":""; },
+        known:[
+          {f:function(x){return 320/(x+2);},msg:"Dieser Term würde berechnen, wie viele Tage ihr braucht, wenn ihr <b>jeden Tag 2 km mehr</b> fahrt. Die 2 Pausentage kommen aber zur Zahl der Tage hinzu – nicht zur Strecke pro Tag."},
+          {f:function(x){return 322/x;},msg:"Hier würden 2 <b>Kilometer</b> zur Strecke hinzukommen. Die 2 steht aber für 2 <b>Tage</b>."},
+          {f:function(x){return 640/x;},msg:"Dieser Term würde die Zahl der Fahrtage verdoppeln. Es kommen aber nur 2 Tage hinzu."},
+          {f:function(x){return 320*x+2;},msg:"Mit "+mfs("320 · <i>x</i>")+" würden es bei mehr Kilometern pro Tag mehr Tage. Schau noch einmal in A3."}
+        ],
+        generic:function(f){ return "Probe mit 40 km pro Tag: 8 Fahrtage + 2 Pausentage = 10 Tage. Dein Term ergibt "+num(f(40))+"."; },
+        help:[
+          {t:"Welcher Term aus A3 zählt die <b>Fahrtage</b>?"},
+          {t:"Die Pausentage kommen zu den Fahrtagen <b>hinzu</b>. Welche Rechenart passt zu „hinzukommen“?"},
+          {t:"Beispiel mit 40 km pro Tag:"+daysViz()+'<span class="mf">320 : 40 = 8</span> Fahrtage (blau), dazu 2 Pausentage (orange): 10 Tage.'}
+        ],
+        solution:{tokens:["320",":","x","+","2"],text:mfs("320 : <i>x</i> + 2")+" – wegen „Punkt vor Strich“ wird zuerst 320 : "+X()+" gerechnet (Fahrtage), dann kommen 2 Pausentage dazu."},
+        onDone:function(ts){ L.set("term",mfs("320 : <i>x</i> + 2")); done("Term: "+mfs("<i>T</i>(<i>x</i>) = "+tokHtml(ts))); }
+      });
+    }},
+    {title:"Was bedeutet der Teil 320 : "+X()+"?",sum:""+mfs("320 : <i>x</i>")+" zählt die Fahrtage, + 2 die Pausentage.",run:function(h,done){
+      mc(h,{q:"Was gibt der Teil "+mfs("320 : <i>x</i>")+" im Term "+mfs("320 : <i>x</i> + 2")+" an?",opts:[
+        {t:"die Anzahl der Pausentage",fb:"Die Pausentage sind die 2."},
+        {t:"die Anzahl aller Tage",fb:"Alle Tage zusammen: "+mfs("320 : <i>x</i> + 2")+"."},
+        {t:"die Anzahl der Fahrtage",ok:true}
+      ],onDone:done});
+    }}
+  ],function(){ complete(); },L.anchor);
+},MA);
+
+/* ---------------- A5 · Klassenausflug ---------------- */
+defTask("A5","Klassenausflug","A6",function(body){
+  var L=aLayout(body,"Der Bus für den Klassenausflug kostet insgesamt <b>600 €</b>. Die Kosten werden gleichmäßig auf alle Schülerinnen und Schüler verteilt, die mitfahren.");
+  steps(L.steps,[
+    {title:"Welche Größe ist variabel?",sum:"600 € fest, "+X()+" = Anzahl der Mitfahrenden, gesucht: Betrag pro Person.",run:function(h,done){
+      matcher(h,{q:"Welche Rolle spielt jede Größe?",
+        pool:[{id:"fest",t:"fest – ändert sich nicht"},{id:"var",t:"verändert sich – dafür steht "+X()},{id:"ber",t:"soll mit dem Term berechnet werden"}],
+        rows:[
+          {html:'<span style="font-family:inherit;font-size:1rem">Buspreis 600 €</span>',ans:"fest",no:{"var":"Der Buspreis steht fest: 600 €.","ber":"Der Buspreis ist bekannt – er muss nicht berechnet werden."}},
+          {html:'<span style="font-family:inherit;font-size:1rem">Anzahl der Mitfahrenden</span>',ans:"var",no:{"fest":"Wie viele mitfahren, kann sich ändern – je nach Klasse und Tag.","ber":"Die Zahl der Mitfahrenden setzt man ein, man berechnet sie nicht."}},
+          {html:'<span style="font-family:inherit;font-size:1rem">Betrag pro Person</span>',ans:"ber",no:{"fest":"Der Betrag pro Person hängt davon ab, wie viele mitfahren.","var":"Diesen Betrag willst du ausrechnen – er hängt von der Zahl der Mitfahrenden ab."}}
+        ],
+        onDone:function(){ L.set("x","die Anzahl der Schülerinnen und Schüler, die mitfahren"); L.set("ber","wie viel jede Person zahlen muss (in €)"); done(); }});
+    }},
+    {title:"Mehr Mitfahrende – was passiert?",sum:"Mehr Mitfahrende → kleinerer Betrag pro Person.",run:function(h,done){
+      mc(h,{q:"Es fahren mehr Schülerinnen und Schüler mit. Was passiert mit dem Betrag pro Person?",opts:[
+        {t:"Er wird größer.",fb:"Die 600 € werden auf mehr Personen verteilt – jede Person zahlt weniger."},
+        {t:"Er bleibt gleich.",fb:"Die 600 € werden auf mehr Personen verteilt – das verändert den Anteil jeder Person."},
+        {t:"Er wird kleiner.",ok:true,fb:"Genau das muss der passende Term auch zeigen."}
+      ],onDone:done});
+    }},
+    {title:"Welcher Term beschreibt die Situation?",sum:"Term: "+mfs("600 : <i>x</i>")+".",run:function(h,done){
+      mc(h,{q:"Welcher Term berechnet den Betrag pro Person?",opts:[
+        {t:mfs("600 · <i>x</i>"),fb:mfs("600 · <i>x</i>")+" wird größer, wenn mehr mitfahren – bei 25 Personen 15.000 €. Der Betrag pro Person muss aber kleiner werden."},
+        {t:mfs("<i>x</i> : 600"),fb:mfs("<i>x</i> : 600")+" ergäbe bei 25 Personen 0,04 € pro Person – dann wäre der Bus fast umsonst. Hier sind die Zahlen der Division vertauscht."},
+        {t:mfs("600 − <i>x</i>"),fb:mfs("600 − <i>x</i>")+" würde bedeuten: Jede weitere Person senkt den Preis nur um 1 €. Bei 25 Personen müsste jede 575 € zahlen."},
+        {t:mfs("600 : <i>x</i>"),ok:true,fb:"Die 600 € werden auf "+X()+" Personen aufgeteilt. Bei 25 Personen: 600 : 25 = 24 € pro Person."}
+      ],onDone:function(){ L.set("term",mfs("600 : <i>x</i>")); done(); }});
+    }}
+  ],function(){ complete(); },L.anchor);
+},MA);
+
+/* ---------------- A6 · Svenjas Taschengeld ---------------- */
+defTask("A6","Svenjas Taschengeld","B1",function(body){
+  var L=aLayout(body,"Svenja bekommt jeden Monat von ihren Eltern <b>20 €</b> und von ihrer Oma <b>14 €</b> Taschengeld. Die <b>Hälfte</b> davon gibt sie aus.");
+  steps(L.steps,[
+    {title:"Wofür steht "+X()+"?",sum:""+X()+" steht für die Anzahl der Monate.",run:function(h,done){
+      mc(h,{q:"Welche Größe kann sich hier verändern? Dafür steht "+X()+".",opts:[
+        {t:"die Anzahl der Monate",ok:true,fb:"Je nachdem, wie viele Monate man betrachtet, ergibt sich ein anderer Betrag."},
+        {t:"das Taschengeld pro Monat",fb:"Das steht fest: 20 € + 14 € = 34 € pro Monat."},
+        {t:"der Betrag, den Svenja ausgibt",fb:"Dieser Betrag hängt von der Zahl der Monate ab – er soll mit dem Term berechnet werden."}
+      ],onDone:function(){ L.set("x","die Anzahl der Monate"); done(); }});
+    }},
+    {title:"Was soll berechnet werden?",sum:"Gesucht ist das Geld, das Svenja in "+X()+" Monaten ausgibt.",run:function(h,done){
+      mc(h,{q:"Svenja fragt sich: „Wie viel Geld gebe ich in "+X()+" Monaten aus?“ Welche Größe soll der Term also liefern?",opts:[
+        {t:"34 € – das Taschengeld eines Monats",fb:"Das ist nur ein Zwischenschritt für einen Monat."},
+        {t:"17 € – das Geld, das sie in einem Monat ausgibt",fb:"Das gilt für einen Monat. Gesucht ist der Betrag für "+X()+" Monate."},
+        {t:"das gesamte Taschengeld in "+X()+" Monaten",fb:"Davon gibt sie nur die Hälfte aus."},
+        {t:"das Geld, das Svenja in "+X()+" Monaten ausgibt",ok:true}
+      ],onDone:function(){ L.set("ber","wie viel Geld Svenja in "+X()+" Monaten ausgibt (in €)"); done(); }});
+    }},
+    {title:"Bausteine in die richtige Reihenfolge bringen",run:function(h,done){
+      termBuilder(h,{
+        q:"Jeder Baustein kann nur einmal verwendet werden. Nicht jeder Baustein wird gebraucht.",
+        prefix:'<i>T</i>(<i>x</i>) =', once:true,
+        tiles:["x","·","(","20","+","14",")",":","2","12"],
+        target:function(x){ return x*34/2; },
+        ok:"In "+X()+" Monaten bekommt sie "+mfs("<i>x</i> · (20 + 14)")+" €, die Hälfte davon gibt sie aus.",
+        noX:"Dein Term enthält kein "+X()+". Er rechnet mit einer festen Zahl von Monaten – gesucht ist ein Term für beliebig viele Monate.",
+        known:[
+          {f:function(x){return 20*x+7;},msg:"Hier wird nur das Geld der Eltern mit "+X()+" multipliziert und nur Omas Geld halbiert. Beide Beträge gehören zusammen – dafür brauchst du eine Klammer."},
+          {f:function(x){return 34*x;},msg:"Dieser Term berechnet das <b>gesamte</b> Taschengeld in "+X()+" Monaten. Svenja gibt aber nur die Hälfte aus."},
+          {f:function(x){return 20*x+14;},msg:"Omas 14 € werden hier nur einmal gezählt statt in jedem Monat – und die Hälfte fehlt."},
+          {f:function(x){return 10*x+14;},msg:"Hier wird nur das Geld der Eltern halbiert und Omas Geld nur einmal gezählt. Setze eine Klammer um das, was Svenja in einem Monat bekommt."},
+          {f:function(x){return 20*x+14/2;},msg:"Hier wird nur das Geld der Eltern mit "+X()+" multipliziert und nur Omas Geld halbiert. Beide Beträge gehören zusammen – dafür brauchst du eine Klammer."}
+        ],
+        generic:function(f){ return "Probe mit 3 Monaten: Svenja bekommt 3 · 34 € = 102 € und gibt die Hälfte aus, also 51 €. Dein Term ergibt "+num(f(3))+" €."; },
+        help:[
+          {t:"Was bekommt Svenja in <b>einem</b> Monat insgesamt?"},
+          {t:"Rechne erst mit Zahlen: In 3 Monaten bekommt sie 3 · (20 + 14) €. Davon gibt sie die Hälfte aus."},
+          {t:'<div class="mf" style="line-height:1.9;white-space:normal">1 Monat: <span class="hl r">(20 + 14)</span> : 2 = 17 €<br>3 Monate: 3 · <span class="hl r">(20 + 14)</span> : 2 = 51 €<br><i>x</i> Monate: ? · <span class="hl r">(20 + 14)</span> : 2</div>'}
+        ],
+        solution:{tokens:["x","·","(","20","+","14",")",":","2"],text:mfs("<i>x</i> · (20 + 14) : 2")},
+        onDone:function(ts){ L.set("term",mfs("<i>x</i> · (20 + 14) : 2")); done("Term: "+mfs("<i>T</i>(<i>x</i>) = "+tokHtml(ts))); }
+      });
+    }},
+    {title:"Was bedeutet die Klammer?",sum:""+mfs("(20 + 14)")+" ist das Taschengeld pro Monat.",run:function(h,done){
+      mc(h,{q:"Was gibt der Teil "+mfs("(20 + 14)")+" im Term an?",opts:[
+        {t:"das Geld, das Svenja pro Monat ausgibt",fb:"Ausgegeben wird nur die Hälfte: "+mfs("(20 + 14) : 2")+"."},
+        {t:"das Taschengeld für "+X()+" Monate",fb:"Dafür muss noch mit "+X()+" multipliziert werden."},
+        {t:"das Taschengeld pro Monat",ok:true,fb:"Übrigens: Weil Svenja genau die Hälfte ausgibt, bleibt ihr auch genau die Hälfte übrig. Derselbe Term gibt also auch an, wie viel Geld ihr in "+X()+" Monaten bleibt."}
+      ],onDone:done});
+    }}
+  ],function(){ complete("Bereich A ist geschafft. In Bereich B wird gebaut."); },L.anchor);
+},MA);
+</script>
+<script>
+"use strict";
+/* =========================================================
+   BEREICH B · BAUEN MIT SYSTEM
+   Grundlage: ISB-Lernumgebung „Bauen mit System“, Aufgabe 2 (Brückenbau)
+   Reales Material zuerst – die digitale Darstellung dient der Überprüfung.
+   Strategie: Wertetabelle → gleichbleibende Änderung → Zahl vor x → Rest → Term
+   ========================================================= */
+var MB=[["mat","zuerst bauen"],["heft","Tabelle und Vermutung notieren"],["pad","dann prüfen"]];
+/* „I“ in eindeutiger Serifenschrift (sonst leicht mit l zu verwechseln) */
+var IF='<span class="serI">I</span>-förmig';
+
+function stepsRow(fn,ns,widthFn){
+  var s='<div class="srow">';
+  ns.forEach(function(n){
+    s+='<figure style="width:'+widthFn(n)+'px">'+fn(n)+'<figcaption>Bauschritt '+n+'</figcaption></figure>';
+  });
+  return s+'</div>';
+}
+function gate(body,cfg){
+  var st=el("section","stop");
+  st.innerHTML='<div class="sh">'+ic("mat")+'<span>'+cfg.title+'</span></div>'+(cfg.sub?'<p style="margin:.4em 0 0">'+cfg.sub+'</p>':'');
+  if(cfg.fig){ var f=el("div","figbox gap",cfg.fig); st.appendChild(f); }
+  var ul=el("ul","todo");
+  cfg.todo.forEach(function(t){ ul.appendChild(el("li","",ic(t[0])+'<span>'+t[1]+'</span>')); });
+  st.appendChild(ul);
+  if(cfg.btn){
+    var row=el("div","btnrow");
+    var b=btn(ic("pad")+" "+cfg.btn,"btn",function(){ b.disabled=true; b.innerHTML="✓ "+cfg.btn; st.classList.add("stopdone"); cfg.onGo(); });
+    row.appendChild(b); st.appendChild(row);
+  }
+  body.appendChild(st);
+  return st;
+}
+function stepperUI(host,min,max,val,onChange,compact){
+  var d=el("div","stepper"+(compact?" compact":""));
+  var lab=el("span","sv");
+  var minus=btn("−","btn ghost sm"); minus.setAttribute("aria-label","Bauschritt kleiner");
+  var plus=btn("+","btn ghost sm"); plus.setAttribute("aria-label","Bauschritt größer");
+  var cur=val, r=null;
+  lab.innerHTML="Bauschritt "+val;
+  if(!compact){ r=el("input"); r.type="range"; r.min=min; r.max=max; r.step=1; r.value=val; r.setAttribute("aria-label","Bauschritt wählen"); }
+  function set(v){ v=Math.max(min,Math.min(max,v)); cur=v; if(r) r.value=v; lab.innerHTML="Bauschritt "+v; onChange(v); }
+  minus.onclick=function(){ set(cur-1); };
+  plus.onclick=function(){ set(cur+1); };
+  if(r) r.addEventListener("input",function(){ set(+r.value); });
+  d.appendChild(lab); d.appendChild(minus); if(r) d.appendChild(r); d.appendChild(plus);
+  host.appendChild(d);
+  return {set:set,get:function(){ return cur; }};
+}
+function legendHtml(items){
+  return items.map(function(it){ return '<span><i class="sw" style="background:'+it[0]+'"></i><span>'+it[1]+'</span></span>'; }).join("");
+}
+function weiter(h,label,fn){
+  var r=el("div","btnrow"), b=btn(label||"Weiter","btn",function(){ b.disabled=true; r.hidden=true; fn(); });
+  r.appendChild(b); h.appendChild(r); return b;
+}
+
+/* ---------- Änderungs-Animation: Werte mit Pfeilen und „+d“ ----------
+   Bei prefers-reduced-motion erscheinen alle Teile sofort. */
+function zuwachsHtml(cfg){
+  var n=cfg.xs.length, cols="auto";
+  for(var i=0;i<n;i++){ cols+=" minmax(28px,1fr)"; if(i<n-1) cols+=" minmax(30px,1fr)"; }
+  var dl=function(t){ return ' style="animation-delay:'+t.toFixed(2)+'s"'; };
+  var s='<div class="zw" style="grid-template-columns:'+cols+'">';
+  s+='<div class="zl">'+X()+'</div>';
+  cfg.xs.forEach(function(x,i){ s+='<div class="zv zx">'+x+'</div>'; if(i<n-1) s+='<div class="za zx1">+1</div>'; });
+  s+='<div class="zl">'+cfg.label+'</div>';
+  var t=0.3;
+  cfg.vals.forEach(function(v,i){
+    s+='<div class="zv zs ani"'+dl(t)+'>'+v+'</div>';
+    if(i<n-1){ t+=0.55; s+='<div class="za ani"'+dl(t)+'><span class="zd">'+(cfg.d>0?"+":"−")+Math.abs(cfg.d)+'</span><span class="zarr">→</span></div>'; t+=0.45; }
+  });
+  s+='</div><p class="ani zwtxt"'+dl(t+0.5)+'>'+cfg.text+'</p>';
+  return s;
+}
+/* ---------- Vergleich: x | ax | Abweichung | S(x) ---------- */
+function vergleichHtml(cfg){
+  var n=cfg.xs.length;
+  var s='<div class="vg" style="grid-template-columns:auto repeat('+n+',minmax(34px,1fr))">';
+  s+='<div class="vl">'+X()+'</div>'+cfg.xs.map(function(x){ return '<div class="vc">'+x+'</div>'; }).join("");
+  s+='<div class="vl vr">'+cfg.aLabel+'</div>'+cfg.xs.map(function(x){ return '<div class="vc vr">'+cfg.a*x+'</div>'; }).join("");
+  s+='<div class="vl vd vdiff">Abweichung</div>'+cfg.xs.map(function(x,i){ return '<div class="vc vd vdiff" style="animation-delay:'+(0.25*i).toFixed(2)+'s"><span>↓ '+(cfg.c>0?"+":"−")+Math.abs(cfg.c)+'</span></div>'; }).join("");
+  s+='<div class="vl">'+cfg.label+'</div>'+cfg.vals.map(function(v){ return '<div class="vc vs">'+v+'</div>'; }).join("");
+  return s+'</div>';
+}
+
+/* ---------- Analysekarte für äquivalente Terme (Fokusmodus) ----------
+   Buttons, Figur, Legende, farbiger Term und Erklärung bilden EINE Karte.
+   Beim Umschalten wird die Karte aktualisiert – nichts wird angehängt. */
+function analysisCard(host,cfg){
+  var card=el("div","acard"); host.appendChild(card);
+  card.appendChild(el("div","ahint","Zeige mir, wie dieser Term in der Figur steckt:"));
+  var seg=el("div","seg"); card.appendChild(seg);
+  var body=el("div","abody"); card.appendChild(body);
+  var fcol=el("div","afig"), tcol=el("div","atxt"); body.appendChild(fcol); body.appendChild(tcol);
+  /* Start immer bei Bauschritt 1 */
+  var n=1, cur=0, done={}, bs=[], ready=false;
+  var fig=el("div"); fcol.appendChild(fig);
+  var stp=stepperUI(fcol,1,cfg.nMax,1,function(v){ n=v; if(ready){ if(n>=2) done[cur]=true; render(); check(); } },true);
+  var leg=el("div","legend"); fcol.appendChild(leg);
+  var term=el("div","aterm"); tcol.appendChild(term);
+  var cap=el("div","acap"); tcol.appendChild(cap);
+  var foot=el("div","afoot"); card.appendChild(foot);
+  var prog=el("div","aprog"); foot.appendChild(prog);
+  var fin=el("div"); foot.appendChild(fin);
+  function render(){
+    var L=cfg.lenses[cur];
+    fig.innerHTML=cfg.svg(n,L.mode);
+    leg.innerHTML=legendHtml(L.legend);
+    term.innerHTML=L.term;
+    cap.innerHTML=L.cap(n);
+    bs.forEach(function(b,i){
+      b.classList.toggle("on",i===cur); b.classList.toggle("seen",!!done[i]);
+      b.setAttribute("aria-pressed",i===cur?"true":"false");
+    });
+  }
+  cfg.lenses.forEach(function(L,i){
+    var b=btn('<span class="segck" aria-hidden="true">✓ </span>'+L.label,"segbtn",function(){
+      if(i===cur) return;                 /* erneuter Klick auf den aktiven Term: kein Reset */
+      cur=i; ready=false; stp.set(1); ready=true;   /* neuer Term: zurück auf Bauschritt 1 */
+      render(); check();
+    });
+    seg.appendChild(b); bs.push(b);
+  });
+  var shown=false;
+  function check(){
+    var k=Object.keys(done).length, N=cfg.lenses.length;
+    prog.innerHTML='<span class="small"><b>Sichtweisen untersucht: '+k+' von '+N+'.</b> '+
+      (k<N?(done[cur]?"Wähle jetzt einen anderen Term.":"Erhöhe den Bauschritt auf 2 oder mehr und beobachte, wie sich die Struktur fortsetzt."):"")+'</span>';
+    if(k<N||shown) return; shown=true;
+    fin.innerHTML='<p class="small" style="margin:6px 0 6px">'+cfg.allText+'</p>';
+    weiter(fin,cfg.nextLabel||"Weiter",cfg.onNext);
+  }
+  render(); ready=true; check();
+  return card;
+}
+
+/* =========================================================
+   Gemeinsamer Aufbau für B1 und B2
+   ========================================================= */
+function bBuild(body,C){
+  var card=el("section","card"); body.appendChild(card);
+  card.appendChild(el("h3","",ic("pad")+" Überprüfen"));
+  var w=el("div","work"); card.appendChild(w);
+  var viz=el("div","viz"), task=el("div","task"); w.appendChild(viz); w.appendChild(task);
+  var n=3, mode="plain", showCount=false;
+  var fb=el("div","figbox");
+  var st=stepperUI(fb,1,C.nMax,n,function(v){ n=v; draw(); });
+  var fig=el("div"); fb.appendChild(fig);
+  var cnt=el("div","countline"); fb.appendChild(cnt);
+  var leg=el("div","legend"); fb.appendChild(leg);
+  /* Merkkartenbereich („memory dock“): fester Teil des Layouts, wandert mit der Abbildung */
+  var vbox=el("div","vbox"), dock=el("div","dock"); dock.hidden=true;
+  dock.setAttribute("aria-live","polite");
+  vbox.appendChild(dock); vbox.appendChild(fb); viz.appendChild(vbox);
+  var anchor=makeAnchor(vbox,viz);
+  function draw(){
+    fig.innerHTML=C.svg(n,mode);
+    cnt.innerHTML=showCount?"Anzahl der Stäbe: <b>"+C.count(n)+"</b>":'<span class="small">Zähle die Stäbe selbst.</span>';
+    leg.innerHTML=legendHtml(C.legend(mode,n));
+  }
+  st.set(n);
+  var api={setMode:function(m){ mode=m; draw(); },setN:function(v){ st.set(v); },
+           showCount:function(){ showCount=true; draw(); },
+           focus:function(on){ w.classList.toggle("solo",on); fb.hidden=on; if(on) dock.hidden=true; if(!on) PLACE&&PLACE(); },
+           plus:function(h,done){ plusStep(h,done); },
+           showFig:function(){
+             fb.classList.remove("nofig"); if(PLACE) PLACE();
+             /* auf schmalen Geräten die wieder eingeblendete Figur ins Bild holen */
+             try{ var r=fb.getBoundingClientRect(), hh=headH();
+               if(window.innerWidth<=900&&(r.top<hh||r.top>window.innerHeight*0.6)) window.scrollBy({top:r.top-hh-10,behavior:REDUCED?"auto":"smooth"});
+             }catch(e){} }};
+  /* Veranschaulichung der gleichbleibenden Änderung (+2 / +6) */
+  function plusStep(h,done){
+    var P=C.plus;
+    var box=el("div","plusbox anim");
+    box.innerHTML='<div class="pbfigs"><figure style="width:'+P.w2+'px">'+P.fig(2,false)+'<figcaption>Bauschritt 2</figcaption></figure>'+
+      '<div class="pbarr" aria-hidden="true">→</div>'+
+      '<figure style="width:'+P.w3+'px">'+P.fig(3,true)+'<figcaption>Bauschritt 3</figcaption></figure></div>'+
+      '<div class="pbplus"><span class="pbbig">+'+C.a+'</span><span>'+P.text+'</span></div>'+(P.extra||"");
+    h.appendChild(box);
+    weiter(h,"Weiter",function(){ flyToDock(box,done); });
+  }
+  function memoHtml(){
+    var P=C.plus;
+    return '<div class="memo"><div class="memofig">'+P.fig(3,false,true)+'</div>'+
+      '<div class="memotxt"><div class="memotop"><span class="memobig">+'+C.a+'</span><span class="memol">gleichbleibende Änderung</span></div>'+
+      '<div class="memos">'+C.vals.join(" → ")+' …<br>Zahl vor '+X()+': <b>'+C.a+'</b></div></div></div>';
+  }
+  function flyToDock(src,done){
+    var r0=src.getBoundingClientRect();
+    dock.innerHTML=memoHtml(); dock.hidden=false;
+    var memo=dock.firstChild, ghost=null;
+    if(!REDUCED){
+      memo.style.visibility="hidden";
+      ghost=src.cloneNode(true); ghost.classList.remove("anim"); ghost.classList.add("flyghost");
+      ghost.style.cssText="position:fixed;left:"+r0.left+"px;top:"+r0.top+"px;width:"+r0.width+"px;height:"+r0.height+"px;margin:0;z-index:40;transform-origin:0 0;pointer-events:none";
+      document.body.appendChild(ghost);
+    }
+    FOCUS_INSTANT=true;
+    done();
+    setTimeout(function(){
+      FOCUS_INSTANT=false;
+      if(!ghost){ memo.classList.add("snap"); return; }
+      var r1=memo.getBoundingClientRect(), sc=Math.min(r1.width/r0.width,r1.height/r0.height);
+      void ghost.offsetWidth;
+      ghost.style.transition="transform .7s cubic-bezier(.22,.7,.2,1), opacity .3s ease .45s";
+      ghost.style.transform="translate("+(r1.left-r0.left)+"px,"+(r1.top-r0.top)+"px) scale("+sc+")";
+      ghost.style.opacity="0.2";
+      setTimeout(function(){ memo.style.visibility=""; memo.classList.add("snap"); if(ghost.parentNode) ghost.parentNode.removeChild(ghost); },720);
+    },140);
+  }
+  var list=[
+    {title:"Deine Tabelle überprüfen",sum:"Tabelle: "+C.vals.join(", ")+".",run:function(h,done){
+      tableAsk(h,{q:"Übertrage deine Werte aus dem Heft und prüfe sie.",xLabel:"Bauschritt",yLabel:"Anzahl der Stäbe",
+        xs:C.xs,vals:C.vals,given:C.given,
+        badMsg:function(bad){ return "Stelle den Regler auf Bauschritt "+bad.join(" bzw. ")+" und zähle noch einmal."; },
+        ok:"Ab jetzt zeigt dir die Figur auch die Anzahl der Stäbe.",solution:C.vals.join(", "),
+        onDone:function(){ api.showCount(); done(); }});
+    }},
+    {title:"Wie verändern sich die Werte?",noFig:true,sum:"Änderung von Wert zu Wert: +"+C.a+" → "+mfs(C.a+"<i>x</i>")+".",run:function(h,done){
+      h.appendChild(el("div","zwbox",zuwachsHtml({xs:C.xs,vals:C.vals,d:C.a,label:'<i>S</i>(<i>x</i>)',
+        text:X()+" wird jeweils um 1 größer.<br>Die Anzahl der Stäbe wird dabei immer um "+C.a+" größer."})));
+      var q=el("div","ani"); q.style.animationDelay=(0.3+(C.xs.length-1)+0.9).toFixed(2)+"s"; h.appendChild(q);
+      numAsk(q,{q:"Welche Zahl muss deshalb vor "+X()+" stehen?",correct:C.a,aria:"Zahl vor x",
+        diag:function(v){
+          if(v===C.vals[0]) return v+" ist der erste Wert der Tabelle, nicht die Änderung von Wert zu Wert.";
+          if(v===1) return "Um 1 wächst "+X()+". Um wie viel wächst die Anzahl der Stäbe?";
+          return "Schau auf die Pfeile: Um wie viel wächst die Anzahl der Stäbe von Wert zu Wert?";
+        },
+        ok:"Die gleichbleibende Änderung "+C.a+" ist die Zahl vor "+X()+".",solution:String(C.a),
+        onDone:function(){
+          q.appendChild(el("div","heft",'<div class="h">Strategie</div><p>Wenn '+X()+' jeweils um 1 größer wird und die Änderung der zugehörigen Werte immer gleich bleibt, zeigt dir diese gleichbleibende Änderung die Zahl vor '+X()+'.</p>'+
+            '<p class="mblock" style="margin:6px 0 2px">zunächst: <span class="hl r">'+C.a+'<i>x</i></span></p>'));
+          weiter(q,"Weiter",function(){ done(); });
+        }});
+    }},
+    C.figStep,
+    {title:"Den Rest finden",noFig:true,sum:C.restSum,run:function(h,done){
+      h.appendChild(el("p","","Vergleiche die Werte von "+mfs(C.a+"<i>x</i>")+" mit der tatsächlichen Anzahl der Stäbe."));
+      var v=el("div","vgbox",vergleichHtml({xs:C.xs,vals:C.vals,a:C.a,c:C.c,aLabel:C.a+'<i>x</i>',label:'<i>S</i>(<i>x</i>)'}));
+      h.appendChild(v);
+      mc(h,{q:"Was fällt dir auf?",opts:C.restOpts,onDone:function(){
+        v.classList.add("show");
+        var r=el("div","");
+        r.innerHTML='<p>'+C.restText+'</p><div class="result">'+C.resultHtml+'</div>';
+        h.appendChild(r);
+        weiter(h,"Weiter zum Termbaukasten",function(){ done(); });
+      }});
+    }},
+    {title:"Dein Term",noFig:true,sum:"",run:function(h,done){
+      var cfg=C.builder;
+      cfg.onDone=function(ts){ api.showCount(); done("Dein Term: "+mfs("<i>S</i>(<i>x</i>) = "+tokHtml(ts))); };
+      termBuilder(h,cfg);
+    }},
+    {title:C.lensTitle,sum:C.lensSum,run:function(h,done){
+      api.focus(true);
+      h.appendChild(el("p","",C.lensIntro));
+      analysisCard(h,{svg:C.svgLens,nMax:8,n0:3,lenses:C.lenses,allText:C.lensAll,nextLabel:"Weiter",
+        onNext:function(){ api.focus(false); api.setMode(C.afterMode); done(); }});
+    }}
+  ].concat(C.after);
+  steps(task,list,function(){ complete(); },function(h,s){ fb.classList.toggle("nofig",!!(s&&s.noFig)); anchor(h); });
+  return api;
+}
+
+/* ---------------- B1 · Eisenbahnbrücke ---------------- */
+defTask("B1","Eisenbahnbrücke","B2",function(body){
+  var api=null;
+  gate(body,{
+    title:"Stopp – iPad zunächst liegen lassen.",
+    sub:"So sieht die Seitenansicht der Eisenbahnbrücke in den ersten Bauschritten aus:",
+    fig:stepsRow(function(n){ return bridgeSVG(n,"plain",{maxW:400}); },[1,2,3],function(n){ return Math.round((32+(n+1)*28)*0.95); }),
+    todo:[
+      ["mat","Baue mit Zahnstochern oder Stäben die Bauschritte 1, 2 und 3."],
+      ["heft","Ergänze im Arbeitsplan die Tabelle: Wie viele Stäbe brauchst du für die Bauschritte 1 bis 5? Notiere auch die Änderung von Wert zu Wert."],
+      ["heft","Notiere eine Vermutung: Mit welchem Term berechnest du die Anzahl der Stäbe für "+X()+" Bauschritte?"],
+      ["pad","Erst danach geht es hier weiter: Du überprüfst deine Werte und deine Vermutung."]
+    ],
+    btn:"Ich habe gebaut und meine Vermutung notiert",
+    onGo:function(){ api=bBuild(body,B1CFG()); }
+  });
+  function B1CFG(){ return {
+    svg:function(n,m){ return bridgeSVG(n,m,{minN:6,maxW:540}); },
+    svgLens:function(n,m){ return bridgeSVG(n,m,{minN:4,maxW:520}); },
+    count:bridgeCount, nMax:20, xs:[1,2,3,4,5], vals:[3,5,7,9,11], given:[0], a:2, c:1,
+    legend:function(mode,n){
+      if(mode==="r21") return [[COL.rep,"wiederholt sich in jedem Bauschritt (2 Stäbe)"],[COL.once,"kommt nur einmal vor (1 Stab)"]];
+      if(mode==="diff") return [[COL.neu,"neu in Bauschritt "+n]];
+      return [];
+    },
+    figStep:{title:"Wo steckt die +2 in der Figur?",delay:0,sum:"Mit jedem Bauschritt kommen 2 Stäbe dazu.",run:function(h,done){
+      mc(h,{q:"Die Tabelle zeigt: Von Bauschritt zu Bauschritt kommen 2 Stäbe dazu. Was passiert dabei in der Figur?",opts:[
+        {t:"Es kommt ein ganzes Dreieck mit 3 eigenen Stäben dazu.",fb:"Das neue Dreieck teilt sich einen Stab mit dem vorherigen. Vergleiche am Regler Bauschritt 2 und 3."},
+        {t:"Es kommt jedes Mal ein Stab mehr dazu als beim letzten Mal.",fb:"Dann müssten die Abstände in der Tabelle wachsen. Die Tabelle zeigt aber immer +2."},
+        {t:"Das neue Dreieck braucht nur 2 neue Stäbe, weil es einen Stab mit dem vorherigen Dreieck teilt.",ok:true,
+         fb:"Unten siehst du die beiden neuen Stäbe grün markiert.",},
+        {t:"Es kommt 1 Stab dazu.",fb:"Vergleiche die Tabelle: 3, 5, 7, … – wie groß ist der Abstand?"}
+      ],onDone:function(){ api.plus(h,done); }});
+    }},
+    plus:{w2:150,w3:190,text:"Bei jedem neuen Bauschritt kommen 2 Stäbe hinzu.",
+      fig:function(n,big,small){ return bridgeSVG(n,n===3?"diff":"plain",{anim:big&&n===3,maxW:small?110:400}); }},
+    restOpts:[
+      {t:"Jeder Wert von "+mfs("2<i>x</i>")+" ist um 1 zu klein.",ok:true},
+      {t:"Jeder Wert von "+mfs("2<i>x</i>")+" ist um 1 zu groß.",fb:"Vergleiche z. B. 2 und 3: Welche Zahl ist größer?"},
+      {t:"Die Abweichung wird immer größer.",fb:"Rechne nach: 3 − 2, 5 − 4, 7 − 6, … Die Abweichung bleibt gleich."}
+    ],
+    restText:"Mit "+mfs("2<i>x</i>")+" treffen wir die gleichbleibende Änderung. Die Werte sind aber jeweils noch um 1 zu klein.",
+    resultHtml:'<i>S</i>(<i>x</i>) = <span class="hl r">2<i>x</i></span> <span class="hl o">+ 1</span>',
+    restSum:mfs("2<i>x</i>")+" ist immer um 1 zu klein → "+mfs("<i>S</i>(<i>x</i>) = 2<i>x</i> + 1")+".",
+    builder:{
+      q:"Baue jetzt einen Term für die Anzahl der Stäbe – zum Beispiel deinen Term aus dem Heft. Gleichwertige Terme werden als richtig erkannt.",
+      prefix:'<i>S</i>(<i>x</i>) =', digits:true,
+      tiles:["1","2","3","4","5","6","7","8","9","0","x","+","−","·","(",")"],
+      target:function(x){ return 2*x+1; },
+      ok:"Dein Term liefert für jeden Bauschritt die richtige Anzahl von Stäben.",
+      known:[
+        {f:function(x){return 3*x;},msg:"Dieser Term würde bei jedem Bauschritt 3 neue Stäbe dazunehmen. Es kommen aber nur 2 dazu – für Bauschritt 2 ergibt 3"+X()+" schon 6 statt 5."},
+        {f:function(x){return 2*x;},msg:"Für Bauschritt 1 ergibt dein Term 2 – gebaut sind aber 3 Stäbe. Ein Stab, der nur einmal vorkommt, fehlt."},
+        {f:function(x){return x+2;},msg:"Dein Term nimmt pro Bauschritt nur 1 Stab dazu. Es kommen aber jeweils 2 dazu."},
+        {f:function(x){return 2*x+3;},msg:"Für Bauschritt 1 ergibt dein Term 5 statt 3. Du zählst das erste Dreieck ganz (3) und nimmst schon beim ersten Bauschritt 2 Stäbe dazu."},
+        {f:function(x){return 3*x+1;},msg:"Für Bauschritt 1 ergibt dein Term 4 statt 3, und pro Bauschritt kämen 3 Stäbe dazu statt 2."}
+      ],
+      generic:function(f){ return "Dein Term liefert für die Bauschritte 1, 2, 3 die Werte "+num(f(1))+", "+num(f(2))+", "+num(f(3))+". Gezählt hast du 3, 5, 7."; },
+      help:[
+        {t:"Schau auf die Merkkarte: Welche zwei Stäbe kommen bei jedem neuen Bauschritt hinzu? Was bedeutet das für deinen Term?"},
+        {t:"Suche einen Teil, der mit jedem Bauschritt wächst, und einen Teil, der nur einmal vorkommt."},
+        {t:"Die Figur ist jetzt farbig zerlegt. <b>Blau</b>: wiederholt sich in jedem Bauschritt. <b>Orange</b>: kommt nur einmal vor. Wie viele blaue Stäbe gibt es bei "+X()+" Bauschritten?",act:function(){ api.setMode("r21"); api.showFig(); }}
+      ],
+      solution:{tokens:["2","x","+","1"],text:mfs("<i>S</i>(<i>x</i>) = 2<i>x</i> + 1")+" &nbsp;– gleichwertig sind z. B. "+mfs("<i>x</i> + <i>x</i> + 1")+" oder "+mfs("3 + 2(<i>x</i> − 1)")+"."}
+    },
+    lensTitle:"Drei Sichtweisen auf dieselbe Brücke",
+    lensIntro:"Alle drei Terme beschreiben dieselbe Brücke. Wähle einen Term und verändere auch den Bauschritt.",
+    lensAll:"Alle drei Terme zählen dieselben Stäbe – nur in anderen Gruppen.",
+    lensSum:mfs("2<i>x</i> + 1 = <i>x</i> + <i>x</i> + 1 = 3 + 2(<i>x</i> − 1)"),
+    lenses:[
+      {label:mfs("2<i>x</i> + 1"),mode:"r21",
+       term:'<i>S</i>(<i>x</i>) = <span class="hl r">2<i>x</i></span> <span class="hl o">+ 1</span>',
+       legend:[[COL.rep,"2 Stäbe je Bauschritt (hell/dunkel abwechselnd)"],[COL.once,"1 Stab, der nur einmal vorkommt"]],
+       cap:function(n){ return (n===1?"Bauschritt 1 besteht aus 2 Stäben (blau) und 1 Stab, der nur einmal vorkommt (orange).":"Jeder der "+n+" Bauschritte bringt 2 Stäbe (blau). Dazu kommt 1 Stab, der nur einmal vorkommt (orange).")+"<div class=\"acalc\"><span class=\"asub\">Für Bauschritt "+n+" setzt du "+mfs("<i>x</i> = "+n)+" ein:</span><br>"+mfs("2 · "+n+" + 1 = "+(2*n+1))+"</div>"; }},
+      {label:mfs("<i>x</i> + <i>x</i> + 1"),mode:"rxx1",
+       term:'<i>S</i>(<i>x</i>) = <span class="hl r"><i>x</i></span> + <span class="hl t"><i>x</i></span> <span class="hl o">+ 1</span>',
+       legend:[[COL.rep,"waagrechte Stäbe"],[COL.teal,"schräge Stäbe"],[COL.once,"ein weiterer schräger Stab"]],
+       cap:function(n){ return (n===1?"1 waagrechter Stab (blau), 1 schräger Stab (grün) und 1 weiterer schräger Stab (orange).":n+" waagrechte Stäbe (blau), "+n+" schräge Stäbe (grün) und 1 weiterer schräger Stab (orange).")+"<div class=\"acalc\"><span class=\"asub\">Für Bauschritt "+n+" setzt du "+mfs("<i>x</i> = "+n)+" ein:</span><br>"+mfs(n+" + "+n+" + 1 = "+(2*n+1))+"</div>"; }},
+      {label:mfs("3 + 2(<i>x</i> − 1)"),mode:"r32",
+       term:'<i>S</i>(<i>x</i>) = <span class="hl o">3</span> + <span class="hl r">2(<i>x</i> − 1)</span>',
+       legend:[[COL.once,"erstes Dreieck (3 Stäbe)"],[COL.rep,"2 Stäbe je weiterem Bauschritt"]],
+       cap:function(n){ return (n===1?"Bauschritt 1 besteht aus dem ersten Dreieck mit 3 Stäben (orange). Weitere Bauschritte gibt es hier noch nicht.":n===2?"Das erste Dreieck hat 3 Stäbe (orange). Bauschritt 2 bringt 2 weitere Stäbe (blau).":"Das erste Dreieck hat 3 Stäbe (orange). Jeder der "+(n-1)+" weiteren Bauschritte bringt 2 Stäbe (blau).")+"<div class=\"acalc\"><span class=\"asub\">Für Bauschritt "+n+" setzt du "+mfs("<i>x</i> = "+n)+" ein:</span><br>"+mfs("3 + 2 · ("+n+" − 1) = "+(2*n+1))+"</div>"; }}
+    ],
+    afterMode:"r21",
+    after:[
+      {title:"Ein großer Bauschritt",sum:"Bauschritt 100: "+mfs("2 · 100 + 1 = 201")+" Stäbe.",run:function(h,done){
+        numAsk(h,{q:"Wie viele Stäbe braucht man für Bauschritt 100?",correct:201,unit:"Stäbe",aria:"Anzahl der Stäbe bei Bauschritt 100",
+          diag:function(v){ if(v===300) return "Das wären 3 Stäbe pro Bauschritt."; if(v===200) return "Der eine Stab, der nur einmal vorkommt, fehlt."; if(v===203) return "Probe mit Bauschritt 1: Es sind 3 Stäbe – dein Rechenweg ergäbe dort 5."; return "Setze 100 in deinen Term ein."; },
+          ok:mfs("2 · 100 + 1 = 201")+". Ohne Term müsstest du 100 Dreiecke bauen.",solution:mfs("2 · 100 + 1 = 201"),onDone:done});
+      }}
+    ]
+  }; }
+},MB);
+
+/* ---------------- B2 · Hohlkammerprofil ---------------- */
+defTask("B2","Hohlkammerprofil","C1",function(body){
+  var api=null;
+  gate(body,{
+    title:"Stopp – iPad zunächst liegen lassen.",
+    sub:"Beim Brückenbau verwendet man auch Hohlkammerprofile. Bauschritt 1 ist ein "+IF+"es Grundelement aus 5 Stäben:",
+    fig:stepsRow(function(n){ return profileSVG(n,"plain",{maxW:400}); },[1,2],function(n){ return Math.round((32+2*n*34)*0.95); }),
+    todo:[
+      ["mat","Baue die Bauschritte 1, 2 und 3 mit Stäben."],
+      ["heft","Ergänze im Arbeitsplan die Tabelle für die Bauschritte 1 bis 4. Notiere auch die Änderung von Wert zu Wert."],
+      ["heft","Notiere eine Vermutung für einen Term."],
+      ["pad","Erst danach geht es hier weiter."]
+    ],
+    btn:"Ich habe gebaut und meine Vermutung notiert",
+    onGo:function(){ api=bBuild(body,B2CFG()); }
+  });
+  function B2CFG(){ return {
+    svg:function(n,m){ return profileSVG(n,m,{minN:4,maxW:560}); },
+    svgLens:function(n,m){ return profileSVG(n,m,{minN:3,maxW:540}); },
+    count:profileCount, nMax:10, xs:[1,2,3,4], vals:[5,11,17,23], given:[0,1], a:6, c:-1,
+    legend:function(mode){
+      if(mode==="l5") return [[COL.rep,IF+"e Grundelemente mit je 5 Stäben"],[COL.once,"Verbindungsstäbe"]];
+      if(mode==="l6") return [[COL.rep,"6er-Gruppen"],[COL.ghost,"fehlender Stab"]];
+      return [];
+    },
+    figStep:{title:"Wo stecken die 6 neuen Stäbe?",delay:0,sum:"Pro Bauschritt kommen 2 Stäbe oben, 2 unten und 2 senkrecht dazu.",run:function(h,done){
+      mc(h,{q:"Die Tabelle zeigt: Pro Bauschritt kommen 6 Stäbe dazu. Vergleiche am Regler Bauschritt 2 und 3. Welche Stäbe sind neu?",opts:[
+        {t:"3 Stäbe oben und 3 Stäbe unten",fb:"Zähle die neuen waagrechten Stäbe oben: Es sind 2. Und senkrecht kommt auch etwas dazu."},
+        {t:"4 waagrechte Stäbe und 1 senkrechter Stab",fb:"Das wären nur 5. Zähle die neuen senkrechten Stäbe noch einmal."},
+        {t:"2 Stäbe oben, 2 Stäbe unten und 2 senkrechte Stäbe",ok:true,fb:"Unten siehst du die sechs neuen Stäbe grün markiert."},
+        {t:"6 waagrechte Stäbe",fb:"Oben und unten kommen je 2 waagrechte Stäbe dazu – dazu senkrechte Stäbe."}
+      ],onDone:function(){ api.plus(h,done); }});
+    }},
+    plus:{w2:150,w3:205,text:"Bei jedem neuen Bauschritt kommen 6 Stäbe hinzu.",
+      extra:'<div class="pbgrid"><span><b>2</b> oben</span><span><b>2</b> unten</span><span><b>2</b> senkrecht</span></div>',
+      fig:function(n,big,small){ return profileSVG(n,n===3?"pdiff":"plain",{anim:big&&n===3,noLab:!!small||n!==3,maxW:small?130:420}); }},
+    restOpts:[
+      {t:"Jeder Wert von "+mfs("6<i>x</i>")+" ist um 1 zu klein.",fb:"Vergleiche z. B. 6 und 5: Welche Zahl ist größer?"},
+      {t:"Jeder Wert von "+mfs("6<i>x</i>")+" ist um 6 zu groß.",fb:"Rechne nach: 6 − 5, 12 − 11, 18 − 17, …"},
+      {t:"Jeder Wert von "+mfs("6<i>x</i>")+" ist um 1 zu groß.",ok:true}
+    ],
+    restText:"Mit "+mfs("6<i>x</i>")+" treffen wir die gleichbleibende Änderung. Die Werte sind aber jeweils um 1 zu groß.",
+    resultHtml:'<i>S</i>(<i>x</i>) = <span class="hl r">6<i>x</i></span> <span class="hl g">− 1</span>',
+    restSum:mfs("6<i>x</i>")+" ist immer um 1 zu groß → "+mfs("<i>S</i>(<i>x</i>) = 6<i>x</i> − 1")+".",
+    builder:{
+      q:"Baue jetzt einen Term für die Anzahl der Stäbe – zum Beispiel deinen Term aus dem Heft. Gleichwertige Terme werden als richtig erkannt.",
+      prefix:'<i>S</i>(<i>x</i>) =', digits:true,
+      tiles:["1","2","3","4","5","6","7","8","9","0","x","+","−","·","(",")"],
+      target:function(x){ return 6*x-1; },
+      ok:"Dein Term liefert für jeden Bauschritt die richtige Anzahl von Stäben.",
+      known:[
+        {f:function(x){return 6*x;},msg:"Für Bauschritt 1 ergibt 6"+X()+" schon 6 – gebaut sind aber 5 Stäbe. Pro Bauschritt kommen zwar 6 dazu, aber der erste Bauschritt hat einen Stab weniger."},
+        {f:function(x){return 5*x;},msg:"Dein Term zählt nur die "+IF+"en Grundelemente mit je 5 Stäben. Die senkrechten Stäbe, die sie verbinden, fehlen."},
+        {f:function(x){return 6*x+5;},msg:"Für Bauschritt 1 ergibt dein Term 11 statt 5. Du zählst das erste Grundelement und nimmst schon beim ersten Bauschritt 6 Stäbe dazu."},
+        {f:function(x){return 5*x+1;},msg:"Pro Bauschritt kämen hier nur 5 Stäbe dazu. Es sind aber 6."}
+      ],
+      generic:function(f){ return "Dein Term liefert für die Bauschritte 1, 2, 3 die Werte "+num(f(1))+", "+num(f(2))+", "+num(f(3))+". Gezählt hast du 5, 11, 17."; },
+      help:[
+        {t:"Schau auf die Merkkarte: Bei jedem neuen Bauschritt kommen 6 Stäbe hinzu – 2 oben, 2 unten und 2 senkrecht. Welche Zahl muss deshalb vor "+X()+" stehen?"},
+        {t:"Bauschritt 1 ist ein "+IF+"es Grundelement aus 5 Stäben. Wie oft steckt es in Bauschritt "+X()+"? Und wie viele Stäbe verbinden die Grundelemente?"},
+        {t:"Die Figur ist jetzt farbig zerlegt: <b>blau</b> die "+IF+"en Grundelemente mit je 5 Stäben, <b>orange</b> die Verbindungsstäbe. Wie viele Verbindungsstäbe gibt es bei "+X()+" Grundelementen?",act:function(){ api.setMode("l5"); api.showFig(); }}
+      ],
+      solution:{tokens:["6","x","−","1"],text:mfs("<i>S</i>(<i>x</i>) = 6<i>x</i> − 1")+" &nbsp;– gleichwertig: "+mfs("5<i>x</i> + (<i>x</i> − 1)")+" oder "+mfs("5 + 6(<i>x</i> − 1)")+"."}
+    },
+    lensTitle:"Drei Strukturbrillen",
+    lensIntro:"Dieselbe Figur lässt sich auf verschiedene Arten zerlegen. Setze nacheinander alle drei Brillen auf und verändere auch den Bauschritt.",
+    lensAll:"Alle drei Terme zählen dieselben Stäbe – nur in anderen Gruppen.",
+    lensSum:mfs("6<i>x</i> − 1 = 5<i>x</i> + (<i>x</i> − 1) = 5 + 6(<i>x</i> − 1)"),
+    lenses:[
+      {label:mfs("6<i>x</i> − 1"),mode:"l6",
+       term:'<i>S</i>(<i>x</i>) = <span class="hl r">6<i>x</i></span> <span class="hl g">− 1</span>',
+       legend:[[COL.rep,"6er-Gruppen (hell/dunkel abwechselnd)"],[COL.ghost,"fehlender Stab (− 1)"]],
+       cap:function(n){ return (n===1?"Denke dir Bauschritt 1 als Gruppe aus 6 Stäben: oben 2, unten 2, senkrecht 2 (blau). Ganz links fehlt aber ein senkrechter Stab (rot gestrichelt).":"Jeder Bauschritt ist eine Gruppe aus 6 Stäben: oben 2, unten 2, senkrecht 2 (blau). Ganz links fehlt aber ein senkrechter Stab (rot gestrichelt).")+"<div class=\"acalc\"><span class=\"asub\">Für Bauschritt "+n+" setzt du "+mfs("<i>x</i> = "+n)+" ein:</span><br>"+mfs("6 · "+n+" − 1 = "+(6*n-1))+"</div>"; }},
+      {label:mfs("5<i>x</i> + (<i>x</i> − 1)"),mode:"l5",
+       term:'<i>S</i>(<i>x</i>) = <span class="hl r">5<i>x</i></span> + <span class="hl o">(<i>x</i> − 1)</span>',
+       legend:[[COL.rep,IF+"e Grundelemente (je 5 Stäbe)"],[COL.once,"Verbindungsstäbe"]],
+       cap:function(n){ return (n===1?"1 "+IF+"es Grundelement mit 5 Stäben (blau). Bei einem einzigen Grundelement gibt es noch keinen Verbindungsstab.":n+" "+IF+"e Grundelemente mit je 5 Stäben (blau). Dazwischen "+(n-1===1?"liegt 1 Verbindungsstab":"liegen "+(n-1)+" Verbindungsstäbe")+" (orange).")+"<div class=\"acalc\"><span class=\"asub\">Für Bauschritt "+n+" setzt du "+mfs("<i>x</i> = "+n)+" ein:</span><br>"+mfs("5 · "+n+" + ("+n+" − 1) = "+(6*n-1))+"</div>"; }},
+      {label:mfs("5 + 6(<i>x</i> − 1)"),mode:"l56",
+       term:'<i>S</i>(<i>x</i>) = <span class="hl o">5</span> + <span class="hl r">6(<i>x</i> − 1)</span>',
+       legend:[[COL.once,"das erste "+IF+"e Grundelement (5 Stäbe)"],[COL.rep,"6 Stäbe je weiterem Bauschritt"]],
+       cap:function(n){ return (n===1?"Bauschritt 1 besteht nur aus dem ersten "+IF+"en Grundelement mit 5 Stäben (orange). Weitere 6er-Gruppen kommen erst ab Bauschritt 2 hinzu.":n===2?"Das erste "+IF+"e Grundelement hat 5 Stäbe (orange). Bauschritt 2 bringt eine 6er-Gruppe dazu (blau).":"Das erste "+IF+"e Grundelement hat 5 Stäbe (orange). Jeder der "+(n-1)+" weiteren Bauschritte bringt 6 Stäbe (blau).")+"<div class=\"acalc\"><span class=\"asub\">Für Bauschritt "+n+" setzt du "+mfs("<i>x</i> = "+n)+" ein:</span><br>"+mfs("5 + 6 · ("+n+" − 1) = "+(6*n-1))+"</div>"; }}
+    ],
+    afterMode:"plain",
+    after:[
+      {title:"Probe mit Bauschritt 10",sum:"Alle drei Terme liefern für "+mfs("<i>x</i> = 10")+" den Wert 59.",run:function(h,done){
+        tableAsk(h,{q:"Setze "+mfs("<i>x</i> = 10")+" in alle drei Terme ein.",xLabel:"Term",yLabel:"Wert für "+X()+" = 10",
+          xs:[mfs("6<i>x</i> − 1"),mfs("5<i>x</i> + (<i>x</i> − 1)"),mfs("5 + 6(<i>x</i> − 1)")],vals:[59,59,59],
+          badMsg:function(){ return "Setze für "+X()+" überall 10 ein. Achte auf Klammer und „Punkt vor Strich“."; },
+          ok:"Alle drei Terme liefern 59 – Bauschritt 10 hat 59 Stäbe.",solution:"Alle drei ergeben 59.",onDone:done});
+      }},
+      {title:"Nachdenken",sum:"Verschiedene äquivalente Terme zählen dieselben Stäbe.",run:function(h,done){
+        analogStep(h,'<p class="q">'+ic("heft")+' Warum können drei verschiedene Terme dieselbe Konstruktion beschreiben? Schreibe deine Antwort ins Heft.</p><p>'+ic("team")+' Vergleiche mit deinem Partner.</p>',"Ich habe meine Antwort notiert",function(){
+          h.appendChild(el("div","heft",'<div class="h">Mögliche Antwort</div><p>Alle drei Terme zählen <b>dieselben Stäbe</b> – nur in anderen Gruppen. Deshalb liefern sie für jede Zahl '+X()+' denselben Wert.</p><p>Terme, die für jede eingesetzte Zahl denselben Wert liefern, heißen <b>äquivalent</b> (gleichwertig).</p>'));
+          done();
+        });
+      }}
+    ]
+  }; }
+},MB);
+</script>
+<script>
+"use strict";
+/* =========================================================
+   BEREICH C · TERMDETEKTIV
+   ========================================================= */
+var MC_=[["pad","iPad"],["heft","Erklärungen ins Heft"]];
+
+/* ---------------- C1 · Was steckt im Term? ---------------- */
+defTask("C1","Was steckt im Term?","C2",function(body){
+  var card=el("section","card narrow"); body.appendChild(card);
+  card.appendChild(el("p","lead","Jeder Teil eines Terms hat in der Situation eine Bedeutung. Ordne zu – in vier verschiedenen Situationen."));
+  function ctx(h,cfg,done){
+    var top=el("div");
+    if(cfg.fig) top.appendChild(el("div","figbox",cfg.fig));
+    top.appendChild(el("p","",cfg.text));
+    top.appendChild(el("p","mblock",cfg.term));
+    h.appendChild(top);
+    matcher(h,{rows:cfg.rows,pool:cfg.pool,ok:cfg.ok||"",defaultNo:cfg.defaultNo,onDone:done});
+  }
+  steps(card,[
+    {title:"Eisenbahnbrücke",sum:mfs("2<i>x</i> + 1")+": "+X()+" Bauschritte, 2"+X()+" wiederholte Stäbe, + 1 einmaliger Stab.",run:function(h,done){
+      ctx(h,{fig:'<div style="max-width:300px;margin:0 auto">'+bridgeSVG(3,"plain")+'</div><div class="figcap">Bauschritt 3</div>',
+        text:"Die Anzahl der Stäbe in Bauschritt "+X()+" wird berechnet mit:",term:'<i>S</i>(<i>x</i>) = 2<i>x</i> + 1',
+        pool:[{id:"n",t:"die Nummer des Bauschritts"},{id:"all",t:"die Anzahl aller Stäbe in Bauschritt "+X()},{id:"dis",t:"die Anzahl der Stäbe eines Dreiecks"},
+              {id:"one",t:"ein Stab, der nur einmal vorkommt"},{id:"rep",t:"je 2 Stäbe für jeden Bauschritt – der Teil, der sich wiederholt"}],
+        rows:[
+          {html:"<i>x</i>",ans:"n",no:{all:"Die Stäbe zählt der ganze Term. "+X()+" ist die Zahl, die du einsetzt."}},
+          {html:"2<i>x</i>",ans:"rep",no:{dis:"Ein Dreieck hat 3 Stäbe. 2"+X()+" wächst mit dem Bauschritt."}},
+          {html:"+ 1",ans:"one",no:{dis:"Ein Dreieck hat 3 Stäbe – hier geht es um einen einzelnen Stab."}},
+          {html:"2<i>x</i> + 1",ans:"all"}
+        ]},done);
+    }},
+    {title:"Fahrradtour mit Pausentagen",sum:mfs("320 : <i>x</i> + 2")+": Fahrtage plus 2 Pausentage.",run:function(h,done){
+      ctx(h,{text:"Eine Radtour ist 320 km lang, "+X()+" ist die durchschnittliche Strecke pro Fahrtag in km. Die Anzahl der Tage wird berechnet mit:",
+        term:'<i>T</i>(<i>x</i>) = 320 : <i>x</i> + 2',
+        pool:[{id:"fahr",t:"die Anzahl der Fahrtage"},{id:"x",t:"die Strecke pro Fahrtag in km"},{id:"all",t:"die Anzahl aller Tage der Tour"},
+              {id:"p",t:"die Anzahl der Pausentage"},{id:"s",t:"die Gesamtstrecke in km"}],
+        rows:[
+          {html:"<i>x</i>",ans:"x"},
+          {html:"320",ans:"s"},
+          {html:"320 : <i>x</i>",ans:"fahr",no:{all:"Die Pausentage fehlen hier noch – "+mfs("320 : <i>x</i>")+" zählt nur die Tage, an denen gefahren wird."}},
+          {html:"+ 2",ans:"p"},
+          {html:"320 : <i>x</i> + 2",ans:"all",no:{fahr:"Hier sind die 2 Pausentage schon dazugezählt."}}
+        ]},done);
+    }},
+    {title:"Hohlkammerprofil",sum:mfs("5<i>x</i> + (<i>x</i> − 1)")+": Grundelemente plus Verbindungsstäbe.",run:function(h,done){
+      ctx(h,{fig:'<div style="max-width:300px;margin:0 auto">'+profileSVG(3,"plain")+'</div><div class="figcap">Bauschritt 3</div>',
+        text:"Lena zerlegt das Profil in "+IF+"e Grundelemente aus je 5 Stäben. Sie berechnet die Anzahl der Stäbe mit:",term:'<i>S</i>(<i>x</i>) = 5<i>x</i> + (<i>x</i> − 1)',
+        pool:[{id:"one",t:"die Stäbe eines einzelnen "+IF+"en Grundelements"},{id:"con",t:"die senkrechten Verbindungsstäbe zwischen den Grundelementen"},
+              {id:"n",t:"die Nummer des Bauschritts (= Anzahl der Grundelemente)"},{id:"all",t:"die Anzahl aller Stäbe in Bauschritt "+X()},{id:"I",t:"die Stäbe aller "+IF+"en Grundelemente zusammen"}],
+        rows:[
+          {html:"<i>x</i>",ans:"n"},
+          {html:"5<i>x</i>",ans:"I",no:{one:"Ein einzelnes Grundelement hat 5 Stäbe. 5"+X()+" zählt die Stäbe von "+X()+" Grundelementen."}},
+          {html:"<i>x</i> − 1",ans:"con",no:{n:"Das wäre "+X()+". Zwischen "+X()+" Grundelementen gibt es eine Verbindung weniger."}},
+          {html:"5<i>x</i> + (<i>x</i> − 1)",ans:"all"}
+        ]},done);
+    }},
+    {title:"Svenjas Taschengeld",sum:mfs("<i>x</i> · (20 + 14) : 2")+": die Hälfte des Taschengelds von "+X()+" Monaten.",run:function(h,done){
+      ctx(h,{text:"Svenja bekommt monatlich 20 € von ihren Eltern und 14 € von ihrer Oma. Die Hälfte gibt sie aus.",term:'<i>x</i> · (20 + 14) : 2',
+        pool:[{id:"m1",t:"das Geld, das Svenja in einem Monat ausgibt"},{id:"sum",t:"das Taschengeld in "+X()+" Monaten"},{id:"x",t:"die Anzahl der Monate"},
+              {id:"aus",t:"das Geld, das Svenja in "+X()+" Monaten ausgibt"},{id:"pm",t:"das Taschengeld pro Monat"}],
+        rows:[
+          {html:"<i>x</i>",ans:"x"},
+          {html:"20 + 14",ans:"pm",no:{m1:"Ausgegeben wird nur die Hälfte. 20 + 14 ist alles, was sie in einem Monat bekommt."}},
+          {html:"<i>x</i> · (20 + 14)",ans:"sum",no:{aus:"Hier fehlt noch das Halbieren."}},
+          {html:"<i>x</i> · (20 + 14) : 2",ans:"aus",no:{sum:"Durch das „: 2“ ist es nur noch die Hälfte."}}
+        ]},done);
+    }}
+  ],function(){ complete(); });
+},MC_);
+
+/* ---------------- C2 · Welches Modell passt? ---------------- */
+defTask("C2","Welches Modell passt?","C3",function(body){
+  var MODELS=[
+    {id:"A",fn:mSepTri,unit:"Stäbe",ok:false,counts:[3,6,9],desc:"einzelne Dreiecke aus Stäben",
+     no:"Modell A: 3, 6, 9 Stäbe. Es kommen zwar immer 3 dazu – aber das „+ 1“ fehlt."},
+    {id:"B",fn:mTower,unit:"Steine",ok:true,counts:[4,7,10],desc:"Turm aus Steinen mit Dachstein",
+     ex:"Jedes Stockwerk hat 3 Steine (blau) → "+mfs("3<i>x</i>")+". Der Dachstein (orange) kommt nur einmal vor → "+mfs("+ 1")+"."},
+    {id:"C",fn:mSquares,unit:"Stäbe",ok:true,counts:[4,7,10],desc:"Quadratreihe aus Stäben",
+     ex:"Der erste senkrechte Stab (orange) kommt einmal vor → "+mfs("+ 1")+". Jedes Quadrat bringt 3 neue Stäbe (blau) → "+mfs("3<i>x</i>")+"."},
+    {id:"D",fn:mSepSquares,unit:"Stäbe",ok:false,counts:[4,8,12],desc:"einzelne Quadrate aus Stäben",
+     no:"Modell D: Bauschritt 1 hat 4 Stäbe – das passt. Dann kommen aber jeweils 4 dazu: 8 statt 7."},
+    {id:"E",fn:mStar,unit:"Steine",ok:true,counts:[4,7,10],desc:"Mittelstein mit drei Armen",
+     ex:"Der Mittelstein (orange) kommt einmal vor → "+mfs("+ 1")+". Mit jedem Bauschritt wird jeder der 3 Arme um einen Stein länger (blau) → "+mfs("3<i>x</i>")+"."}
+  ];
+  var card=el("section","card"); body.appendChild(card);
+  card.appendChild(el("p","lead","Welche Bausysteme passen zu diesem Term?"));
+  card.appendChild(el("p","mblock",'<i>T</i>(<i>x</i>) = 3<i>x</i> + 1'));
+  card.appendChild(el("p","","Gezeigt sind jeweils die Bauschritte 1, 2 und 3. <b>Es können mehrere Modelle passen.</b> Wähle alle passenden aus."));
+  var grid=el("div","mgrid"); card.appendChild(grid);
+  var sel={}, cards={}, locked=false;
+  MODELS.forEach(function(M){
+    var c=btn("","mcard");
+    c.innerHTML='<div class="mh"><span>Modell '+M.id+'</span><span class="box" aria-hidden="true"></span></div>'+
+      '<div class="msvg">'+seriesSVG(M.fn,false,"Modell "+M.id+": "+M.desc)+'</div><div class="md">'+M.desc+'</div><div class="md mcnt" hidden></div>';
+    c.setAttribute("aria-pressed","false");
+    c.onclick=function(){
+      if(locked) return;
+      sel[M.id]=!sel[M.id]; c.classList.toggle("sel",!!sel[M.id]); c.setAttribute("aria-pressed",sel[M.id]?"true":"false");
+      c.querySelector(".box").textContent=sel[M.id]?"✓":"";
+      c.classList.remove("good","bad");
+    };
+    grid.appendChild(c); cards[M.id]=c;
+  });
+  var row=el("div","btnrow"); card.appendChild(row);
+  var chk=btn("Prüfen","btn"); row.appendChild(chk);
+  var fb=el("div","fb"); card.appendChild(fb);
+  var help=helpLadder(card,{levels:[
+      {t:"Welche Anzahlen liefert der Term "+mfs("3<i>x</i> + 1")+" für die Bauschritte 1, 2 und 3?"},
+      {t:"Zähle bei jedem Modell die Stäbe bzw. Steine in den Bauschritten 1, 2 und 3. Es reicht nicht, nur Bauschritt 1 zu prüfen."},
+      {t:"Unter jedem Modell stehen jetzt die Anzahlen. Der Term liefert 4, 7, 10.",act:function(){
+        MODELS.forEach(function(M){ var d=cards[M.id].querySelector(".mcnt"); d.hidden=false; d.innerHTML=M.unit+": <b>"+M.counts.join(" · ")+"</b>"; });
+      }}
+    ],onSolution:function(){
+      MODELS.forEach(function(M){ sel[M.id]=M.ok; cards[M.id].classList.toggle("sel",M.ok); cards[M.id].querySelector(".box").textContent=M.ok?"✓":""; });
+      showFb(fb,"sol",'<span class="soltag">Lösung angezeigt</span>Die Modelle B, C und E passen zu '+mfs("3<i>x</i> + 1")+'.');
+      success(true);
+    }});
+  card.appendChild(fb);
+  chk.onclick=function(){
+    if(locked) return;
+    var wrongSel=[], missing=0, any=false;
+    MODELS.forEach(function(M){
+      var c=cards[M.id]; c.classList.remove("good","bad");
+      if(sel[M.id]){ any=true; if(M.ok) c.classList.add("good"); else { c.classList.add("bad"); wrongSel.push(M.no); } }
+      else if(M.ok) missing++;
+    });
+    if(!any){ showFb(fb,"hint","Wähle mindestens ein Modell aus."); return; }
+    if(!wrongSel.length&&!missing){ showFb(fb,"ok","<strong>Richtig.</strong> Die Modelle B, C und E passen – drei ganz verschiedene Bauwerke zu demselben Term."); success(false); return; }
+    var msg="<strong>Noch nicht ganz.</strong> ";
+    if(wrongSel.length) msg+=wrongSel.join(" ")+" ";
+    if(missing) msg+=(wrongSel.length?"Außerdem gibt es ":"Die grün markierten Modelle passen. Es gibt aber ")+"noch mindestens ein weiteres passendes Modell.";
+    showFb(fb,"hint",msg); help.nudge();
+  };
+  function success(viaSol){
+    locked=true; chk.disabled=true; help.close();
+    MODELS.forEach(function(M){ var c=cards[M.id]; c.disabled=true; c.classList.remove("bad"); if(M.ok) c.classList.add("good"); });
+    var c2=el("section","card"); body.appendChild(c2);
+    c2.appendChild(el("h3","","Wo steckt 3"+X()+", wo steckt + 1?"));
+    analogStep(c2,'<p>'+ic("heft")+' Wähle eines der passenden Modelle und erkläre im Heft: Wo steckt in diesem Bauwerk '+mfs("3<i>x</i>")+' und wo '+mfs("+ 1")+'?</p><p>'+ic("team")+' Vergleicht eure Erklärungen.</p>',"Ich habe meine Erklärung notiert",function(){
+      MODELS.forEach(function(M){
+        if(!M.ok) return;
+        cards[M.id].querySelector(".msvg").innerHTML=seriesSVG(M.fn,true,"Modell "+M.id+" farbig zerlegt");
+      });
+      var ex=el("div","heft");
+      ex.innerHTML='<div class="h">Mögliche Deutungen (siehe Farben oben)</div>'+MODELS.filter(function(M){return M.ok;}).map(function(M){ return "<p><b>Modell "+M.id+":</b> "+M.ex+"</p>"; }).join("")+
+        '<p>Zu einem Term können also <b>verschiedene</b> Bauwerke passen.</p>';
+      c2.appendChild(ex);
+      complete();
+    });
+    setTimeout(function(){ softScroll(c2); },60);
+    void viaSol;
+  }
+},MC_);
+
+/* ---------------- C3 · Fehlerlabor ---------------- */
+function cmpTable(xLabel,xs,rows){
+  var s='<div class="tblscroll"><div class="cmp" style="min-width:320px">';
+  s+='<div class="lab">'+xLabel+'</div>'+xs.map(function(x){ return '<div class="lab" style="text-align:center">'+x+'</div>'; }).join("");
+  rows.forEach(function(r){ s+='<div class="lab">'+r[0]+'</div>'+r[1].map(function(v){ return '<div class="'+r[2]+'">'+v+'</div>'; }).join(""); });
+  return s+'</div></div>';
+}
+defTask("C3","Fehlerlabor","C4",function(body){
+  var card=el("section","card narrow"); body.appendChild(card);
+  card.appendChild(el("p","lead","Hier haben sich andere geirrt. Finde heraus, <b>warum</b> ihr Term nicht passt – das ist wichtiger als die richtige Lösung."));
+  function speech(who,txt){ return '<div class="speech"><div class="who">'+who+'</div>„'+txt+'“</div>'; }
+  steps(card,[
+    {title:"Fall 1 · Brücke",sum:"Lukas: Pro Bauschritt kommen nur 2 Stäbe dazu, nicht 3.",run:function(h,done){
+      h.appendChild(el("div","figbox",'<div class="srow"><figure style="width:100px">'+bridgeSVG(1,"plain")+'<figcaption>Bauschritt 1</figcaption></figure><figure style="width:128px">'+bridgeSVG(2,"plain")+'<figcaption>Bauschritt 2</figcaption></figure></div>'));
+      h.appendChild(el("div","",speech("Lukas","Beim ersten Bauschritt sehe ich drei Stäbe. Also lautet der Term 3"+X()+".")));
+      mc(h,{q:"Was ist Lukas' Denkfehler?",opts:[
+        {t:"Er hat sich bei Bauschritt 1 verzählt – dort sind es nur 2 Stäbe.",fb:"Bauschritt 1 hat tatsächlich 3 Stäbe. Lukas' Fehler liegt woanders."},
+        {t:"Er nimmt an, dass bei jedem weiteren Bauschritt wieder 3 neue Stäbe dazukommen. Tatsächlich kommen nur 2 neue dazu.",ok:true},
+        {t:"Er hätte "+mfs("<i>x</i> · 3")+" statt "+mfs("3<i>x</i>")+" schreiben müssen.",fb:mfs("3<i>x</i>")+" und "+mfs("<i>x</i> · 3")+" sind gleichwertig. Das ist nicht das Problem."},
+        {t:"Kein Fehler – "+mfs("3<i>x</i>")+" passt zur Brücke.",fb:"Probe: Für Bauschritt 2 liefert "+mfs("3<i>x</i>")+" den Wert 6. Gebaut sind aber 5 Stäbe."}
+      ],onDone:function(){
+        var v=el("div","figbox gap anim");
+        v.innerHTML='<div class="srow">'+
+          '<figure style="width:110px">'+bridgeSVG(1,"plain")+'<figcaption>Bauschritt 1: 3 Stäbe</figcaption></figure>'+
+          '<figure style="width:140px">'+bridgeSVG(2,"diff",{anim:true})+'<figcaption>Bauschritt 2: nur <b style="color:'+COL.neu+'">2</b> neue</figcaption></figure></div>'+
+          cmpTable("Bauschritt",[1,2,3],[["Lukas: "+mfs("3<i>x</i>"),[3,6,9],"bad"],["gezählt",[3,5,7],"good"]])+
+          '<p class="small" style="margin-bottom:0">Das neue Dreieck teilt sich einen Stab mit dem vorherigen. Passend ist z. B. '+mfs("2<i>x</i> + 1")+'.</p>';
+        h.appendChild(v);
+        h.appendChild(el("p","small",ic("heft")+" Formuliere einen Satz, mit dem du Lukas seinen Fehler erklärst."));
+        weiter(h,"Weiter zu Fall 2",function(){ done(); });
+      }});
+    }},
+    {title:"Fall 2 · Hohlkammerprofil",sum:"Mia: Zwischen "+X()+" Grundelementen liegen nur "+mfs("<i>x</i> − 1")+" Verbindungsstäbe.",run:function(h,done){
+      h.appendChild(el("div","figbox",'<div style="max-width:300px;margin:0 auto">'+profileSVG(3,"plain")+'</div><div class="figcap">Bauschritt 3</div>'));
+      h.appendChild(el("div","",speech("Mia","Ich sehe in Bauschritt "+X()+" genau "+X()+" "+IF+"e Grundelemente mit je 5 Stäben. Zu jedem Grundelement gehört ein senkrechter Verbindungsstab. Also "+mfs("5<i>x</i> + <i>x</i> = 6<i>x</i>")+".")));
+      mc(h,{q:"Was ist Mias Denkfehler?",opts:[
+        {t:"Ein "+IF+"es Grundelement hat 6 Stäbe, nicht 5.",fb:"Zähle Bauschritt 1: oben 2, unten 2, in der Mitte 1 – also 5."},
+        {t:"Mia hat recht.",fb:"Probe: Für "+mfs("<i>x</i> = 1")+" liefert "+mfs("6<i>x</i>")+" den Wert 6. Bauschritt 1 hat aber nur 5 Stäbe."},
+        {t:"Zwischen "+X()+" Grundelementen gibt es nur "+mfs("<i>x</i> − 1")+" Verbindungsstäbe – so wie zwischen 3 Zaunpfosten nur 2 Lücken liegen.",ok:true},
+        {t:"Die Grundelemente teilen sich waagrechte Stäbe, deshalb muss man welche abziehen.",fb:"Die waagrechten Stäbe gehören jeweils nur zu einem Grundelement. Schau dir die senkrechten Verbindungsstäbe an."}
+      ],onDone:function(){
+        var v=el("div","figbox gap");
+        v.innerHTML='<div style="max-width:380px;margin:0 auto">'+profileSVG(3,"mia")+'</div>'+
+          '<div class="legend">'+legendHtml([[COL.rep,IF+"e Grundelemente (je 5)"],[COL.once,"Verbindungsstäbe"],[COL.ghost,"zählt Mia zu viel"]])+'</div>'+
+          cmpTable("Bauschritt",[1,2,3],[["Mia: "+mfs("6<i>x</i>"),[6,12,18],"bad"],["gezählt",[5,11,17],"good"]])+
+          '<p class="small" style="margin-bottom:0">Bei 3 Grundelementen gibt es nur 2 Verbindungsstäbe. Passend ist '+mfs("5<i>x</i> + (<i>x</i> − 1)")+'.</p>';
+        h.appendChild(v);
+        h.appendChild(el("p","small",ic("heft")+" Formuliere einen Satz, mit dem du Mia ihren Fehler erklärst."));
+        weiter(h,"Weiter zu Fall 3",function(){ done(); });
+      }});
+    }},
+    {title:"Fall 3 · Fahrradtour",sum:"Jonas: Anzahl der Tage = "+mfs("320 : <i>x</i>")+", nicht "+mfs("320 · <i>x</i>")+".",run:function(h,done){
+      h.appendChild(el("div","",speech("Jonas","Die Tour ist 320 km lang und wir fahren "+X()+" km pro Tag. Also brauchen wir "+mfs("320<i>x</i>")+" Tage.")));
+      mc(h,{q:"Was ist Jonas' Denkfehler?",opts:[
+        {t:"Mit "+mfs("320 · <i>x</i>")+" würden es bei mehr Kilometern pro Tag <b>mehr</b> Tage. Tatsächlich werden es weniger – man muss 320 durch "+X()+" teilen.",ok:true},
+        {t:"Er hätte "+mfs("320 + <i>x</i>")+" schreiben müssen.",fb:"Auch dann würden es bei mehr Kilometern pro Tag mehr Tage."},
+        {t:"Der Term stimmt, es fehlt nur die Einheit.",fb:"Probe mit 40 km pro Tag: 320 · 40 = 12.800 Tage – das sind mehr als 35 Jahre."},
+        {t:"Er hätte "+mfs("<i>x</i> : 320")+" schreiben müssen.",fb:mfs("<i>x</i> : 320")+" ergäbe bei 40 km pro Tag nur 0,125 – das ist keine sinnvolle Anzahl von Tagen."}
+      ],onDone:function(){
+        var v=el("div","figbox gap");
+        v.innerHTML=cmpTable("km pro Tag",[40,80,160],[["Jonas: "+mfs("320 · <i>x</i>"),["12.800","25.600","51.200"],"bad"],["richtig: "+mfs("320 : <i>x</i>"),[8,4,2],"good"]])+
+          '<p class="small" style="margin-bottom:0">Mehr Kilometer pro Tag → <b>weniger</b> Tage. Der Term muss also kleiner werden, wenn '+X()+' größer wird.</p>';
+        h.appendChild(v);
+        weiter(h,"Weiter zu Fall 4",function(){ done(); });
+      }});
+    }},
+    {title:"Fall 4 · Busfahrt",sum:"Emma: Betrag pro Person = "+mfs("600 : <i>x</i>")+", nicht "+mfs("600 · <i>x</i>")+".",run:function(h,done){
+      h.appendChild(el("div","",speech("Emma","Der Bus kostet 600 € und es fahren "+X()+" Schüler mit. Also zahlt jeder "+mfs("600<i>x</i>")+" Euro.")));
+      mc(h,{q:"Was ist Emmas Denkfehler?",opts:[
+        {t:"Emma hat recht – jeder zahlt den Buspreis.",fb:"Dann müsste bei 25 Mitfahrenden jede Person 600 · 25 = 15.000 € zahlen."},
+        {t:"Sie hätte "+mfs("600 − <i>x</i>")+" schreiben müssen.",fb:"Bei 25 Mitfahrenden wären das 575 € pro Person. Die 600 € werden aber aufgeteilt."},
+        {t:"Je mehr Schüler mitfahren, desto kleiner muss der Betrag pro Person werden. "+mfs("600 · <i>x</i>")+" wird aber größer. Der Preis muss aufgeteilt werden: "+mfs("600 : <i>x</i>")+".",ok:true}
+      ],onDone:function(){
+        var v=el("div","figbox gap");
+        v.innerHTML=cmpTable("Mitfahrende",[20,25,30],[["Emma: "+mfs("600 · <i>x</i>"),["12.000 €","15.000 €","18.000 €"],"bad"],["richtig: "+mfs("600 : <i>x</i>"),["30 €","24 €","20 €"],"good"]])+
+          '<p class="small" style="margin-bottom:0">Mehr Mitfahrende → <b>kleinerer</b> Betrag pro Person.</p>';
+        h.appendChild(v);
+        h.appendChild(el("p","",ic("team")+" Vergleicht: Was haben die Fehler von Jonas und Emma gemeinsam?"));
+        done();
+      }});
+    }}
+  ],function(){ complete(); });
+},MC_);
+
+/* ---------------- C4 · Erfinde selbst ---------------- */
+defTask("C4","Erfinde selbst",null,function(body){
+  var st=el("section","stop");
+  st.innerHTML='<div class="sh">'+ic("pad")+'<span>iPad jetzt wieder zur Seite legen.</span></div>'+
+    '<p style="margin:.5em 0 0" class="lead">'+ic("team")+' Entwickelt zu zweit ein Bausystem, das durch den Term</p>'+
+    '<p class="mblock"><i>T</i>(<i>x</i>) = 3<i>x</i> + 1</p><p style="margin-top:0">beschrieben werden kann.</p>';
+  var ul=el("ul","todo");
+  [["mat","Baut die ersten drei Bauschritte mit Stäben oder Steinen – oder"],["heft","zeichnet die ersten drei Bauschritte ins Heft."],
+   ["heft","Erklärt anschließend schriftlich:<ul class=\"plain\"><li>Wofür steht "+X()+"?</li><li>Was beschreibt "+mfs("3<i>x</i>")+"?</li><li>Was beschreibt "+mfs("+ 1")+"?</li><li>Was beschreibt der ganze Term?</li></ul>"],
+   ["team","Tauscht danach mit einem anderen Paar und kontrolliert euch gegenseitig mit der Checkliste."]].forEach(function(t){
+    ul.appendChild(el("li","",ic(t[0])+"<span>"+t[1]+"</span>"));
+  });
+  st.appendChild(ul);
+  st.appendChild(el("p","small","Ein Bauwerk aus C2 nachzubauen gilt nicht – erfindet etwas Neues."));
+  body.appendChild(st);
+
+  var c=el("section","card narrow"); body.appendChild(c);
+  c.appendChild(el("h3","",ic("team")+" Checkliste für die Partnerkontrolle"));
+  c.appendChild(el("p","small","Die Checkliste wird nicht ausgewertet und nicht gespeichert. Sie hilft euch beim gegenseitigen Kontrollieren."));
+  var items=[
+    "Die Bauschritte 1, 2 und 3 folgen einer erkennbaren Regel.",
+    "Bauschritt 1 besteht aus 4 Teilen, Bauschritt 2 aus 7, Bauschritt 3 aus 10.",
+    "Mit jedem Bauschritt kommen genau 3 Teile dazu.",
+    "Man erkennt, welcher Teil nur einmal vorkommt (+ 1).",
+    X()+", "+mfs("3<i>x</i>")+", "+mfs("+ 1")+" und der ganze Term sind in Worten erklärt.",
+    "Auch für Bauschritt 10 stimmt der Term: 31 Teile."
+  ];
+  var box=el("div"); c.appendChild(box);
+  items.forEach(function(t,i){
+    var l=el("label","check"); var cb=el("input"); cb.type="checkbox"; cb.id="chk"+i;
+    l.appendChild(cb); l.appendChild(el("span","",t)); box.appendChild(l);
+  });
+  helpLadder(c,{levels:[
+    {t:"Beginnt mit einem Teil, der nur <b>einmal</b> vorkommt. Was könnte das sein?"},
+    {t:"Überlegt: Welche Gruppe aus <b>3 Teilen</b> kann man immer wieder anbauen?"},
+    {t:"Denkt an die Brücke aus B1: Dort kommen je 2 Stäbe dazu. Wie müsste man sie verändern, damit jeweils 3 dazukommen?"}
+  ]});
+  var row=el("div","btnrow"); c.appendChild(row);
+  var fin=btn("Wir haben die Checkliste gemeinsam durchgesehen","btn",function(){ fin.disabled=true; complete("Stellt euer Bausystem bei Gelegenheit der Klasse vor."); });
+  row.appendChild(fin);
+},[["heft","Heft"],["mat","Material"],["team","Partnerarbeit"]]);
+
+/* =========================================================
+   Start
+   ========================================================= */
+measureHead();
+route();
+</script>
+</body>
+</html>
