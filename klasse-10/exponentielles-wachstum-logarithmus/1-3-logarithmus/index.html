@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logarithmus – die Umkehrung des Potenzierens</title>
+<style>
+:root{
+  --bg:#f5f6f8; --card:#fff; --ink:#1b2430; --soft:#4a5566; --line:#dde2e9;
+  --accent:#1f4e79; --accent-soft:#eaf1f8; --note:#eef4fa;
+  --ba:#1c64b0;  --ba-bg:#e3eefa;   /* Basis */
+  --ex:#b85f00;  --ex-bg:#fdefdc;   /* Exponent */
+  --re:#2b7a3d;  --re-bg:#e4f3e7;   /* Ergebnis */
+  --mfont:"Cambria Math",Cambria,"STIX Two Math","Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:18px;line-height:1.5;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+
+header{background:var(--card);border-bottom:1px solid var(--line)}
+.head{max-width:980px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px}
+.kap{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);font-weight:600}
+h1{margin:0;font-size:clamp(1.05rem,2.3vw,1.3rem);color:var(--accent);line-height:1.3}
+main{max-width:980px;margin:0 auto;padding:10px 16px 28px}
+
+/* Teile (schalten sich frei) */
+nav.parts{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+nav.parts button{min-height:44px;padding:4px 12px;border:1px solid var(--line);background:#fff;border-radius:22px;
+  font:inherit;font-size:.86rem;color:var(--soft);cursor:pointer}
+nav.parts button[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.parts button:disabled{opacity:.4;cursor:default}
+nav.parts button:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.card+.card{margin-top:10px}
+h2{margin:0 0 6px;font-size:1.15rem;color:var(--accent)}
+p{margin:.45em 0}
+.small{font-size:.9rem;color:var(--soft)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:760px){.grid2{grid-template-columns:minmax(0,1fr)}}
+
+/* Mathe */
+.m{font-family:var(--mfont);font-style:italic;white-space:nowrap}
+.up{font-style:normal}
+.eq{font-family:var(--mfont);font-size:clamp(1.5rem,4.4vw,2.2rem);text-align:center;margin:.35em 0;line-height:1.5}
+.eq.sm{font-size:clamp(1.2rem,3.2vw,1.5rem)}
+.eq sup{font-size:.62em;vertical-align:.85em;line-height:0}
+.eq sub,.m sub{font-size:.62em;line-height:0}
+.ba{color:var(--ba);font-weight:600}
+.ex{color:var(--ex);font-weight:600}
+.re{color:var(--re);font-weight:600}
+.box{display:inline-block;min-width:1.2em;padding:0 .2em;border:2px dashed var(--ex);border-radius:6px;color:var(--ex);background:var(--ex-bg);line-height:1.15;text-align:center}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;font-size:.88rem;color:var(--soft);margin-top:4px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.lg-ba::before{background:var(--ba)} .lg-ex::before{background:var(--ex)} .lg-re::before{background:var(--re)}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px 14px;font-family:var(--mfont);font-size:clamp(1.15rem,3vw,1.45rem)}
+.pair .l{text-align:right}.pair .c{color:var(--soft)}.pair .r{text-align:left}
+.pair sup{font-size:.62em;vertical-align:.85em;line-height:0}
+.pair sub{font-size:.62em;line-height:0}
+.pairs{display:flex;flex-direction:column;gap:6px;margin:.5em 0}
+
+/* Bedienelemente */
+button{font-family:inherit;font-size:1rem}
+.btn{border:1.5px solid var(--accent);background:var(--accent);color:#fff;border-radius:9px;padding:10px 18px;min-height:48px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.quiet{background:#fff;color:var(--soft);border-color:#c3ccd7;font-weight:500}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+@media (hover:hover){.btn:hover:not(:disabled){filter:brightness(1.08)} .btn.ghost:hover:not(:disabled),.btn.quiet:hover:not(:disabled){background:var(--accent-soft);filter:none}}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:46px;min-width:52px;padding:6px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;font-family:var(--mfont);font-size:1.15rem;color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.chip:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.ctl{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center}
+.ctl .lab{font-weight:600;font-size:.95rem}
+.stepper{display:inline-flex;align-items:center;gap:8px}
+.stepper button{width:52px;height:48px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-size:1.4rem;color:var(--accent);cursor:pointer}
+.stepper button:disabled{opacity:.35;cursor:default}
+.stepper button:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.stepper .val{font-family:var(--mfont);font-size:1.5rem;min-width:3.2em;text-align:center;font-weight:600}
+.status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.95rem;font-weight:600}
+.st-lo{background:#eef2f7;color:var(--soft)} .st-hi{background:#fbeee6;color:#8a4a12} .st-ok{background:var(--re-bg);color:var(--re)}
+.fb{margin-top:10px;padding:9px 13px;border-radius:9px;font-size:.97rem}
+.fb.ok{background:#eaf6ee;border-left:4px solid #2b8a3e}
+.fb.hint{background:#fdf6e7;border-left:4px solid #d6a23a}
+.note{background:var(--note);border:1px solid #c9dcec;border-left:5px solid var(--accent);border-radius:10px;padding:10px 14px;margin-top:10px}
+.def{border:2px solid var(--accent);border-radius:12px;padding:12px 16px;background:#fff}
+.def .ttl{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cond{display:flex;justify-content:center;gap:10px 24px;flex-wrap:wrap;font-family:var(--mfont);font-size:1.2rem;margin:.3em 0}
+.done-list{display:flex;flex-wrap:wrap;gap:6px 10px;margin:.3em 0}
+.tag{display:inline-block;font-size:.8rem;padding:2px 10px;border-radius:12px;background:var(--re-bg);color:var(--re);font-weight:600}
+.qnr{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);font-weight:650}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:8px 14px;text-align:left;border:1.5px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;font-size:1rem;line-height:1.35;color:var(--ink)}
+.opt .k{font-weight:700;color:var(--accent);min-width:1.3em}
+.opt .mm{font-family:var(--mfont);font-size:1.2rem}
+.opt sup{font-size:.65em;vertical-align:.7em;line-height:0}
+.opt sub{font-size:.65em;line-height:0}
+@media (hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.opt.ok{border-color:#2b8a3e;background:#eaf6ee}
+.opt.no{border-color:#dcb4b4;background:#fbf3f3;color:#7a5a5a}
+.opt:disabled{cursor:default}
+.steps{font-family:var(--mfont);font-size:clamp(1.05rem,2.8vw,1.3rem);display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}
+.steps .why{font-family:"Segoe UI",system-ui,sans-serif;font-size:.88rem;color:var(--soft)}
+.fold{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.stack{width:120px;height:120px;border-bottom:2px solid #9aa3ae;position:relative;flex:0 0 auto}
+.stack div{position:absolute;left:10px;right:10px;bottom:0;background:repeating-linear-gradient(0deg,#f2f4f7 0,#f2f4f7 2px,#c9d2dd 2px,#c9d2dd 3px);border:1px solid #9aa3ae;border-bottom:0}
+.fade{animation:fade .25s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}}
+/* Übergang Potenz ⇄ Logarithmus: Größen wandern an ihre neue Stelle */
+.morph{position:relative}
+.tgt.pending .tok,.tgt.pending .g{visibility:hidden}
+.tgt.skel .g{visibility:visible;animation:fade .4s ease-out}
+.tgt .tok.shown{visibility:visible}
+.fly{position:absolute;z-index:5;pointer-events:none;white-space:nowrap;transform-origin:0 0;will-change:transform}
+.tok.dim{opacity:.35;transition:opacity .2s}
+.later{visibility:hidden}
+.maprow{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;font-size:.92rem;margin:.2em 0 .4em}
+.maprow>span{visibility:hidden}
+.maprow>span.shown{visibility:visible;animation:fade .3s ease-out}
+.mini{font-family:var(--mfont);font-size:1.25rem;text-align:center;margin:.4em 0 .1em}
+.mini sup{font-size:.62em;vertical-align:.85em;line-height:0}
+.mini sub{font-size:.62em;line-height:0}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div>
+      <div class="kap">Mathematik 10 · 1.3</div>
+      <h1>Logarithmus – die Umkehrung des Potenzierens</h1>
+    </div>
+    <button class="btn quiet" id="reset">Neu starten</button>
+  </div>
+</header>
+<main>
+  <nav class="parts" id="parts" aria-label="Teile"></nav>
+  <div id="stage" aria-live="polite"></div>
+</main>
+
+<script>
+(function(){
+"use strict";
+var PARTS=["Das Problem","Potenzieren umkehren","Neue Schreibweise","Definition","Verständnischeck","Zurück zum Mond"];
+function fresh(){ return {part:0, unlocked:0, folds:0, a:2, x:3, tried:{}, reverse:false, rq:0, cand:[0,0,0,0], fine:false, seenLo:true, seenHi:false,
+  notation:0, cq:0, ctried:[[],[],[],[]], cok:[false,false,false,false], moon:0, ord:mixAnswers(), defAnim:false, cAnim:[false,false,false,false]}; }
+// Antworten mischen: richtige Antwort steht bei den vier Aufgaben an vier verschiedenen Positionen
+function shuf(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function mixAnswers(){
+  var pos=shuf([0,1,2,3]);
+  return pos.map(function(pc){ var rest=shuf([1,2,3]), o=[]; for(var k=0;k<4;k++) o.push(k===pc?0:rest.shift()); return o; });  // Originalindex 0 = richtig
+}
+var S=fresh();
+
+/* ---------- Hilfen ---------- */
+function de(v,d){ var s=(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d); s=s.replace(/\.?0+$/,""); return s.replace("-","−").replace(".",","); }
+function big(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," "); }
+function B(v){ return '<span class="ba">'+v+'</span>'; }
+function E(v){ return '<span class="ex">'+v+'</span>'; }
+function R(v){ return '<span class="re">'+v+'</span>'; }
+function pow(a,x){ return a+'<sup class="ex">'+x+'</sup>'; }
+function num(x){ return String(x).replace("-","−").replace(".",","); }
+// Wert einer Potenz als Text (Brüche bei negativen Exponenten)
+function valText(a,x){
+  var v=Math.pow(a,x);
+  if(Number.isInteger(x) && x<0){ var d=Math.pow(a,-x); return "<span class='m up'>1/"+big(d)+"</span>"+(d<=1000?" = "+de(v,4):""); }
+  if(Number.isInteger(v)) return big(v);
+  return "≈ "+de(v,3);
+}
+function logHTML(a,b,x){ return 'log<sub class="ba">'+a+'</sub>('+R(b)+') = '+x; }
+// Potenz- und Logarithmusschreibweise mit markierten Größen (data-r: a = Basis, x = Exponent, b = Ergebnis)
+function powT(a,x,b){ return '<span class="tok ba" data-r="a">'+a+'</span><sup class="tok ex" data-r="x">'+x+'</sup> = <span class="tok re" data-r="b">'+b+'</span>'; }
+function logT(a,x,b){ return '<span class="g up">log</span><sub class="tok ba" data-r="a">'+a+'</sub><span class="g">(</span><span class="tok re" data-r="b">'+b+'</span><span class="g">)</span> <span class="g">=</span> <span class="tok ex" data-r="x">'+x+'</span>'; }
+var GEN=0;
+var RED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// FLIP-ähnliche Bewegung: Kopien der Größen fliegen von der Ausgangs- zur Zielschreibweise
+function morph(src,tgt,opt){
+  opt=opt||{}; var roles=opt.roles||["a","b","x"], dur=opt.dur||900, gen=GEN, box=src.closest(".morph");
+  function finish(){ tgt.classList.remove("pending","skel"); tgt.querySelectorAll(".tok").forEach(function(t){ t.classList.add("shown"); });
+    if(opt.onStep) roles.forEach(opt.onStep); if(opt.done) opt.done(); }
+  if(RED||!box){ finish(); return; }
+  tgt.classList.add("skel");
+  var i=0;
+  (function next(){
+    if(gen!==GEN) return;                       // Ansicht wurde gewechselt
+    if(i>=roles.length){ tgt.classList.remove("pending","skel"); if(opt.done) opt.done(); return; }
+    var r=roles[i++], a=src.querySelector('[data-r="'+r+'"]'), b=tgt.querySelector('[data-r="'+r+'"]');
+    var cb=box.getBoundingClientRect(), ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect(), cs=getComputedStyle(a);
+    var fly=document.createElement("span"); fly.className="fly "+(a.className.match(/\b(ba|ex|re)\b/)||[""])[0]; fly.innerHTML=a.innerHTML;
+    fly.style.cssText="left:"+(ra.left-cb.left)+"px;top:"+(ra.top-cb.top)+"px;height:"+ra.height+"px;line-height:"+ra.height+"px;font-size:"+cs.fontSize+
+      ";font-family:"+cs.fontFamily+";font-style:"+cs.fontStyle+";font-weight:"+cs.fontWeight+";transition:transform "+dur+"ms cubic-bezier(.45,.05,.3,1)";
+    box.appendChild(fly); a.classList.add("dim");
+    var sc=rb.height/ra.height, dx=rb.left-ra.left, dy=rb.top-ra.top, ended=false;
+    function land(){ if(ended) return; ended=true; if(fly.parentNode) fly.parentNode.removeChild(fly); a.classList.remove("dim");
+      if(gen!==GEN) return; b.classList.add("shown"); if(opt.onStep) opt.onStep(r); setTimeout(next,160); }
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ fly.style.transform="translate("+dx+"px,"+dy+"px) scale("+sc+")"; }); });
+    fly.addEventListener("transitionend",land); setTimeout(land,dur+120);
+  })();
+}
+
+/* ---------- Teile ---------- */
+function render(anim){
+  var nav=document.getElementById("parts");
+  nav.innerHTML=PARTS.map(function(t,i){ return '<button data-p="'+i+'"'+(i>S.unlocked?' disabled':'')+(i===S.part?' aria-current="step"':'')+'>'+(i+1)+' · '+t+'</button>'; }).join("");
+  nav.querySelectorAll("button").forEach(function(b){ b.onclick=function(){ S.part=+b.getAttribute("data-p"); render(true); window.scrollTo(0,0); }; });
+  var st=document.getElementById("stage");
+  GEN++;
+  st.innerHTML=[p1,p2,p3,p4,p5,p6][S.part]();
+  if(anim && st.firstElementChild) st.firstElementChild.classList.add("fade");
+  // Einblend-Effekt nur für gerade neu aufgedeckte Inhalte, nicht bei jedem Klick erneut
+  if(!anim && !S.flash) st.querySelectorAll(".fade").forEach(function(e){ e.classList.remove("fade"); });
+  S.flash=false;
+  bind();
+  after();
+}
+function go(i){ S.unlocked=Math.max(S.unlocked,i); S.part=i; render(true); window.scrollTo(0,0); }
+
+/* ===== Teil 1: Das Problem ===== */
+function p1(){
+  var d=0.1*Math.pow(2,S.folds), txt=d<10?de(d,2)+" mm":(d<1000?de(d/10,1)+" cm":de(d/1000,2)+" m");
+  var h=Math.min(118,4+S.folds*11.4);
+  return '<div class="card"><h2>Papier bis zum Mond</h2>'+
+    '<div class="grid2"><div>'+
+      '<p>Ein Blatt Papier ist etwa <b>0,1 mm</b> dick. Bei jedem Falten <b>verdoppelt</b> sich die Dicke.</p>'+
+      '<p>Wie oft müsste man falten, damit der Stapel so dick ist wie die Entfernung zum Mond (≈ 384 000 km)?</p>'+
+    '</div><div class="fold"><div class="stack" aria-hidden="true"><div style="height:'+h+'px"></div></div>'+
+      '<div><div class="small">Faltungen: <b id="fN">'+S.folds+'</b></div><div class="small">Dicke: <b>'+txt+'</b></div>'+
+      '<div class="btnrow" style="margin-top:6px"><button class="btn ghost" id="fold"'+(S.folds>=10?' disabled':'')+'>Falten</button>'+
+      '<button class="btn quiet" id="unfold"'+(S.folds<=0?' disabled':'')+'>Zurück</button></div></div></div></div>'+
+    (S.folds>=10?'<p class="small">Nach 10 Faltungen ist der Stapel gerade einmal etwa 10 cm dick. Bis zum Mond weiterzuprobieren wäre mühsam.</p>':'')+
+    '</div>'+
+    (S.folds>=3?'<div class="card fade"><p>Nach <span class="m">x</span> Faltungen ist die Dicke <span class="m up">0,1 mm · 2</span><sup class="ex">x</sup>. Gesucht ist also <span class="m">x</span> mit</p>'+
+      '<div class="eq">0,1 mm · 2<sup><span class="box">x</span></sup> = 384 000 km</div>'+
+      '<div class="note">Gesucht ist jetzt <b>nicht das Ergebnis</b> einer Potenz, sondern der <b class="ex">Exponent</b>.</div>'+
+      '<div class="btnrow"><button class="btn" id="to2">Wie kann man einen unbekannten Exponenten bestimmen?</button></div></div>'
+     :'<p class="small" style="margin-top:8px">Falte das Blatt ein paar Mal.</p>');
+}
+
+/* ===== Teil 2: Potenzieren umkehren ===== */
+var REV=[{a:2,b:8,x:3,bt:"8",opts:[1,2,3,4]},{a:10,b:1000,x:3,bt:"1000"},{a:3,b:1/3,x:-1,bt:"<span class='up'>1/3</span>"},{a:4,b:2,x:0.5,bt:"2"}];
+function p2(){
+  if(!S.reverse){
+    var nTried=Object.keys(S.tried).length;
+    return '<div class="card"><h2>Potenzieren: Ergebnis berechnen</h2>'+
+      '<div class="grid2"><div class="ctl">'+
+        '<span class="lab"><span class="ba">Basis</span> <span class="m ba">a</span></span><div class="chips" id="aChips">'+[2,3,4,5,10].map(function(v){return '<button class="chip" data-a="'+v+'" aria-pressed="'+(S.a===v)+'">'+v+'</button>';}).join("")+'</div>'+
+        '<span class="lab"><span class="ex">Exponent</span> <span class="m ex">x</span></span><div class="stepper"><button id="xm" aria-label="Exponent verkleinern"'+(S.x<=-3?' disabled':'')+'>−</button><span class="val ex">'+num(S.x)+'</span><button id="xp" aria-label="Exponent vergrößern"'+(S.x>=6?' disabled':'')+'>+</button></div>'+
+      '</div><div>'+
+        '<div class="eq">'+B(S.a)+'<sup class="ex">'+num(S.x)+'</sup> = '+R(valText(S.a,S.x))+'</div>'+
+        '<div class="legend"><span class="lg-ba">Basis</span><span class="lg-ex">Exponent</span><span class="lg-re">Ergebnis</span></div>'+
+      '</div></div>'+
+      '<p class="small" style="margin-top:10px">Beispiele: '+[[2,3],[3,2],[10,3],[2,-2]].map(function(e){return '<button class="chip" data-ex="'+e[0]+','+e[1]+'" style="min-height:44px;font-size:1rem">'+e[0]+'<sup>'+num(e[1])+'</sup></button>';}).join(" ")+'</p>'+
+      '<div class="note">Sind <span class="ba">Basis</span> und <span class="ex">Exponent</span> bekannt, kann man das <span class="re">Ergebnis</span> einfach berechnen.</div>'+
+      '<div class="btnrow"><button class="btn" id="rev"'+(nTried>=3?'':' disabled')+'>Jetzt umgekehrt</button>'+(nTried<3?'<span class="small">Probiere mindestens drei Potenzen aus.</span>':'')+'</div></div>';
+  }
+  var q=S.rq, t=REV[q], c=S.cand[q], v=Math.pow(t.a,c), ok=Math.abs(v-t.b)<1e-9, stepv=(q===3&&S.fine)?0.25:1;
+  var status=ok?'<span class="status st-ok">passt!</span>':(v<t.b?'<span class="status st-lo">zu klein</span>':'<span class="status st-hi">zu groß</span>');
+  var done=REV.slice(0,q).map(function(r){return '<span class="tag">'+r.a+'<sup>'+num(r.x)+'</sup> = '+r.bt.replace(/<[^>]+>/g,"")+'</span>';}).join(" ");
+  var h='<div class="card"><h2>Jetzt umgekehrt: Exponent gesucht</h2>'+
+    '<p>Jetzt sind <span class="ba">Basis</span> und <span class="re">Ergebnis</span> bekannt. Gesucht ist der <span class="ex">Exponent</span>.</p>'+
+    (done?'<div class="done-list">'+done+'</div>':'')+
+    '<div class="small" style="margin-top:6px">Beispiel '+(q+1)+' von 4</div>'+
+    '<div class="eq">'+B(t.a)+'<sup><span class="box">'+(ok?num(c):'?')+'</span></sup> = '+R(t.bt)+'</div>'+
+    '<div class="grid2"><div><div class="lab small" style="font-weight:600">Exponent ausprobieren</div>'+
+      '<div class="stepper"><button id="cm" aria-label="Exponent verkleinern"'+(ok||c<=-3?' disabled':'')+'>−</button><span class="val ex">'+num(c)+'</span><button id="cp" aria-label="Exponent vergrößern"'+(ok||c>=5?' disabled':'')+'>+</button></div></div>'+
+      '<div><div class="eq sm">'+B(t.a)+'<sup class="ex">'+num(c)+'</sup> = '+R(valText(t.a,c))+'</div><div style="text-align:center">'+status+'</div></div></div>';
+  if(q===3 && !ok && S.seenLo && S.seenHi && !S.fine) h+='<div class="fb hint">4<sup>0</sup> = 1 ist zu klein, 4<sup>1</sup> = 4 ist zu groß. Der gesuchte Exponent liegt also <b>zwischen 0 und 1</b>.'+
+     '<div class="btnrow" style="margin-top:8px"><button class="btn ghost" id="fine">Auch Zwischenwerte probieren</button></div></div>';
+  if(q===3 && S.fine && !ok) h+='<p class="small">Jetzt ändert sich der Exponent in Schritten von 0,25.</p>';
+  if(ok){
+    h+='<div class="fb ok">'+(q===3?'Richtig: 4<sup>0,5</sup> = √4 = 2. <b>Der gesuchte Exponent muss nicht ganzzahlig sein.</b>':
+        (q===2?'Richtig: 3<sup>−1</sup> = 1/3.':'Richtig: '+t.a+'<sup>'+num(t.x)+'</sup> = '+t.bt+'.'))+'</div>';
+    h+='<div class="btnrow">'+(q<3?'<button class="btn ghost" id="nextR">Nächstes Beispiel</button>':'<button class="btn" id="to3">Weiter: eine neue Schreibweise</button>')+'</div>';
+  }
+  return h+'</div>';
+}
+
+/* ===== Teil 3: Neue Schreibweise ===== */
+function p3(){
+  var h='<div class="card"><h2>Eine neue Schreibweise</h2>'+
+    '<div class="morph" id="m3"><div class="eq src">'+powT(2,3,8)+'</div>'+
+    '<div class="eq tgt'+(S.notation<1?' pending':'')+'">'+logT(2,3,8)+'</div></div>'+
+    '<p style="text-align:center">Der <span class="ex">Exponent 3</span> beantwortet die Frage:<br><i>Mit welchem Exponenten muss man <span class="ba">2</span> potenzieren, um <span class="re">8</span> zu erhalten?</i></p>';
+  if(S.notation<1) return h+'<div class="btnrow" style="justify-content:center"><button class="btn" id="n1">Wie schreibt man das kürzer?</button></div></div>';
+  h+='<p class="small fade" style="text-align:center">gelesen: „Logarithmus von 8 zur Basis 2 ist 3“</p>'+
+     '<div class="legend"><span class="lg-ba">Basis</span><span class="lg-re">Ergebnis der Potenz</span><span class="lg-ex">gesuchter Exponent</span></div>';
+  if(S.notation<2) return h+'<div class="btnrow" style="justify-content:center"><button class="btn" id="n2">Beide Schreibweisen vergleichen</button></div></div>';
+  // 3^−1 = 1/3 wird noch einmal animiert übersetzt, danach erscheinen die übrigen Beispiele
+  var P=[[2,"3","8"],[10,"3","1000"],[3,"−1","1/3"],[4,"0,5","2"]], anim=(S.notation===2);
+  h+='<div class="pairs">'+P.map(function(r,k){ var act=(k===2);
+    return '<div class="pair morph'+(anim&&!act?' later':'')+(act?'" id="m3b':'')+'"><span class="l src">'+powT(r[0],r[1],r[2])+'</span><span class="c">⇔</span><span class="r tgt'+(anim&&act?' pending':'')+'">'+logT(r[0],r[1],r[2])+'</span></div>'; }).join("")+'</div>';
+  if(S.notation>=3) h+='<div class="btnrow" style="justify-content:center"><button class="btn" id="to4">Weiter: die Definition</button></div>';
+  return h+'</div>';
+}
+
+/* ===== Teil 4: Definition ===== */
+function p4(){
+  return '<div class="card"><h2>Was bedeutet der Logarithmus?</h2>'+
+    '<div class="def"><div class="ttl">Zusammenhang</div>'+
+      '<div class="eq morph" id="m4"><span class="m src">'+powT("a","x","b")+'</span> &nbsp;⇔&nbsp; <span class="m tgt'+(S.defAnim?'':' pending')+'">'+logT("a","x","b")+'</span></div>'+
+      '<div class="maprow" id="map4"><span data-r="a"'+(S.defAnim?' class="shown"':'')+'><span class="m ba">a</span> → Logarithmusbasis</span>'+
+        '<span data-r="b"'+(S.defAnim?' class="shown"':'')+'><span class="m re">b</span> → Argument</span>'+
+        '<span data-r="x"'+(S.defAnim?' class="shown"':'')+'><span class="m ex">x</span> → Ergebnis des Logarithmus</span></div>'+
+      '<p style="text-align:center">Der Logarithmus <span class="m"><span class="up">log</span><sub class="ba">a</sub>('+R("b")+')</span> gibt an, mit welchem <span class="ex">Exponenten</span> man die <span class="ba">Basis a</span> potenzieren muss, um <span class="re">b</span> zu erhalten.</p>'+
+      '<div class="cond"><span><span class="m">a</span> &gt; 0</span><span><span class="m">a</span> ≠ 1</span><span><span class="m">b</span> &gt; 0</span></div></div>'+
+    '<div class="btnrow" style="justify-content:center"><button class="btn" id="to5"'+(S.defAnim?'':' disabled')+'>Weiter: kurzer Verständnischeck</button></div></div>';
+}
+
+/* ===== Teil 5: Verständnischeck ===== */
+var CQ=[
+  {q:'<span class="m" style="font-size:1.25rem">5<sup>3</sup> = 125</span> &nbsp;Ergänze: <span class="m" style="font-size:1.25rem">log<sub>5</sub>(125) = ?</span>',
+   o:["3","25","125","1/3"], ok:0, mini:{dir:"pl",a:5,x:3,b:125}, hint:"Welcher Exponent steht in 5<sup>3</sup> = 125? Genau diesen Exponenten gibt der Logarithmus an."},
+  {q:'<span class="m" style="font-size:1.25rem">log<sub>2</sub>(32) = 5</span> &nbsp;Welche Potenzgleichung gehört dazu?',
+   o:["2<sup>5</sup> = 32","5<sup>2</sup> = 32","32<sup>5</sup> = 2","2<sup>32</sup> = 5"], ok:0, mini:{dir:"lp",a:2,x:5,b:32}, hint:"Die Basis des Logarithmus ist auch die Basis der Potenz, und der Wert des Logarithmus ist der Exponent."},
+  {q:'<span class="m" style="font-size:1.25rem">log<sub>10</sub>(0,01) = ?</span>',
+   o:["−2","2","−1","0,001"], ok:0, hint:"Schreibe 0,01 als Bruch: 0,01 = 1/100. Mit welchem Exponenten wird aus 10 die Zahl 1/100?"},
+  {q:'Welche Bedeutung hat <span class="m" style="font-size:1.25rem">log<sub>3</sub>(7)</span>?',
+   o:["Der Exponent, mit dem 3 potenziert werden muss, um 7 zu erhalten.","Das Ergebnis der Potenz 3<sup>7</sup>.","Das Ergebnis der Division 7 : 3.","Die Zahl, die dreimal mit sich selbst multipliziert 7 ergibt."], ok:0,
+   hint:"Übersetze in die Potenzschreibweise: log<sub>3</sub>(7) = x bedeutet 3<sup>x</sup> = 7. Was ist also x?"}
+];
+function p5(){
+  var q=S.cq, it=CQ[q], solved=S.cok[q], tried=S.ctried[q];
+  var h='<div class="card"><h2>Kurzer Verständnischeck</h2><div class="qnr">Aufgabe '+(q+1)+' von 4</div><p style="margin:.4em 0">'+it.q+'</p><div class="opts">';
+  S.ord[q].forEach(function(i,pos){ var t=it.o[i], cls=(solved&&i===it.ok)?" ok":(tried.indexOf(i)>=0?" no":"");
+    h+='<button class="opt'+cls+'" data-o="'+i+'"'+((solved||tried.indexOf(i)>=0)?" disabled":"")+'><span class="k">'+"ABCD"[pos]+'</span><span class="'+(q<3?'mm':'')+'">'+t+'</span></button>'; });
+  h+='</div>';
+  if(solved && it.mini){ var mm=it.mini, pend=S.cAnim[q]?'':' pending';
+    h+='<div class="fb ok">Richtig.<div class="mini morph" id="m5"><span class="src">'+(mm.dir==="pl"?powT(mm.a,mm.x,mm.b):logT(mm.a,mm.x,mm.b))+'</span> &nbsp;⇔&nbsp; '+
+       '<span class="tgt'+pend+'">'+(mm.dir==="pl"?logT(mm.a,mm.x,mm.b):powT(mm.a,mm.x,mm.b))+'</span></div></div>'; }
+  else if(solved) h+='<div class="fb ok">Richtig.</div>';
+  else if(tried.length) h+='<div class="fb hint">Noch nicht. '+it.hint+'</div>';
+  if(solved) h+='<div class="btnrow">'+(q<3?'<button class="btn ghost" id="cNext">Nächste Aufgabe</button>':'<button class="btn" id="to6">Zurück zum Mond</button>')+'</div>';
+  return h+'</div>';
+}
+
+/* ===== Teil 6: Zurück zum Mond ===== */
+function p6(){
+  var x=Math.log(3.84e12)/Math.LN2;
+  var h='<div class="card"><h2>Zurück zum Mond</h2><div class="steps">'+
+    '<div>0,1 mm · 2<sup class="ex">x</sup> = 384 000 km</div>';
+  if(S.moon>=1) h+='<div class="why fade">Beide Seiten in derselben Einheit: 384 000 km = 384 000 000 000 mm</div>'+
+    '<div class="fade">0,1 mm · 2<sup class="ex">x</sup> = 384 000 000 000 mm &nbsp;<span class="why">| : 0,1 mm</span></div>'+
+    '<div class="fade">'+B(2)+'<sup class="ex">x</sup> = '+R(big(3840000000000))+'</div>';
+  if(S.moon>=2) h+='<div class="why fade">Gesucht ist der Exponent – also ein Logarithmus:</div>'+
+    '<div class="fade" style="font-size:1.25em">'+E("x")+' = log<sub class="ba">2</sub>('+R(big(3840000000000))+')</div>';
+  if(S.moon>=3) h+='<div class="fade" style="font-size:1.25em">'+E("x")+' ≈ '+de(x,1)+'</div>'+
+    '<div class="why fade">Probe: 2<sup>41</sup> · 0,1 mm ≈ 220 000 km, 2<sup>42</sup> · 0,1 mm ≈ 440 000 km</div>';
+  h+='</div>';
+  if(S.moon===0) h+='<div class="btnrow" style="justify-content:center"><button class="btn" id="m1">Auf die Form 2<sup>x</sup> = … bringen</button></div>';
+  if(S.moon===1) h+='<div class="btnrow" style="justify-content:center"><button class="btn" id="m2">Exponent als Logarithmus schreiben</button></div>';
+  if(S.moon===2) h+='<div class="btnrow" style="justify-content:center"><button class="btn" id="m3">Näherungswert berechnen</button></div>';
+  if(S.moon>=3) h+='<div class="note fade"><p style="margin:0">Rechnerisch entspricht die Mondentfernung etwa <b>41,8 Faltungen</b>. Da nur ganze Faltungen möglich sind, wird die Mondentfernung bei der <b>42. Faltung</b> erstmals überschritten.</p>'+
+    '<p style="margin:.4em 0 0"><b>Mit dem Logarithmus können wir Exponenten bestimmen, die sich nicht einfach durch Probieren finden lassen.</b></p></div>';
+  return h+'</div>';
+}
+
+/* ---------- Ereignisse ---------- */
+function on(id,fn){ var e=document.getElementById(id); if(e) e.onclick=fn; }
+// automatische Animationen nach dem Aufbau einer Ansicht
+function after(){
+  var m;
+  if(S.part===2 && S.notation===2 && (m=document.getElementById("m3b")))
+    morph(m.querySelector(".src"),m.querySelector(".tgt"),{done:function(){ S.notation=3; S.flash=true; render(); }});
+  if(S.part===3 && !S.defAnim && (m=document.getElementById("m4"))){
+    var map=document.getElementById("map4");
+    setTimeout(function(){ morph(m.querySelector(".src"),m.querySelector(".tgt"),{dur:800,
+      onStep:function(r){ var e=map.querySelector('[data-r="'+r+'"]'); if(e) e.classList.add("shown"); },
+      done:function(){ S.defAnim=true; var b=document.getElementById("to5"); if(b) b.disabled=false; }}); },RED?0:350);
+  }
+  if(S.part===4 && S.cok[S.cq] && !S.cAnim[S.cq] && (m=document.getElementById("m5"))){
+    var q=S.cq; morph(m.querySelector(".src"),m.querySelector(".tgt"),{dur:600,done:function(){ S.cAnim[q]=true; }});
+  }
+}
+function bind(){
+  on("fold",function(){ S.folds++; render(); }); on("unfold",function(){ S.folds--; render(); });
+  on("to2",function(){ go(1); });
+  document.querySelectorAll("[data-a]").forEach(function(b){ b.onclick=function(){ S.a=+b.getAttribute("data-a"); S.tried[S.a+"|"+S.x]=1; render(); }; });
+  document.querySelectorAll("[data-ex]").forEach(function(b){ b.onclick=function(){ var p=b.getAttribute("data-ex").split(","); S.a=+p[0]; S.x=+p[1]; S.tried[S.a+"|"+S.x]=1; render(); }; });
+  on("xm",function(){ S.x--; S.tried[S.a+"|"+S.x]=1; render(); }); on("xp",function(){ S.x++; S.tried[S.a+"|"+S.x]=1; render(); });
+  on("rev",function(){ S.reverse=true; render(); });
+  var stp=function(d){ var q=S.rq, st=(q===3&&S.fine)?0.25:1, c=Math.round((S.cand[q]+d*st)*100)/100;
+    if(q===3&&S.fine) c=Math.max(0,Math.min(1,c)); S.cand[q]=c;
+    if(q===3){ var v=Math.pow(4,c); if(v<2) S.seenLo=true; if(v>2) S.seenHi=true; } render(); };
+  on("cm",function(){ stp(-1); }); on("cp",function(){ stp(1); });
+  on("fine",function(){ S.fine=true; S.cand[3]=0; render(); });
+  on("nextR",function(){ S.rq++; render(); });
+  on("to3",function(){ go(2); });
+  on("n1",function(){ var b=document.getElementById("n1"); b.disabled=true; b.style.visibility="hidden";
+    var m=document.getElementById("m3"); morph(m.querySelector(".src"),m.querySelector(".tgt"),{done:function(){ S.notation=1; S.flash=true; render(); }}); });
+  on("n2",function(){ S.notation=2; S.flash=true; render(); });
+  on("to4",function(){ go(3); }); on("to5",function(){ go(4); });
+  document.querySelectorAll("[data-o]").forEach(function(b){ b.onclick=function(){ var q=S.cq, i=+b.getAttribute("data-o");
+    if(i===CQ[q].ok) S.cok[q]=true; else if(S.ctried[q].indexOf(i)<0) S.ctried[q].push(i); render(); }; });
+  on("cNext",function(){ S.cq++; render(); });
+  on("to6",function(){ go(5); });
+  on("m1",function(){ S.moon=1; S.flash=true; render(); }); on("m2",function(){ S.moon=2; S.flash=true; render(); }); on("m3",function(){ S.moon=3; S.flash=true; render(); });
+}
+document.getElementById("reset").onclick=function(){ S=fresh(); render(); window.scrollTo(0,0); };
+render();
+})();
+</script>
+</body>
+</html>
