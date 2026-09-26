@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HDI – Integralfunktionen entdecken</title>
+<style>
+:root{
+  --bg:#f5f6f8; --card:#fff; --ink:#1b2430; --soft:#4a5566; --line:#dde2e9;
+  --accent:#1f4e79; --accent-soft:#eaf1f8; --note:#eef4fa;
+  --f:#232d3b; --ia:#1a6fc4; --ref:#8c96a4; --tan:#2b8a3e;
+  --mfont:"Cambria Math",Cambria,"STIX Two Math","Times New Roman",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+
+/* ---------- Kopf ---------- */
+header{background:var(--card);border-bottom:1px solid var(--line)}
+.head{max-width:1280px;margin:0 auto;padding:8px clamp(12px,2vw,22px);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 16px}
+.kap{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);font-weight:600}
+h1{margin:0;font-size:clamp(1.02rem,1.9vw,1.25rem);color:var(--accent);line-height:1.3}
+nav.modes{display:grid;grid-template-columns:repeat(4,auto);border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+nav.modes a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;
+  text-decoration:none;color:var(--soft);font-weight:600;font-size:.92rem;white-space:nowrap;
+  border-left:1px solid var(--line);-webkit-tap-highlight-color:transparent}
+nav.modes a:first-child{border-left:0}
+nav.modes a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+nav.modes a:focus-visible{outline:3px solid #7ba9d0;outline-offset:-3px}
+@media (max-width:600px){
+  .kap{display:none}
+  nav.modes{grid-template-columns:repeat(2,1fr);width:100%}
+  nav.modes a:nth-child(3){border-left:0}
+  nav.modes a:nth-child(n+3){border-top:1px solid var(--line)}
+}
+
+/* ---------- Layout ---------- */
+main{max-width:1280px;margin:0 auto;padding:0 clamp(10px,2vw,22px) 30px}
+.stage{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:clamp(12px,2vw,24px);
+  align-items:start;margin-top:10px}
+.viz,.panel{min-width:0}
+.viz{display:flex;flex-direction:column;gap:8px}
+/* zweispaltig bis ca. 720 px: Steuerung + Diagramme bleiben beim Scrollen der rechten Spalte sichtbar */
+@media (min-width:720px){ .viz{position:sticky;top:8px} }
+@media (max-width:719px){ .stage{grid-template-columns:minmax(0,1fr);gap:10px} }
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.plotcard{padding:6px}
+.panel>*+*{margin-top:12px}
+.tag{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);font-weight:650}
+h2{margin:2px 0 0;font-size:clamp(1.1rem,2vw,1.28rem);color:var(--accent);line-height:1.3}
+p{margin:.4em 0}
+.small{font-size:.92rem;color:var(--soft)}
+.task p{margin:.25em 0}
+.task ol{margin:.2em 0 0;padding-left:1.4em}
+.task li{margin:.2em 0}
+
+/* ---------- Mathe ---------- */
+.m{font-family:var(--mfont);font-style:italic;white-space:nowrap}
+.up{font-style:normal}
+.m sub,.m sup,.fm sub,.fm sup{font-size:.7em;line-height:0}
+.fm{font-family:var(--mfont);font-style:italic;display:flex;flex-wrap:wrap;justify-content:center;
+  align-items:center;gap:.1em .35em;margin:.35em 0;text-align:center}
+.fm.big{font-size:clamp(1.45rem,3.4vw,1.9rem);color:var(--accent);font-weight:600}
+.fm.mid{font-size:1.2rem}
+.intg{display:inline-flex;align-items:center;vertical-align:middle}
+.intsym{font-style:normal;font-size:1.6em;line-height:1;margin-right:.02em}
+.intlim{display:inline-flex;flex-direction:column;justify-content:space-between;height:2.4em;
+  font-size:.6em;line-height:1;margin-right:.15em}
+
+/* ---------- Regler ---------- */
+.ctrl{padding:6px 14px 8px}
+.ctrl-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.ctrl-row input[type=range]{flex:1 1 200px;width:auto;min-width:0}
+@media (max-width:1000px){ .ctrl-row input[type=range]{flex-basis:100%} }
+.ctrl-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 14px}
+.ctrl-top label{font-weight:600}
+.ctrl-top .xv{font-family:var(--mfont);font-size:1.15rem;margin-left:.35em;font-variant-numeric:tabular-nums}
+.ival{font-family:var(--mfont);font-style:italic;font-size:1.12rem;display:inline-flex;align-items:center;gap:.25em;flex-wrap:wrap}
+.ival b{font-style:normal;color:var(--ia);font-variant-numeric:tabular-nums;min-width:3.4em;display:inline-block}
+input[type=range]{display:block;width:100%;margin:2px 0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent}
+input[type=range]:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px;border-radius:6px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- Buttons ---------- */
+button{font-family:inherit;font-size:1rem}
+.btn{border:1.5px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;
+  padding:9px 16px;min-height:46px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.quiet{background:#fff;color:var(--soft);border-color:#c3ccd7;font-weight:500}
+.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.btn:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+@media (hover:hover){.btn:hover{filter:brightness(1.08)} .btn.ghost:hover,.btn.quiet:hover{background:var(--accent-soft);filter:none}}
+
+/* ---------- Ausgaben ---------- */
+.reveal{background:var(--note);border:1px solid #c9dcec;border-left:5px solid var(--accent)}
+.reveal p{margin:.3em 0}
+.concl{font-weight:700;color:var(--accent)}
+.values{border-left:4px solid var(--tan)}
+.values .row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 12px;padding:3px 0}
+.values .row+.row{border-top:1px solid var(--line)}
+.values .lbl{color:var(--soft);font-size:.95rem}
+.values .num{font-family:var(--mfont);font-size:1.3rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.values .num.t{color:var(--tan)}
+.zero{font-size:.95rem;border-left:4px solid var(--tan);background:#f1f8f3}
+/* Verständnischecks (Multiple Choice) */
+.qnr{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);font-weight:650}
+.mc .qtext{font-size:1.04rem;font-weight:600;margin:.3em 0 .2em}
+.opts{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.opt{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:7px 12px;text-align:left;
+  border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);cursor:pointer;
+  font-size:.98rem;line-height:1.35;-webkit-tap-highlight-color:transparent}
+.opt .k{flex:0 0 auto;font-weight:700;color:var(--accent);min-width:1.3em}
+@media (hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.opt.ok{border-color:#2b8a3e;background:#eaf6ee}
+.opt.no{border-color:#dcb4b4;background:#fbf3f3;color:#7a5a5a}
+.opt:disabled{cursor:default}
+.fb{margin-top:8px;padding:8px 12px;border-radius:8px;font-size:.96rem}
+.fb.ok{background:#eaf6ee;border-left:4px solid #2b8a3e}
+.fb.hint{background:#fdf6e7;border-left:4px solid #d6a23a}
+.fb p{margin:.2em 0}
+.vzw{display:grid;grid-template-columns:auto auto;gap:2px 14px;justify-content:start;margin:.3em 0 0;font-size:.95rem}
+.done{font-size:.93rem;color:var(--soft);border-left:3px solid var(--line);padding-left:10px;margin:.3em 0}
+.zusatz{border-style:dashed;background:#fbfcfd}
+.zusatz p{color:var(--soft)}
+.btn.optional{background:#fff;color:var(--soft);border:1.5px dashed #b8c2cf;font-weight:500}
+.hl-c{background:#fff7e0;border:1px solid #ecd58f;border-radius:8px;padding:6px 10px;font-weight:600}
+/* ---------- Modus „Untere Grenze“: zwei Regler, Flächenzerlegung ---------- */
+.urow{display:grid;grid-template-columns:minmax(190px,auto) minmax(0,1fr) auto;align-items:center;gap:2px 10px;
+  padding:4px 8px;border-radius:8px;border-left:4px solid transparent}
+.urow+.urow{margin-top:4px}
+.urow.active{background:var(--accent-soft);border-left-color:var(--accent)}
+.urow.dim .ulab,.urow.dim input{opacity:.45}
+.ulab{font-weight:600;white-space:nowrap}
+.ulab .xv{font-family:var(--mfont);font-size:1.15rem;margin-left:.35em;font-weight:400;font-variant-numeric:tabular-nums}
+.urow .btn{min-height:44px;padding:6px 12px;font-size:.92rem}
+@media (max-width:1000px){ .urow{grid-template-columns:minmax(0,1fr)} .urow input{grid-row:2} .urow .btn{grid-row:3;justify-self:start} }
+.decomp{display:grid;grid-template-columns:auto auto minmax(64px,1fr) auto minmax(64px,1fr);align-items:center;gap:8px 8px;
+  font-family:var(--mfont);font-size:1.12rem}
+.decomp .dl{font-style:italic;white-space:nowrap}
+.fbox{border-radius:6px;padding:4px 8px;text-align:center;font-variant-numeric:tabular-nums;font-style:normal}
+.fbox.y{background:#fbe3a6;border:1.5px solid #d9a21e}
+.fbox.b{background:#d6e6f5;border:1.5px solid #3b82c4}
+.swy,.swb{display:inline-block;width:14px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.swy{background:#fbe3a6;border:1.5px solid #d9a21e}
+.swb{background:#d6e6f5;border:1.5px solid #3b82c4}
+.optrow{display:flex;flex-wrap:wrap;gap:8px}
+.hint{font-size:.94rem;color:var(--soft);margin-top:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.95rem}
+.legend>span{display:inline-flex;align-items:center;gap:8px}
+[hidden]{display:none!important}
+.fade{animation:fade .25s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}}
+
+/* ---------- Grafik ---------- */
+svg.plot{display:block;width:100%;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+svg text{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+svg .mt{font-family:var(--mfont);font-style:italic}
+
+/* ---------- Beweis für Interessierte (freiwillig) ---------- */
+.proof{margin-top:22px}
+.proof h2{margin-bottom:4px}
+.proof-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,1fr);gap:16px;align-items:start;margin-top:8px}
+@media (max-width:999px){.proof-grid{grid-template-columns:minmax(0,1fr)}}
+.hsel{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.hsel button{min-width:52px;min-height:44px;border:1px solid var(--line);background:#fff;border-radius:8px;
+  font-family:var(--mfont);font-size:1.05rem;cursor:pointer;color:var(--ink)}
+.hsel button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.hsel button:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.cmp>div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0}
+.cmp .t{font-size:.84rem;color:var(--soft)}
+.cmp .n{font-family:var(--mfont);font-size:1.22rem;font-variant-numeric:tabular-nums}
+.cmp .hl{background:var(--note);border-color:#9fc3de}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.95em}
+.frac>span:first-child{border-bottom:1.3px solid currentColor;padding:0 .2em .05em}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div>
+      <div class="kap">Q13 · I.3 Hauptsatz der Differential- und Integralrechnung</div>
+      <h1>HDI – Integralfunktionen entdecken</h1>
+    </div>
+    <nav class="modes" aria-label="Beispiel wählen">
+      <a href="#beispiel1" data-mode="beispiel1">Beispiel 1</a>
+      <a href="#beispiel2" data-mode="beispiel2">Beispiel 2</a>
+      <a href="#beispiel3" data-mode="beispiel3">Beispiel 3</a>
+      <a href="#untere-grenze" data-mode="untere-grenze">Untere Grenze</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="stage">
+    <div class="viz">
+      <div class="card ctrl">
+        <div class="ctrl-top">
+          <div><label for="slider" id="slabel">obere Grenze</label><span class="xv" id="xv"></span></div>
+          <div class="ival" id="ival" aria-live="off"></div>
+        </div>
+        <div class="ctrl-row">
+          <input type="range" id="slider" min="0" max="100" step="1" value="0">
+          <button class="btn quiet" id="play" aria-pressed="false">Abspielen</button>
+          <button class="btn quiet" id="reset">Neu starten</button>
+        </div>
+        <div id="ctrlUG" hidden>
+          <div class="urow" id="uRowA">
+            <div class="ulab"><label for="sA">Neue untere Grenze</label><span class="xv" id="vA"></span></div>
+            <input type="range" id="sA" min="-2" max="1.5" step="0.1" value="-2">
+            <button class="btn quiet" id="uNewA" hidden>Andere untere Grenze wählen</button>
+          </div>
+          <div class="urow" id="uRowX">
+            <div class="ulab"><label for="sX">Obere Grenze</label><span class="xv" id="vX"></span></div>
+            <input type="range" id="sX" min="-2" max="5" step="0.05" value="-2">
+          </div>
+        </div>
+      </div>
+      <div class="card plotcard"><svg class="plot" id="plot" role="img" aria-label="Oben der Graph von f mit Fläche, unten die Integralfunktion"></svg></div>
+    </div>
+    <div class="panel" id="panel"></div>
+  </section>
+
+  <section class="card proof" id="proof" hidden aria-labelledby="proofTitle">
+    <div class="tag">Freiwillige Vertiefung · Beweis für Interessierte</div>
+    <h2 id="proofTitle">Warum gilt <span class="m">I<sub>a</sub>′(x) = f(x)</span>?</h2>
+    <div class="proof-grid">
+      <div>
+        <div class="card plotcard"><svg class="plot" id="proofplot" style="touch-action:auto" role="img" aria-label="Vergrößerter Ausschnitt: Flächenstreifen zwischen x und x plus h und Rechteck der Höhe f von x"></svg></div>
+        <p class="small" style="margin:4px 2px 0">Ausschnitt um die aktuelle Stelle <span class="m">x</span>, horizontal passend zu <span class="m">h</span> vergrößert.</p>
+      </div>
+      <div>
+        <p style="margin-top:0">Wird <span class="m">x</span> um <span class="m">h</span> vergrößert, kommt ein schmaler Flächenstreifen hinzu. Für kleines <span class="m">h</span> ist er fast ein Rechteck mit Breite <span class="m">h</span> und Höhe <span class="m">f(x)</span>.</p>
+        <div class="hsel" id="hsel" role="group" aria-label="Breite h wählen"></div>
+        <div class="fm"><span>I<sub>a</sub>(x+h) − I<sub>a</sub>(x)</span><span class="up">≈</span><span>f(x) · h</span></div>
+        <div class="cmp">
+          <div><div class="t">Streifen</div><div class="n" id="pA"></div></div>
+          <div><div class="t">Rechteck</div><div class="n" id="pR"></div></div>
+        </div>
+        <div class="fm"><span class="frac"><span>I<sub>a</sub>(x+h) − I<sub>a</sub>(x)</span><span>h</span></span><span class="up">≈</span><span>f(x)</span></div>
+        <div class="cmp">
+          <div class="hl"><div class="t">Differenzenquotient</div><div class="n" id="pQ"></div></div>
+          <div class="hl"><div class="t"><span class="m">f(x)</span></div><div class="n" id="pF"></div></div>
+        </div>
+        <p>Für <span class="m">h</span> → 0 wird aus dem Differenzenquotienten die Ableitung:</p>
+        <div class="fm mid" style="color:var(--accent)"><span>I<sub>a</sub>′(x) = f(x)</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* =====================================================================
+   Mathematik
+   ===================================================================== */
+var PI=Math.PI;
+// Beispiel 3 (Term wird nicht angezeigt): f(x) = 0,03·(x+3)(x+1,5)·x·(x−1,2)(x−3)
+function wild(x){ return 0.03*(x+3)*(x+1.5)*x*(x-1.2)*(x-3); }
+
+// orientierte Flächenbilanz ∫_a^b f(t) dt, Simpson-Regel (n = 400, gerade)
+function integral(f,a,b){
+  if(a===b) return 0;
+  var n=400, h=(b-a)/n, s=f(a)+f(b), i;
+  for(i=1;i<n;i++) s+=(i%2?4:2)*f(a+i*h);
+  return s*h/3;
+}
+// Steigung von I_a an der Stelle x: symmetrischer Differenzenquotient mit sehr kleinem d
+function slopeI(f,a,x){ var d=1e-5; return (integral(f,a,x+d)-integral(f,a,x-d))/(2*d); }
+
+/* =====================================================================
+   Formatierung (deutsch)
+   ===================================================================== */
+function num(v,d){
+  var k=Math.pow(10,d), r=Math.round(v*1e9)/1e9;
+  r=(r<0?-1:1)*Math.round(Math.abs(r)*k)/k;
+  var s=r.toFixed(d); if(parseFloat(s)===0) s=(0).toFixed(d);
+  return s.replace("-","−").replace(".",",");
+}
+function numT(v,d){ // ohne überflüssige Nullen
+  var s=num(v,d); if(s.indexOf(",")>=0) s=s.replace(/0+$/,"").replace(/,$/,""); return s;
+}
+
+/* =====================================================================
+   Modi
+   ===================================================================== */
+var M={
+  beispiel1:{kind:"x", f:function(x){return 2*x;}, a:0, x0:0, x1:3, N:300,
+    xr:[-0.45,3.45], yf:[-1.2,7], yi:[-1.2,10.2], xt:"int", idx:"0", title:"Beispiel 1"},
+  beispiel2:{kind:"x", f:Math.cos, a:0, x0:0, x1:2*PI, N:628,
+    xr:[-0.55,2*PI+0.5], yf:[-1.45,1.45], yi:[-1.45,1.45], xt:"pi", idx:"0", title:"Beispiel 2"},
+  // Beispiel 3 / Untere Grenze: f wird nur auf dem Intervall [−3,3; 3,3] gezeichnet und bleibt im Plot
+  beispiel3:{kind:"x", f:wild, a:-3.3, x0:-3.3, x1:3.3, N:660, dom:[-3.3,3.3],
+    xr:[-3.55,3.55], yf:[-1.85,2.2], yi:[-1.0,0.75], xt:"int", idx:"a", title:"Beispiel 3"},
+  // Untere Grenze: einfache Funktion f(x) = 0,5x + 2 (im Bereich positiv), Referenz a0 = −2,
+  // neue untere Grenze a zwischen −2 und 1,5, obere Grenze x zwischen a und 5
+  "untere-grenze":{kind:"a", f:function(x){return 0.5*x+2;}, a0:-2, amin:-2, amax:1.5, x1:5,
+    dom:[-3.5,5], xr:[-3.8,5.5], yf:[-0.9,5.2], yi:[-7.2,20.6], xt:"int", N:35, x0:-2, title:"Untere Grenze"}
+};
+function freshState(m){
+  var c=M[m];
+  if(c.kind==="x") return {k:0, maxK:0, solved:false, study:false, values:false, valMoves:0, lastValK:-1, verm:false,
+    mcq:0, tried:[[],[],[],[]], mcOk:[false,false,false,false], hint:false, proof:false};
+  return {phase:1, a:-2, movedA:0, x:-2, maxX:-2, movedX:0, mcq:0, tried:[[],[],[]], mcOk:[false,false,false],
+    full:false, why:false, formal:false};
+}
+var S={}; Object.keys(M).forEach(function(m){ S[m]=freshState(m); });
+var mode="beispiel1";
+function cur(){ return M[mode]; }
+function st(){ return S[mode]; }
+function xOf(c,k){ return Math.round((c.x0+(c.x1-c.x0)*k/c.N)*1e9)/1e9; }
+
+/* =====================================================================
+   SVG-Bausteine
+   ===================================================================== */
+function panel(W,y0,H,xr,yr){
+  var L=W<480?38:46, R=12, T=10, B=26, pw=W-L-R, ph=H-T-B;
+  return {W:W,L:L,Rr:W-R,top:y0+T,bot:y0+T+ph,pw:pw,ph:ph,xr:xr,yr:yr,
+    X:function(x){return L+(x-xr[0])/(xr[1]-xr[0])*pw;},
+    Y:function(y){return y0+T+(yr[1]-y)/(yr[1]-yr[0])*ph;},
+    inv:function(px){return xr[0]+(px-L)/pw*(xr[1]-xr[0]);},
+    ux:pw/(xr[1]-xr[0]), uy:ph/(yr[1]-yr[0])};
+}
+function f2(v){ return (Math.round(v*100)/100); }
+function clip(id,P){ return '<clipPath id="'+id+'"><rect x="'+P.L+'" y="'+P.top+'" width="'+P.pw+'" height="'+P.ph+'"/></clipPath>'; }
+function T(x,y,t,o){ o=o||{};
+  return '<text x="'+f2(x)+'" y="'+f2(y)+'" font-size="'+(o.s||13)+'" fill="'+(o.c||"#4a5566")+'" text-anchor="'+(o.a||"start")+'"'+
+    (o.cls?' class="'+o.cls+'"':'')+(o.w?' font-weight="'+o.w+'"':'')+' paint-order="stroke" stroke="#fff" stroke-width="'+(o.halo===0?0:4)+'" stroke-linejoin="round">'+t+'</text>';
+}
+// Mathe-Beschriftung mit Index (z. B. I_a)
+function ML(x,y,main,sub,o){ o=o||{}; var s=o.s||18;
+  return '<text class="mt" x="'+f2(x)+'" y="'+f2(y)+'" font-size="'+s+'" fill="'+(o.c||"#232d3b")+'" text-anchor="'+(o.a||"start")+'" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">'+main+
+    (sub!==""&&sub!=null?'<tspan dy="5" font-size="'+Math.round(s*0.68)+'" font-style="'+(/^[−\d]/.test(sub)?"normal":"italic")+'">'+sub+'</tspan>':"")+'</text>';
+}
+function niceStep(u,minPx,list){ for(var i=0;i<list.length;i++) if(list[i]*u>=minPx) return list[i]; return list[list.length-1]; }
+function lab(v){ return numT(v,2); }
+function axes(P,xt){
+  var s="", v, st, x0=P.X(0), y0=P.Y(0), hasY=P.xr[0]<0&&P.xr[1]>0;
+  // x-Gitter und Beschriftung
+  var xs=[];
+  if(xt==="pi"){ for(v=1;v<=4;v++) xs.push([v*PI/2,["π/2","π","3π/2","2π"][v-1]]); }
+  else { st=niceStep(P.ux,30,[1,2,5]); for(v=Math.ceil(P.xr[0]/st)*st;v<=P.xr[1]-0.2;v+=st){ if(Math.abs(v)>1e-9) xs.push([v,lab(v)]); } }
+  xs.forEach(function(t){ s+='<line x1="'+f2(P.X(t[0]))+'" y1="'+P.top+'" x2="'+f2(P.X(t[0]))+'" y2="'+P.bot+'" stroke="#edf0f4"/>'; });
+  st=niceStep(P.uy,26,[0.1,0.2,0.25,0.5,1,2,5]);
+  var ys=[]; for(v=Math.ceil(P.yr[0]/st-1e-9)*st;v<=P.yr[1]-st*0.3;v+=st){ v=Math.round(v*1e6)/1e6; if(Math.abs(v)>1e-9) ys.push(v); }
+  ys.forEach(function(y){ s+='<line x1="'+P.L+'" y1="'+f2(P.Y(y))+'" x2="'+P.Rr+'" y2="'+f2(P.Y(y))+'" stroke="#edf0f4"/>'; });
+  s+='<rect x="'+P.L+'" y="'+P.top+'" width="'+P.pw+'" height="'+P.ph+'" fill="none" stroke="#e1e6ec"/>';
+  s+='<line x1="'+P.L+'" y1="'+f2(y0)+'" x2="'+P.Rr+'" y2="'+f2(y0)+'" stroke="#5b6573" stroke-width="1.4"/>';
+  s+='<path d="M'+P.Rr+' '+f2(y0)+' l-8 -4 v8 z" fill="#5b6573"/>';
+  if(hasY){
+    s+='<line x1="'+f2(x0)+'" y1="'+P.top+'" x2="'+f2(x0)+'" y2="'+P.bot+'" stroke="#5b6573" stroke-width="1.4"/>';
+    s+='<path d="M'+f2(x0)+' '+P.top+' l-4 8 h8 z" fill="#5b6573"/>';
+  }
+  var ax=hasY?x0:P.L;
+  xs.forEach(function(t){ var X=P.X(t[0]);
+    s+='<line x1="'+f2(X)+'" y1="'+f2(y0-3)+'" x2="'+f2(X)+'" y2="'+f2(y0+3)+'" stroke="#5b6573"/>';
+    s+=T(X,Math.min(y0+17,P.bot+16),t[1],{a:"middle",s:xt==="pi"?14:13,cls:xt==="pi"?"mtu":""}); });
+  ys.forEach(function(y){
+    s+='<line x1="'+f2(ax-3)+'" y1="'+f2(P.Y(y))+'" x2="'+f2(ax+3)+'" y2="'+f2(P.Y(y))+'" stroke="#5b6573"/>';
+    s+=T(ax-6,P.Y(y)+4.5,lab(y),{a:"end"}); });
+  s+=T(P.Rr-3,y0+19,"x",{a:"end",s:16,cls:"mt"});
+  return s;
+}
+function path(P,f,x1,x2,n){
+  n=n||Math.max(100,Math.round(Math.abs(P.X(x2)-P.X(x1))/2)); var d="", i, x, y;
+  for(i=0;i<=n;i++){ x=x1+(x2-x1)*i/n; y=P.Y(f(x)); y=Math.max(-3000,Math.min(6000,y)); d+=(i?"L":"M")+f2(P.X(x))+" "+f2(y); }
+  return d;
+}
+// Integralfunktion als Funktion: kumulativ auf feinem Gitter (für das Zeichnen), exakt per Simpson für Werte
+function Ifun(f,a){ return function(x){ return integral(f,a,x); }; }
+function curveCum(P,f,a,x1,x2,n){ // Pfad von I_a auf [x1,x2] – kumulative Simpson-Schritte, startend mit exaktem Wert
+  n=n||Math.max(80,Math.round(Math.abs(P.X(x2)-P.X(x1))/2)); if(n%2) n++;
+  var h=(x2-x1)/n, v=integral(f,a,x1), d="M"+f2(P.X(x1))+" "+f2(P.Y(v)), i, xm, xr;
+  for(i=0;i<n;i++){
+    xm=x1+(i+0.5)*h; xr=x1+(i+1)*h;
+    v+=h/6*(f(x1+i*h)+4*f(xm)+f(xr));
+    d+="L"+f2(P.X(xr))+" "+f2(Math.max(-3000,Math.min(6000,P.Y(v))));
+  }
+  return d;
+}
+function dot(x,y,c,r){ return '<circle cx="'+f2(x)+'" cy="'+f2(y)+'" r="'+(r||6.5)+'" fill="'+c+'" stroke="#fff" stroke-width="2.2"/>'; }
+function clampv(v,a,b){ return Math.max(a,Math.min(b,v)); }
+
+/* =====================================================================
+   Größe der Grafik
+   ===================================================================== */
+var svg=document.getElementById("plot");
+function sizes(ratioTop){
+  var W=svg.clientWidth||svg.parentNode.clientWidth||600, tot, H=window.innerHeight;
+  if(window.innerWidth>=720){
+    // zweispaltig: Steuerleiste steht über den Diagrammen, alles soll ohne Scrollen sichtbar sein
+    // statische Lage der Grafik (unabhängig von position:sticky und Scrollposition)
+    var viz=svg.closest(".viz"), stage=document.querySelector(".stage");
+    var top=stage.getBoundingClientRect().top+window.scrollY+(svg.getBoundingClientRect().top-viz.getBoundingClientRect().top);
+    tot=Math.min(H-top-20, W*1.35, H*0.62, 560);
+  } else {
+    // einspaltig: Höhe hängt von Breite UND Fensterhöhe ab
+    tot=Math.min(W*1.3, H*0.62, 540);
+  }
+  tot=clampv(tot,340,560);
+  var gap=20, h1=Math.round((tot-gap)*ratioTop), h2=Math.round(tot-gap-h1);
+  return {W:W,h1:h1,h2:h2,gap:gap,tot:h1+gap+h2};
+}
+
+/* =====================================================================
+   Zeichnen – Beispiele 1–3
+   ===================================================================== */
+function drawX(){
+  var c=cur(), s=st(), g=sizes(0.5), W=g.W;
+  svg.setAttribute("viewBox","0 0 "+W+" "+g.tot); svg.setAttribute("height",g.tot);
+  var P=panel(W,0,g.h1,c.xr,c.yf), Q=panel(W,g.h1+g.gap,g.h2,c.xr,c.yi);
+  var f=c.f, a=c.a, x=xOf(c,s.k), Ix=integral(f,a,x), o="";
+  var yz=P.Y(0);
+  o+='<defs>'+clip("cp",P)+clip("cq",Q)+
+    '<clipPath id="cpos"><rect x="'+P.L+'" y="'+P.top+'" width="'+P.pw+'" height="'+f2(Math.max(0,yz-P.top))+'"/></clipPath>'+
+    '<clipPath id="cneg"><rect x="'+P.L+'" y="'+f2(yz)+'" width="'+P.pw+'" height="'+f2(Math.max(0,P.bot-yz))+'"/></clipPath></defs>';
+  /* ---- oben: f und Fläche ---- */
+  o+=axes(P,c.xt);
+  if(x>a+1e-9){
+    var n=Math.max(40,Math.round((P.X(x)-P.X(a))/2)), d="M"+f2(P.X(a))+" "+f2(yz), i, t;
+    for(i=0;i<=n;i++){ t=a+(x-a)*i/n; d+="L"+f2(P.X(t))+" "+f2(clampv(P.Y(f(t)),-3000,6000)); }
+    d+="L"+f2(P.X(x))+" "+f2(yz)+"Z";
+    o+='<g clip-path="url(#cp)"><path d="'+d+'" fill="#3b82c4" fill-opacity=".2" clip-path="url(#cpos)"/>'+
+       '<path d="'+d+'" fill="#a4532a" fill-opacity=".2" clip-path="url(#cneg)"/></g>';
+  }
+  var fd=c.dom||c.xr;
+  o+='<g clip-path="url(#cp)"><path d="'+path(P,f,fd[0],fd[1])+'" fill="none" stroke="#232d3b" stroke-width="3" stroke-linejoin="round"/></g>';
+  // untere Grenze a
+  o+='<line x1="'+f2(P.X(a))+'" y1="'+f2(yz-7)+'" x2="'+f2(P.X(a))+'" y2="'+f2(yz+7)+'" stroke="#4a5566" stroke-width="2"/>';
+  if(mode==="beispiel3") o+=ML(P.X(a),yz-11,"a","",{s:16,c:"#4a5566",a:"middle"});
+  else o+=ML(P.X(a)+10,yz+19,"a","",{s:16,c:"#4a5566",a:"middle"});
+  // Beschriftung f
+  var lf=fLabelPos(P,c); o+=ML(lf[0],lf[1],"f","",{s:20,a:lf[2]});
+  /* ---- unten: Integralfunktion (Spur) ---- */
+  o+=axes(Q,c.xt);
+  var tlx=(Q.xr[0]<0&&Q.X(0)<Q.L+Q.pw*0.25)?Q.X(0)+12:Q.L+8;
+  o+='<text x="'+f2(tlx)+'" y="'+(Q.top+18)+'" font-size="13" fill="#6b7584" paint-order="stroke" stroke="#fff" stroke-width="4">'+(Q.pw>460||tlx>Q.L+20?'Integralfunktion ':'')+
+     '<tspan class="mt" font-size="17" fill="#1a6fc4">I</tspan><tspan class="mt" dy="4" font-size="12" fill="#1a6fc4" font-style="'+(c.idx==="0"?"normal":"italic")+'">'+c.idx+'</tspan></text>';
+  var full=(mode==="beispiel3" && s.study);
+  o+='<g clip-path="url(#cq)">';
+  if(full) o+='<path d="'+curveCum(Q,f,a,c.x0,c.x1)+'" fill="none" stroke="#1a6fc4" stroke-width="3.5" stroke-linejoin="round"/>';
+  else if(x>a+1e-9) o+='<path d="'+curveCum(Q,f,a,a,x)+'" fill="none" stroke="#1a6fc4" stroke-width="3.5" stroke-linejoin="round"/>';
+  // Zusatz: Extremstellen von f ↔ Wendestellen von I_a (außerhalb der Clip-Gruppen)
+  var hintSvg="";
+  if(mode==="beispiel3" && s.hint){
+    EXTR.forEach(function(e){
+      var yt=P.Y(f(e)), yb=Q.Y(integral(f,a,e)), lower=(full || e<=x);
+      if(lower) hintSvg+='<line x1="'+f2(P.X(e))+'" y1="'+f2(yt)+'" x2="'+f2(Q.X(e))+'" y2="'+f2(yb)+'" stroke="#7a5ab8" stroke-width="1.2" stroke-dasharray="2 4" opacity=".8"/>';
+      hintSvg+='<circle cx="'+f2(P.X(e))+'" cy="'+f2(yt)+'" r="6" fill="#fff" stroke="#7a5ab8" stroke-width="2.4"/>';
+      if(lower) hintSvg+='<circle cx="'+f2(Q.X(e))+'" cy="'+f2(yb)+'" r="6" fill="#fff" stroke="#7a5ab8" stroke-width="2.4"/>';
+    });
+  }
+  // Tangente (nur Beispiel 3, nach "Zusammenhang genauer untersuchen")
+  var px=Q.X(x), py=Q.Y(Ix);
+  if(mode==="beispiel3" && s.study){
+    var m=slopeI(f,a,x), vx=Q.ux, vy=-m*Q.uy, len=Math.sqrt(vx*vx+vy*vy), Lt=Math.min(90,W*0.15);
+    vx=vx/len*Lt; vy=vy/len*Lt;
+    o+='<line x1="'+f2(px-vx)+'" y1="'+f2(py-vy)+'" x2="'+f2(px+vx)+'" y2="'+f2(py+vy)+'" stroke="#2b8a3e" stroke-width="3.2" stroke-linecap="round"/>';
+  }
+  o+='</g>';
+  // y-Koordinate von P = Integralwert
+  var yAx=(Q.xr[0]<0&&Q.xr[1]>0)?Q.X(0):Q.L;
+  if(Math.abs(px-yAx)>4){
+    o+='<line x1="'+f2(yAx)+'" y1="'+f2(py)+'" x2="'+f2(px)+'" y2="'+f2(py)+'" stroke="#1a6fc4" stroke-width="1.3" stroke-dasharray="3 4" opacity=".8"/>';
+  }
+  var tagTxt=num(Ix,2), tw=tagTxt.length*8+12, tx, onRight=px>yAx;
+  if(Math.abs(px-yAx)>tw+18){
+    tx=onRight? yAx+5 : yAx-5-tw;
+    var ty=clampv(py-26,Q.top+2,Q.bot-22);
+    o+='<rect x="'+f2(tx)+'" y="'+f2(ty)+'" width="'+tw+'" height="20" rx="4" fill="#1a6fc4"/>';
+    o+=T(tx+tw/2,ty+14.5,tagTxt,{a:"middle",c:"#fff",s:13,w:600,halo:0});
+  }
+  o+=hintSvg;
+  /* ---- Verbindung beider Diagramme ---- */
+  var gx=P.X(x), fx=f(x);
+  o+='<line x1="'+f2(gx)+'" y1="'+P.top+'" x2="'+f2(gx)+'" y2="'+Q.bot+'" stroke="#8c96a4" stroke-width="1.3" stroke-dasharray="5 5"/>';
+  // Rand der Fläche bei x
+  o+='<line x1="'+f2(gx)+'" y1="'+f2(yz)+'" x2="'+f2(gx)+'" y2="'+f2(clampv(P.Y(fx),P.top,P.bot))+'" stroke="#232d3b" stroke-width="2.4"/>';
+  if(mode==="beispiel3" && s.study) o+=dot(gx,P.Y(fx),"#232d3b",6.5);
+  // Griff auf der x-Achse (ziehbar)
+  o+='<circle cx="'+f2(gx)+'" cy="'+f2(yz)+'" r="9" fill="#fff" stroke="#1f4e79" stroke-width="2.6"/>';
+  o+='<rect x="'+f2(gx-12)+'" y="'+(P.bot+3)+'" width="24" height="17" rx="4" fill="#fff"/>';
+  o+=ML(gx,P.bot+16,"x","",{s:16,a:"middle",c:"#1f4e79"});
+  // Punkt P
+  o+=dot(px,py,"#1a6fc4",7.5);
+  var lx=clampv(px+(onRight?-12:12),Q.L+14,Q.Rr-14), ly=clampv(py-12,Q.top+16,Q.bot-6);
+  if(py-12<Q.top+16) ly=py+26;
+  o+=ML(lx,ly,"P","",{s:18,c:"#1a6fc4",a:onRight?"end":"start"});
+  svg.innerHTML=o;
+  svg._P=P;
+}
+function fLabelPos(P,c){
+  if(mode==="beispiel1") return [P.X(2.9)-12,P.Y(5.8)+2,"end"];
+  if(mode==="beispiel2") return [P.X(0.35),P.Y(1.0)-9,"start"];
+  return [P.X(-2.47),P.Y(wild(-2.47))-12,"middle"];
+}
+// Extremstellen von f in Beispiel 3 (numerisch, Nullstellen von f')
+var EXTR=(function(){ var r=[], h=1e-4, prev=null, x, d;
+  for(x=-3.3;x<=3.3;x+=0.001){ d=(wild(x+h)-wild(x-h))/(2*h); if(prev!==null && prev*d<0){
+      var lo=x-0.001, hi=x, k; for(k=0;k<40;k++){ var mid=(lo+hi)/2, dm=(wild(mid+h)-wild(mid-h))/(2*h); if(dm*prev>0) lo=mid; else hi=mid; } r.push((lo+hi)/2); }
+    prev=d; }
+  return r; })();
+
+/* =====================================================================
+   Zeichnen – Untere Grenze
+   ===================================================================== */
+function drawA(){
+  var c=cur(), s=st(), g=sizes(0.4), W=g.W;
+  svg.setAttribute("viewBox","0 0 "+W+" "+g.tot); svg.setAttribute("height",g.tot);
+  var P=panel(W,0,g.h1,c.xr,c.yf), Q=panel(W,g.h1+g.gap,g.h2,c.xr,c.yi), f=c.f, a0=c.a0, o="";
+  var a=s.a, x=(s.phase===1)?s.a:Math.max(s.x,a);
+  var lo=Math.min(a,a0), hi=Math.max(a,a0), yz=P.Y(0), showX=(s.phase===2);
+  function area(x1,x2,col,op){
+    var n=Math.max(20,Math.round((P.X(x2)-P.X(x1))/3)), d="M"+f2(P.X(x1))+" "+f2(yz), i, t;
+    for(i=0;i<=n;i++){ t=x1+(x2-x1)*i/n; d+="L"+f2(P.X(t))+" "+f2(P.Y(f(t))); }
+    return '<path d="'+d+"L"+f2(P.X(x2))+" "+f2(yz)+'Z" fill="'+col+'" fill-opacity="'+op+'"/>';
+  }
+  o+='<defs>'+clip("cp",P)+clip("cq",Q)+'</defs>';
+  /* ---- oben: f, gelbe Unterschiedsfläche (a0 bis a), blaue Fläche (a bis x) ---- */
+  o+=axes(P,c.xt);
+  o+='<g clip-path="url(#cp)">';
+  if(hi-lo>1e-9) o+=area(lo,hi,"#f2b233",".55");
+  if(showX && x>hi+1e-9) o+=area(hi,x,"#3b82c4",".25");
+  o+='<path d="'+path(P,f,c.dom[0],c.dom[1])+'" fill="none" stroke="#232d3b" stroke-width="3"/></g>';
+  o+=ML(P.X(4.3)-10,P.Y(f(4.3))-8,"f","",{s:20,a:"end"});
+  // Beschriftung der gelben Fläche (nur wenn genug Platz)
+  if(P.X(hi)-P.X(lo)>=112){
+    var mx=(lo+hi)/2, my=P.Y(f(mx)/2);
+    o+=T(P.X(mx),my-3,"feste",{a:"middle",c:"#7a4f00",s:13,w:600,halo:0});
+    o+=T(P.X(mx),my+13,"Unterschiedsfläche",{a:"middle",c:"#7a4f00",s:13,w:600,halo:0});
+  }
+  // senkrechte Linien bei a0 (grau) und a (blau)
+  o+='<line x1="'+f2(P.X(a0))+'" y1="'+P.top+'" x2="'+f2(P.X(a0))+'" y2="'+P.bot+'" stroke="#9aa3ae" stroke-width="2"/>';
+  o+='<line x1="'+f2(P.X(a))+'" y1="'+P.top+'" x2="'+f2(P.X(a))+'" y2="'+P.bot+'" stroke="#1a6fc4" stroke-width="2.4"/>';
+  var aRight=a>=a0;
+  if(hi-lo<1e-9){ o+=ML(P.X(a0)-5,P.top+16,"a","0",{s:15,c:"#6b7584",a:"end"}); o+=ML(P.X(a)+5,P.top+16,"a","",{s:16,c:"#1a6fc4"}); }
+  else {
+    o+=ML(P.X(a0)+(aRight?-5:5),P.top+16,"a","0",{s:15,c:"#6b7584",a:aRight?"end":"start"});
+    o+=ML(P.X(a)+(aRight?5:-5),P.top+16,"a","",{s:16,c:"#1a6fc4",a:aRight?"start":"end"});
+  }
+  /* ---- unten: in Phase 1 nur Achsen mit Hinweis; ab Phase 2 Punkte, Spuren bzw. vollständige Graphen ---- */
+  o+=axes(Q,c.xt);
+  if(!showX){
+    var hx=(Q.L+Q.Rr)/2, hy=Q.top+Q.ph*0.3;
+    if(Q.pw>=430) o+=T(hx,hy,"Die Integralfunktionen vergleichen wir im nächsten Schritt.",{a:"middle",c:"#8a94a3",s:14});
+    else { o+=T(hx,hy,"Die Integralfunktionen vergleichen",{a:"middle",c:"#8a94a3",s:14}); o+=T(hx,hy+19,"wir im nächsten Schritt.",{a:"middle",c:"#8a94a3",s:14}); }
+    o+='<circle cx="'+f2(P.X(a))+'" cy="'+f2(yz)+'" r="9" fill="#fff" stroke="#1f4e79" stroke-width="2.6"/>';
+    o+='<rect x="'+f2(P.X(a)-12)+'" y="'+(P.bot+3)+'" width="24" height="17" rx="4" fill="#fff"/>';
+    o+=ML(P.X(a),P.bot+16,"a","",{s:16,a:"middle",c:"#1a6fc4"});
+    svg.innerHTML=o; svg._P=P; return;
+  }
+  o+='<g clip-path="url(#cq)">';
+  if(s.full){
+    var g0=Math.min(-2,a);
+    o+='<path d="'+curveCum(Q,f,a0,g0,c.x1)+'" fill="none" stroke="#8c96a4" stroke-width="3" stroke-dasharray="8 6"/>';
+    o+='<path d="'+curveCum(Q,f,a,g0,c.x1)+'" fill="none" stroke="#1a6fc4" stroke-width="3.5" stroke-linejoin="round"/>';
+  } else if(x>a+1e-9){
+    o+='<path d="'+curveCum(Q,f,a0,a,x)+'" fill="none" stroke="#8c96a4" stroke-width="3" stroke-dasharray="8 6"/>';
+    o+='<path d="'+curveCum(Q,f,a,a,x)+'" fill="none" stroke="#1a6fc4" stroke-width="3.5" stroke-linejoin="round"/>';
+  }
+  o+='</g>';
+  function arrow(X,y1,y2,w){ // von P0 (y1) nach P (y2), Farbe der gelben Fläche
+    var r='<line x1="'+f2(X)+'" y1="'+f2(y1)+'" x2="'+f2(X)+'" y2="'+f2(y2)+'" stroke="#b7791f" stroke-width="'+w+'"/>';
+    if(Math.abs(y2-y1)>12){ var d=y2>y1?1:-1; r+='<path d="M'+f2(X)+' '+f2(y2)+' l-5 '+f2(-d*9)+' h10 z" fill="#b7791f"/>'; }
+    return r;
+  }
+  // nach der Sicherung: gleich lange Pfeile an weiteren Stellen
+  if(s.full){
+    [-1,1.5,3.5].filter(function(t){ return Math.abs(t-x)>0.7 && Math.abs(t-a)>0.3 && t>=Math.min(-2,a); }).forEach(function(t){
+      o+=arrow(Q.X(t),Q.Y(integral(f,a0,t)),Q.Y(integral(f,a,t)),2);
+    });
+  }
+  // Abstand an der aktuellen Stelle x
+  var X=Q.X(x), y0p=Q.Y(integral(f,a0,x)), y1p=Q.Y(integral(f,a,x));
+  o+=arrow(X,y0p,y1p,2.8);
+  if(Math.abs(y1p-y0p)>4){
+    var lab="gelbe Fläche", tw=100, right=X+14+tw<Q.Rr, tx=right?X+10:X-10-tw, ty=(y0p+y1p)/2-10;
+    o+='<rect x="'+f2(tx)+'" y="'+f2(ty)+'" width="'+tw+'" height="20" rx="4" fill="#fbe3a6" stroke="#d9a21e"/>';
+    o+=T(tx+tw/2,ty+14.5,lab,{a:"middle",c:"#6b4500",s:13,w:600,halo:0});
+  }
+  // Hilfslinie und Griff
+  var gx=P.X(x);
+  o+='<line x1="'+f2(gx)+'" y1="'+(showX?P.top:P.bot)+'" x2="'+f2(gx)+'" y2="'+Q.bot+'" stroke="#8c96a4" stroke-width="1.3" stroke-dasharray="5 5"/>';
+  o+='<circle cx="'+f2(gx)+'" cy="'+f2(yz)+'" r="9" fill="#fff" stroke="#1f4e79" stroke-width="2.6"/>';
+  o+='<rect x="'+f2(gx-12)+'" y="'+(P.bot+3)+'" width="24" height="17" rx="4" fill="#fff"/>';
+  o+=ML(gx,P.bot+16,showX?"x":"a","",{s:16,a:"middle",c:showX?"#1f4e79":"#1a6fc4"});
+  // Punkt (a | 0) auf der neuen Integralfunktion: I_a(a) = 0
+  var ga=Q.X(a);
+  o+=dot(ga,Q.Y(0),"#1a6fc4",8);
+  o+='<text class="mt" x="'+f2(ga+11)+'" y="'+f2(Q.Y(0)+24)+'" font-size="16" fill="#1a6fc4" font-style="normal" paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round">(<tspan font-style="italic">a</tspan> | 0)</text>';
+  // Punkte P0 (grau) und P (blau)
+  o+=dot(X,y0p,"#8c96a4",7);
+  o+=ML(X-10,y0p+(y0p<y1p?-8:20),"P","0",{s:16,c:"#6b7584",a:"end"});
+  if(showX && Math.abs(x-a)>1e-9){ o+=dot(X,y1p,"#1a6fc4",7.5); o+=ML(X-10,y1p+(y0p<y1p?20:-8),"P","",{s:17,c:"#1a6fc4",a:"end"}); }
+  svg.innerHTML=o;
+  svg._P=P;
+}
+
+/* =====================================================================
+   Panels (Texte je Modus)
+   ===================================================================== */
+var INT=function(lo,hi){ return '<span class="intg"><span class="intsym">∫</span><span class="intlim"><span>'+hi+'</span><span>'+lo+'</span></span></span>'; };
+function panelHTML(){
+  var c=cur(), s=st();
+  if(mode==="beispiel1") return ''+
+    '<div><div class="tag">Beispiel 1</div><h2>Wie entsteht der Graph der Integralfunktion?</h2></div>'+
+    '<div class="card info"><div class="fm mid"><span>f(x) = 2x</span></div><p class="small" style="text-align:center;margin:0">untere Grenze: <span class="m">a = <span class="up">0</span></span></p></div>'+
+    '<div class="card task"><p><b>Bewege <span class="m">x</span></b> und beobachte die Fläche oben und den Punkt <span class="m">P</span> unten.</p>'+
+    '<p>Vergleiche die <span class="m">y</span>-Koordinate von <span class="m">P</span> mit dem Integralwert.</p></div>'+
+    solveBlock('<div class="fm big"><span>I<sub>0</sub>(x) = x²</span></div>'+
+      '<div class="fm mid"><span>I<sub>0</sub>′(x) = 2x = f(x)</span></div>'+
+      '<p class="concl">Die Integralfunktion ist hier eine Stammfunktion von <span class="m">f</span>.</p>');
+  if(mode==="beispiel2") return ''+
+    '<div><div class="tag">Beispiel 2</div><h2>Welcher Graph entsteht diesmal?</h2></div>'+
+    '<div class="card info"><div class="fm mid"><span>f(x) = cos(x)</span></div><p class="small" style="text-align:center;margin:0">untere Grenze: <span class="m">a = <span class="up">0</span></span></p></div>'+
+    '<div class="card task"><p><b>Bewege <span class="m">x</span></b> von 0 bis 2π und beobachte, welcher Graph unten entsteht.</p>'+
+    '<p>Kennst du diese Funktion?</p></div>'+
+    solveBlock('<div class="fm big"><span>I<sub>0</sub>(x) = sin(x)</span></div>'+
+      '<div class="fm mid"><span>I<sub>0</sub>′(x) = cos(x) = f(x)</span></div>'+
+      '<p class="concl">Zufall – oder steckt dahinter ein allgemeiner Zusammenhang?</p>');
+  if(mode==="beispiel3") return ''+
+    '<div><div class="tag">Beispiel 3</div><h2>Wie hängen <span class="m">f</span> und die Integralfunktion zusammen?</h2></div>'+
+    '<p class="small" style="margin:.2em 0 0">Von <span class="m">f</span> kennst du nur den Graphen. Untere Grenze: <span class="m">a = <span class="up">−3,3</span></span>.</p>'+
+    '<div class="card mc" id="mc3"></div>'+
+    '<div class="btnrow" id="b3btns">'+
+      '<button class="btn" id="bStudy" hidden>Zusammenhang genauer untersuchen</button>'+
+      '<button class="btn ghost" id="bValues" aria-pressed="false" hidden>Werte vergleichen</button>'+
+      '<button class="btn" id="bVerm" hidden>Vermutung auflösen</button>'+
+    '</div>'+
+    '<p class="hint" id="b3hint" hidden></p>'+
+    '<div class="card values" id="vals" hidden>'+
+      '<div class="row"><span class="lbl">Funktionswert</span><span class="num" id="vF"></span></div>'+
+      '<div class="row"><span class="lbl">Steigung der Integralfunktion</span><span class="num t" id="vS"></span></div>'+
+    '</div>'+
+    '<div class="card zero" id="zeroNote" hidden></div>'+
+    '<div class="card reveal fade" id="sol3" hidden>'+
+      '<div class="fm big"><span>I<sub>a</sub>′(x) = f(x)</span></div>'+
+      '<p>Die Ableitung der Integralfunktion ist die Ausgangsfunktion.</p>'+
+      '<p class="concl">Damit ist die Integralfunktion <span class="m">I<sub>a</sub></span> eine Stammfunktion von <span class="m">f</span>.</p>'+
+    '</div>'+
+    '<div class="btnrow"><button class="btn optional" id="bProof" aria-expanded="false" aria-controls="proof" hidden>Beweis für Interessierte</button></div>'+
+    '<div class="card zusatz"><p style="margin:0 0 6px"><b>Zusatz</b> (freiwillig): Was fällt dir bei Hoch- und Tiefpunkten von <span class="m">f</span> an der Form der Integralfunktion auf?</p>'+
+      '<button class="btn quiet" id="bHint" aria-pressed="false">Markierungen zeigen</button>'+
+      '<p class="hint" id="hintTxt" hidden>Markiert: Hoch- und Tiefpunkte von <span class="m">f</span>. An diesen Stellen ändert die Integralfunktion ihre Krümmung (Wendestellen).</p></div>';
+  return ugHTML();
+}
+function ugHTML(){
+  var s=st(), h='', A0='<span class="m">a<sub class="up">0</sub></span>';
+  var Ia0='<span class="m">I<sub>a<sub class="up">0</sub></sub>(x)</span>', Ia='<span class="m">I<sub>a</sub>(x)</span>';
+  h+='<div><div class="tag">Untere Grenze</div><h2>Was bewirkt eine andere untere Grenze?</h2></div>';
+  h+='<p style="margin:.2em 0 0;display:flex;flex-wrap:wrap;gap:2px 1.4em"><span class="m" style="font-size:1.08rem">f(x) = 0,5x + 2</span>'+
+     '<span class="small">Referenz-Untergrenze (grau): '+A0+' = −2</span>'+(s.phase===2?'<span class="small">neue untere Grenze: <span class="m">a = <span class="up">'+numT(s.a,1)+'</span></span></span>':'')+'</p>';
+  if(s.phase===1){
+    h+='<div class="card task"><div class="qnr">Schritt 1</div>'+
+       '<p><b>Verschiebe <span class="m">a</span>.</b> Welche Fläche unterscheidet die beiden Integralfunktionen?</p>'+
+       '<p class="small"><span class="swy"></span>feste Unterschiedsfläche von '+A0+' bis <span class="m">a</span>: <b id="uY"></b></p>'+
+       '<button class="btn" id="uUse" hidden>Diese untere Grenze verwenden</button>'+
+       '<p class="hint" id="uUseHint">Verschiebe <span class="m">a</span> deutlich nach rechts.</p></div>';
+    return h;
+  }
+  h+='<div class="card task"><div class="qnr">Schritt 2</div>'+
+     '<p style="margin:.15em 0 .5em"><b>Bewege <span class="m">x</span></b> und beobachte die Punkte <span class="m">P<sub class="up">0</sub></span> und <span class="m">P</span>.</p>'+
+     '<div class="decomp" id="uDec"></div>'+
+     '<p class="small" style="margin:.45em 0 .5em"><span class="swy"></span>feste Unterschiedsfläche &nbsp; <span class="swb"></span>Fläche bis <span class="m">x</span></p>'+
+     '<p style="font-weight:600;margin:0">Was ist bei jedem Wert von <span class="m">x</span> der Unterschied zwischen den beiden Integralwerten?</p>'+
+     '<p class="hint" id="uXHint">Bewege <span class="m">x</span> über einen größeren Bereich.</p></div>';
+  h+='<div class="card mc" id="mcU" hidden></div>';
+  if(s.mcOk.every(Boolean)){
+    h+='<div class="card reveal fade"><p class="concl">Andere untere Grenze → gleicher Graphverlauf, nur vertikal verschoben.</p></div>';
+    h+='<div class="card"><div class="fm mid"><span>I<sub>a</sub>(a) = <span class="up">0</span></span></div>'+
+       '<p>Warum liegt der Punkt <span class="m">(a | <span class="up">0</span>)</span> immer auf der Integralfunktion <span class="m">I<sub>a</sub></span>?</p>'+
+       (s.why?'<p><b>Von <span class="m">a</span> bis <span class="m">a</span> wird keine Fläche eingeschlossen.</b></p>':'<button class="btn quiet" id="uWhy">Antwort zeigen</button>')+'</div>';
+    h+='<div class="optrow"><button class="btn optional" id="uFormal" aria-expanded="'+s.formal+'">Mathematisch formuliert</button></div>';
+    if(s.formal) h+='<div class="card reveal fade">'+
+       '<div class="fm mid"><span>I<sub>a</sub>(x) = I<sub>a<sub class="up">0</sub></sub>(x) −</span>'+INT("a<sub class=\"up\">0</sub>","a")+'<span>f(t) dt</span></div>'+
+       '<p>Der subtrahierte Flächeninhalt hängt von '+A0+' und <span class="m">a</span> ab, aber nicht von <span class="m">x</span>.</p>'+
+       '<p class="concl">Deshalb unterscheiden sich die Funktionswerte immer um denselben Betrag.</p></div>';
+  }
+  return h;
+}
+function solveBlock(inner){
+  return '<div class="btnrow"><button class="btn ghost" id="bSolve" hidden>Auflösung anzeigen</button></div>'+
+         '<div class="card reveal fade" id="sol" hidden>'+inner+'</div>';
+}
+var IA='<span class="m">I<sub>a</sub></span>', FX='<span class="m">f(x)</span>';
+var MC3=[
+  {q:"Was macht die Integralfunktion "+IA+" in einem Bereich, in dem "+FX+" &gt; 0 gilt?",
+   o:["Sie steigt.","Sie fällt.","Sie ist dort konstant.","Das hängt von der unteren Grenze <span class=\"m\">a</span> ab."], ok:0,
+   hint:"Beobachte einen Bereich, in dem der Graph von <span class=\"m\">f</span> oberhalb der <span class=\"m\">x</span>-Achse liegt, und verfolge gleichzeitig den unteren Graphen.",
+   good:"<p>Richtig. Solange "+FX+" &gt; 0 ist, kommt positive Flächenbilanz hinzu – "+IA+" steigt.</p>"},
+  {q:"Was macht die Integralfunktion "+IA+" in einem Bereich, in dem "+FX+" &lt; 0 gilt?",
+   o:["Sie steigt.","Sie fällt.","Sie ist dort konstant.","Sie besitzt dort immer eine Nullstelle."], ok:1,
+   hint:"Beobachte einen Bereich, in dem <span class=\"m\">f</span> unterhalb der <span class=\"m\">x</span>-Achse liegt.",
+   good:"<p>Richtig. Für "+FX+" &lt; 0 kommt negative Flächenbilanz hinzu – "+IA+" fällt.</p>"},
+  {q:"Was gilt an einer Nullstelle von <span class=\"m\">f</span> für die Integralfunktion?",
+   o:["Sie hat dort ebenfalls eine Nullstelle.","Sie hat dort eine waagrechte Tangente.","Sie hat dort immer einen Wendepunkt.","Ihr Funktionswert ist dort 0."], ok:1,
+   hint:"Beobachte den unteren Graphen genau an einer Stelle, an der der Graph von <span class=\"m\">f</span> die <span class=\"m\">x</span>-Achse schneidet. Wie verläuft er dort?",
+   good:"<p>Richtig. An einer Nullstelle von <span class=\"m\">f</span> hat "+IA+" eine waagrechte Tangente.</p>"+
+        "<p>Wechselt <span class=\"m\">f</span> an dieser Nullstelle das Vorzeichen, entsteht bei der Integralfunktion ein Hoch- oder Tiefpunkt.</p>"+
+        "<div class=\"vzw\"><span>+ → −</span><span>Hochpunkt</span><span>− → +</span><span>Tiefpunkt</span></div>"},
+  {q:"Wie hängt |"+FX+"| mit der Steigung der Integralfunktion zusammen?",
+   o:["Je größer |"+FX+"|, desto steiler verläuft "+IA+".","Je größer |"+FX+"|, desto flacher verläuft "+IA+".","Es besteht kein Zusammenhang.","Große Werte von |"+FX+"| führen zu Nullstellen von "+IA+"."], ok:0,
+   hint:"Vergleiche eine Stelle, an der der Graph von <span class=\"m\">f</span> weit von der <span class=\"m\">x</span>-Achse entfernt ist, mit einer Stelle nahe der <span class=\"m\">x</span>-Achse. Wie steil verläuft der untere Graph jeweils?",
+   good:"<p>Das legt eine Vermutung nahe:<br>Die Steigung von "+IA+" an der Stelle <span class=\"m\">x</span> könnte genau "+FX+" sein.</p>"}
+];
+var IA0='<span class="m">I<sub>a<sub class="up">0</sub></sub>(x)</span>', IAX='<span class="m">I<sub>a</sub>(x)</span>', A0S='<span class="m">a<sub class="up">0</sub></span>';
+var MCU=[
+  {q:"Was passiert mit der gelben Fläche, wenn du <span class=\"m\">x</span> veränderst?",
+   o:["Sie bleibt gleich.","Sie wird immer größer.","Sie wird immer kleiner.","Sie hängt davon ab, wie steil <span class=\"m\">f</span> verläuft."], ok:0,
+   hint:"Beobachte nur den Bereich zwischen "+A0S+" und <span class=\"m\">a</span>. Bewegt sich eine dieser beiden Grenzen, wenn du <span class=\"m\">x</span> veränderst?",
+   good:"<p>Richtig. Die gelbe Fläche liegt zwischen "+A0S+" und <span class=\"m\">a</span> – beide Grenzen bleiben fest.</p>"},
+  {q:"Was ist deshalb bei jedem <span class=\"m\">x</span> der Unterschied zwischen "+IA0+" und "+IAX+"?",
+   o:["Immer dieselbe gelbe Fläche.","Immer die blaue Fläche.","Der Unterschied wird mit <span class=\"m\">x</span> immer größer.","Es gibt keinen festen Zusammenhang."], ok:0,
+   hint:"Vergleiche oben: Welche Fläche besitzt "+IA0+" zusätzlich zu "+IAX+"?",
+   good:"<p>Richtig. "+IA0+" besitzt bei jedem <span class=\"m\">x</span> die gelbe Fläche zusätzlich.</p>"},
+  {q:"Was bedeutet das für die beiden Graphen der Integralfunktionen?",
+   o:["Sie haben dieselbe Form und sind nur vertikal verschoben.","Sie haben unterschiedliche Steigungen.","Einer der Graphen ist gestaucht.","Sie schneiden sich bei jedem <span class=\"m\">x</span>."], ok:0,
+   hint:"Der Abstand der Punkte <span class=\"m\">P<sub class=\"up\">0</sub></span> und <span class=\"m\">P</span> ist bei jedem <span class=\"m\">x</span> gleich groß. Was folgt daraus für die beiden Graphen?",
+   good:"<p>Genau: Jeder Funktionswert unterscheidet sich um denselben Betrag.</p>"}
+];
+// Multiple Choice: eine Frage, erneute Auswahl nach Fehlern, keine Punkte
+function mcHTML(item,tried,solved,label){
+  var h='<div class="qnr">'+label+'</div><p class="qtext">'+item.q+'</p><div class="opts" role="group">';
+  item.o.forEach(function(t,i){
+    var cls=(solved&&i===item.ok)?" ok":(tried.indexOf(i)>=0?" no":"");
+    h+='<button type="button" class="opt'+cls+'" data-opt="'+i+'"'+((solved||tried.indexOf(i)>=0)?" disabled":"")+'><span class="k">'+"ABCD"[i]+'</span><span>'+t+'</span></button>';
+  });
+  h+='</div>';
+  if(solved) h+='<div class="fb ok" role="status">'+item.good+'</div>';
+  else if(tried.length) h+='<div class="fb hint" role="status"><p>Noch nicht. '+item.hint+'</p></div>';
+  return h;
+}
+function bindMC(el,cb){ el.querySelectorAll("[data-opt]").forEach(function(b){ b.onclick=function(){ cb(parseInt(b.getAttribute("data-opt"),10)); }; }); }
+function renderMC3(){
+  var s=st(), el=document.getElementById("mc3"), q=s.mcq, item=MC3[q];
+  el.innerHTML=mcHTML(item,s.tried[q],s.mcOk[q],"Frage "+(q+1)+" von 4")+
+    ((s.mcOk[q]&&q<3)?'<div class="btnrow" style="margin-top:8px"><button class="btn ghost" id="mcNext">Nächste Frage</button></div>':'');
+  bindMC(el,function(i){
+    if(i===item.ok) s.mcOk[q]=true; else if(s.tried[q].indexOf(i)<0) s.tried[q].push(i);
+    renderMC3(); update();
+    var fb=el.querySelector(".fb"); if(fb && fb.scrollIntoView && window.innerWidth<720) fb.scrollIntoView({block:"nearest"});
+  });
+  var nx=document.getElementById("mcNext"); if(nx) nx.onclick=function(){ s.mcq++; renderMC3(); update(); var b=el.querySelector(".opt"); if(b) b.focus(); };
+}
+function renderMCU(){
+  var s=st(), el=document.getElementById("mcU"); if(!el) return;
+  var q=s.mcq, item=MCU[q];
+  el.innerHTML=mcHTML(item,s.tried[q],s.mcOk[q],"Frage "+(q+1)+" von 3")+
+    ((s.mcOk[q]&&q<2)?'<div class="btnrow" style="margin-top:8px"><button class="btn ghost" id="mcUNext">Nächste Frage</button></div>':'');
+  bindMC(el,function(i){
+    if(i===item.ok){ s.mcOk[q]=true; if(q===2){ s.full=true; renderUG(); update(); return; } }
+    else if(s.tried[q].indexOf(i)<0) s.tried[q].push(i);
+    renderMCU(); update();
+  });
+  var nx=document.getElementById("mcUNext"); if(nx) nx.onclick=function(){ s.mcq++; renderMCU(); update(); var b=el.querySelector(".opt"); if(b) b.focus(); };
+}
+
+/* =====================================================================
+   Aktualisieren
+   ===================================================================== */
+var slider=document.getElementById("slider");
+function valueLine(){
+  var c=cur(), s=st(), el=document.getElementById("ival"), xv=document.getElementById("xv");
+  if(c.kind==="x"){
+    var x=xOf(c,s.k), v=integral(c.f,c.a,x);
+    xv.textContent="x = "+num(x,2);
+    el.innerHTML='<span>I<sub>'+c.idx+'</sub>(x) =</span>'+INT(c.idx==="0"?"0":"a","x")+'<span>f(t) dt =</span><b>'+num(v,2)+'</b>';
+  }
+}
+function update(){
+  var c=cur(), s=st();
+  if(c.kind==="x"){ slider.max=c.N; slider.value=s.k; valueLine(); }
+  if(c.kind==="x"){
+    // Beispiel 3: erst bei (fast) vollständig erzeugtem Graphen (≥ 98 %) weiter
+    var span=c.N, explored=s.maxK>=(mode==="beispiel3"?0.98:0.9)*span;
+    if(mode!=="beispiel3"){
+      var b=document.getElementById("bSolve"); if(b) b.hidden=!explored||s.solved;
+      var so=document.getElementById("sol"); if(so) so.hidden=!s.solved;
+    } else updB3(explored);
+    drawX();
+  } else {
+    updUG();
+    drawA();
+  }
+  drawProof();
+}
+function updB3(explored){
+  var s=st(), c=cur(), x=xOf(c,s.k), mcAll=s.mcOk.every(Boolean);
+  var bS=document.getElementById("bStudy"), bV=document.getElementById("bValues"), bR=document.getElementById("bVerm"), hint=document.getElementById("b3hint");
+  bS.hidden=!(mcAll&&explored)||s.study;
+  bV.hidden=!s.study; bV.setAttribute("aria-pressed",s.values);
+  bR.hidden=!(s.values && s.valMoves>=2) || s.verm;
+  hint.textContent = (mcAll && !explored) ? "Bewege x bis ganz nach rechts, damit der Graph vollständig entsteht."
+                   : (s.values && s.valMoves<2 && !s.verm ? "Probiere mehrere verschiedene Stellen x aus." : "");
+  hint.hidden=hint.textContent==="";
+  var vals=document.getElementById("vals"); vals.hidden=!s.values;
+  if(s.values){
+    document.getElementById("vF").textContent="f("+num(x,2)+") = "+num(c.f(x),2);
+    document.getElementById("vS").textContent="≈ "+num(slopeI(c.f,c.a,x),2);
+  }
+  // Nullstellen: waagrechte Tangente; Extremum nur bei Vorzeichenwechsel
+  var zn=document.getElementById("zeroNote");
+  if(s.study && Math.abs(c.f(x))<1e-9){
+    var l=c.f(x-0.01), r=c.f(x+0.01), txt="Hier ist <span class=\"m\">f(x)</span> = 0: Die Integralfunktion hat eine <b>waagrechte Tangente</b>.";
+    if(l*r<0) txt+=" Da <span class=\"m\">f</span> hier das Vorzeichen wechselt (von "+(l>0?"+ nach −":"− nach +")+"), hat die Integralfunktion einen <b>"+(l>0?"Hochpunkt":"Tiefpunkt")+"</b>.";
+    else txt+=" <span class=\"m\">f</span> wechselt hier nicht das Vorzeichen – daher kein Hoch- oder Tiefpunkt.";
+    zn.innerHTML=txt; zn.hidden=false;
+  } else zn.hidden=true;
+  document.getElementById("sol3").hidden=!s.verm;
+  var bp=document.getElementById("bProof"); bp.hidden=!s.verm; bp.setAttribute("aria-expanded",!!s.proof);
+  var bh=document.getElementById("bHint"); bh.setAttribute("aria-pressed",s.hint); bh.textContent=s.hint?"Markierungen ausblenden":"Markierungen zeigen";
+  document.getElementById("hintTxt").hidden=!s.hint;
+}
+function ugExplored(s){ return s.maxX>=s.a+0.7*(5-s.a) && s.movedX>=2; }
+function updUG(){
+  var s=st(), c=cur(), f=c.f, a0=c.a0;
+  var sA=document.getElementById("sA"), sX=document.getElementById("sX");
+  var rA=document.getElementById("uRowA"), rX=document.getElementById("uRowX");
+  sA.value=s.a; sX.min=s.a; sX.value=Math.max(s.x,s.a);
+  sA.disabled=(s.phase!==1); sX.disabled=(s.phase!==2);
+  rA.className="urow"+(s.phase===1?" active":" dim"); rX.className="urow"+(s.phase===2?" active":" dim");
+  document.getElementById("uNewA").hidden=(s.phase!==2);
+  document.getElementById("vA").textContent="a = "+numT(s.a,1);
+  document.getElementById("vX").textContent=s.phase===2?"x = "+num(s.x,2):"";
+  var uy=document.getElementById("uY");
+  if(uy){ uy.textContent=num(integral(f,c.a0,s.a),2);
+    var ok=(s.a>=c.a0+0.5 && s.movedA>=0.5); document.getElementById("uUse").hidden=!ok; document.getElementById("uUseHint").hidden=ok; }
+  var dec=document.getElementById("uDec");
+  if(dec){
+    var a=s.a, lo=Math.min(a,a0), hi=Math.max(a,a0), x=Math.max(s.x,hi);
+    var Y=num(integral(f,lo,hi),2), B=num(integral(f,hi,x),2);
+    var yb='<span class="fbox y">'+Y+'</span>', bb='<span class="fbox b">'+B+'</span>';
+    var r0='<span class="dl">I<sub>a<sub class="up">0</sub></sub>(x)</span><span>=</span>', r1='<span class="dl">I<sub>a</sub>(x)</span><span>=</span>';
+    // Referenz: gelb + blau; neue Integralfunktion: nur blau
+    dec.innerHTML = r0+yb+'<span>+</span>'+bb + r1+'<span></span><span></span>'+bb;
+    var ex=ugExplored(s);
+    document.getElementById("uXHint").hidden=ex||s.mcOk.every(Boolean);
+    document.getElementById("mcU").hidden=!(ex||s.mcOk.every(Boolean));
+    if(ex && s.mcOk.every(Boolean)) s.full=true;
+  }
+}
+function renderUG(){
+  var s=st();
+  document.getElementById("panel").innerHTML=ugHTML();
+  renderMCU();
+  var b;
+  if((b=document.getElementById("uUse"))) b.onclick=function(){ s.phase=2; s.x=s.a; s.maxX=s.a; s.movedX=0; renderUG(); update();
+    // einspaltig: zurück zur Steuerung, damit Regler x und Diagramme sichtbar sind
+    if(window.innerWidth<720) document.querySelector(".ctrl").scrollIntoView({block:"start"}); };
+  if((b=document.getElementById("uWhy"))) b.onclick=function(){ s.why=true; renderUG(); update(); };
+  if((b=document.getElementById("uFormal"))) b.onclick=function(){ s.formal=!s.formal; renderUG(); update(); };
+}
+function ugSetA(v){ var s=st(), c=cur(); v=clampv(Math.round(v*10)/10,c.amin,c.amax); s.movedA+=Math.abs(v-s.a); s.a=v; s.x=v; s.maxX=v; update(); }
+function ugSetX(v){ var s=st(), c=cur(); v=clampv(Math.round(v*20)/20,s.a,c.x1); s.movedX+=Math.abs(v-s.x); s.x=v; if(v>s.maxX) s.maxX=v; update(); }
+document.getElementById("sA").addEventListener("input",function(){ ugSetA(parseFloat(this.value)); });
+document.getElementById("sX").addEventListener("input",function(){ ugSetX(parseFloat(this.value)); });
+document.getElementById("uNewA").addEventListener("click",function(){
+  var s=st(); s.phase=1; s.full=false; s.x=s.a; s.maxX=s.a; s.movedX=0; s.movedA=0; renderUG(); update();
+});
+function renderPanel(){
+  var s=st();
+  if(mode==="untere-grenze"){ renderUG(); }
+  else {
+    document.getElementById("panel").innerHTML=panelHTML();
+    if(mode==="beispiel3"){ renderMC3();
+      document.getElementById("bStudy").onclick=function(){ s.study=true; update(); };
+      document.getElementById("bValues").onclick=function(){ s.values=!s.values; s.lastValK=s.k; update(); };
+      document.getElementById("bVerm").onclick=function(){ s.verm=true; update(); };
+      document.getElementById("bHint").onclick=function(){ s.hint=!s.hint; update(); };
+      document.getElementById("bProof").onclick=function(){
+        s.proof=!s.proof; update();
+        if(s.proof){ var red=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          document.getElementById("proof").scrollIntoView({behavior:red?"auto":"smooth",block:"start"}); }
+      };
+    } else {
+      document.getElementById("bSolve").onclick=function(){ s.solved=true; update(); };
+    }
+  }
+  var ug=(mode==="untere-grenze");
+  document.querySelector(".ctrl-top").hidden=ug; document.querySelector(".ctrl-row").hidden=ug; document.getElementById("ctrlUG").hidden=!ug;
+  document.getElementById("slabel").textContent = cur().kind==="x" ? "obere Grenze" : "untere Grenze";
+  document.getElementById("play").hidden = cur().kind!=="x";
+}
+function setK(k){
+  var c=cur(), s=st(); k=clampv(Math.round(k),0,c.N);
+  if(c.kind==="x"){
+    // "mehrere Vergleiche": neue Stelle zählt erst ab 0,2 Einheiten Abstand zur zuletzt gezählten
+    if(s.values && Math.abs(k-s.lastValK)*(c.x1-c.x0)/c.N>=0.2){ s.valMoves++; s.lastValK=k; }
+    s.k=k; if(k>s.maxK) s.maxK=k;
+  }
+  update();
+}
+slider.addEventListener("input",function(){ stopPlay(); setK(parseInt(slider.value,10)); });
+
+/* ---------- Ziehen im Diagramm (horizontal) ---------- */
+(function(){
+  var on=false;
+  function kFrom(ev){
+    var P=svg._P; if(!P) return null;
+    var r=svg.getBoundingClientRect(), vb=svg.viewBox.baseVal, sc=(vb&&vb.width?vb.width:r.width)/r.width;
+    var v=P.inv((ev.clientX-r.left)*sc), c=cur();
+    if(mode==="untere-grenze"){ if(st().phase===1) ugSetA(v); else ugSetX(v); return null; }
+    var k=(v-c.x0)/(c.x1-c.x0)*c.N;
+    // in Beispiel 3 (genauer untersuchen) an Nullstellen einrasten
+    if(mode==="beispiel3" && st().study){
+      [-3,-1.5,0,1.2,3].forEach(function(z){ var kz=(z-c.x0)/(c.x1-c.x0)*c.N; if(Math.abs(k-kz)<3) k=kz; });
+    }
+    return k;
+  }
+  svg.addEventListener("pointerdown",function(ev){
+    if(ev.pointerType==="mouse"&&ev.button!==0) return;
+    on=true; stopPlay(); try{svg.setPointerCapture(ev.pointerId);}catch(e){}
+    var k=kFrom(ev); if(k!==null) setK(k);
+  });
+  svg.addEventListener("pointermove",function(ev){ if(!on) return; var k=kFrom(ev); if(k!==null) setK(k); });
+  function end(){ on=false; }
+  svg.addEventListener("pointerup",end); svg.addEventListener("pointercancel",end);
+})();
+
+/* ---------- Abspielen ---------- */
+var playing=false, raf=0, lastT=0, fk=0, playBtn=document.getElementById("play");
+function stopPlay(){ if(!playing) return; playing=false; cancelAnimationFrame(raf); playBtn.textContent="Abspielen"; playBtn.setAttribute("aria-pressed","false"); }
+function step(t){
+  if(!playing) return;
+  var c=cur(), s=st(), dt=Math.min(100,t-lastT); lastT=t;
+  fk+=c.N*dt/9000;                  // ganzer Bereich in ca. 9 Sekunden
+  if(fk>=c.N){ setK(c.N); stopPlay(); return; }
+  setK(Math.floor(fk)); raf=requestAnimationFrame(step);
+}
+playBtn.addEventListener("click",function(){
+  if(playing){ stopPlay(); return; }
+  var c=cur(), s=st(); if(s.k>=c.N) setK(0);
+  fk=st().k; playing=true; playBtn.textContent="Anhalten"; playBtn.setAttribute("aria-pressed","true");
+  lastT=performance.now(); raf=requestAnimationFrame(step);
+});
+document.getElementById("reset").addEventListener("click",function(){
+  stopPlay(); S[mode]=freshState(mode); renderPanel(); update();
+});
+
+/* =====================================================================
+   Beweis für Interessierte (freiwillig, erst nach der Auflösung in Beispiel 3)
+   ===================================================================== */
+var HS=[1,0.5,0.2,0.1,0.05,0.02,0.01], hIdx=0, psvg=document.getElementById("proofplot");
+(function(){
+  var box=document.getElementById("hsel");
+  HS.forEach(function(h,i){
+    var b=document.createElement("button"); b.type="button"; b.textContent="h = "+numT(h,2);
+    b.setAttribute("aria-pressed",i===hIdx); b.onclick=function(){ hIdx=i; box.querySelectorAll("button").forEach(function(x,j){x.setAttribute("aria-pressed",j===hIdx);}); drawProof(); };
+    box.appendChild(b);
+  });
+})();
+function drawProof(){
+  var sec=document.getElementById("proof");
+  var show=(mode==="beispiel3" && st().proof===true); sec.hidden=!show; if(!show) return;
+  var c=cur(), s=st(), f=c.f, a=c.a, x=xOf(c,s.k), h=HS[hIdx];
+  var W=psvg.clientWidth||psvg.parentNode.clientWidth||500, H=Math.round(clampv(W*0.6,240,340));
+  psvg.setAttribute("viewBox","0 0 "+W+" "+H); psvg.setAttribute("height",H);
+  // Ausschnitt: horizontal passend zu h
+  var x1=x-0.8*h, x2=x+1.8*h, lo=0, hi=0, i, t, v;
+  for(i=0;i<=60;i++){ t=x1+(x2-x1)*i/60; v=f(t); lo=Math.min(lo,v); hi=Math.max(hi,v); }
+  var pad=(hi-lo)*0.18||0.5, P=panel(W,0,H,[x1,x2],[lo-pad,hi+pad]), yz=P.Y(0), o="";
+  o+='<defs>'+clip("pp",P)+'</defs>';
+  o+='<rect x="'+P.L+'" y="'+P.top+'" width="'+P.pw+'" height="'+P.ph+'" fill="none" stroke="#e1e6ec"/>';
+  o+='<line x1="'+P.L+'" y1="'+f2(yz)+'" x2="'+P.Rr+'" y2="'+f2(yz)+'" stroke="#5b6573" stroke-width="1.4"/>';
+  var n=60, d="M"+f2(P.X(x))+" "+f2(yz);
+  for(i=0;i<=n;i++){ t=x+h*i/n; d+="L"+f2(P.X(t))+" "+f2(P.Y(f(t))); }
+  d+="L"+f2(P.X(x+h))+" "+f2(yz)+"Z";
+  o+='<g clip-path="url(#pp)"><path d="'+d+'" fill="#3b82c4" fill-opacity=".25" stroke="#3b82c4" stroke-opacity=".6"/>';
+  o+='<rect x="'+f2(P.X(x))+'" y="'+f2(Math.min(P.Y(f(x)),yz))+'" width="'+f2(P.X(x+h)-P.X(x))+'" height="'+f2(Math.abs(P.Y(f(x))-yz))+'" fill="none" stroke="#2b8a3e" stroke-width="2.6" stroke-dasharray="7 4"/>';
+  o+='<path d="'+path(P,f,x1,x2,120)+'" fill="none" stroke="#232d3b" stroke-width="3"/></g>';
+  var yb=Math.min(yz+19,P.bot+18);
+  o+=ML(P.X(x),yb,"x","",{s:16,a:"middle"});
+  o+=ML(P.X(x+h),yb,"x + h","",{s:16,a:"middle"});
+  o+=ML((P.X(x)+P.X(x+h))/2,f(x)>=0?yz-8:yz+18,"h","",{s:16,a:"middle",c:"#2b8a3e"});
+  o+='<line x1="'+P.L+'" y1="'+f2(P.Y(f(x)))+'" x2="'+f2(P.X(x))+'" y2="'+f2(P.Y(f(x)))+'" stroke="#2b8a3e" stroke-width="1.3" stroke-dasharray="2 4"/>';
+  o+=ML(P.L+6,P.Y(f(x))+(f(x)>=0?-7:18),"f(x)","",{s:16,c:"#2b8a3e"});
+  psvg.innerHTML=o;
+  var dA=integral(f,a,x+h)-integral(f,a,x);
+  document.getElementById("pA").textContent=num(dA,4);
+  document.getElementById("pR").textContent=num(f(x)*h,4);
+  document.getElementById("pQ").textContent=num(dA/h,4);
+  document.getElementById("pF").textContent=num(f(x),4);
+}
+
+/* =====================================================================
+   Navigation über Hash
+   ===================================================================== */
+function route(){
+  var h=(location.hash||"").replace("#","").split("?")[0];
+  if(!M[h]) h="beispiel1";
+  stopPlay(); mode=h;
+  document.querySelectorAll("nav.modes a").forEach(function(a){
+    if(a.getAttribute("data-mode")===h) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current");
+  });
+  renderPanel(); update(); window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+var rt; window.addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(update,60); });
+route();
+})();
+</script>
+</body>
+</html>
