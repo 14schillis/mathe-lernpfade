@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fit für den BMT 10 – Übungseinheit</title>
+<style>
+:root{
+  --paper:#F7FAFD; --grid:#DEE7F1; --sheet:#FFFFFF; --line:#C9D5E3;
+  --ink:#1C3D72; --ink2:#3A5E94; --inkbg:#E8EEF8;
+  --text:#1E2633; --muted:#56616F;
+  --red:#BE2F29; --redbg:#FBECEA; --margin:#E6A4A0;
+  --green:#1E7746; --greenbg:#E6F3EB;
+  --marker:#FFE35A; --amber:#B06F12;
+  --head:64px; --foot:68px;
+  --ui:"Avenir Next","Avenir","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --math:"Charter","Iowan Old Style","Cambria","Georgia","Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--head) + 12px)}
+body{
+  margin:0; font-family:var(--ui); font-size:17px; line-height:1.45; color:var(--text);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  padding-top:calc(var(--head) + env(safe-area-inset-top,0px));
+  padding-bottom:calc(var(--foot) + 20px + env(safe-area-inset-bottom,0px));
+}
+i,.m{font-family:var(--math)}
+i{font-style:italic}
+sup{font-size:.7em;line-height:0}
+button,input,select{font:inherit;color:inherit}
+button{touch-action:manipulation}
+:focus-visible{outline:3px solid var(--ink2);outline-offset:2px}
+
+/* ---------- Kopfzeile mit Stationskästchen ---------- */
+#top{position:fixed;top:0;left:0;right:0;z-index:20;background:#fff;border-bottom:2px solid var(--ink);
+  height:calc(var(--head) + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 16px 0;
+  display:flex;align-items:center;gap:14px}
+#top .ttl{font-weight:700;color:var(--ink);font-size:18px;white-space:nowrap;background:none;border:0;padding:8px 0;cursor:pointer}
+#squares{margin-left:auto;display:flex;gap:6px}
+.sq8{width:46px;height:46px;border:2px solid var(--ink);border-radius:6px;background:#fff;color:var(--ink);
+  font-weight:700;font-size:17px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;position:relative}
+.sq8.cur{background:var(--marker);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+.sq8.done{background:var(--ink);color:#fff}
+.sq8.cur.done{color:var(--marker)}
+
+/* ---------- Grundlayout ---------- */
+main{max-width:1120px;margin:0 auto;padding:16px 20px}
+.page{display:none}
+.page.on{display:block}
+.shead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:0 0 4px}
+.kicker{color:var(--muted);font-weight:600;font-size:15px;margin:0}
+h1{font-size:28px;line-height:1.2;color:var(--ink);margin:0;letter-spacing:-.01em}
+.lead{font-size:17px;color:var(--muted);margin:2px 0 14px;max-width:75ch}
+.mk{background:linear-gradient(transparent 58%,var(--marker) 58%)}
+
+/* ---------- Merkkasten ---------- */
+.merke{background:#fff;border:2px solid var(--ink);border-radius:6px;padding:12px 18px 10px;margin:0 0 20px;box-shadow:5px 5px 0 var(--inkbg)}
+.merke h2{margin:0 0 6px;font-size:17px;color:var(--ink)}
+.merke p{margin:5px 0}
+.merke ul{margin:4px 0;padding-left:20px}
+.merke li{margin:3px 0}
+/* Erklärung links, passende Grafik rechts */
+.ex{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,280px);gap:6px 20px;align-items:center;padding:10px 0;border-top:1px dashed var(--line)}
+.ex:first-of-type{border-top:0}
+.ex.wide{grid-template-columns:minmax(0,1fr) minmax(260px,360px)}
+.ex>div:first-child p:first-child{margin-top:0}
+.ex figure{margin:0}
+.ex figcaption,.cap{font-size:14px;color:var(--muted);text-align:center;margin-top:3px;line-height:1.3}
+.ex b.t{color:var(--ink)}
+dl.ops{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:5px 14px;margin:6px 0}
+dl.ops dt{font-weight:700;color:var(--ink)}
+dl.ops dd{margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0}
+.two>div{border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:4px 12px;align-items:center}
+.two h3{margin:0 0 4px;font-size:16px;color:var(--ink)}
+.two p{margin:3px 0}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.minis figure{margin:0;text-align:center}
+.minis figcaption{font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.25}
+.minis svg{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+.venns{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:8px 0}
+.venns figure{margin:0;text-align:center}
+.venns svg{width:100%;height:auto}
+.venns figcaption{font-size:14px;color:var(--muted);line-height:1.25;margin-top:2px}
+.anno{font-family:var(--math);font-size:19px;line-height:2;background:#fff;border:1.5px solid var(--line);border-radius:4px;padding:6px 12px;margin:6px 0}
+.anno .op{background:var(--marker);padding:2px 4px;border-radius:3px}
+.anno .ges{border-bottom:3px solid var(--ink2);padding-bottom:1px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:15px;color:var(--muted);margin:2px 0 6px}
+.legend span::before{content:"";display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+.legend .l1::before{background:var(--marker)}
+.legend .l2::before{border-bottom:3px solid var(--ink2);height:10px;border-radius:0}
+.formulas{display:flex;flex-wrap:wrap;gap:8px 26px;font-family:var(--math);font-size:18px;margin:6px 0}
+.strike{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+
+/* ---------- Grafiken ---------- */
+.fig{display:flex;justify-content:center}
+svg.plot,svg.sk{display:block;width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:6px}
+.fig svg.plot{max-width:340px}
+.fig svg.sk{max-width:380px}
+.ex svg.plot,.ex svg.sk,.two svg.plot{max-width:100%}
+
+/* ---------- Aufgabenkarte ---------- */
+.task{background:var(--sheet);border:1px solid var(--line);border-radius:8px;margin:0 0 18px;padding:14px 16px 14px 60px;position:relative}
+.task::before{content:"";position:absolute;left:46px;top:0;bottom:0;width:1.5px;background:var(--margin)}
+.tl{position:absolute;left:10px;top:13px;font-weight:700;color:var(--ink);font-size:19px;text-align:center;width:28px}
+.task.solved .tl::after{content:"✓";display:block;color:var(--green);font-size:21px;margin-top:4px}
+.task.shown .tl::after{content:"L";display:block;color:var(--muted);font-size:15px;margin-top:6px}
+.tp p{margin:0 0 7px}
+.tp .bmt{font-family:var(--math);font-size:18px}
+/* Aufgabe mit Bezugsgrafik: Grafik links, bleibt beim Scrollen sichtbar */
+.tgrid{display:block}
+.task.hasfig .tgrid{display:grid;grid-template-columns:minmax(230px,36%) minmax(0,1fr);gap:18px;align-items:start}
+.tfig{position:sticky;top:calc(var(--head) + 12px + env(safe-area-inset-top,0px));align-self:start}
+.tfig .fig{justify-content:flex-start}
+.tfig .fig svg.plot,.tfig .fig svg.sk{max-width:100%}
+.tfig .cap{text-align:left}
+.w{margin:8px 0}
+.wq{margin:0 0 8px;font-weight:600}
+
+.opts{display:grid;grid-template-columns:1fr;gap:8px}
+.opts.g2{grid-template-columns:1fr 1fr}
+.opt,.chip{text-align:left;min-height:48px;padding:9px 14px;border:1.5px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:8px 14px;font-family:var(--math);font-size:17px}
+.chip.txt{font-family:var(--ui);font-size:16px}
+.opt.sel,.chip.sel{border-color:var(--ink);background:var(--inkbg);box-shadow:inset 0 0 0 1px var(--ink)}
+.opt.right,.chip.right{border-color:var(--green);background:var(--greenbg);box-shadow:inset 0 0 0 1px var(--green)}
+.opt.wrong,.chip.wrong{border-color:var(--red);background:var(--redbg);box-shadow:inset 0 0 0 1px var(--red)}
+.opt:disabled,.chip:disabled{cursor:default;color:var(--text)}
+.opt .m{font-size:18px}
+
+/* Zuordnen: Text links, Auswahl rechts */
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.mrow.sel{grid-template-columns:minmax(0,1fr) minmax(240px,340px)}
+.mrow:last-child{border-bottom:0}
+.mrow .mt .m{font-size:20px}
+.mrow.right .mt::before{content:"✓ ";color:var(--green);font-weight:700}
+.mrow.wrong .mt{color:var(--red)}
+select.sel{width:100%;min-height:48px;font-size:16px;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--text)}
+.mrow.right select.sel{border-color:var(--green);background:var(--greenbg)}
+.mrow.wrong select.sel{border-color:var(--red);background:var(--redbg)}
+
+/* Eingaben */
+.frow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0}
+input.in{font-family:var(--math);font-size:19px;min-height:48px;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;width:8em;background:#fff;color:var(--text)}
+input.in.wide{width:13em;max-width:100%}
+input.in.right{border-color:var(--green);background:var(--greenbg)}
+input.in.wrong{border-color:var(--red);background:var(--redbg)}
+input.in:disabled{color:var(--text);opacity:1}
+.syntax{font-size:14.5px;color:var(--muted);margin:2px 0 0}
+.srow{display:grid;grid-template-columns:minmax(180px,240px) minmax(0,1fr);gap:4px 14px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.srow:last-child{border-bottom:0}
+.srow .eq{font-family:var(--math);font-size:19px}
+.task.hasfig .srow{grid-template-columns:1fr}
+.srow .frow{margin:0}
+.srow input.in{width:6.5em}
+.chip.none{font-family:var(--ui);font-size:15px}
+
+table.vft{border-collapse:collapse;margin:4px 0;font-family:var(--math);font-size:18px}
+table.vft th,table.vft td{border:1.5px solid var(--ink);width:92px;height:54px;text-align:center;padding:3px}
+table.vft th{background:var(--inkbg)}
+table.vft input.in{width:78px;text-align:center;padding:4px}
+.vwrap{overflow-x:auto}
+
+/* Prüfen, Tipps, Lösung */
+.ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{min-height:48px;padding:9px 20px;border-radius:8px;border:2px solid var(--ink);background:var(--ink);color:#fff;font-weight:600;cursor:pointer}
+.btn.sec{background:#fff;color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+.fb{margin-top:6px;font-weight:600}
+.fb:empty{display:none}
+.fb.no{color:var(--red)}
+.fb.ok{color:var(--green)}
+.help{margin-top:10px;border:1.5px solid var(--line);border-radius:8px;overflow:hidden}
+.help[hidden]{display:none}
+.htabs{display:flex;gap:0;border-bottom:1.5px solid var(--line);background:#FAFBFD}
+.htabs button{border:0;background:none;padding:10px 16px;min-height:44px;font-weight:600;color:var(--muted);cursor:pointer;border-right:1px solid var(--line)}
+.htabs button.on{background:#FFFBE3;color:var(--text)}
+.htabs button.sol.on{background:var(--inkbg)}
+.hbody{padding:10px 14px;background:#FFFBE3}
+.hbody.sol{background:var(--inkbg)}
+.hbody p{margin:4px 0}
+.hbody .fig{justify-content:flex-start;margin-top:6px}
+.hbody .fig svg{max-width:300px}
+.after{margin-top:10px}
+.after .fig{justify-content:flex-start}
+.after .fig svg.plot{max-width:360px}
+.info{font-size:15.5px;color:var(--muted)}
+.info b{color:var(--text);font-weight:600}
+
+/* Explorer: Regler links, Grafik rechts */
+.explore{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:0 0 20px}
+.explore h2{font-size:17px;margin:0 0 6px;color:var(--ink)}
+.exgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,360px);gap:10px 22px;align-items:center}
+.explore .row{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:4px 0}
+.explore label{display:flex;align-items:center;gap:10px;min-height:48px}
+input[type=range]{width:190px;accent-color:var(--ink);height:40px}
+input[type=checkbox]{width:24px;height:24px;accent-color:var(--ink)}
+.term{font-family:var(--math);font-size:22px;color:var(--ink);margin:6px 0}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;color:var(--ink);padding:8px 16px;min-height:44px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff}
+.mini-ex label{min-height:44px}
+.mini-ex input[type=range]{width:100%}
+
+.done{display:none;border:2px dashed var(--green);background:var(--greenbg);padding:12px 16px;border-radius:8px;margin:4px 0 20px;align-items:center;gap:14px;flex-wrap:wrap}
+.done.on{display:flex}
+.done p{margin:0;font-weight:600;color:var(--green)}
+
+/* ---------- Startseite ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:18px 30px;align-items:start}
+.hero h1{font-size:34px;margin:2px 0 8px}
+.hero .lead{margin-bottom:10px}
+.how{font-size:15.5px;color:var(--muted);margin:0 0 14px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{display:grid;grid-template-columns:46px 1fr;gap:12px;align-items:center;min-height:64px;padding:8px 12px;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;cursor:pointer}
+.tile .n{width:46px;height:46px;border:2px solid var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);font-size:18px}
+.tile.done .n{background:var(--ink);color:#fff}
+.tile .tt{font-weight:600;line-height:1.25}
+.tile:hover{border-color:var(--ink)}
+.check{display:grid;grid-template-columns:1fr 1fr;gap:10px 26px;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:14px 18px 14px 40px;margin:12px 0;box-shadow:5px 5px 0 var(--inkbg)}
+.check li{margin:0}
+
+/* ---------- Brüche, Wurzeln, Querstriche ---------- */
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.94em;margin:0 .15em;line-height:1.25}
+.fr>span:first-child{border-bottom:1.3px solid currentColor;padding:0 .25em}
+.fr>span:last-child{padding:0 .25em}
+.sr{white-space:nowrap}
+.sr>span{border-top:1.3px solid currentColor;padding:0 .12em;margin-left:.05em}
+.ol{text-decoration:overline;text-decoration-thickness:1.5px}
+
+/* ---------- Fußleiste ---------- */
+#bottom{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:2px solid var(--ink);
+  min-height:calc(var(--foot) + env(safe-area-inset-bottom,0px));padding:9px 16px calc(9px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+#bottom .mid{color:var(--muted);font-weight:600;text-align:center;font-size:15px;line-height:1.25;min-width:0}
+#bottom .mid .nt{display:block;color:var(--ink);font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bottom .btn{min-width:120px}
+
+/* ---------- Tablet hochkant / kleinere Laptops ---------- */
+@media (max-width:980px){
+  .venns{grid-template-columns:repeat(3,1fr)}
+  dl.ops{grid-template-columns:auto 1fr}
+  .two>div{grid-template-columns:1fr}
+  .two>div .fig svg{max-width:240px}
+  .hero{grid-template-columns:1fr;gap:10px}
+  .hero .lead{max-width:none}
+}
+@media (max-width:760px){
+  :root{--head:60px}
+  body{font-size:16.5px}
+  main{padding:12px 12px}
+  #top{padding-left:10px;padding-right:10px;gap:8px}
+  #top .ttl{display:none}
+  #squares{margin:0;width:100%;gap:5px}
+  .sq8{flex:1 1 0;width:auto;height:46px;min-width:0;font-size:16px}
+  h1{font-size:24px}
+  .hero h1{font-size:28px}
+  .task{padding:12px 12px 12px 44px}
+  .task::before{left:34px}
+  .tl{left:4px;width:26px}
+  .task.hasfig .tgrid{display:block}
+  .tfig{position:static;margin-bottom:10px}
+  .tfig .fig{justify-content:center}
+  .tfig .fig svg.plot,.tfig .fig svg.sk{max-width:320px}
+  .tfig .cap{text-align:center}
+  .ex,.ex.wide{grid-template-columns:1fr}
+  .ex figure,.ex>div:last-child{max-width:280px;margin:0 auto;width:100%}
+  .two{grid-template-columns:1fr}
+  .mrow,.mrow.sel{grid-template-columns:1fr}
+  .srow{grid-template-columns:1fr}
+  .opts.g2{grid-template-columns:1fr}
+  .exgrid{grid-template-columns:1fr}
+  .exgrid .fig svg{max-width:340px}
+  .tiles{grid-template-columns:1fr}
+  .check{grid-template-columns:1fr}
+  #bottom .btn{min-width:88px;padding:9px 12px}
+  #bottom .mid .nt{display:none}
+  table.vft th,table.vft td{width:68px;height:50px}
+  table.vft input.in{width:58px}
+}
+@media (max-width:480px){
+  .venns{grid-template-columns:repeat(2,1fr)}
+  .minis{grid-template-columns:repeat(3,1fr);gap:5px}
+  input.in{width:7em}
+}
+/* ---------- Kompakte Merkhilfe ---------- */
+.merke{position:relative}
+.qsent{position:absolute;left:0;top:0;bottom:90px;width:1px;pointer-events:none}
+#quick{position:fixed;z-index:15;background:#fff;border:2px solid var(--ink);border-radius:8px;box-shadow:4px 4px 0 var(--inkbg);
+  padding:10px 14px 10px;font-size:15px;line-height:1.35;visibility:hidden;opacity:0;overflow:auto;overscroll-behavior:contain}
+#quick h2{font-size:15.5px;margin:0 0 6px;color:var(--ink)}
+#quick ul{margin:0;padding-left:18px}
+#quick li{margin:5px 0}
+#quick .m{font-size:16px}
+#quick li::marker{color:var(--ink)}
+#quick .qx{display:none}
+#quickBtn{display:none}
+@media (min-width:1000px){
+  body.st-page main{max-width:1374px;padding-right:274px}
+  #quick{top:calc(var(--head) + 16px + env(safe-area-inset-top,0px));right:calc(max(0px, (100vw - 1374px) / 2) + 20px);width:230px;max-height:50vh}
+  body.st-page.quick-on #quick{visibility:visible;opacity:1}
+}
+@media (max-width:999px){
+  #quickBtn{position:fixed;z-index:16;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(var(--foot) + 14px + env(safe-area-inset-bottom,0px));
+    align-items:center;gap:6px;min-height:48px;padding:10px 18px;border-radius:24px;background:var(--marker);border:2px solid var(--ink);color:var(--ink);font-weight:700;cursor:pointer;box-shadow:3px 3px 0 var(--inkbg)}
+  body.st-page.quick-on #quickBtn{display:inline-flex}
+  #quick{right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(var(--foot) + 74px + env(safe-area-inset-bottom,0px));width:min(310px, calc(100vw - 24px));max-height:50vh;padding-right:12px}
+  body.st-page.quick-on.quick-open #quick{visibility:visible;opacity:1}
+  #quick h2{padding-right:42px;min-height:30px;display:flex;align-items:center}
+  #quick .qx{display:flex;align-items:center;justify-content:center;position:absolute;top:3px;right:3px;width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:26px;font-weight:700;line-height:1;cursor:pointer;border-radius:6px}
+}
+@media (prefers-reduced-motion:no-preference){
+  #quick{transition:opacity .2s,visibility .2s}
+  .opt,.chip,.btn,input.in,.tile{transition:background-color .15s,border-color .15s}
+}
+</style>
+</head>
+<body>
+<header id="top">
+  <button class="ttl" id="homeBtn" type="button">Fit für den BMT 10</button>
+  <div id="squares" role="navigation" aria-label="Stationen"></div>
+</header>
+<main id="main"></main>
+<aside id="quick" aria-label="Merkhilfe"><h2 id="quickTitle">Merkhilfe</h2><button class="qx" id="quickClose" type="button" aria-label="Merkhilfe schließen">×</button><ul id="quickList"></ul></aside>
+<button id="quickBtn" type="button" aria-controls="quick" aria-expanded="false">Merkhilfe</button>
+<nav id="bottom" aria-label="Blättern">
+  <button class="btn sec" id="prevBtn" type="button">Zurück</button>
+  <span class="mid" id="navMid"></span>
+  <button class="btn" id="nextBtn" type="button">Weiter</button>
+</nav>
+
+<script>
+"use strict";
+/* ---------- kleine Helfer ---------- */
+const F = (a,b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const R = x => `<span class="sr">√<span>${x}</span></span>`;
+const O = x => `<span class="ol">${x}</span>`;
+const X = "<i>x</i>";
+const sq = "<sup>2</sup>";
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+function num(n){ // Anzeige mit Komma und echtem Minus
+  let s = (Math.round(n*1000)/1000).toString().replace(".", ",");
+  return s.replace("-", "−");
+}
+
+/* ---------- Term-Auswertung (eigener Parser, kein eval) ---------- */
+function compile(src){
+  let s = String(src).trim();
+  s = s.replace(/^[a-zA-Z]\s*\(\s*x\s*\)\s*=/, "")
+       .replace(/^\s*(x\s*[₁₂12]?|y|V|A|t|P\s*\(.*\))\s*=/, "");
+  s = s.replace(/\s+/g, "");
+  s = s.replace(/(m|s|g|%|l|liter|minuten|min|sekunden|einwohner|cm|km|µg|mg)\.?$/i, "");
+  if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  s = s.replace(/[−–]/g,"-").replace(/[·⋅×]/g,"*").replace(/:/g,"/").replace(/,/g,".")
+       .replace(/²/g,"^2").replace(/³/g,"^3").replace(/⁴/g,"^4").replace(/⁶/g,"^6").replace(/⁸/g,"^8")
+       .replace(/sqrt|wurzel/gi,"r").replace(/π/g,"p").replace(/pi/gi,"p").replace(/√/g,"r").replace(/X/g,"x");
+  if(!s) throw new Error("leer");
+  const toks = [];
+  let i = 0;
+  while(i < s.length){
+    const c = s[i];
+    if(/[0-9.]/.test(c)){ let j=i; while(j<s.length && /[0-9.]/.test(s[j])) j++; const v=parseFloat(s.slice(i,j)); if(isNaN(v)) throw new Error("Zahl"); toks.push({t:"n",v}); i=j; continue; }
+    if(s.startsWith("sin",i)||s.startsWith("cos",i)||s.startsWith("tan",i)){ toks.push({t:"f",v:s.substr(i,3)}); i+=3; continue; }
+    if(c==="x"){ toks.push({t:"x"}); i++; continue; }
+    if(c==="p"){ toks.push({t:"c",v:Math.PI}); i++; continue; }
+    if(c==="r"){ toks.push({t:"f",v:"r"}); i++; continue; }
+    if("+-*/^()".includes(c)){ toks.push({t:"o",v:c}); i++; continue; }
+    throw new Error("Zeichen");
+  }
+  let pos = 0, usesX = false;
+  const peek = () => toks[pos], next = () => toks[pos++];
+  const isOp = (t,v) => t && t.t==="o" && t.v===v;
+  const starts = t => t && (t.t==="n"||t.t==="x"||t.t==="c"||t.t==="f"||isOp(t,"("));
+  const FN = {r:Math.sqrt, sin:v=>Math.sin(v*Math.PI/180), cos:v=>Math.cos(v*Math.PI/180), tan:v=>Math.tan(v*Math.PI/180)};
+  function pExpr(){ let l=pTerm(); while(isOp(peek(),"+")||isOp(peek(),"-")){ const o=next().v, r=pTerm(), L=l; l = o==="+" ? x=>L(x)+r(x) : x=>L(x)-r(x); } return l; }
+  function pTerm(){ let l=pUnary(); for(;;){ const t=peek();
+      if(isOp(t,"*")||isOp(t,"/")){ next(); const r=pUnary(), L=l; l = t.v==="*" ? x=>L(x)*r(x) : x=>L(x)/r(x); }
+      else if(starts(t)){ const r=pPow(), L=l; l = x=>L(x)*r(x); }
+      else break; } return l; }
+  function pUnary(){ const t=peek(); if(isOp(t,"-")||isOp(t,"+")){ next(); const u=pUnary(); return t.v==="-" ? x=>-u(x) : u; } return pPow(); }
+  function pPow(){ const b=pPrim(); if(isOp(peek(),"^")){ next(); const e=pUnary(); return x=>Math.pow(b(x),e(x)); } return b; }
+  function pPrim(){ const t=next(); if(!t) throw new Error("Ende");
+    if(t.t==="n") return ()=>t.v;
+    if(t.t==="c") return ()=>t.v;
+    if(t.t==="x"){ usesX=true; return x=>x; }
+    if(t.t==="f"){ const a = isOp(peek(),"(") ? pPrim() : pPow(); const f=FN[t.v]; return x=>f(a(x)); }
+    if(isOp(t,"(")){ const e=pExpr(); if(!isOp(next(),")")) throw new Error("Klammer"); return e; }
+    throw new Error("Syntax"); }
+  const fn = pExpr();
+  if(pos < toks.length) throw new Error("Rest");
+  return {fn, usesX};
+}
+function sameFn(f, g, skip=[]){
+  let n = 0;
+  for(const x of [-3.7,-2.3,-1.4,-0.6,0.35,1.3,2.6,3.9,5.2,7.1]){
+    if(skip.some(s=>Math.abs(s-x)<1e-9)) continue;
+    const b = g(x); if(!isFinite(b)) continue;
+    const a = f(x); if(!isFinite(a)) return false;
+    if(Math.abs(a-b) > 1e-6*Math.max(1,Math.abs(b))) return false;
+    n++;
+  }
+  return n >= 5;
+}
+function linCoeffs(f){ const t=f(0), m=f(1)-t; for(const x of [2,-3,5.5]) if(!(Math.abs(f(x)-(m*x+t))<1e-6)) return null; return {m,t}; }
+function quadCoeffs(f){
+  const c=f(0), p=f(1), q=f(-1), a=(p+q-2*c)/2, b=(p-q)/2;
+  for(const x of [2,-3,4.5,-2.5]){ const v=f(x); if(!(Math.abs(v-(a*x*x+b*x+c)) < 1e-6*Math.max(1,Math.abs(v)))) return null; }
+  return {a,b,c};
+}
+const near = (a,b,t=1e-6) => Math.abs(a-b) <= t;
+
+/* ---------- Koordinatensystem als SVG ---------- */
+let svgId = 0;
+function plot(o){
+  const {xmin,xmax,ymin,ymax} = o, W = o.w || 300;
+  const H = o.h || Math.round(W*(ymax-ymin)/(xmax-xmin));
+  const sx = x => (x-xmin)/(xmax-xmin)*W, sy = y => H-(y-ymin)/(ymax-ymin)*H;
+  const id = "p"+(++svgId), tick = o.tick || 1, ytick = o.ytick || tick, gx = o.gx || 1, gy = o.gy || 1, fs = o.fs || 13.5;
+  let s = `<svg class="plot" viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.label||"Koordinatensystem"}">`;
+  s += `<defs><clipPath id="${id}"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath>
+    <marker id="${id}a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1E2633"/></marker></defs>`;
+  for(let x=Math.ceil(xmin/gx)*gx; x<=xmax; x+=gx) s += `<line x1="${sx(x)}" y1="0" x2="${sx(x)}" y2="${H}" stroke="#E3EAF3" stroke-width="1"/>`;
+  for(let y=Math.ceil(ymin/gy)*gy; y<=ymax; y+=gy) s += `<line x1="0" y1="${sy(y)}" x2="${W}" y2="${sy(y)}" stroke="#E3EAF3" stroke-width="1"/>`;
+  if(o.band==="y") s += `<rect x="${sx(0)-6}" y="0" width="12" height="${H}" fill="#FFE35A" opacity=".7"/>`;
+  if(o.band==="x") s += `<rect x="0" y="${sy(0)-6}" width="${W}" height="12" fill="#FFE35A" opacity=".7"/>`;
+  const x0 = (xmin<=0 && 0<=xmax) ? sx(0) : 0, y0 = (ymin<=0 && 0<=ymax) ? sy(0) : H;
+  s += `<line x1="0" y1="${y0}" x2="${W-2}" y2="${y0}" stroke="#1E2633" stroke-width="1.3" marker-end="url(#${id}a)"/>`;
+  s += `<line x1="${x0}" y1="${H}" x2="${x0}" y2="2" stroke="#1E2633" stroke-width="1.3" marker-end="url(#${id}a)"/>`;
+  s += `<text x="${W-12}" y="${y0-7}" font-size="16" font-style="italic" font-family="Georgia,serif">x</text>`;
+  s += `<text x="${x0+7}" y="14" font-size="16" font-style="italic" font-family="Georgia,serif">y</text>`;
+  if(!o.noTicks){
+  for(let x=Math.floor(xmin/tick)*tick+tick; x<xmax-1e-9; x+=tick){ if(Math.abs(x)<1e-9) continue;
+    s += `<line x1="${sx(x)}" y1="${y0-3}" x2="${sx(x)}" y2="${y0+3}" stroke="#1E2633"/><text x="${sx(x)}" y="${y0+fs+4}" font-size="${fs}" fill="#5A6576" text-anchor="middle">${num(x)}</text>`; }
+  for(let y=Math.floor(ymin/ytick)*ytick+ytick; y<ymax-1e-9; y+=ytick){ if(Math.abs(y)<1e-9) continue;
+    s += `<line x1="${x0-3}" y1="${sy(y)}" x2="${x0+3}" y2="${sy(y)}" stroke="#1E2633"/><text x="${x0-6}" y="${sy(y)+4}" font-size="${fs}" fill="#5A6576" text-anchor="end">${num(y)}</text>`; } }
+  s += `<g clip-path="url(#${id})">`;
+  for(const v of (o.vlines||[])) s += `<line x1="${sx(v)}" y1="0" x2="${sx(v)}" y2="${H}" stroke="#3A5E94" stroke-width="1.5" stroke-dasharray="6 5"/>`;
+  for(const h of (o.hlines||[])) s += `<line x1="0" y1="${sy(h)}" x2="${W}" y2="${sy(h)}" stroke="#3A5E94" stroke-width="1.5" stroke-dasharray="6 5"/>`;
+  for(const g of (o.fns||[])){
+    const N = 600, dx = (xmax-xmin)/N, span = ymax-ymin;
+    let d = "", pen = false, prev = null;
+    for(let k=0; k<=N; k++){
+      const x = xmin+k*dx, y = g.f(x);
+      const bad = !isFinite(y) || y>ymax+span || y<ymin-span || (prev!==null && Math.abs(y-prev)>span);
+      if(bad){ pen=false; prev = isFinite(y)?y:null; continue; }
+      d += (pen?"L":"M") + sx(x).toFixed(1) + " " + sy(y).toFixed(1);
+      pen = true; prev = y;
+    }
+    s += `<path d="${d}" fill="none" stroke="${g.color||"#1C3D72"}" stroke-width="3"/>`;
+  }
+  for(const g of (o.segs||[])) s += `<line x1="${sx(g.x1)}" y1="${sy(g.y1)}" x2="${sx(g.x2)}" y2="${sy(g.y2)}" stroke="${g.color||"#B06F12"}" stroke-width="${g.w||2.5}"${g.dash?` stroke-dasharray="5 4"`:""}/>`;
+  s += `</g>`;
+  for(const t of (o.texts||[])) s += `<text x="${sx(t.x)}" y="${sy(t.y)}" font-size="${t.fs||14.5}" font-weight="700" fill="${t.color||"#B06F12"}" text-anchor="${t.anchor||"middle"}">${t.t}</text>`;
+  for(const p of (o.pts||[])){
+    s += `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="6" fill="${p.color||"#BE2F29"}" stroke="#fff" stroke-width="2"/>`;
+    if(p.label) s += `<text x="${sx(p.x)+(p.dx||8)}" y="${sy(p.y)+(p.dy||-9)}" font-size="15" font-weight="700" fill="${p.color||"#BE2F29"}" text-anchor="${p.anchor||"start"}">${p.label}</text>`;
+  }
+  return s + `</svg>`;
+}
+
+/* ---------- Eingabe-Bausteine ---------- */
+function wChoice({q, options, correct, wrong={}, cols=1}){
+  const root = el("div","w"); if(q) root.append(el("p","wq",q));
+  const box = el("div","opts"+(cols===2?" g2":"")), fb = el("div","fb");
+  let sel = null;
+  const btns = options.map((o,i) => {
+    const b = el("button","opt",o); b.type="button"; b.setAttribute("aria-pressed","false");
+    b.onclick = () => { sel=i; btns.forEach(x=>{x.classList.remove("sel","right","wrong"); x.setAttribute("aria-pressed","false");}); b.classList.add("sel"); b.setAttribute("aria-pressed","true"); };
+    box.append(b); return b; });
+  root.append(box, fb);
+  return {el:root, fb,
+    check(){ if(sel===null) return {ok:false,msg:"Wähle eine Antwort aus."};
+      if(sel===correct){ btns[sel].classList.add("right"); return {ok:true}; }
+      btns[sel].classList.add("wrong"); return {ok:false,msg:wrong[sel]||"Das passt noch nicht."}; },
+    reveal(){ btns.forEach(b=>b.classList.remove("wrong","sel")); btns[correct].classList.add("right"); },
+    lock(){ btns.forEach(b=>b.disabled=true); } };
+}
+function wMulti({q, options, correct, wrong={}, chips=false, cols=1}){
+  const root = el("div","w"); if(q) root.append(el("p","wq",q));
+  const box = el("div", chips?"chips":("opts"+(cols===2?" g2":""))), fb = el("div","fb");
+  const on = new Set();
+  const btns = options.map((o,i) => {
+    const b = el("button", chips?"chip":"opt", o); b.type="button"; b.setAttribute("aria-pressed","false");
+    b.onclick = () => { if(on.has(i)) on.delete(i); else on.add(i); b.classList.toggle("sel", on.has(i)); b.setAttribute("aria-pressed", on.has(i)); btns.forEach(x=>x.classList.remove("right","wrong")); };
+    box.append(b); return b; });
+  root.append(box, fb);
+  return {el:root, fb,
+    check(){ if(!on.size) return {ok:false,msg:"Markiere mindestens eine Antwort."};
+      let msg = null;
+      for(const i of on){ if(!correct.includes(i)){ btns[i].classList.add("wrong"); msg = msg || wrong[i] || "Mindestens eine markierte Antwort stimmt nicht."; } else btns[i].classList.add("right"); }
+      if(msg) return {ok:false,msg};
+      if(correct.some(i=>!on.has(i))) return {ok:false,msg:"Richtig bisher – aber es gibt noch eine weitere richtige Antwort."};
+      return {ok:true}; },
+    reveal(){ btns.forEach((b,i)=>{ b.classList.remove("wrong","sel"); b.classList.toggle("right", correct.includes(i)); }); },
+    lock(){ btns.forEach(b=>b.disabled=true); } };
+}
+/* Zuordnen: mode "select" (Textoptionen) oder "chips" (kurze Optionen, auch mit Formeln) */
+function wMatch({q, items, options, mode="select", txt=false, wrongMsg}){
+  const root = el("div","w"); if(q) root.append(el("p","wq",q));
+  const fb = el("div","fb");
+  const rows = items.map(it => {
+    const row = el("div", mode==="select" ? "mrow sel" : "mrow"); row.append(el("div","mt",it.t));
+    let getVal, setVal, lockRow;
+    if(mode==="select"){
+      const s = el("select","sel"); s.setAttribute("aria-label","Zuordnung wählen");
+      s.innerHTML = `<option value="">– bitte wählen –</option>` + options.map((o,i)=>`<option value="${i}">${o}</option>`).join("");
+      s.onchange = () => row.classList.remove("right","wrong");
+      row.append(s);
+      getVal = () => s.value===""?null:+s.value; setVal = v => s.value=v; lockRow = () => s.disabled=true;
+    } else {
+      const box = el("div","chips"); let v = null;
+      const bs = options.map((o,i)=>{ const b=el("button","chip"+(txt?" txt":""),o); b.type="button"; b.setAttribute("aria-pressed","false");
+        b.onclick=()=>{ v=i; bs.forEach(x=>{x.classList.toggle("sel",x===b); x.setAttribute("aria-pressed",x===b);}); row.classList.remove("right","wrong"); }; box.append(b); return b; });
+      row.append(box);
+      getVal = () => v; setVal = k => { v=k; bs.forEach((x,i)=>x.classList.toggle("sel",i===k)); }; lockRow = () => bs.forEach(b=>b.disabled=true);
+    }
+    root.append(row);
+    return {row, it, getVal, setVal, lockRow};
+  });
+  root.append(fb);
+  return {el:root, fb,
+    check(){ let open=0, bad=0, firstMsg=null;
+      rows.forEach(r=>{ const v=r.getVal(); r.row.classList.remove("right","wrong");
+        if(v===null){ open++; return; }
+        if(v===r.it.a) r.row.classList.add("right"); else { r.row.classList.add("wrong"); bad++; if(!firstMsg && r.it.w && r.it.w[v]) firstMsg=r.it.w[v]; } });
+      if(open) return {ok:false,msg:`Es fehlen noch ${open} Zuordnung${open>1?"en":""}.`};
+      if(bad) return {ok:false,msg: firstMsg || (wrongMsg||"") + `${bad} von ${rows.length} Zuordnungen stimmen noch nicht (rot markiert).`};
+      return {ok:true}; },
+    reveal(){ rows.forEach(r=>{ r.setVal(r.it.a); r.row.classList.remove("wrong"); r.row.classList.add("right"); }); },
+    lock(){ rows.forEach(r=>r.lockRow()); } };
+}
+/* Eingabefelder: Zahl oder Term */
+function wFields(fields){
+  const root = el("div","w"), fb = el("div","fb");
+  const ins = fields.map(f => {
+    const row = el("div","frow");
+    if(f.pre) row.append(el("span","pre",f.pre));
+    const inp = el("input","in"+(f.term?" wide":"")); inp.type="text"; inp.autocomplete="off"; inp.spellcheck=false;
+    inp.setAttribute("autocapitalize","off"); inp.setAttribute("aria-label", f.aria || "Antwort");
+    inp.inputMode = "text"; inp.setAttribute("autocorrect","off");
+    if(f.ph) inp.placeholder = f.ph;
+    inp.oninput = () => inp.classList.remove("right","wrong");
+    row.append(inp);
+    if(f.post) row.append(el("span","post",f.post));
+    root.append(row);
+    return {f, inp};
+  });
+  root.append(fb);
+  if(fields.some(f=>f.term)) root.append(el("p","syntax","Schreibweise: ^ für Hochzahlen (x^2), / für Brüche, das Malzeichen darf fehlen."));
+  return {el:root, fb,
+    check(){ const msgs=[];
+      for(const {f,inp} of ins){
+        inp.classList.remove("right","wrong");
+        const raw = inp.value.trim();
+        if(!raw){ msgs.push("Fülle alle Felder aus."); inp.classList.add("wrong"); continue; }
+        let c; try{ c = compile(raw); }catch(e){ inp.classList.add("wrong"); msgs.push(`„${raw}“ kann ich nicht lesen – prüfe die Schreibweise.`); continue; }
+        if(f.term){
+          const r = f.check(c.fn, raw, c.usesX);
+          if(r===true) inp.classList.add("right"); else { inp.classList.add("wrong"); msgs.push(r); }
+        } else {
+          if(c.usesX){ inp.classList.add("wrong"); msgs.push("Hier ist eine Zahl gesucht, kein Term mit x."); continue; }
+          const v = c.fn(0);
+          if(near(v, f.ans, f.tol||1e-6)) { inp.classList.add("right"); continue; }
+          inp.classList.add("wrong");
+          const e = (f.errs||[]).find(e=>near(v,e.v,e.tol||1e-6));
+          msgs.push(e ? e.msg : (f.msg || "Dieser Wert stimmt noch nicht."));
+        }
+      }
+      const uniq = [...new Set(msgs)];
+      return uniq.length ? {ok:false,msg:uniq.slice(0,2).join(" ")} : {ok:true}; },
+    reveal(){ ins.forEach(({f,inp})=>{ inp.value = f.show || num(f.ans); inp.classList.remove("wrong"); inp.classList.add("right"); }); },
+    lock(){ ins.forEach(({inp})=>inp.disabled=true); } };
+}
+/* Quadratische Gleichungen: zwei Lösungsfelder + „keine Lösung“ */
+function wSolve(eqs){
+  const root = el("div","w"), fb = el("div","fb");
+  const rows = eqs.map(q => {
+    const row = el("div","srow"); row.append(el("div","eq",q.eq));
+    const line = el("div","frow");
+    const a = el("input","in"), b = el("input","in");
+    [a,b].forEach((inp,k)=>{ inp.type="text"; inp.inputMode="text"; inp.autocomplete="off"; inp.spellcheck=false; inp.setAttribute("autocorrect","off"); inp.setAttribute("autocapitalize","off"); inp.setAttribute("aria-label",`Lösung ${k+1}`); inp.oninput=()=>{inp.classList.remove("right","wrong"); none=false; nb.classList.remove("sel","right","wrong");}; });
+    const nb = el("button","chip none","keine Lösung"); nb.type="button";
+    let none = false;
+    nb.onclick = () => { none=!none; nb.classList.toggle("sel",none); nb.classList.remove("right","wrong"); if(none){ a.value=""; b.value=""; a.classList.remove("right","wrong"); b.classList.remove("right","wrong"); } };
+    line.append(el("span","",`${X}<sub>1</sub> =`), a, el("span","",`${X}<sub>2</sub> =`), b, nb);
+    row.append(line); root.append(row);
+    return {q,a,b,nb,get none(){return none;}, set none(v){none=v;}};
+  });
+  root.append(fb);
+  return {el:root, fb,
+    check(){ const msgs=[];
+      for(const r of rows){
+        const {q,a,b,nb} = r;
+        if(r.none){
+          if(q.sol.length===0){ nb.classList.add("right"); continue; }
+          nb.classList.add("wrong"); msgs.push(`${q.name}: Diese Gleichung hat Lösungen.`); continue;
+        }
+        const vals=[]; let bad=false;
+        for(const inp of [a,b]){ if(!inp.value.trim()) continue;
+          try{ const c=compile(inp.value); if(c.usesX) throw 0; vals.push(c.fn(0)); }catch(e){ bad=true; inp.classList.add("wrong"); } }
+        if(bad){ msgs.push(`${q.name}: Eine Eingabe kann ich nicht lesen.`); continue; }
+        if(!vals.length){ msgs.push(`${q.name}: Trage die Lösungen ein oder wähle „keine Lösung“.`); continue; }
+        const custom = q.errs ? q.errs(vals) : null;
+        const allIn = vals.every(v=>q.sol.some(s=>near(v,s)));
+        const complete = q.sol.every(s=>vals.some(v=>near(v,s)));
+        [a,b].forEach(inp=>{ if(!inp.value.trim()) return; try{ const v=compile(inp.value).fn(0); inp.classList.add(q.sol.some(s=>near(v,s))?"right":"wrong"); }catch(e){} });
+        if(q.sol.length===0){ msgs.push(custom || `${q.name}: Prüfe, ob diese Gleichung überhaupt Lösungen hat.`); continue; }
+        if(allIn && complete) continue;
+        if(custom){ msgs.push(`${q.name}: ${custom}`); continue; }
+        if(allIn) msgs.push(`${q.name}: Stimmt – aber es fehlt noch eine Lösung.`);
+        else msgs.push(`${q.name}: Mindestens eine Lösung stimmt nicht.`);
+      }
+      return msgs.length ? {ok:false,msg:msgs.slice(0,2).join(" ")} : {ok:true}; },
+    reveal(){ rows.forEach(r=>{ if(r.q.sol.length===0){ r.none=true; r.nb.classList.add("sel","right"); r.a.value=""; r.b.value=""; }
+        else { r.a.value=num(r.q.sol[0]); r.b.value=r.q.sol[1]!==undefined?num(r.q.sol[1]):""; r.a.classList.add("right"); if(r.b.value) r.b.classList.add("right"); } }); },
+    lock(){ rows.forEach(r=>{ r.a.disabled=r.b.disabled=r.nb.disabled=true; }); } };
+}
+/* Vierfeldertafel */
+function wVFT(){
+  const root = el("div","w vwrap"), fb = el("div","fb");
+  const ans = {b:80, c:180, d:120, Sb:300, Fb:200};
+  const inputs = {};
+  const cell = k => { const i=el("input","in"); i.type="text"; i.inputMode="numeric"; i.autocomplete="off"; i.setAttribute("aria-label","Feld der Vierfeldertafel"); i.oninput=()=>i.classList.remove("right","wrong"); inputs[k]=i; const td=el("td"); td.append(i); return td; };
+  const t = el("table","vft");
+  const tr1 = el("tr"); tr1.append(el("th",""," "), el("th","","F"), el("th","",O("F")), el("th","","Summe"));
+  const tr2 = el("tr"); tr2.append(el("th","","S"), el("td","","120"), cell("b"), el("td","","200"));
+  const tr3 = el("tr"); tr3.append(el("th","",O("S")), cell("c"), cell("d"), cell("Sb"));
+  const tr4 = el("tr"); tr4.append(el("th","","Summe"), el("td","","300"), cell("Fb"), el("td","","500"));
+  t.append(tr1,tr2,tr3,tr4); root.append(t, fb);
+  return {el:root, fb,
+    check(){ let open=0, bad=0;
+      for(const k in ans){ const i=inputs[k]; i.classList.remove("right","wrong");
+        if(!i.value.trim()){ open++; continue; }
+        const v = parseFloat(i.value.replace(",",".").replace(/\s/g,""));
+        if(v===ans[k]) i.classList.add("right"); else { i.classList.add("wrong"); bad++; } }
+      if(open) return {ok:false,msg:"Fülle alle leeren Felder aus."};
+      if(bad) return {ok:false,msg:"Rot markierte Felder stimmen nicht. Jede Zeile und jede Spalte muss aufgehen."};
+      return {ok:true}; },
+    reveal(){ for(const k in ans){ inputs[k].value=ans[k]; inputs[k].classList.add("right"); } },
+    lock(){ for(const k in ans) inputs[k].disabled=true; } };
+}
+
+/* ---------- Skizzen ---------- */
+function rampSVG(){
+  return `<svg class="sk" viewBox="0 0 360 170" role="img" aria-label="Rampe als rechtwinkliges Dreieck">
+  <polygon points="40,140 310,140 310,40" fill="#E8EEF8" stroke="#1C3D72" stroke-width="2.2"/>
+  <polyline points="296,140 296,126 310,126" fill="none" stroke="#1C3D72" stroke-width="1.5"/>
+  <path d="M85 140 A45 45 0 0 0 82.2 124.4" fill="none" stroke="#BE2F29" stroke-width="2"/>
+  <text x="92" y="136" font-size="17" font-style="italic" font-family="Georgia,serif" fill="#BE2F29">α</text>
+  <text x="160" y="78" font-size="16" font-family="Georgia,serif" transform="rotate(-20.3 160 78)">Rampe: 6 m</text>
+  <text x="318" y="96" font-size="16" font-family="Georgia,serif">1,2 m</text>
+  <text x="120" y="162" font-size="13" fill="#5A6576">Skizze nicht maßstäblich</text></svg>`;
+}
+function unitQuadrantSVG(){
+  const ox=44, oy=276, u=240; let s=`<svg class="sk" viewBox="0 0 320 300" role="img" aria-label="Viertel des Einheitskreises mit Winkel 53 Grad">`;
+  for(let k=0;k<=11;k++){ const p=k*u/10; s+=`<line x1="${ox+p}" y1="${oy}" x2="${ox+p}" y2="${oy-u*1.1}" stroke="#E3EAF3"/><line x1="${ox}" y1="${oy-p}" x2="${ox+u*1.1}" y2="${oy-p}" stroke="#E3EAF3"/>`; }
+  s+=`<line x1="${ox}" y1="${oy}" x2="${ox+u*1.12}" y2="${oy}" stroke="#1E2633" stroke-width="1.3"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy-u*1.12}" stroke="#1E2633" stroke-width="1.3"/>`;
+  s+=`<path d="M${ox+u} ${oy} A${u} ${u} 0 0 0 ${ox} ${oy-u}" fill="none" stroke="#1C3D72" stroke-width="2"/>`;
+  const a=53*Math.PI/180, px=ox+u*Math.cos(a), py=oy-u*Math.sin(a);
+  s+=`<line x1="${ox}" y1="${oy}" x2="${px}" y2="${py}" stroke="#1C3D72" stroke-width="2"/><circle cx="${px}" cy="${py}" r="5" fill="#BE2F29"/>`;
+  s+=`<text x="${px+8}" y="${py-6}" font-size="15" font-weight="700" fill="#BE2F29">P</text>`;
+  s+=`<path d="M${ox+40} ${oy} A40 40 0 0 0 ${ox+40*Math.cos(a)} ${oy-40*Math.sin(a)}" fill="none" stroke="#BE2F29" stroke-width="1.8"/><text x="${ox+46}" y="${oy-16}" font-size="13" fill="#BE2F29">53°</text>`;
+  s+=`<text x="${ox+u/2}" y="${oy+16}" font-size="12" fill="#5A6576" text-anchor="middle">0,5</text><text x="${ox+u}" y="${oy+16}" font-size="12" fill="#5A6576" text-anchor="middle">1</text>`;
+  s+=`<text x="${ox-6}" y="${oy-u/2+4}" font-size="12" fill="#5A6576" text-anchor="end">0,5</text><text x="${ox-6}" y="${oy-u+4}" font-size="12" fill="#5A6576" text-anchor="end">1</text>`;
+  s+=`<text x="${ox-6}" y="${oy+14}" font-size="12" fill="#5A6576" text-anchor="end">0</text>`;
+  return s+`</svg>`;
+}
+function paraSVG(){
+  return `<svg class="sk" viewBox="0 0 380 170" role="img" aria-label="Parallelogramm mit Seiten 6 und 3 und Winkel alpha">
+  <polygon points="40,145 280,145 348.8,46.7 108.8,46.7" fill="#E8EEF8" stroke="#1C3D72" stroke-width="2.2"/>
+  <path d="M78 145 A38 38 0 0 0 61.8 113.9" fill="none" stroke="#BE2F29" stroke-width="2"/>
+  <text x="80" y="134" font-size="17" font-style="italic" font-family="Georgia,serif" fill="#BE2F29">α</text>
+  <text x="160" y="164" font-size="16" font-family="Georgia,serif">6</text>
+  <text x="58" y="92" font-size="16" font-family="Georgia,serif">3</text></svg>`;
+}
+
+function venn(kind, cap, labels=["A","B"]){
+  const id = "v"+(++svgId);
+  const A = `<circle cx="58" cy="52" r="32"/>`, B = `<circle cx="98" cy="52" r="32"/>`;
+  const fill = "#F2C94C";
+  let sh = "";
+  const onlyA = `<g mask="url(#${id}nb)"><circle cx="58" cy="52" r="32" fill="${fill}"/></g>`;
+  const onlyB = `<g mask="url(#${id}na)"><circle cx="98" cy="52" r="32" fill="${fill}"/></g>`;
+  const both  = `<g clip-path="url(#${id}ca)"><circle cx="98" cy="52" r="32" fill="${fill}"/></g>`;
+  const out   = `<g mask="url(#${id}nab)"><rect x="4" y="4" width="148" height="96" fill="${fill}"/></g>`;
+  if(kind==="and") sh = both;
+  if(kind==="or") sh = onlyA+onlyB+both;
+  if(kind==="notA") sh = onlyB+out;
+  if(kind==="one") sh = onlyA+onlyB;
+  if(kind==="none") sh = out;
+  if(kind==="notboth") sh = onlyA+onlyB+out;
+  return `<figure><svg viewBox="0 0 156 104" role="img" aria-label="${cap.replace(/<[^>]+>/g,"")}"><defs>
+    <mask id="${id}nb"><rect width="156" height="104" fill="#fff"/><circle cx="98" cy="52" r="32" fill="#000"/></mask>
+    <mask id="${id}na"><rect width="156" height="104" fill="#fff"/><circle cx="58" cy="52" r="32" fill="#000"/></mask>
+    <mask id="${id}nab"><rect width="156" height="104" fill="#fff"/><circle cx="58" cy="52" r="32" fill="#000"/><circle cx="98" cy="52" r="32" fill="#000"/></mask>
+    <clipPath id="${id}ca">${A}</clipPath></defs>
+    ${sh}<rect x="4" y="4" width="148" height="96" fill="none" stroke="#1C3D72" stroke-width="1.5"/>
+    <circle cx="58" cy="52" r="32" fill="none" stroke="#1C3D72" stroke-width="1.8"/><circle cx="98" cy="52" r="32" fill="none" stroke="#1C3D72" stroke-width="1.8"/>
+    <text x="14" y="24" font-size="17" font-style="italic" font-family="Georgia,serif" fill="#1C3D72">${labels[0]}</text><text x="132" y="24" font-size="17" font-style="italic" font-family="Georgia,serif" fill="#1C3D72">${labels[1]}</text>
+  </svg><figcaption>${cap}</figcaption></figure>`;
+}
+function areaSVG(){
+  const a=90,b=50,o=10;
+  return `<svg viewBox="0 0 ${a+b+2*o+24} ${a+b+2*o}" role="img" aria-label="Flächenmodell zur binomischen Formel">
+  <rect x="${o}" y="${o}" width="${a}" height="${a}" fill="#DCE6F5" stroke="#1C3D72" stroke-width="1.5"/>
+  <rect x="${o+a}" y="${o}" width="${b}" height="${a}" fill="#EEF0F3" stroke="#1C3D72" stroke-width="1.5"/>
+  <rect x="${o}" y="${o+a}" width="${a}" height="${b}" fill="#EEF0F3" stroke="#1C3D72" stroke-width="1.5"/>
+  <rect x="${o+a}" y="${o+a}" width="${b}" height="${b}" fill="#F8E3B5" stroke="#1C3D72" stroke-width="1.5"/>
+  <g font-family="Georgia,serif" font-style="italic" text-anchor="middle">
+  <text x="${o+a/2}" y="${o+a/2+6}" font-size="18">a²</text><text x="${o+a+b/2}" y="${o+a/2+6}" font-size="16">ab</text>
+  <text x="${o+a/2}" y="${o+a+b/2+6}" font-size="16">ab</text><text x="${o+a+b/2}" y="${o+a+b/2+6}" font-size="16">b²</text></g>
+  <g font-family="Georgia,serif" font-style="italic" font-size="15" fill="#5A6576">
+  <text x="${o+a+b+10}" y="${o+a/2+5}">a</text><text x="${o+a+b+10}" y="${o+a+b/2+5}">b</text></g>
+</svg>`;
+}
+function stripSVG(pLabel, pVal, qLabel, frac=0.19){
+  const x0=20, W=300, pw=W*frac;
+  return `<svg class="sk" viewBox="0 0 ${W+40} 96" role="img" aria-label="Prozentstreifen">
+  <rect x="${x0}" y="30" width="${W}" height="30" fill="#fff" stroke="#1C3D72" stroke-width="1.8"/>
+  <rect x="${x0}" y="30" width="${pw}" height="30" fill="#F2C94C" stroke="#1C3D72" stroke-width="1.8"/>
+  <g font-size="15" text-anchor="middle" font-weight="700">
+  <text x="${x0+pw/2}" y="22" fill="#B06F12">${pLabel}</text><text x="${x0+W}" y="22" fill="#1C3D72" text-anchor="end">100 %</text>
+  <text x="${x0+pw/2}" y="80" fill="#B06F12">${pVal}</text><text x="${x0+W}" y="80" fill="#1C3D72" text-anchor="end">${qLabel}</text></g>
+</svg>`;
+}
+function trigSVG(){
+  return `<svg viewBox="0 0 360 190" role="img" aria-label="Rechtwinkliges Dreieck mit Gegenkathete, Ankathete und Hypotenuse">
+  <polygon points="30,150 250,150 250,40" fill="#F4F7FC"/>
+  <line x1="30" y1="150" x2="250" y2="150" stroke="#1C3D72" stroke-width="6"/>
+  <line x1="250" y1="150" x2="250" y2="40" stroke="#B06F12" stroke-width="6"/>
+  <line x1="30" y1="150" x2="250" y2="40" stroke="#1E2633" stroke-width="3.5"/>
+  <polyline points="234,150 234,134 250,134" fill="none" stroke="#1E2633" stroke-width="1.6"/>
+  <path d="M76 150 A46 46 0 0 0 71.1 129.4" fill="none" stroke="#BE2F29" stroke-width="2.2"/>
+  <text x="84" y="143" font-size="19" font-style="italic" font-family="Georgia,serif" fill="#BE2F29">α</text>
+  <text x="140" y="176" font-size="16" font-weight="700" fill="#1C3D72" text-anchor="middle">Ankathete</text>
+  <text x="262" y="92" font-size="16" font-weight="700" fill="#B06F12">Gegen-</text><text x="262" y="112" font-size="16" font-weight="700" fill="#B06F12">kathete</text>
+  <text x="118" y="84" font-size="16" font-weight="700" fill="#1E2633" transform="rotate(-26.6 118 84)">Hypotenuse</text></svg>`;
+}
+function paraHSVG(){
+  return paraSVG().replace("</svg>", `<line x1="108.8" y1="46.7" x2="108.8" y2="145" stroke="#B06F12" stroke-width="2.5" stroke-dasharray="6 4"/>
+  <polyline points="108.8,133 120.8,133 120.8,145" fill="none" stroke="#B06F12" stroke-width="1.5"/>
+  <text x="116" y="100" font-size="15" font-weight="700" fill="#B06F12">h = 3 · sin α</text></svg>`);
+}
+function cylSVG(){
+  return `<svg class="sk" viewBox="0 0 260 220" role="img" aria-label="Zylinder mit Radius 3 und Höhe 4">
+  <ellipse cx="120" cy="170" rx="80" ry="22" fill="#E8EEF8" stroke="#1C3D72" stroke-width="2"/>
+  <rect x="40" y="50" width="160" height="120" fill="#E8EEF8" stroke="none"/>
+  <line x1="40" y1="50" x2="40" y2="170" stroke="#1C3D72" stroke-width="2"/><line x1="200" y1="50" x2="200" y2="170" stroke="#1C3D72" stroke-width="2"/>
+  <path d="M40 170 A80 22 0 0 0 200 170" fill="none" stroke="#1C3D72" stroke-width="2"/>
+  <ellipse cx="120" cy="50" rx="80" ry="22" fill="#F4F7FC" stroke="#1C3D72" stroke-width="2"/>
+  <line x1="120" y1="170" x2="200" y2="170" stroke="#B06F12" stroke-width="2.5"/><text x="160" y="164" font-size="15" font-weight="700" fill="#B06F12" text-anchor="middle">r = 3</text>
+  <line x1="120" y1="50" x2="120" y2="170" stroke="#BE2F29" stroke-width="2" stroke-dasharray="5 4"/><text x="128" y="115" font-size="15" font-weight="700" fill="#BE2F29">h = 4</text>
+  <circle cx="120" cy="170" r="3" fill="#1E2633"/></svg>`;
+}
+const mini = (f, cap, extra={}) => `<figure>${plot(Object.assign({xmin:-3,xmax:5,ymin:-5,ymax:4,w:200,noTicks:true,fns:[{f}]},extra))}<figcaption>${cap}</figcaption></figure>`;
+
+/* ---------- Zusatzskizzen ---------- */
+function todoSVG(){
+  return `<svg class="sk" viewBox="0 0 260 120" role="img" aria-label="Zwei Aufträge abhaken">
+  <rect x="16" y="18" width="30" height="30" rx="4" fill="#fff" stroke="#1C3D72" stroke-width="2.5"/><path d="M22 33 L29 41 L41 24" fill="none" stroke="#1E7746" stroke-width="4"/>
+  <text x="58" y="39" font-size="17" font-weight="600" fill="#1E2633">1. Rechnung f(10)</text>
+  <rect x="16" y="68" width="30" height="30" rx="4" fill="#fff" stroke="#1C3D72" stroke-width="2.5"/><path d="M22 83 L29 91 L41 74" fill="none" stroke="#1E7746" stroke-width="4"/>
+  <text x="58" y="89" font-size="17" font-weight="600" fill="#1E2633">2. Antwortsatz</text></svg>`;
+}
+function wheelSVG(){
+  const sec = (cx, angles, cols) => { let s="", a0=-90; angles.forEach((a,i)=>{ const a1=a0+a, r=48, p=(t)=>[cx+r*Math.cos(t*Math.PI/180), 62+r*Math.sin(t*Math.PI/180)], [x0,y0]=p(a0), [x1,y1]=p(a1);
+      s+=`<path d="M${cx} 62 L${x0} ${y0} A${r} ${r} 0 ${a>180?1:0} 1 ${x1} ${y1} Z" fill="${cols[i]}" stroke="#1C3D72" stroke-width="1.5"/>`; a0=a1; }); return s; };
+  const c = ["#E07A6F","#7FA6D9","#F2C94C"];
+  return `<svg class="sk" viewBox="0 0 280 140" role="img" aria-label="Zwei Glücksräder">
+  ${sec(70,[200,90,70],c)}${sec(210,[120,120,120],c)}
+  <text x="70" y="132" font-size="13" text-anchor="middle" fill="#BE2F29" font-weight="700">kein Laplace-Rad</text>
+  <text x="210" y="132" font-size="13" text-anchor="middle" fill="#1E7746" font-weight="700">Laplace-Rad</text></svg>`;
+}
+function circleSVG(a, plus){
+  const cx=160, cy=150, R=120, W=320, H=300, rad=t=>t*Math.PI/180;
+  const P = t => [cx+R*Math.cos(rad(t)), cy-R*Math.sin(rad(t))];
+  let s = `<svg class="sk" viewBox="0 0 ${W} ${H}" role="img" aria-label="Einheitskreis mit Winkel ${a} Grad">`;
+  s += `<line x1="10" y1="${cy}" x2="${W-10}" y2="${cy}" stroke="#1E2633" stroke-width="1.3"/><line x1="${cx}" y1="${H-10}" x2="${cx}" y2="10" stroke="#1E2633" stroke-width="1.3"/>`;
+  s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#9FB2CC" stroke-width="1.6"/>`;
+  s += `<g font-size="15" fill="#56616F"><text x="${cx+R+5}" y="${cy+18}">1</text><text x="${cx-R-18}" y="${cy+18}">−1</text><text x="${cx+7}" y="${cy-R-5}">1</text><text x="${cx+7}" y="${cy+R+17}">−1</text></g>`;
+  const draw = (t, dash) => { const [px,py]=P(t); const da = dash?` stroke-dasharray="7 5"`:"";
+    return `<line x1="${cx}" y1="${cy}" x2="${px}" y2="${py}" stroke="#56616F" stroke-width="1.6"${da}/>`+
+      `<line x1="${cx}" y1="${cy}" x2="${px}" y2="${cy}" stroke="#1C3D72" stroke-width="5"${da}/>`+
+      `<line x1="${px}" y1="${cy}" x2="${px}" y2="${py}" stroke="#B06F12" stroke-width="5"${da}/>`+
+      `<circle cx="${px}" cy="${py}" r="6" fill="#BE2F29"/>`; };
+  const la = ((a%360)+360)%360, [ax,ay]=[cx+28*Math.cos(rad(la)), cy-28*Math.sin(rad(la))];
+  if(la>0) s += `<path d="M${cx+28} ${cy} A28 28 0 ${la>180?1:0} 0 ${ax} ${ay}" fill="none" stroke="#BE2F29" stroke-width="2"/>`;
+  s += draw(a,false);
+  const [px,py]=P(a), right = Math.cos(rad(a))>=0, up = Math.sin(rad(a))>=0;
+  s += `<text x="${px+(right?9:-9)}" y="${(py+cy)/2+5}" font-size="16" fill="#B06F12" font-weight="700" text-anchor="${right?"start":"end"}">sin α</text>`;
+  s += `<text x="${(px+cx)/2}" y="${cy+(up?21:-10)}" font-size="16" fill="#1C3D72" font-weight="700" text-anchor="middle">cos α</text>`;
+  s += `<text x="${px+7}" y="${py-9}" font-size="17" font-weight="700" fill="#BE2F29">P</text>`;
+  if(plus){ s += draw(a+90,true); const [qx,qy]=P(a+90); s += `<text x="${qx+7}" y="${qy-9}" font-size="17" font-weight="700" fill="#BE2F29">Q</text>`; }
+  return s + `</svg>`;
+}
+function circleValues(a, plus){
+  const r2 = v => num(Math.round(v*100)/100), rad=a*Math.PI/180;
+  return `<b>sin α ≈ ${r2(Math.sin(rad))}</b>, <b>cos α ≈ ${r2(Math.cos(rad))}</b>` + (plus?`, <b>sin(α + 90°) ≈ ${r2(Math.sin(rad+Math.PI/2))}</b>`:"");
+}
+/* kleines Einheitskreis-Werkzeug für die Aufgabe selbst */
+function miniCircle(){
+  const box = el("div","mini-ex"); let a = 30, show = false;
+  const fig = el("div","fig"), L = el("label"), sl = el("input"), out = el("span","term");
+  sl.type="range"; sl.min=0; sl.max=360; sl.step=1; sl.value=a; sl.setAttribute("aria-label","Winkel α");
+  L.append(el("span","","α"), sl, out);
+  const C = el("label"), cb = el("input"); cb.type="checkbox"; C.append(cb, el("span","","Werte anzeigen"));
+  const info = el("p","info");
+  const upd = () => { out.textContent = a+"°"; fig.innerHTML = circleSVG(a,true);
+    info.innerHTML = "P zu α, Q (gestrichelt) zu α + 90°." + (show?"<br>"+circleValues(a,true):""); };
+  sl.oninput=()=>{a=+sl.value;upd();}; cb.onchange=()=>{show=cb.checked;upd();};
+  box.append(fig, L, C, info); upd(); return box;
+}
+const miniP = (o) => plot(Object.assign({w:240,noTicks:true},o));
+
+/* ---------- Stationen ---------- */
+const ST = [];
+
+/* ===== Station 1 ===== */
+ST.push({
+  title:"Was will die Aufgabe?", short:"Operatoren verstehen", quick:["Alle Operatoren im Aufgabentext markieren","Angeben → nur das Ergebnis","Berechnen / Bestimmen → Weg zeigen","Zeigen → vorgegebenes Ergebnis durch Rechnung bestätigen","Begründen → „weil …“, Deuten → Antwortsatz"],
+  lead:"Operatoren sagen dir, was du tun und wie viel du hinschreiben musst. Oft stehen mehrere in einem Satz.",
+  merke:`<h2>Merke: Operatoren im BMT</h2>
+  <p><span class="mk">Markiere alle Operatoren im Aufgabentext.</span> Jeder Operator ist ein eigener Auftrag – und für jeden gibt es Punkte.</p>
+  <dl class="ops">
+    <dt>Geben Sie an</dt><dd><span class="mk">Ergebnis genügt</span>, kein Rechenweg nötig.</dd>
+    <dt>Berechnen Sie</dt><dd>Rechenweg muss erkennbar sein.</dd>
+    <dt>Bestimmen / Ermitteln Sie</dt><dd>Weg frei wählbar (Rechnung, Zeichnung), aber erkennbar.</dd>
+    <dt>Zeigen Sie (rechnerisch)</dt><dd>Ergebnis steht schon da: <span class="mk">mit Rechnung bestätigen</span>, meist durch Einsetzen.</dd>
+    <dt>Begründen Sie</dt><dd>Mathematisches Argument, am besten mit „weil …“.</dd>
+    <dt>Beschreiben Sie</dt><dd>In Worten mit Fachbegriffen („um 2 nach links verschoben“).</dd>
+    <dt>Deuten Sie</dt><dd><span class="mk">Antwortsatz</span> mit Einheit und Bezug zur Situation.</dd>
+  </dl>
+  <div class="ex"><div><p><b class="t">Beispiel: zwei Operatoren, zwei Aufträge</b></p>
+    <div class="anno"><span class="op">Berechnen</span> Sie <span class="ges"><i>f</i>(10)</span> und <span class="op">deuten</span> Sie das Ergebnis im Sachzusammenhang.</div>
+    <div class="legend"><span class="l1">Operatoren</span><span class="l2">gesucht: ein Funktionswert, also x = 10 einsetzen</span></div></div>
+    <figure>${todoSVG()}<figcaption>Im BMT beide Aufträge abhaken</figcaption></figure></div>`,
+  tasks:[
+    { prompt:`<p>Was musst du jeweils hinschreiben, um volle Punkte zu bekommen? Ordne zu.</p>`,
+      parts:[()=>wMatch({ mode:"select",
+        options:["nur das Ergebnis","Rechenweg und Ergebnis","eine Rechnung, die ein vorgegebenes Ergebnis bestätigt","eine Beschreibung in Worten mit Fachbegriffen","ein Argument mit „weil …“","Rechnung und Antwortsatz zur Situation"],
+        items:[
+          {t:"„Geben Sie die Nullstellen von <i>g</i> an.“", a:0},
+          {t:"„Zeigen Sie rechnerisch, dass −1 Nullstelle von <i>f</i> ist.“", a:2},
+          {t:"„Beschreiben Sie, wie der Graph von <i>g</i> aus dem Graphen von <i>f</i> hervorgeht.“", a:3},
+          {t:"„Berechnen Sie <i>f</i>(10) und deuten Sie das Ergebnis im Sachzusammenhang.“", a:5},
+          {t:"„Begründen Sie, dass der Term nicht für alle reellen Zahlen definiert ist.“", a:4},
+          {t:`„Bestimmen Sie für ${X} ∈ ℝ die Lösungen der Gleichung.“`, a:1}
+        ]})],
+      hints:["Markiere in jedem Satz alle Operatoren und vergleiche sie mit dem Merkkasten.",
+             "„Zeigen“ heißt: Das Ergebnis steht schon in der Aufgabe – du bestätigst es nur. Stehen zwei Operatoren im Satz („berechnen … und deuten“), sind auch zwei Dinge verlangt."],
+      sol:`<p>Angeben → nur Ergebnis. Zeigen → bestätigende Rechnung. Beschreiben → Worte mit Fachbegriffen. Berechnen und deuten → Rechnung plus Antwortsatz. Begründen → Argument mit „weil“. Bestimmen → Rechenweg und Ergebnis.</p>` },
+
+    { prompt:`<p class="bmt">Zeigen Sie rechnerisch, dass ${X} = −1 eine Nullstelle der Funktion <i>f</i> mit <i>f</i>(${X}) = ${F("4",X+" + 3")} − 2 ist.</p><p>Welche Schülerantworten bekommen volle Punkte? Markiere alle.</p>`,
+      parts:[()=>wMulti({ cols:2,
+        options:[
+          `„<i>f</i>(−1) = ${F("4","−1 + 3")} − 2 = ${F("4","2")} − 2 = 0 ✓“`,
+          `„<i>f</i>(−1) = 0, also ist −1 eine Nullstelle.“`,
+          `„${F("4",X+" + 3")} − 2 = 0 ⇒ ${F("4",X+" + 3")} = 2 ⇒ ${X} + 3 = 2 ⇒ ${X} = −1“`,
+          `„Am Graphen sieht man, dass er die ${X}-Achse bei −1 schneidet.“`],
+        correct:[0,2],
+        wrong:{1:"Diese Antwort behauptet nur das Ergebnis – es fehlt die Rechnung.",3:"„Rechnerisch“ verlangt eine Rechnung. Ein Blick auf den Graphen reicht nicht."}})],
+      hints:["„Rechnerisch“ – eine bloße Behauptung oder ein Blick auf den Graphen reicht nicht.",
+             "Einsetzen genügt: Kommt 0 heraus, ist −1 Nullstelle. Das komplette Lösen der Gleichung ist auch richtig – nur mehr Arbeit."],
+      sol:`<p>Volle Punkte: die Einsetz-Rechnung und das vollständige Lösen der Gleichung. Die bloße Behauptung und der Verweis auf den Graphen sind keine Rechnung.</p>` },
+
+    { prompt:`<p>Die Anzahl der Kinos in einem Land wird modellhaft durch <i>f</i>(${X}) = −40${X} + 1800 beschrieben. Dabei ist ${X} die Zeit in Jahren seit 2015.</p>
+       <p class="bmt">Berechnen Sie <i>f</i>(5) und deuten Sie das Ergebnis im Sachzusammenhang.</p><p>Welche Antwort ist vollständig und richtig?</p>`,
+      parts:[()=>wChoice({
+        options:[
+          `<i>f</i>(5) = 1600`,
+          `<i>f</i>(5) = 1600. Nach 5 Jahren wurden 1600 Kinos geschlossen.`,
+          `<i>f</i>(5) = −40 · 5 + 1800 = 1600. Im Jahr 2020 gibt es laut Modell etwa 1600 Kinos.`,
+          `<i>f</i>(5) = 1600. Es gibt 5 Jahre lang 1600 Kinos.`],
+        correct:2,
+        wrong:{0:"Die Rechnung stimmt, aber der zweite Auftrag „deuten“ fehlt – also kein Antwortsatz zur Situation.",1:"f(5) ist die Anzahl der Kinos, die es nach 5 Jahren noch gibt – nicht die Zahl der geschlossenen.",3:"x = 5 ist ein Zeitpunkt (das Jahr 2020), kein Zeitraum."}})],
+      hints:["Zwei Operatoren: „berechnen“ und „deuten“. Deuten braucht einen Satz: Was bedeutet die Zahl in der Situation?",
+             "x = 5 heißt: 5 Jahre nach 2015, also 2020. f(x) ist die Anzahl der Kinos zu diesem Zeitpunkt."],
+      sol:`<p><i>f</i>(5) = −40 · 5 + 1800 = 1600. Im Jahr 2020 gibt es laut Modell etwa 1600 Kinos.</p>` }
+  ]
+});
+
+/* ===== Station 2 ===== */
+const g2 = {y:false, z:false}, g2els = [];
+function g2html(){
+  const pts = [];
+  if(g2.y) pts.push({x:0,y:-3,label:"(0 | −3)",dx:9,dy:18});
+  if(g2.z) pts.push({x:-1,y:0,label:"−1",dx:-9,dy:-10,anchor:"end"},{x:3,y:0,label:"3",dx:9,dy:-10});
+  return plot({xmin:-4,xmax:6,ymin:-5,ymax:6,w:300,fns:[{f:x=>(x-1)**2-4}],pts,label:"Graph der Funktion f"});
+}
+function g2fig(){ const d = el("div","fig"); d.innerHTML = g2html(); g2els.push(d); return d; }
+function drawG2(){ g2els.forEach(d => d.innerHTML = g2html()); }
+const bandY = () => miniP({xmin:-4,xmax:6,ymin:-5,ymax:6,band:"y",fns:[{f:x=>(x-1)**2-4}],texts:[{x:0.5,y:4.6,t:"x = 0",anchor:"start"}]});
+const bandX = () => miniP({xmin:-4,xmax:6,ymin:-5,ymax:6,band:"x",fns:[{f:x=>(x-1)**2-4}],texts:[{x:1,y:1.3,t:"y = 0"}]});
+ST.push({
+  title:"Nullstelle oder y-Achsenabschnitt?", short:"x = 0 oder f(x) = 0", quick:["y-Achse → <i>x</i> = 0 einsetzen","Nullstellen → <i>f</i>(<i>x</i>) = 0 lösen","<i>x</i> bekannt → einsetzen","y bekannt → Gleichung lösen"],
+  lead:"Eine typische Verwechslung: Wann setzt du x = 0 ein – und wann setzt du f(x) = 0?",
+  merke:`<h2>Merke</h2>
+  <div class="two">
+    <div><div><h3>Schnittpunkt mit der y-Achse</h3><p>Jeder Punkt auf der y-Achse hat <b>x = 0</b>.</p><p><span class="mk">x = 0 einsetzen</span>: <i>f</i>(0) berechnen.</p><p>Ergebnis: ein y-Wert.</p></div>
+      <div class="fig">${plot({xmin:-3,xmax:5,ymin:-5,ymax:4,w:220,noTicks:true,band:"y",fns:[{f:x=>(x-1)**2-4}],pts:[{x:0,y:-3}],texts:[{x:0.45,y:2.6,t:"x = 0",anchor:"start"}],label:"y-Achsenabschnitt"})}</div></div>
+    <div><div><h3>Nullstellen (Schnitt mit der x-Achse)</h3><p>Jeder Punkt auf der x-Achse hat <b>y = 0</b>.</p><p><span class="mk"><i>f</i>(${X}) = 0 setzen</span> und nach ${X} auflösen.</p><p>Ergebnis: x-Werte.</p></div>
+      <div class="fig">${plot({xmin:-3,xmax:5,ymin:-5,ymax:4,w:220,noTicks:true,band:"x",fns:[{f:x=>(x-1)**2-4}],pts:[{x:-1,y:0},{x:3,y:0}],texts:[{x:1,y:1.4,t:"y = 0"}],label:"Nullstellen"})}</div></div>
+  </div>
+  <p>Allgemein: <b>${X} bekannt, y gesucht</b> → einsetzen. <b>y bekannt, ${X} gesucht</b> → Gleichung <i>f</i>(${X}) = … lösen. Schnittpunkt zweier Graphen: <i>f</i>(${X}) = <i>g</i>(${X}).</p>`,
+  tasks:[
+    { prompt:`<p>Einsetzen oder Gleichung lösen? Entscheide für jede Frage.</p>`,
+      parts:[()=>wMatch({ mode:"chips", txt:true, options:["x einsetzen","Gleichung lösen"],
+        items:[
+          {t:"Berechnen Sie die y-Koordinate des Schnittpunkts des Graphen mit der y-Achse.", a:0},
+          {t:"Bestimmen Sie die Nullstellen von <i>f</i>.", a:1},
+          {t:"Wie hoch ist der Ball 2 Sekunden nach dem Abwurf?", a:0},
+          {t:"Nach wie vielen Minuten ist der Tank leer?", a:1},
+          {t:"Geben Sie <i>f</i>(−3) an.", a:0},
+          {t:"An welcher Stelle nimmt <i>f</i> den Wert 5 an?", a:1},
+          {t:"Wo schneidet der Graph die x-Achse?", a:1},
+          {t:"Wie lang ist der Reaktionsweg bei 130 km/h?", a:0}
+        ]})],
+      hints:["Frag dich bei jeder Frage: Kenne ich x (dann einsetzen) oder kenne ich y (dann Gleichung lösen)?",
+             "Schnitt mit der x-Achse heißt y = 0 – bekannt ist also y. „Tank leer“ heißt: Wassermenge 0 – auch hier ist y bekannt."],
+      sol:`<p>Einsetzen: y-Achsenabschnitt (x = 0), Höhe nach 2 s (t = 2), <i>f</i>(−3), Reaktionsweg bei 130 km/h. Gleichung lösen: Nullstellen, Tank leer, Stelle mit Wert 5, Schnitt mit der x-Achse.</p>` },
+
+    { fig:g2fig, cap:`<i>f</i>(${X}) = (${X} − 1)${sq} − 4`,
+      prompt:`<p>Gegeben ist die Funktion <i>f</i> mit <i>f</i>(${X}) = (${X} − 1)${sq} − 4 (siehe Graph).</p><p class="bmt">Berechnen Sie die y-Koordinate des Schnittpunkts des Graphen von <i>f</i> mit der y-Achse.</p>`,
+      parts:[()=>wFields([{pre:"Schnittpunkt S(0 |", post:")", ans:-3,
+        errs:[{v:3,msg:"3 ist eine Nullstelle. Auf der y-Achse ist aber x = 0 vorgegeben, gesucht ist y."},{v:-1,msg:"−1 ist eine Nullstelle. Auf der y-Achse ist x = 0 vorgegeben, gesucht ist y."},{v:-4,msg:"−4 ist die y-Koordinate des Scheitels. Setze x = 0 ein."},{v:1,msg:"Du hast (0 − 1)² berechnet, aber die −4 vergessen."}]}])],
+      hints:[`Jeder Punkt auf der y-Achse hat x = 0 – im Bild gelb markiert. Setze also 0 für x ein.<div class="fig">${bandY()}</div>`,"<i>f</i>(0) = (0 − 1)² − 4 = 1 − 4"],
+      sol:`<p><i>f</i>(0) = (0 − 1)${sq} − 4 = 1 − 4 = −3, also S(0 | −3). Der Punkt ist jetzt im Graphen markiert.</p>`,
+      onSolved(){ g2.y=true; drawG2(); } },
+
+    { fig:g2fig, cap:`<i>f</i>(${X}) = (${X} − 1)${sq} − 4`,
+      prompt:`<p class="bmt">Bestimmen Sie die Nullstellen von <i>f</i> mit <i>f</i>(${X}) = (${X} − 1)${sq} − 4.</p>`,
+      parts:[()=>wSolve([{name:"Nullstellen", eq:`(${X} − 1)${sq} − 4 = 0`, sol:[3,-1],
+        errs:v=>{ if(v.some(a=>near(a,-3))) return "−3 ist der y-Achsenabschnitt. Für Nullstellen setzt du f(x) = 0 und löst nach x auf.";
+                  if(v.some(a=>near(a,5))) return "Beim Wurzelziehen: Aus (x − 1)² = 4 folgt x − 1 = 2 oder x − 1 = −2.";
+                  if(v.length===1 && (near(v[0],3)||near(v[0],-1))) return "Es fehlt eine Lösung: x − 1 kann 2 oder −2 sein."; return null; }}])],
+      hints:[`Nullstellen liegen auf der x-Achse, dort ist y = 0. Setze (x − 1)² − 4 = 0.<div class="fig">${bandX()}</div>`,"(x − 1)² = 4 ⇒ x − 1 = 2 oder x − 1 = −2."],
+      sol:`<p>(${X} − 1)${sq} = 4 ⇒ ${X} − 1 = 2 oder ${X} − 1 = −2 ⇒ ${X}<sub>1</sub> = 3, ${X}<sub>2</sub> = −1.</p>`,
+      onSolved(){ g2.z=true; drawG2(); } },
+
+    { prompt:`<p>Ein Ball wird von einem Turm geworfen. Seine Höhe über dem Boden wird durch <i>h</i>(<i>t</i>) = −5<i>t</i>${sq} + 10<i>t</i> + 15 beschrieben (<i>t</i>: Zeit in Sekunden nach dem Abwurf, <i>h</i>(<i>t</i>): Höhe in Metern).</p>`,
+      parts:[()=>wFields([
+        {pre:"Der Ball wird aus einer Höhe von", post:"m abgeworfen.", ans:15,
+          errs:[{v:3,msg:"3 ist der Zeitpunkt der Landung. „Abwurf“ heißt t = 0 – also einsetzen."},{v:-1,msg:"Abwurf heißt t = 0 – setze 0 für t ein."}]},
+        {pre:"Der Ball landet nach", post:"Sekunden.", ans:3,
+          errs:[{v:-1,msg:"t = −1 löst zwar die Gleichung, aber eine negative Zeit passt nicht zur Situation."},{v:15,msg:"15 m ist die Abwurfhöhe. „Landen“ heißt: Höhe 0, also h(t) = 0 lösen."}]}])],
+      hints:["Abwurf: Zeitpunkt t = 0 → einsetzen. Landen: Höhe 0 → Gleichung h(t) = 0 lösen.",
+             "−5t² + 10t + 15 = 0 | : (−5) ⇒ t² − 2t − 3 = 0 ⇒ Lösungsformel oder (t − 3)(t + 1) = 0."],
+      sol:`<p><i>h</i>(0) = 15, also Abwurfhöhe 15 m. <i>h</i>(<i>t</i>) = 0 ⇒ <i>t</i>${sq} − 2<i>t</i> − 3 = 0 ⇒ <i>t</i> = 3 oder <i>t</i> = −1. Nur <i>t</i> = 3 passt: Der Ball landet nach 3 Sekunden.</p>`,
+      after:()=>`<p class="info">So sieht die Situation am Graphen aus:</p><div class="fig">${plot({xmin:-1.5,xmax:4,ymin:-4,ymax:22,w:320,h:280,ytick:5,gy:5,fns:[{f:t=>-5*t*t+10*t+15}],pts:[{x:0,y:15,label:"Abwurf: t = 0",dx:9,dy:-8},{x:3,y:0,label:"Landung: h = 0",dx:-6,dy:-12,anchor:"end"}],label:"Flugbahn des Balls"})}</div>` }
+  ]
+});
+
+/* ===== Station 3 ===== */
+ST.push({
+  title:"Quadratische Gleichungen: Welcher Weg?", short:"Quadratische Gleichungen", quick:["kein <i>x</i>-Glied → Wurzel ziehen","kein Absolutglied → <i>x</i> ausklammern",`<span class="m"><i>x</i><sub>1,2</sub> = ${F(`−<i>b</i> ± ${R(`<i>b</i>${sq} − 4<i>ac</i>`)}`,"2<i>a</i>")}</span>`,"beim Wurzelziehen ± beachten"],
+  lead:"Quadratische Gleichungen sind ein wiederkehrendes Grundkompetenzthema im BMT. Wer den passenden Lösungsweg wählt, spart Zeit und vermeidet Fehler.",
+  merke:`<h2>Merke: drei Wege</h2>
+  <div class="ex"><div><p><b class="t">Kein ${X}-Glied</b> (z. B. 3${X}${sq} = 27 oder (${X} + 2)${sq} = 16): nach dem Quadrat auflösen, Wurzel ziehen, <span class="mk">± nicht vergessen</span>.</p>
+    <p>${X}${sq} = 4 fragt: Wo hat die Normalparabel die Höhe 4? Das passiert <b>zweimal</b>, bei ${X} = −2 und ${X} = 2. Steht rechts eine negative Zahl: keine Lösung.</p></div>
+    <figure>${plot({xmin:-4,xmax:4,ymin:-1,ymax:6,w:260,fns:[{f:x=>x*x},{f:()=>4,color:"#B06F12"}],pts:[{x:-2,y:4,label:"−2",dx:-9,anchor:"end"},{x:2,y:4,label:"2",dx:9}],label:"Normalparabel und Gerade y = 4"})}<figcaption>y = ${X}${sq} und y = 4: zwei Schnittpunkte</figcaption></figure></div>
+  <div class="ex"><div><p><b class="t">Kein Absolutglied</b> (z. B. ${X}${sq} − 4${X} = 0): ${X} ausklammern: ${X} · (${X} − 4) = 0. Ein Produkt ist null, wenn ein Faktor null ist ⇒ ${X}<sub>1</sub> = 0, ${X}<sub>2</sub> = 4.</p>
+    <p><span class="mk">Nie durch ${X} teilen</span> – sonst geht die Lösung ${X} = 0 verloren.</p></div>
+    <figure>${plot({xmin:-2,xmax:6,ymin:-5,ymax:4,w:260,fns:[{f:x=>x*x-4*x}],pts:[{x:0,y:0,label:"0",dx:-9,dy:-9,anchor:"end"},{x:4,y:0,label:"4",dx:9,dy:-9}],label:"Parabel durch den Ursprung"})}<figcaption>Ohne Absolutglied geht die Parabel durch (0 | 0)</figcaption></figure></div>
+  <div class="ex wide"><div><p><b class="t">Alles da</b> (<i>a</i>${X}${sq} + <i>b</i>${X} + <i>c</i> = 0): Lösungsformel ${X}<sub>1,2</sub> = ${F(`−<i>b</i> ± ${R(`<i>b</i>${sq} − 4<i>ac</i>`)}`,"2<i>a</i>")}.</p>
+    <p>Die Diskriminante <i>D</i> = <i>b</i>${sq} − 4<i>ac</i> entscheidet, wie oft die Parabel die ${X}-Achse trifft.</p></div>
+    <div class="minis">${mini(x=>x*x-2*x-3,"<i>D</i> &gt; 0: zwei",{pts:[{x:-1,y:0},{x:3,y:0}],w:160})}${mini(x=>(x-1)**2,"<i>D</i> = 0: eine",{pts:[{x:1,y:0}],w:160})}${mini(x=>x*x-2*x+2,"<i>D</i> &lt; 0: keine",{w:160})}</div></div>`,
+  tasks:[
+    { prompt:`<p>Welcher Weg ist jeweils am schnellsten? Du musst hier noch nichts ausrechnen.</p>`,
+      parts:[()=>wMatch({ mode:"chips", txt:true, options:["Wurzel ziehen","x ausklammern","Lösungsformel"],
+        items:[
+          {t:`<span class="m">3${X}${sq} = 27</span>`, a:0},
+          {t:`<span class="m">5${X}${sq} − 20${X} = 0</span>`, a:1},
+          {t:`<span class="m">${X}${sq} − ${X} − 6 = 0</span>`, a:2},
+          {t:`<span class="m">(${X} + 2)${sq} = 16</span>`, a:0},
+          {t:`<span class="m">${X}${sq} = 7${X}</span>`, a:1, w:{0:"Bei x² = 7x steht rechts ein x – Wurzelziehen hilft nicht. Bringe 7x nach links: x² − 7x = 0."}},
+          {t:`<span class="m">2${X}${sq} + 3${X} − 2 = 0</span>`, a:2}
+        ]})],
+      hints:["Schau, welche Bausteine vorkommen: x², x und eine Zahl ohne x.","x² = 7x: Erst alles auf eine Seite bringen – dann fehlt die Zahl ohne x."],
+      sol:`<p>Wurzel ziehen: 3${X}${sq} = 27 und (${X} + 2)${sq} = 16. Ausklammern: 5${X}${sq} − 20${X} = 0 und ${X}${sq} − 7${X} = 0. Lösungsformel: ${X}${sq} − ${X} − 6 = 0 und 2${X}${sq} + 3${X} − 2 = 0.</p>` },
+
+    { prompt:`<p class="bmt">Bestimmen Sie für ${X} ∈ ℝ die Lösungen der Gleichungen.</p><p class="info">Brüche darfst du als 1/2 oder 0,5 eingeben. Hat eine Gleichung nur eine Lösung, bleibt das zweite Feld leer.</p>`,
+      parts:[()=>wSolve([
+        {name:"a)", eq:`a)  ${X}${sq} = 49`, sol:[7,-7], errs:v=>(v.length===1&&near(Math.abs(v[0]),7))?"Auch (−7)² = 49 – es gibt zwei Lösungen.":null},
+        {name:"b)", eq:`b)  3${X}${sq} − 12${X} = 0`, sol:[0,4], errs:v=>(v.length===1&&near(v[0],4))?"x = 0 fehlt. Du hast vermutlich durch x geteilt – klammere x stattdessen aus.":null},
+        {name:"c)", eq:`c)  2${X}${sq} + 3${X} − 2 = 0`, sol:[0.5,-2], errs:v=>v.some(a=>near(a,2))&&v.some(a=>near(a,-0.5))?"Vorzeichen prüfen: −b ist hier −3.":null},
+        {name:"d)", eq:`d)  ${X}${sq} + 4${X} + 5 = 0`, sol:[], errs:()=>"Berechne die Diskriminante D = b² − 4ac."}
+      ])],
+      hints:["a) Wurzel ziehen, ± beachten. b) x ausklammern. c) und d) Lösungsformel mit a, b, c.",
+             "c) a = 2, b = 3, c = −2: D = 9 + 16 = 25, x = (−3 ± 5) : 4. d) D = 16 − 20 = −4."],
+      sol:`<p>a) ${X} = 7 oder ${X} = −7. b) ${X}(3${X} − 12) = 0 ⇒ ${X} = 0 oder ${X} = 4. c) <i>D</i> = 25 ⇒ ${X} = ${F("−3 + 5","4")} = 0,5 oder ${X} = ${F("−3 − 5","4")} = −2. d) <i>D</i> = −4 &lt; 0 ⇒ keine Lösung.</p>` },
+
+    { prompt:`<p class="bmt">Geben Sie einen Term einer in ℝ definierten quadratischen Funktion <i>f</i> an, sodass die Gleichung <i>f</i>(${X}) = 0 keine Lösung in ℝ besitzt.</p>`,
+      parts:[()=>wFields([{pre:"<i>f</i>(<i>x</i>) =", term:true, show:"x^2 + 1", aria:"Funktionsterm",
+        check(fn){ const q=quadCoeffs(fn);
+          if(!q || Math.abs(q.a)<1e-9) return "Das ist keine quadratische Funktion – der Term braucht ein x².";
+          const D=q.b*q.b-4*q.a*q.c;
+          if(Math.abs(D)<1e-9) return "Diese Parabel berührt die x-Achse – f(x) = 0 hat also genau eine Lösung.";
+          if(D>0) return "Deine Parabel schneidet die x-Achse, f(x) = 0 hat also Lösungen. Verschiebe sie weiter weg von der x-Achse.";
+          return true; }}])],
+      hints:["Stell dir eine Parabel vor, die die x-Achse nie trifft.",
+             `Nimm die Normalparabel und verschiebe sie nach oben (blau: nach oben verschoben).<div class="fig">${plot({xmin:-3,xmax:3,ymin:-1,ymax:6,w:240,fns:[{f:x=>x*x,color:"#B7C5D9"},{f:x=>x*x+2}],label:"Verschobene Normalparabel"})}</div>`],
+      sol:`<p>Zum Beispiel <i>f</i>(${X}) = ${X}${sq} + 1: Wegen ${X}${sq} ≥ 0 ist <i>f</i>(${X}) ≥ 1, also nie 0. Auch z. B. −${X}${sq} − 3 oder (${X} − 2)${sq} + 5 sind richtig.</p>` }
+  ]
+});
+
+/* ===== Station 4 ===== */
+function shiftExplorer(){
+  const box = el("div","explore");
+  box.append(el("h2","","Ausprobieren: Verschieben"));
+  let type = "p", d = 2, e = 1;
+  const g = el("div","exgrid"), left = el("div"), fig = el("div","fig");
+  const seg = el("div","seg"), bp = el("button","on","Parabel"), bh = el("button","","Hyperbel");
+  [bp,bh].forEach(b=>b.type="button"); seg.append(bp,bh);
+  const lab = (t) => { const L=el("label"); const i=el("input"); i.type="range"; i.min=-4; i.max=4; i.step=1; i.setAttribute("aria-label",t.replace(/<[^>]+>/g,"")); L.append(el("span","",t), i); return {L,i}; };
+  const A = lab("<i>d</i> links/rechts"), B = lab("<i>e</i> unten/oben");
+  A.i.value=d; B.i.value=e;
+  const r1 = el("div","row"); r1.append(seg);
+  const term = el("div","term"), info = el("p","info");
+  left.append(r1, A.L, B.L, term, info, el("p","info","Grau: Ausgangsgraph (x² bzw. 2/x). Gestrichelt: Asymptoten."));
+  g.append(left, fig); box.append(g);
+  const inner = () => d>0 ? `${X} − ${d}` : d<0 ? `${X} + ${-d}` : X;
+  const tail = () => e>0 ? ` + ${e}` : e<0 ? ` − ${-e}` : "";
+  function upd(){
+    if(type==="p"){
+      term.innerHTML = `<i>f</i>(${X}) = ${d===0?X:"("+inner()+")"}${sq}${tail()}`;
+      info.innerHTML = `<b>Scheitel</b> S(${num(d)} | ${num(e)}), <b>Wertemenge</b> W = [${num(e)}; +∞[. Verschoben um ${Math.abs(d)} nach ${d>=0?"rechts":"links"} und um ${Math.abs(e)} nach ${e>=0?"oben":"unten"}.`;
+      fig.innerHTML = plot({xmin:-7,xmax:7,ymin:-7,ymax:7,w:320,tick:2,fns:[{f:x=>x*x,color:"#B7C5D9"},{f:x=>(x-d)**2+e}],pts:[{x:d,y:e,label:"S"}],label:"Verschobene Parabel"});
+    } else {
+      term.innerHTML = `<i>f</i>(${X}) = ${F("2",inner())}${tail()}`;
+      info.innerHTML = `<b>D</b> = ℝ \\ {${num(d)}}, <b>senkrechte Asymptote</b> ${X} = ${num(d)}, <b>waagrechte Asymptote</b> y = ${num(e)}, <b>W</b> = ℝ \\ {${num(e)}}.`;
+      fig.innerHTML = plot({xmin:-7,xmax:7,ymin:-7,ymax:7,w:320,tick:2,fns:[{f:x=>2/x,color:"#B7C5D9"},{f:x=>2/(x-d)+e}],vlines:[d],hlines:[e],label:"Verschobene Hyperbel"});
+    }
+  }
+  bp.onclick=()=>{type="p";bp.classList.add("on");bh.classList.remove("on");upd();};
+  bh.onclick=()=>{type="h";bh.classList.add("on");bp.classList.remove("on");upd();};
+  A.i.oninput=()=>{d=+A.i.value;upd();}; B.i.oninput=()=>{e=+B.i.value;upd();};
+  upd(); return box;
+}
+ST.push({
+  title:"Graphen verschieben: Parabel und Hyperbel", short:"Parabel und Hyperbel", quick:["Parabel: (<i>x</i> − <i>d</i>)<sup>2</sup> + <i>e</i>","Scheitel S(<i>d</i> | <i>e</i>)","Vorzeichen in der Klammer umgekehrt","Hyperbel: <i>a</i> / (<i>x</i> − <i>d</i>) + <i>e</i>","Asymptoten: <i>x</i> = <i>d</i> und y = <i>e</i>"],
+  lead:"Verschiebung beschreiben, Wertemenge, Definitionsmenge und Asymptoten angeben – das kommt im BMT regelmäßig vor.",
+  merke:`<h2>Merke</h2>
+  <div class="ex"><div><p><b class="t">Parabel</b> <i>f</i>(${X}) = (${X} − <i>d</i>)${sq} + <i>e</i>: Scheitel S(<i>d</i> | <i>e</i>). Der Graph entsteht aus y = ${X}${sq} durch Verschieben um <i>d</i> in ${X}-Richtung und um <i>e</i> in y-Richtung.</p>
+    <p><span class="mk">Vorzeichen-Falle:</span> (${X} + 2)${sq} ist um 2 nach <b>links</b> verschoben – siehe Bild.</p></div>
+    <figure>${plot({xmin:-5,xmax:3,ymin:-3,ymax:5,w:260,fns:[{f:x=>x*x,color:"#B7C5D9"},{f:x=>(x+2)**2-1}],segs:[{x1:0,y1:0,x2:-2,y2:-1,dash:true}],pts:[{x:-2,y:-1,label:"S(−2 | −1)",dx:-4,dy:22,anchor:"middle"}],label:"Parabel um 2 nach links und 1 nach unten verschoben"})}<figcaption>(${X} + 2)${sq} − 1: 2 nach links, 1 nach unten</figcaption></figure></div>
+  <div class="ex"><div><p><b class="t">Wertemenge</b>: alle y-Werte, die der Graph annimmt – Blick auf die y-Achse. Nach oben geöffnete Parabel: W = [<i>e</i>; +∞[, also <span class="mk">vom Scheitel an aufwärts</span>.</p>
+    <p><b class="t">Definitionsmenge</b>: alle ${X}-Werte, die man einsetzen darf.</p></div>
+    <figure>${plot({xmin:-3,xmax:5,ymin:-3,ymax:5,w:260,fns:[{f:x=>(x-1)**2-2}],segs:[{x1:0,y1:-2,x2:0,y2:5,w:7},{x1:0,y1:-2,x2:1,y2:-2,dash:true,color:"#56616F",w:1.5}],texts:[{x:-0.35,y:3.5,t:"W",anchor:"end",fs:16}],pts:[{x:1,y:-2,label:"S",dx:8,dy:16}],label:"Wertemenge auf der y-Achse markiert"})}<figcaption>W = [−2; +∞[ (ocker auf der y-Achse)</figcaption></figure></div>
+  <div class="ex"><div><p><b class="t">Hyperbel</b> <i>f</i>(${X}) = ${F("<i>a</i>",X+" − <i>d</i>")} + <i>e</i>: Der Nenner darf nicht 0 sein ⇒ D = ℝ \\ {<i>d</i>}, <span class="mk">senkrechte Asymptote ${X} = <i>d</i></span>.</p>
+    <p>Die Zahl hinter dem Bruch gibt die <span class="mk">waagrechte Asymptote y = <i>e</i></span>. Wertemenge W = ℝ \\ {<i>e</i>}.</p></div>
+    <figure>${plot({xmin:-4,xmax:6,ymin:-4,ymax:6,w:260,fns:[{f:x=>2/(x-1)+1}],vlines:[1],hlines:[1],texts:[{x:1.25,y:5.2,t:"x = 1",anchor:"start",color:"#3A5E94"},{x:-2.6,y:1.4,t:"y = 1",color:"#3A5E94"}],label:"Hyperbel mit Asymptoten"})}<figcaption>${F("2",X+" − 1")} + 1</figcaption></figure></div>`,
+  top: shiftExplorer,
+  tasks:[
+    { prompt:`<p class="bmt">Beschreiben Sie, wie der Graph von <i>g</i> mit <i>g</i>(${X}) = (${X} + 2)${sq} − 5 aus dem Graphen der Funktion <i>f</i> mit <i>f</i>(${X}) = ${X}${sq} hervorgeht, und geben Sie die Wertemenge von <i>g</i> an.</p>`,
+      parts:[
+        ()=>wMatch({ mode:"chips", txt:true, options:["um 2 nach rechts","um 2 nach links","um 5 nach oben","um 5 nach unten","gar nicht"],
+          items:[{t:"Verschiebung in x-Richtung", a:1, w:{0:"Vorzeichen-Falle: (x + 2)² ist nach links verschoben.",2:"Die 5 steht hinter der Klammer – sie verschiebt in y-Richtung.",3:"Die 5 steht hinter der Klammer – sie verschiebt in y-Richtung."}},
+                 {t:"Verschiebung in y-Richtung", a:3, w:{2:"Hinter der Klammer steht − 5: nach unten.",0:"Die 2 steht in der Klammer – sie verschiebt in x-Richtung.",1:"Die 2 steht in der Klammer – sie verschiebt in x-Richtung."}}]}),
+        ()=>wMatch({ mode:"chips", items:[{t:"Wertemenge von <i>g</i>", a:1, w:{2:"Achte auf das Vorzeichen: Der Scheitel liegt bei y = −5.",3:"Die Parabel ist nach oben geöffnet – die y-Werte gehen ab −5 nach oben.",0:"Eine nach oben geöffnete Parabel nimmt nicht alle y-Werte an – unterhalb des Scheitels gibt es keine."}}],
+          options:["W = ℝ","W = [−5; +∞[","W = [5; +∞[","W = ]−∞; −5]"]})],
+      hints:["Scheitelform (x − d)² + e: Schreibe x + 2 als x − (−2). Dann ist d = −2.",
+             `Scheitel S(−2 | −5). Die Wertemenge beginnt beim y-Wert des Scheitels. So sieht es aus (grau: Normalparabel):<div class="fig">${plot({xmin:-6,xmax:4,ymin:-6,ymax:5,w:260,fns:[{f:x=>x*x,color:"#B7C5D9"},{f:x=>(x+2)**2-5}],pts:[{x:-2,y:-5,label:"S(−2 | −5)",dx:9,dy:5}],label:"Verschobene Parabel"})}</div>`],
+      sol:`<p>Um 2 nach links und um 5 nach unten verschoben. Scheitel S(−2 | −5), W = [−5; +∞[.</p>` },
+
+    { prompt:`<p>Gegeben ist die Funktion <i>f</i> mit <i>f</i>(${X}) = ${F("6",X+" + 1")} − 2 mit maximalem Definitionsbereich.</p>`,
+      parts:[()=>wFields([
+        {pre:"D = ℝ \\ {", post:"}", ans:-1, errs:[{v:1,msg:"Vorzeichen prüfen: Der Nenner x + 1 wird null für x = −1."},{v:-2,msg:"−2 gehört zur waagrechten Asymptote. Für D suchst du, wann der Nenner null wird."}]},
+        {pre:"Waagrechte Asymptote: y =", ans:-2, errs:[{v:-1,msg:"x = −1 ist die senkrechte Asymptote (Definitionslücke). Die waagrechte liest du an der Zahl hinter dem Bruch ab."},{v:1,msg:"Die waagrechte Asymptote liest du an der Zahl hinter dem Bruch ab – nicht am Nenner."},{v:2,msg:"Vorzeichen prüfen: hinter dem Bruch steht − 2."},{v:6,msg:"Die 6 im Zähler streckt nur. Die waagrechte Asymptote kommt von der Zahl hinter dem Bruch."}]},
+        {pre:"Nullstelle: <i>x</i> =", ans:2, errs:[{v:4,msg:"4 ist f(0), also der y-Achsenabschnitt. Für die Nullstelle setzt du f(x) = 0."},{v:-1,msg:"Bei x = −1 ist f gar nicht definiert."},{v:-4,msg:"Prüfe den Schritt 6 : (x + 1) = 2 ⇒ x + 1 = 3."}]}])],
+      hints:["Nenner ≠ 0 liefert D. Die Zahl hinter dem Bruch verschiebt den Graphen nach oben oder unten.",
+             `Nullstelle: ${F("6",X+" + 1")} − 2 = 0 ⇒ ${F("6",X+" + 1")} = 2 ⇒ 6 = 2(${X} + 1). Die beiden Asymptoten sehen so aus:<div class="fig">${plot({xmin:-6,xmax:6,ymin:-7,ymax:6,w:260,tick:2,vlines:[-1],hlines:[-2],texts:[{x:-0.8,y:5,t:"x = −1",anchor:"start",color:"#3A5E94"},{x:4.2,y:-1.5,t:"y = −2",color:"#3A5E94"}],label:"Asymptoten"})}</div>`],
+      sol:`<p>D = ℝ \\ {−1}. Waagrechte Asymptote y = −2. ${F("6",X+" + 1")} = 2 ⇒ ${X} + 1 = 3 ⇒ ${X} = 2.</p>`,
+      after:()=>`<p class="info">Der Graph dazu: gestrichelt die Asymptoten, rot die Nullstelle, blau der y-Achsenabschnitt – nicht verwechseln!</p><div class="fig">${plot({xmin:-6,xmax:6,ymin:-7,ymax:6,w:320,tick:2,fns:[{f:x=>6/(x+1)-2}],vlines:[-1],hlines:[-2],pts:[{x:2,y:0,label:"Nullstelle x = 2",dx:9,dy:-10},{x:0,y:4,label:"f(0) = 4",dx:9,dy:-6,color:"#1C3D72"}],label:"Graph von f mit Asymptoten"})}</div>` },
+
+    { fig:()=>plot({xmin:-5,xmax:7,ymin:-5,ymax:6,w:300,fns:[{f:x=>1/(x-2)+1}],vlines:[2],hlines:[1],label:"Hyperbel mit Asymptoten x = 2 und y = 1"}), cap:"Hyperbel mit ihren Asymptoten (gestrichelt)",
+      prompt:`<p>Der Graph zeigt eine verschobene Hyperbel mit ihren Asymptoten. Welcher Term gehört zu ihr?</p>`,
+      parts:[()=>wChoice({ cols:2, options:[`<span class="m"><i>f</i>(${X}) = ${F("1",X+" + 2")} + 1</span>`,`<span class="m"><i>f</i>(${X}) = ${F("1",X+" − 1")} + 2</span>`,`<span class="m"><i>f</i>(${X}) = ${F("1",X+" + 2")} − 1</span>`,`<span class="m"><i>f</i>(${X}) = ${F("1",X+" − 2")} + 1</span>`],
+        correct:3, wrong:{0:"Die senkrechte Asymptote liegt bei x = 2. Welcher Nenner wird bei x = 2 null?",1:"Vertauscht: Die senkrechte Asymptote steckt im Nenner, die waagrechte hinter dem Bruch.",2:"Beide Vorzeichen stimmen nicht: Asymptoten bei x = 2 und y = 1."}})],
+      hints:["Lies die beiden gestrichelten Asymptoten ab.","Senkrechte Asymptote x = 2 ⇒ Nenner x − 2. Waagrechte Asymptote y = 1 ⇒ + 1 hinter dem Bruch."],
+      sol:`<p>Asymptoten ${X} = 2 und y = 1, also <i>f</i>(${X}) = ${F("1",X+" − 2")} + 1.</p>` }
+  ]
+});
+
+/* ===== Station 5 ===== */
+ST.push({
+  title:"Terme sicher umformen", short:"Terme umformen", quick:[`<span class="m">${R("<i>a</i>")} · ${R("<i>b</i>")} = ${R("<i>ab</i>")}</span>`,`<span class="m"><i>x</i><sup><i>m</i></sup> · <i>x</i><sup><i>n</i></sup> = <i>x</i><sup><i>m</i>+<i>n</i></sup></span>`,`<span class="m"><i>x</i><sup><i>m</i></sup> : <i>x</i><sup><i>n</i></sup> = <i>x</i><sup><i>m</i>−<i>n</i></sup></span>`,`<span class="m">(<i>a</i> + <i>b</i>)${sq} = <i>a</i>${sq} + 2<i>ab</i> + <i>b</i>${sq}</span>`,"Kürzen nur bei Faktoren; Nenner ≠ 0"],
+  lead:"Wurzeln, Potenzen und Bruchterme: kleine Aufgaben, bei denen oft Punkte verloren gehen.",
+  merke:`<h2>Merke</h2>
+  <ul>
+    <li>${R("<i>a</i>")} · ${R("<i>b</i>")} = ${R("<i>a</i> · <i>b</i>")}, z. B. ${R("40")} · ${R("10")} = ${R("400")} = 20. Aber: <span class="mk">${R("<i>a</i> + <i>b</i>")} ≠ ${R("<i>a</i>")} + ${R("<i>b</i>")}</span>.</li>
+    <li>${X}<sup>m</sup> · ${X}<sup>n</sup> = ${X}<sup>m+n</sup>, ${X}<sup>m</sup> : ${X}<sup>n</sup> = ${X}<sup>m−n</sup>. 10<sup>−6</sup> = 0,000001 (Komma 6 Stellen nach links).</li>
+    <li><b>Definitionsmenge</b> eines Bruchterms: Der Nenner darf nicht 0 werden.</li>
+  </ul>
+  <div class="ex"><div><p><b class="t">Binomische Formel</b>: Warum ist (<i>a</i> + <i>b</i>)${sq} ≠ <i>a</i>${sq} + <i>b</i>${sq}? Das Quadrat mit der Seite <i>a</i> + <i>b</i> besteht aus <span class="mk">vier Teilen</span>: (<i>a</i> + <i>b</i>)${sq} = <i>a</i>${sq} + 2<i>ab</i> + <i>b</i>${sq}.</p>
+    <p>Die beiden grauen Rechtecke ergeben zusammen 2<i>ab</i> – genau die fehlen, wenn man nur <i>a</i>${sq} + <i>b</i>${sq} schreibt.</p></div>
+    <figure>${areaSVG()}</figure></div>
+  <div class="ex"><div><p><b class="t">Kürzen</b>: Erst Zähler und Nenner in Produkte zerlegen (ausklammern, binomische Formel <i>a</i>${sq} − <i>b</i>${sq} = (<i>a</i> + <i>b</i>)(<i>a</i> − <i>b</i>)), dann gleiche <b>Faktoren</b> kürzen.</p>
+    <p><span class="mk">Summanden kürzt man nie.</span></p></div>
+    <figure><div class="formulas" style="justify-content:center;font-size:20px"><span>${F(`3${X} · <span class="strike">(${X} − 2)</span>`,`(${X} + 2) · <span class="strike">(${X} − 2)</span>`)} = ${F(`3${X}`,`${X} + 2`)}</span></div><figcaption>✓ gleicher Faktor oben und unten</figcaption>
+      <div class="formulas" style="justify-content:center;font-size:20px;margin-top:10px"><span>${F(`${X} + <span class="strike">3</span>`,`<span class="strike">3</span>`)} ≠ ${X}</span></div><figcaption style="color:#BE2F29">✗ aus Summen wird nicht gekürzt</figcaption></figure></div>`,
+  tasks:[
+    { prompt:`<p class="bmt">Vereinfachen Sie jeweils so weit wie möglich.</p>`,
+      parts:[()=>wFields([
+        {pre:`${R("8")} · ${R("2")} =`, ans:4, errs:[{v:16,msg:"√16 musst du noch ausrechnen."}]},
+        {pre:`${R("50")} : ${R("2")} =`, ans:5, errs:[{v:25,msg:"√25 musst du noch ausrechnen."}]},
+        {pre:`${F(`12${X}<sup>8</sup>`,`4${X}<sup>2</sup>`)} =`, term:true, show:"3x^6", aria:"vereinfachter Term",
+          check(fn,raw){ if(sameFn(fn,x=>3*x**6)) return /\//.test(raw) ? "Richtig umgeformt, aber noch nicht vereinfacht – ohne Bruch schreiben." : true;
+            if(sameFn(fn,x=>3*x**4)) return "Beim Dividieren werden die Exponenten subtrahiert, nicht dividiert: 8 − 2.";
+            if(sameFn(fn,x=>8*x**6)) return "Die Zahlen werden dividiert: 12 : 4.";
+            return "Das stimmt noch nicht. Zahlen dividieren, Exponenten subtrahieren."; }},
+        {pre:"3500 µg =", post:"g  (1 µg = 10<sup>−6</sup> g)", ans:0.0035, show:"0,0035",
+          errs:[{v:0.035,msg:"Zähle die Stellen: 10⁻⁶ bedeutet, das Komma wandert 6 Stellen nach links."},{v:0.35,msg:"Zähle die Stellen: 10⁻⁶ bedeutet, das Komma wandert 6 Stellen nach links."},{v:3.5,msg:"Das wären Milligramm. Für Gramm wandert das Komma 6 Stellen nach links."},{v:0.00035,msg:"Eine Stelle zu weit: 3500 · 0,000001."},{v:3500000000,msg:"Umgekehrt: Gramm ist die größere Einheit, die Zahl wird kleiner."}]}])],
+      hints:["Wurzeln: erst multiplizieren bzw. dividieren, dann die Wurzel ziehen. Potenzen: Zahlen dividieren, Exponenten subtrahieren.",
+             "√8 · √2 = √16. 12 : 4 = 3 und 8 − 2 = 6. 3500 · 0,000001 = 0,0035."],
+      sol:`<p>${R("16")} = 4. ${R("25")} = 5. 3${X}<sup>6</sup>. 3500 µg = 3500 · 10<sup>−6</sup> g = 0,0035 g.</p>` },
+
+    { prompt:`<p>Stimmt die Umformung?</p>`,
+      parts:[()=>wMatch({ mode:"chips", txt:true, options:["stimmt","stimmt nicht"],
+        items:[
+          {t:`<span class="m">${R("9 + 16")} = 3 + 4</span>`, a:1, w:{0:"Rechne nach: √25 = 5, aber 3 + 4 = 7."}},
+          {t:`<span class="m">(<i>a</i> + <i>b</i>)${sq} = <i>a</i>${sq} + <i>b</i>${sq}</span>`, a:1, w:{0:"Binomische Formel: Es fehlt 2ab – siehe Flächenmodell im Merkkasten."}},
+          {t:`<span class="m">${X}${sq} · ${X}<sup>3</sup> = ${X}<sup>5</sup></span>`, a:0},
+          {t:`<span class="m">${F(X+" + 3","3")} = ${X} + 1</span>`, a:1, w:{0:"Aus Summen darf man nicht kürzen. Teste mit x = 3: 6/3 = 2, aber 3 + 1 = 4."}},
+          {t:`<span class="m">${X}${sq} − 9 = (${X} + 3)(${X} − 3)</span>`, a:0},
+          {t:`Der Term ${F("1",X+" − 5")} ist für ${X} = 5 nicht definiert.`, a:0}
+        ]})],
+      hints:["Setze im Zweifel eine Zahl ein und vergleiche beide Seiten.",
+             "Drei der sechs Aussagen sind falsch. Achte besonders auf Summen: unter der Wurzel, beim Quadrieren einer Klammer und im Bruch."],
+      sol:`<p>Drei Umformungen sind falsch: ${R("9 + 16")} = ${R("25")} = 5 (nicht 7); (<i>a</i> + <i>b</i>)${sq} = <i>a</i>${sq} + 2<i>ab</i> + <i>b</i>${sq}; ${F(X+" + 3","3")} lässt sich nicht kürzen.</p><p>Drei sind richtig: ${X}${sq} · ${X}<sup>3</sup> = ${X}<sup>5</sup>, die 3. binomische Formel ${X}${sq} − 9 = (${X} + 3)(${X} − 3) und die Definitionslücke bei ${X} = 5.</p>` },
+
+    { prompt:`<p>Gegeben ist der Term <span class="m"><i>T</i>(${X}) = ${F(`3${X}${sq} − 6${X}`,`${X}${sq} − 4`)}</span>.</p>`,
+      parts:[()=>wMulti({ chips:true, q:"Für welche Zahlen ist der Term nicht definiert? Markiere alle.", options:["−4","−2","0","2","4"], correct:[1,3],
+          wrong:{0:"Setze −4 in den Nenner ein: 16 − 4 = 12 ≠ 0.",2:"Für x = 0 wird der Zähler null, nicht der Nenner – das ist erlaubt.",4:"Setze 4 in den Nenner ein: 16 − 4 = 12 ≠ 0."}}),
+        ()=>wFields([{pre:"Gekürzt: <i>T</i>(<i>x</i>) =", term:true, show:"3x/(x+2)", aria:"gekürzter Term",
+          check(fn,raw){ if(sameFn(fn,x=>3*x/(x+2),[2,-2])){ if(/\^2|²/.test(raw)) return "Das lässt sich noch weiter kürzen."; return true; }
+            if(sameFn(fn,x=>3*x/(x-2),[2,-2])) return "Prüfe die Faktoren: x² − 4 = (x + 2)(x − 2). Welcher Faktor steht auch im Zähler?";
+            return "Das stimmt noch nicht. Zerlege Zähler und Nenner zuerst in Faktoren."; }}])],
+      hints:["Nenner null setzen: x² − 4 = 0. Zum Kürzen: Zähler 3x ausklammern, Nenner mit der 3. binomischen Formel zerlegen.",
+             `${F(`3${X}(${X} − 2)`,`(${X} + 2)(${X} − 2)`)} – jetzt kannst du den gemeinsamen Faktor (${X} − 2) kürzen.`],
+      sol:`<p>Nicht definiert für ${X} = 2 und ${X} = −2.</p><p><i>T</i>(${X}) = ${F(`3${X}<span class="strike">(${X} − 2)</span>`,`(${X} + 2)<span class="strike">(${X} − 2)</span>`)} = ${F(`3${X}`,`${X} + 2`)}.</p>` }
+  ]
+});
+
+/* ===== Station 6 ===== */
+ST.push({
+  title:"Prozente und lineare Modelle", short:"Prozente und Geraden", quick:["Grundwert = Prozentwert : Prozentsatz","prozentuale Änderung = (neu − alt) / alt","<i>f</i>(<i>x</i>) = <i>mx</i> + <i>t</i>","<i>m</i> = Änderung pro Einheit"],
+  lead:"Sachaufgaben mit Prozenten und Geraden: Entscheidend ist, dass du den Text richtig in eine Rechnung übersetzt.",
+  merke:`<h2>Merke</h2>
+  <div class="ex"><div><p><b class="t">Grundwert gesucht</b>: Prozentwert = Grundwert · Prozentsatz. Kennst du den Prozentwert, teilst du: <span class="mk">Grundwert = Prozentwert : Prozentsatz</span>.</p><p>Beispiel: 85 Mio. sind 19 % ⇒ Grundwert = 85 Mio. : 0,19.</p></div>
+    <figure>${stripSVG("19 %","85 Mio.","? = 85 Mio. : 0,19",0.19)}</figure></div>
+  <div class="ex"><div><p><b class="t">Prozentuale Änderung</b> = ${F("neu − alt","alt")}. <span class="mk">Geteilt wird durch den Ausgangswert.</span></p></div>
+    <figure>${stripSVG("? %","Abnahme","alter Wert = 100 %",0.15)}</figure></div>
+  <div class="ex"><div><p><b class="t">Lineare Funktion</b> <i>f</i>(${X}) = <i>m</i>${X} + <i>t</i>: <i>t</i> = <i>f</i>(0) ist der Startwert, <i>m</i> die Änderung pro Einheit. Aus zwei Punkten: <i>m</i> = ${F("<i>y</i><sub>2</sub> − <i>y</i><sub>1</sub>","<i>x</i><sub>2</sub> − <i>x</i><sub>1</sub>")}.</p><p>Im Bild: 2 nach rechts, 1 nach oben ⇒ <i>m</i> = ${F("1","2")}, <i>t</i> = 1.</p></div>
+    <figure>${plot({xmin:-1,xmax:6,ymin:-1,ymax:5,w:260,fns:[{f:x=>0.5*x+1}],segs:[{x1:2,y1:2,x2:4,y2:2,dash:true},{x1:4,y1:2,x2:4,y2:3,dash:true}],texts:[{x:3,y:1.45,t:"+2"},{x:4.45,y:2.4,t:"+1",anchor:"start"}],pts:[{x:0,y:1,label:"t = 1",dx:9,dy:19,color:"#1C3D72"}],label:"Steigungsdreieck"})}</figure></div>
+  <div class="ex"><div><p><b class="t">„Halb so starker Rückgang“</b> ⇒ <i>m</i> halbieren, der Startwert <i>t</i> bleibt. Beide Geraden starten im selben Punkt.</p></div>
+    <figure>${plot({xmin:-1,xmax:9,ymin:-1,ymax:9,w:260,fns:[{f:x=>-x+8,color:"#B7C5D9"},{f:x=>-0.5*x+8}],texts:[{x:6.5,y:1.9,t:"m = −1",color:"#56616F"},{x:6.2,y:5.6,t:"m = −0,5",color:"#1C3D72"}],pts:[{x:0,y:8,label:"t bleibt",dx:9,dy:-6,color:"#1C3D72"}],label:"Zwei Geraden mit gleichem Startwert"})}</figure></div>`,
+  tasks:[
+    { prompt:`<p>In einer Stadt fahren 4200 Menschen täglich mit dem Rad zur Arbeit. Das sind 14 % aller Einwohner.</p><p class="bmt">Berechnen Sie die Einwohnerzahl der Stadt.</p>`,
+      parts:[()=>wFields([{pre:"Einwohnerzahl:", ans:30000, show:"30000",
+        errs:[{v:588,msg:"Du hast 14 % von 4200 berechnet. Die 4200 sind aber schon der Prozentwert – gesucht ist der Grundwert."},{v:300,msg:"4200 : 14 ergibt 1 %. Für 100 % fehlt noch ein Schritt."}]}])],
+      hints:["Was ist hier gegeben – der Grundwert (100 %) oder der Prozentwert (14 %)?",`Im Prozentstreifen: 14 % entsprechen 4200, gesucht sind 100 %. Grundwert = 4200 : 0,14.<div class="fig">${stripSVG("14 %","4200","?",0.14)}</div>`],
+      sol:`<p>4200 sind 14 % ⇒ Grundwert = 4200 : 0,14 = 30000 Einwohner.</p>` },
+
+    { prompt:`<p>Ein Sportverein hatte im Jahr 2015 genau 8000 Mitglieder, im Jahr 2025 nur noch 6800.</p>`,
+      parts:[()=>wChoice({ cols:2, q:"Welcher Term gibt an, um wie viel Prozent die Mitgliederzahl gesunken ist?",
+          options:[`<span class="m">${F("8000 − 6800","6800")}</span>`,`<span class="m">${F("6800","8000")}</span>`,`<span class="m">${F("8000 − 6800","8000")}</span>`,`<span class="m">${F("8000","6800")}</span>`],
+          correct:2, wrong:{0:"Geteilt wird durch den Ausgangswert – das ist die Mitgliederzahl von 2015.",1:"6800 : 8000 = 85 % – das ist der Anteil, der übrig bleibt, nicht die Abnahme.",3:"Dieser Term ist größer als 1 und beschreibt keine Abnahme."}}),
+        ()=>wFields([{pre:"Die Mitgliederzahl ist um", post:"% gesunken.", ans:15, errs:[{v:85,msg:"85 % sind noch übrig – gesunken ist sie um den Rest."},{v:1200,msg:"1200 ist die absolute Abnahme. Gesucht ist der Prozentsatz."}]}])],
+      hints:["Abnahme zuerst als Zahl: 8000 − 6800 = 1200. Dann mit dem Ausgangswert vergleichen.",`1200 : 8000 = 0,15<div class="fig">${stripSVG("?","1200","8000 = 100 %",0.15)}</div>`],
+      sol:`<p>${F("8000 − 6800","8000")} = ${F("1200","8000")} = 0,15 = 15 %.</p>` },
+
+    { prompt:`<p>Ein Wassertank enthält zu Beginn 40 Liter. Nach 5 Minuten sind noch 30 Liter darin. Die Wassermenge nimmt gleichmäßig ab. ${X} ist die Zeit in Minuten, <i>f</i>(${X}) die Wassermenge in Litern.</p>`,
+      parts:[()=>wFields([
+        {pre:"<i>f</i>(<i>x</i>) =", term:true, show:"−2x + 40", aria:"Term der linearen Funktion",
+          check(fn){ const l=linCoeffs(fn); if(!l) return "Gesucht ist eine lineare Funktion der Form m·x + t.";
+            if(near(l.m,-2)&&near(l.t,40)) return true;
+            if(!near(l.t,40)) return "f(0) muss die Anfangsmenge 40 sein.";
+            if(near(l.m,2)) return "Die Wassermenge nimmt ab – die Steigung muss negativ sein.";
+            if(near(l.m,-10)) return "Die 10 Liter verteilen sich auf 5 Minuten: m = −10 : 5.";
+            return "Die Steigung stimmt noch nicht: m = (30 − 40) : (5 − 0)."; }},
+        {pre:"Nach 8 Minuten sind noch", post:"Liter im Tank.", ans:24, errs:[{v:16,msg:"Du hast f(x) = 8 gelöst. Gegeben ist aber x = 8 – also einsetzen."}]},
+        {pre:"Der Tank ist nach", post:"Minuten leer.", ans:20, errs:[{v:40,msg:"40 ist f(0), die Anfangsmenge. „Leer“ heißt f(x) = 0."},{v:-20,msg:"Vorzeichen prüfen: −2x + 40 = 0 ⇒ x = 20."}]}])],
+      hints:["Startwert t = f(0) = 40. Steigung: Um wie viel Liter ändert sich die Menge pro Minute?",
+             `Die beiden bekannten Punkte (0 | 40) und (5 | 30): 5 nach rechts, 10 nach unten ⇒ m = −10 : 5 = −2. „Nach 8 Minuten“: f(8). „Leer“: f(x) = 0.<div class="fig">${plot({xmin:-1,xmax:12,ymin:-2,ymax:46,w:260,h:240,tick:2,ytick:10,gx:1,gy:5,fns:[{f:x=>-2*x+40}],segs:[{x1:0,y1:40,x2:5,y2:40,dash:true},{x1:5,y1:40,x2:5,y2:30,dash:true}],texts:[{x:2.5,y:42.5,t:"+5"},{x:5.4,y:34,t:"−10",anchor:"start"}],pts:[{x:0,y:40,color:"#1C3D72"},{x:5,y:30,color:"#1C3D72"}],label:"Zwei Punkte der Geraden"})}</div>`],
+      sol:`<p><i>f</i>(${X}) = −2${X} + 40. <i>f</i>(8) = −16 + 40 = 24 Liter. −2${X} + 40 = 0 ⇒ ${X} = 20: nach 20 Minuten leer.</p>`,
+      after:()=>`<p class="info">Am Graphen: Einsetzen heißt „von der x-Achse hoch zum Graphen“, Gleichung lösen heißt „von der y-Achse hinüber zum Graphen“.</p><div class="fig">${plot({xmin:-2,xmax:24,ymin:-4,ymax:46,w:340,h:280,tick:5,ytick:10,gx:5,gy:10,fns:[{f:x=>-2*x+40}],segs:[{x1:8,y1:0,x2:8,y2:24,dash:true,color:"#1C3D72"},{x1:0,y1:24,x2:8,y2:24,dash:true,color:"#1C3D72"}],pts:[{x:0,y:40,label:"Start: 40 l",dx:9,dy:-4,color:"#1C3D72"},{x:8,y:24,label:"x = 8 → 24 l",dx:9,dy:-8,color:"#1C3D72"},{x:20,y:0,label:"leer: f(x) = 0",dx:-4,dy:-12,anchor:"end"}],label:"Wassermenge im Tank"})}</div>` },
+
+    { prompt:`<p class="bmt">Wäre die Abnahme pro Minute nur halb so groß, müsste man die Funktion <i>f</i> mit <i>f</i>(${X}) = −2${X} + 40 anpassen. Geben Sie einen Term der angepassten Funktion an.</p>`,
+      parts:[()=>wFields([{pre:"<i>f</i><sub>neu</sub>(<i>x</i>) =", term:true, show:"−x + 40", aria:"angepasster Term",
+        check(fn){ const l=linCoeffs(fn); if(!l) return "Gesucht ist wieder eine lineare Funktion.";
+          if(near(l.m,-1)&&near(l.t,40)) return true;
+          if(near(l.m,-2)&&near(l.t,20)) return "Die Anfangsmenge bleibt gleich – nur die Abnahme pro Minute halbiert sich.";
+          if(near(l.m,-1)&&!near(l.t,40)) return "Die Steigung stimmt. Die Anfangsmenge ist aber weiterhin 40 Liter.";
+          if(near(l.m,-4)) return "Halb so große Abnahme – nicht doppelt so große.";
+          if(near(l.m,-0.5)) return "Halbiere die Steigung −2 – das ergibt nicht −0,5.";
+          return "Halbiere nur die Steigung, der Startwert bleibt."; }}])],
+      hints:["Welcher Teil des Terms beschreibt die Abnahme pro Minute?","Die Steigung −2 wird zu −1, die 40 bleibt (vergleiche das Bild im Merkkasten)."],
+      sol:`<p><i>f</i><sub>neu</sub>(${X}) = −1 · ${X} + 40 = −${X} + 40.</p>` }
+  ]
+});
+
+/* ===== Station 7 ===== */
+ST.push({
+  title:"Stochastik: und, oder, nicht", short:"Stochastik", quick:["∩ = und","∪ = oder (mindestens eines)","Querstrich = nicht","<i>P</i>(Gegenereignis) = 1 − <i>P</i>(<i>E</i>)"],
+  lead:"Mengenschreibweise, Vierfeldertafel, Laplace und Zählen – sichere Punkte, wenn die Begriffe sitzen.",
+  merke:`<h2>Merke</h2>
+  <p><i>A</i> ∩ <i>B</i>: <span class="mk"><i>A</i> <b>und</b> <i>B</i></span> (beide). <i>A</i> ∪ <i>B</i>: <span class="mk"><i>A</i> <b>oder</b> <i>B</i></span> (mindestens eines, auch beide). ${O("<i>A</i>")}: nicht <i>A</i> (Gegenereignis), <i>P</i>(${O("<i>A</i>")}) = 1 − <i>P</i>(<i>A</i>).</p>
+  <div class="venns">${venn("and","<i>A</i> ∩ <i>B</i><br>beide")}${venn("or","<i>A</i> ∪ <i>B</i><br>mindestens eines")}${venn("notA",O("<i>A</i>")+"<br>nicht <i>A</i>")}${venn("one","(<i>A</i> ∩ "+O("<i>B</i>")+") ∪ ("+O("<i>A</i>")+" ∩ <i>B</i>)<br>genau eines")}${venn("none",O("<i>A</i>")+" ∩ "+O("<i>B</i>")+"<br>keines")}${venn("notboth",O("<i>A</i>")+" ∪ "+O("<i>B</i>")+"<br>nicht beide")}</div>
+  <div class="ex"><div><p><b class="t">Laplace-Experiment</b>: alle Ergebnisse gleich wahrscheinlich. <i>P</i>(<i>E</i>) = ${F("Anzahl günstiger Ergebnisse","Anzahl aller Ergebnisse")}.</p>
+    <p><b class="t">Zählprinzip</b>: <i>n</i> Stufen mit je <i>k</i> Möglichkeiten ⇒ <i>k</i><sup><i>n</i></sup> Möglichkeiten. <b class="t">Relative Häufigkeit</b> = absolute Häufigkeit : Anzahl der Versuche.</p></div>
+    <figure>${wheelSVG()}</figure></div>`,
+  tasks:[
+    { prompt:`<p>An einer Schule wurden 500 Jugendliche befragt. S: „spielt ein Instrument“, F: „ist in einem Sportverein“.</p><p class="bmt">Füllen Sie die Vierfeldertafel vollständig aus. Eine der 500 Personen wird zufällig ausgewählt. Geben Sie die Wahrscheinlichkeit <i>P</i>(S ∪ F) in Prozent an.</p>`,
+      parts:[()=>wVFT(), ()=>wFields([{pre:"<i>P</i>(S ∪ F) =", post:"%", ans:76,
+        errs:[{v:24,msg:"24 % machen keines von beiden. S ∪ F ist genau das Gegenereignis dazu."},{v:100,msg:"Die 120 Personen, die beides machen, hast du doppelt gezählt."},{v:0.76,msg:"Richtig gerechnet – aber in Prozent angeben: 0,76 = 76 %."},{v:52,msg:"Das ist „genau eines“. S ∪ F heißt „mindestens eines“ – die 120 mit beidem gehören dazu."}]}])],
+      hints:["Jede Zeile und jede Spalte muss aufgehen: innen addiert ergibt die Summe am Rand. S-Zeile: 200 − 120 = 80.",
+             `∪ heißt „mindestens eines“. Am schnellsten über das Gegenereignis „keines“ (nur das Feld ${O("S")} ∩ ${O("F")}): 500 − 120 = 380.<div class="fig" style="max-width:170px">${venn("or","S ∪ F",["S","F"]).replace("<figure>","<figure style='margin:0'>")}</div>`],
+      sol:`<p>S ∩ ${O("F")} = 80, ${O("S")} ∩ F = 180, ${O("S")} ∩ ${O("F")} = 120, ${O("S")} gesamt 300, ${O("F")} gesamt 200.</p><p><i>P</i>(S ∪ F) = ${F("120 + 80 + 180","500")} = ${F("380","500")} = 76 %.</p>` },
+
+    { prompt:`<p>Ordne jeder Beschreibung die passende Mengenschreibweise zu (S und F wie in Aufgabe a).</p>`,
+      parts:[()=>wMatch({ mode:"chips",
+        options:[`S ∩ F`,`S ∪ F`,`${O("S")} ∩ ${O("F")}`,`${O("S")} ∪ ${O("F")}`,`(S ∩ ${O("F")}) ∪ (${O("S")} ∩ F)`,`${O("S")} ∩ F`],
+        items:[
+          {t:"Die Person macht beides.", a:0},
+          {t:"Die Person macht mindestens eines von beiden.", a:1},
+          {t:"Die Person macht keines von beiden.", a:2, w:{3:`${O("S")} ∪ ${O("F")} heißt „nicht beides“ – das schließt auch Personen mit genau einer Aktivität ein.`}},
+          {t:"Die Person macht genau eines von beiden.", a:4},
+          {t:"Die Person spielt kein Instrument, ist aber im Sportverein.", a:5}
+        ]})],
+      hints:["Übersetze Wort für Wort: „und“ = ∩, „oder“ = ∪, „kein/nicht“ = Querstrich.",
+             `Keines: nur die Fläche außerhalb beider Kreise. Genau eines: die beiden Sichel-Flächen ohne die Mitte.<div class="venns" style="grid-template-columns:repeat(2,150px)">${venn("none","keines",["S","F"])}${venn("one","genau eines",["S","F"])}</div>`],
+      sol:`<p>Beides: S ∩ F. Mindestens eines: S ∪ F. Keines: ${O("S")} ∩ ${O("F")}. Genau eines: (S ∩ ${O("F")}) ∪ (${O("S")} ∩ F). Kein Instrument, aber Sportverein: ${O("S")} ∩ F. Übrig bleibt ${O("S")} ∪ ${O("F")} = „nicht beide“.</p>` },
+
+    { prompt:`<p>Ein Glücksrad hat drei Sektoren in den Farben Rot, Blau und Gelb.</p>`,
+      parts:[()=>wChoice({ q:"Welche Voraussetzung müsste zusätzlich gelten, damit einmaliges Drehen ein Laplace-Experiment ist?",
+          options:["Das Rad wird sehr oft gedreht.","Alle drei Sektoren sind gleich groß.","Jede Farbe kommt genau einmal vor.","Die Farben sind zufällig angeordnet."],
+          correct:1, wrong:{0:"Häufiges Drehen ändert nichts an den Wahrscheinlichkeiten eines einzelnen Drehs.",2:"Das gilt schon – trotzdem könnte z. B. Rot einen viel größeren Sektor haben.",3:"Die Anordnung spielt keine Rolle. Entscheidend ist, ob alle Ergebnisse gleich wahrscheinlich sind."}}),
+        ()=>wFields([
+          {pre:"Das Rad wird viermal gedreht, die Farben werden der Reihe nach notiert. Anzahl möglicher Farbfolgen:", ans:81, show:"3^4 = 81",
+            errs:[{v:12,msg:"Nicht 3 · 4: Bei jeder der 4 Drehungen gibt es 3 Möglichkeiten, also 3 · 3 · 3 · 3."},{v:64,msg:"Basis und Exponent vertauscht: 3 Farben, 4 Drehungen ⇒ 3⁴."},{v:7,msg:"Nach dem Zählprinzip wird multipliziert, nicht addiert."}]},
+          {pre:"Bei 250 Drehungen trat Rot mit der relativen Häufigkeit 0,4 auf. Rot kam", post:"-mal.", ans:100,
+            errs:[{v:625,msg:"Relative Häufigkeit = Anzahl : 250. Also Anzahl = 0,4 · 250."},{v:40,msg:"0,4 entspricht 40 % – von 250 Drehungen."}]}])],
+      hints:["Laplace heißt: alle Ergebnisse gleich wahrscheinlich – vergleiche die beiden Räder im Merkkasten. Zählprinzip: pro Drehung 3 Möglichkeiten.","3 · 3 · 3 · 3 = 81. Anzahl = 0,4 · 250."],
+      sol:`<p>Alle Sektoren müssen gleich groß sein. 3<sup>4</sup> = 81 Farbfolgen. 0,4 · 250 = 100-mal Rot.</p>` }
+  ]
+});
+
+/* ===== Station 8 ===== */
+function circleExplorer(){
+  const box = el("div","explore");
+  box.append(el("h2","","Ausprobieren: Einheitskreis"));
+  let a = 40, plus = false, show = false;
+  const g = el("div","exgrid"), left = el("div"), fig = el("div","fig");
+  const L = el("label"), sl = el("input"), out = el("span","term");
+  sl.type="range"; sl.min=0; sl.max=360; sl.step=1; sl.value=a; sl.setAttribute("aria-label","Winkel α");
+  L.append(el("span","","Winkel α"), sl, out);
+  const C1 = el("label"), c1 = el("input"); c1.type="checkbox"; C1.append(c1, el("span","","α + 90° zeigen"));
+  const C2 = el("label"), c2 = el("input"); c2.type="checkbox"; C2.append(c2, el("span","","Werte anzeigen"));
+  const info = el("p","info");
+  left.append(L, C1, C2, info); g.append(left, fig); box.append(g);
+  function upd(){
+    out.textContent = a+"°"; fig.innerHTML = circleSVG(a, plus);
+    info.innerHTML = "P(cos α | sin α). Blau: cos α (waagrecht), ocker: sin α (senkrecht)." + (plus?" Gestrichelt: Punkt Q zum Winkel α + 90°.":"") + (show?"<br>"+circleValues(a,plus):"");
+  }
+  sl.oninput=()=>{a=+sl.value;upd();}; c1.onchange=()=>{plus=c1.checked;upd();}; c2.onchange=()=>{show=c2.checked;upd();};
+  upd(); return box;
+}
+ST.push({
+  title:"Trigonometrie und Körper", short:"Trigonometrie und Körper", quick:["sin = Gegenkathete / Hypotenuse","cos = Ankathete / Hypotenuse","Einheitskreis: P(cos α | sin α)","Parallelogramm: <i>A</i> = <i>a</i> · <i>b</i> · sin α","Zylinder: <i>V</i> = <i>r</i><sup>2</sup> · π · <i>h</i>"],
+  lead:"Sinus, Kosinus und Tangens im Dreieck und am Einheitskreis, dazu Flächen und Volumen.",
+  merke:`<h2>Merke</h2>
+  <div class="ex wide"><div><p><b class="t">Rechtwinkliges Dreieck</b>, von α aus gesehen:</p>
+    <div class="formulas"><span>sin α = ${F("Gegenkathete","Hypotenuse")}</span><span>cos α = ${F("Ankathete","Hypotenuse")}</span><span>tan α = ${F("Gegenkathete","Ankathete")}</span></div>
+    <p>Die <b>Hypotenuse</b> liegt dem rechten Winkel gegenüber und ist die längste Seite. Die <span class="mk">Gegenkathete liegt α gegenüber</span>, die Ankathete liegt an α an.</p></div>
+    <figure>${trigSVG()}</figure></div>
+  <div class="ex"><div><p><b class="t">Einheitskreis</b> (Radius 1): <span class="mk">P(cos α | sin α)</span>. sin α ist die Höhe von P, cos α der waagrechte Abstand. Probiere es unten mit dem Regler aus.</p></div>
+    <figure>${circleSVG(40,false)}</figure></div>
+  <div class="ex"><div><p><b class="t">Flächeninhalt</b>: Dreieck <i>A</i> = ${F("1","2")} · <i>a</i> · <i>b</i> · sin γ (γ liegt zwischen <i>a</i> und <i>b</i>). Parallelogramm <i>A</i> = <i>a</i> · <i>b</i> · sin α, denn die Höhe ist <i>h</i> = <i>b</i> · sin α.</p>
+    <p><b class="t">Pythagoras</b>: <i>a</i>${sq} + <i>b</i>${sq} = <i>c</i>${sq} (<i>c</i> Hypotenuse). <b class="t">Zylinder</b> <i>V</i> = <i>r</i>${sq} · π · <i>h</i>. <b class="t">Kegel</b> <i>V</i> = ${F("1","3")} · <i>r</i>${sq} · π · <i>h</i>.</p></div>
+    <figure>${paraHSVG().replace("h = 3 · sin α","h = b · sin α").replace(">6<",">a<").replace(">3<",">b<")}</figure></div>`,
+  top: circleExplorer,
+  tasks:[
+    { fig: rampSVG, cap:"Rampe als rechtwinkliges Dreieck",
+      prompt:`<p>Eine Rampe ist 6 m lang und überwindet einen Höhenunterschied von 1,2 m.</p>`,
+      parts:[()=>wChoice({ cols:2, q:"Welche Gleichung liefert den Steigungswinkel α?",
+        options:[`<span class="m">cos α = ${F("1,2","6")}</span>`,`<span class="m">tan α = ${F("1,2","6")}</span>`,`<span class="m">sin α = ${F("1,2","6")}</span>`,`<span class="m">sin α = ${F("6","1,2")}</span>`],
+        correct:2, wrong:{0:"Die 1,2 m liegen dem Winkel α gegenüber – das ist die Gegenkathete.",1:"Tangens braucht die waagrechte Ankathete. Die 6 m sind aber die Rampe selbst – die Hypotenuse.",3:"Sinus ist Gegenkathete durch Hypotenuse. Außerdem kann ein Sinuswert nie größer als 1 sein."}})],
+      hints:[`Welche Seite liegt α gegenüber, welche ist die längste? Vergleiche mit dem Dreieck:<div class="fig">${trigSVG()}</div>`,"1,2 m = Gegenkathete, 6 m = Hypotenuse."],
+      sol:`<p>Gegenkathete 1,2 m, Hypotenuse 6 m ⇒ sin α = ${F("1,2","6")} = 0,2.</p>` },
+
+    { fig: unitQuadrantSVG, cap:"Viertel des Einheitskreises, Gitter in 0,1-Schritten",
+      prompt:`<p class="bmt">Geben Sie mithilfe der Abbildung einen Näherungswert für sin 53° an.</p>`,
+      parts:[()=>wFields([{pre:"sin 53° ≈", ans:0.8, tol:0.051, show:"0,8",
+        errs:[{v:0.6,tol:0.051,msg:"0,6 ist cos 53° – der waagrechte Abstand. Der Sinus ist die Höhe von P."},{v:53,msg:"Gesucht ist der Sinuswert, eine Zahl zwischen 0 und 1."}]}])],
+      hints:["Der Kreis hat den Radius 1. sin α ist die y-Koordinate von P, also seine Höhe.","Gehe von P waagrecht zur y-Achse und lies dort ab (Gitter in 0,1-Schritten)."],
+      sol:`<p>P liegt etwa auf Höhe 0,8, also sin 53° ≈ 0,8 (Werte zwischen 0,75 und 0,85 zählen).</p>` },
+
+    { fig: miniCircle, cap:"Verändere α mit dem Regler.",
+      prompt:`<p>Welche Aussage gilt für jeden Winkel α? Verändere α am Einheitskreis und vergleiche die Höhe von Q mit den Strecken bei P.</p>`,
+      parts:[()=>wChoice({ options:[`<span class="m">sin(α + 90°) = sin α</span>`,`<span class="m">sin(α + 90°) = cos α</span>`,`<span class="m">sin(α + 90°) = −cos α</span>`,`<span class="m">sin(α + 90°) = sin α + 1</span>`],
+        correct:1, wrong:{0:"Vergleiche die Höhe von Q mit der Höhe von P – sie sind meist verschieden.",2:"Vorzeichen prüfen: Für α = 0° ist sin 90° = 1 und cos 0° = 1.",3:"Für α = 90° käme 2 heraus – ein Sinuswert ist aber nie größer als 1."}})],
+      hints:["Setze einen einfachen Winkel ein, z. B. α = 0°: sin 90° = 1.","Die Höhe von Q (ocker, gestrichelt) ist genauso lang wie der waagrechte Abstand von P (blau)."],
+      sol:`<p>Dreht man P um 90° weiter, wird aus dem waagrechten Abstand die Höhe: sin(α + 90°) = cos α.</p>` },
+
+    { fig: paraSVG, cap:"Parallelogramm mit den Seiten 6 und 3",
+      prompt:`<p>Gegeben ist ein Parallelogramm mit den Seitenlängen 6 und 3.</p>`,
+      parts:[()=>wChoice({ cols:2, q:"Welcher Term beschreibt den Flächeninhalt in Abhängigkeit von α?",
+          options:[`<span class="m">${F("1","2")} · 6 · 3 · sin α</span>`,`<span class="m">6 · 3 · cos α</span>`,`<span class="m">6 · 3</span>`,`<span class="m">6 · 3 · sin α</span>`],
+          correct:3, wrong:{0:"Der Faktor ½ gehört zum Dreieck. Das Parallelogramm besteht aus zwei solchen Dreiecken.",1:"Die Höhe liegt dem Winkel α gegenüber: h = 3 · sin α.",2:"6 · 3 gilt nur für ein Rechteck, also für α = 90°."}}),
+        ()=>wFields([{pre:"Für α = 30° beträgt der Flächeninhalt", ans:9, errs:[{v:18,msg:"sin 30° = 0,5 – den Faktor hast du vergessen."},{v:4.5,msg:"Beim Parallelogramm gibt es keinen Faktor ½."}]}])],
+      hints:["Flächeninhalt = Grundseite · Höhe. Die Höhe h auf die Seite 6 ist die Gegenkathete zu α im Dreieck mit der Hypotenuse 3.",`h = 3 · sin α, also A = 6 · 3 · sin α. sin 30° = 0,5.<div class="fig">${paraHSVG()}</div>`],
+      sol:`<div class="fig">${paraHSVG()}</div><p><i>A</i> = 6 · 3 · sin α = 18 · sin α. Für α = 30°: 18 · 0,5 = 9.</p>` },
+
+    { fig: cylSVG, cap:"Zylinder mit Radius 3 und Höhe 4",
+      prompt:`<p class="bmt">Ein Zylinder hat den Radius 3 und die Höhe 4. Geben Sie sein Volumen an.</p><p class="info">π kannst du als π oder pi eingeben.</p>`,
+      parts:[()=>wFields([{pre:"<i>V</i> =", ans:36*Math.PI, tol:0.2, show:"36π",
+        errs:[{v:24*Math.PI,tol:0.2,msg:"24π ist die Mantelfläche 2 · π · r · h. Volumen = Grundfläche · Höhe."},{v:12*Math.PI,tol:0.2,msg:"Prüfe die Formel: Der Radius wird quadriert (r² = 9), und beim Zylinder gibt es keinen Faktor ⅓."},{v:36,msg:"Da fehlt π."},{v:144*Math.PI,tol:0.2,msg:"Du hast mit dem Durchmesser 6 statt mit dem Radius 3 gerechnet."}]}])],
+      hints:["Volumen = Grundfläche · Höhe. Die Grundfläche ist ein Kreis.","V = 3² · π · 4"],
+      sol:`<p>Grundfläche: Kreis mit <i>G</i> = 3${sq} · π = 9π. <i>V</i> = <i>G</i> · <i>h</i> = 9π · 4 = 36π ≈ 113.</p>` }
+  ]
+});
+
+/* ---------- Aufbau der Seiten ---------- */
+const main = document.getElementById("main");
+const state = { cur:0, done: ST.map(()=>new Set()), pages:[] };
+const isDone = si => state.done[si].size === ST[si].tasks.length;
+let tileEls = [];
+
+function buildIntro(){
+  const p = el("section","page");
+  const hero = el("div","hero"), left = el("div"), right = el("div");
+  left.innerHTML = `<p class="kicker">Übungseinheit Mathematik, 10. Klasse</p>
+  <h1>Fit für den BMT 10</h1>
+  <p class="lead">Der BMT prüft grundlegende Kompetenzen aus den Klassen 7 bis 9 – häufig in neuer Verpackung. In acht Stationen übst du, Aufgabentexte richtig zu lesen, den passenden Ansatz zu wählen und sicher zu rechnen.</p>
+  <p class="how">Die Reihenfolge wählst du selbst. Jede Station beginnt mit einem Merkkasten. Bei jeder Aufgabe kannst du zwei Tipps und zum Schluss die Lösung aufdecken. Nebenrechnungen machst du im Heft.</p>`;
+  const b = el("button","btn","Mit Station 1 beginnen"); b.type="button"; b.onclick=()=>go(1); left.append(b);
+  const tiles = el("div","tiles");
+  tileEls = ST.map((s,i)=>{ const t = el("button","tile",`<span class="n">${i+1}</span><span class="tt">${s.title}</span>`); t.type="button"; t.onclick=()=>go(i+1); tiles.append(t); return t; });
+  right.append(tiles); hero.append(left, right); p.append(hero);
+  return p;
+}
+function buildStation(si){
+  const s = ST[si], p = el("section","page");
+  const head = el("div","shead"); head.append(el("p","kicker",`Station ${si+1} von ${ST.length}`), el("h1","",s.title));
+  const mk = el("div","merke",s.merke); const sent = el("span","qsent"); sent.setAttribute("aria-hidden","true"); mk.append(sent); s._sent = sent;
+  p.append(head, el("p","lead",s.lead), mk);
+  if(s.top) p.append(s.top());
+  s.tasks.forEach((t,ti)=>p.append(buildTask(si,t,ti)));
+  const done = el("div","done"); done.id = "done"+si;
+  done.append(el("p","", si<ST.length-1 ? "Station geschafft – alle Aufgaben erledigt." : "Letzte Station geschafft!"));
+  const nb = el("button","btn", si<ST.length-1 ? `Weiter zu Station ${si+2}` : "Zur Checkliste"); nb.type="button"; nb.onclick=()=>go(si+2);
+  done.append(nb); p.append(done);
+  return p;
+}
+function buildTask(si, t, ti){
+  const card = el("section","task");
+  card.append(el("span","tl", String.fromCharCode(97+ti)+")"));
+  const grid = el("div","tgrid"), body = el("div","tbody");
+  if(t.fig){
+    card.classList.add("hasfig");
+    const side = el("div","tfig"), f = el("div","fig"), content = t.fig();
+    if(typeof content === "string") f.innerHTML = content; else f.append(content);
+    side.append(f); if(t.cap) side.append(el("p","cap",t.cap));
+    grid.append(side);
+  }
+  grid.append(body); card.append(grid);
+  body.append(el("div","tp",t.prompt));
+  const parts = t.parts.map(mk=>mk());
+  parts.forEach(w=>body.append(w.el));
+  const ctrl = el("div","ctrl");
+  const bc = el("button","btn","Prüfen"), bh = el("button","btn sec","Tipp 1 zeigen");
+  bc.type = bh.type = "button";
+  const fb = el("span","fb");
+  ctrl.append(bc,bh,fb); body.append(ctrl);
+  /* Tipps und Lösung in einem festen Bereich mit Reitern statt untereinander */
+  const help = el("div","help"), tabs = el("div","htabs"), hb = el("div","hbody");
+  help.hidden = true; help.append(tabs, hb); body.append(help);
+  const after = el("div","after"); body.append(after);
+  body.querySelectorAll("input.in").forEach(i=>i.enterKeyHint="go");
+  body.addEventListener("keydown", e => { if(e.key==="Enter" && e.target.tagName==="INPUT"){ e.preventDefault(); bc.click(); } });
+  let h = 0, finished = false, solTab = false;
+  const show = k => {
+    [...tabs.children].forEach((b,i)=>b.classList.toggle("on", i===k));
+    if(k < t.hints.length){ hb.className="hbody"; hb.innerHTML = `<div>${t.hints[k]}</div>`; }
+    else { hb.className="hbody sol"; hb.innerHTML = t.sol; }
+  };
+  const addTab = (label, k, cls) => { const b = el("button", cls||"", label); b.type="button"; b.onclick=()=>show(k); tabs.append(b); help.hidden=false; show(k); };
+  const addSol = () => { if(solTab) return; solTab = true; addTab("Lösung", t.hints.length, "sol"); };
+  const finish = how => {
+    finished = true; parts.forEach(w=>w.lock()); bc.disabled = true;
+    card.classList.add(how); state.done[si].add(ti);
+    if(t.onSolved) t.onSolved(card);
+    if(t.after) after.innerHTML = t.after();
+    if(how==="solved"){ bh.textContent = "Lösungsweg ansehen"; } else { bh.hidden = true; }
+    stationCheck(si);
+  };
+  bc.onclick = () => {
+    if(finished) return;
+    let all = true;
+    parts.forEach(w=>{ const r=w.check(); w.fb.className = "fb " + (r.ok?"ok":"no"); w.fb.innerHTML = r.ok ? (parts.length>1?"✓ Richtig.":"") : r.msg; if(!r.ok) all=false; });
+    if(all){ fb.className="fb ok"; fb.textContent = h ? "Richtig! Nächstes Mal vielleicht ohne Tipp." : "Richtig!"; finish("solved"); }
+    else { fb.className="fb"; fb.textContent=""; }
+  };
+  bh.onclick = () => {
+    if(finished){ addSol(); return; }
+    if(h < t.hints.length){
+      addTab(`Tipp ${h+1}`, h); h++;
+      bh.textContent = h < t.hints.length ? `Tipp ${h+1} zeigen` : "Lösung zeigen";
+    } else {
+      addSol();
+      parts.forEach(w=>{ w.reveal(); w.fb.textContent=""; });
+      fb.className="fb"; fb.textContent="Vergleiche die Lösung mit deinem Ansatz.";
+      finish("shown");
+    }
+  };
+  return card;
+}
+function buildFinal(){
+  const p = el("section","page");
+  p.innerHTML = `<div class="shead"><p class="kicker">Geschafft</p><h1>Checkliste für den BMT</h1></div>
+  <p class="lead">Typische Fehlerquellen – kurz vor dem Test noch einmal durchlesen.</p>
+  <ol class="check">
+    <li><b>Alle Operatoren markieren.</b> Angeben: Ergebnis genügt. Berechnen und Bestimmen: Weg zeigen. Begründen: Satz mit „weil“. Deuten: Antwortsatz zur Situation.</li>
+    <li><b>y-Achsenabschnitt:</b> ${X} = 0 einsetzen. <b>Nullstellen:</b> <i>f</i>(${X}) = 0 lösen.</li>
+    <li>${X}${sq} = 49 hat <b>zwei</b> Lösungen. Bei 3${X}${sq} − 12${X} = 0 ausklammern, <b>nie durch ${X} teilen</b>.</li>
+    <li>(${X} + 2)${sq} ist nach <b>links</b> verschoben. Hyperbel: senkrechte Asymptote aus dem Nenner, waagrechte hinter dem Bruch.</li>
+    <li>Kürzen nur bei Produkten. Der Nenner darf nicht 0 werden.</li>
+    <li>Prozentuale Änderung: durch den <b>alten</b> Wert teilen. Gegebener Prozentwert: durch den Prozentsatz teilen.</li>
+    <li>∩ = und, ∪ = oder (mindestens eines), Querstrich = nicht. Zählprinzip: <i>k</i><sup><i>n</i></sup>.</li>
+    <li>Einheitskreis: P(cos α | sin α). Parallelogramm: <i>a</i> · <i>b</i> · sin α. Zylinder: <i>r</i>${sq} · π · <i>h</i>.</li>
+  </ol>
+  <p>Schreib auch bei schweren Aufgaben deinen Ansatz hin: Bei Aufgaben mit 2 Punkten kann schon ein richtiger Ansatz einen Punkt bringen.</p>`;
+  const b = el("button","btn sec","Zur Startseite"); b.type="button"; b.onclick=()=>go(0); p.append(b);
+  return p;
+}
+function stationCheck(si){
+  if(isDone(si)){ document.getElementById("done"+si).classList.add("on"); renderChrome(); }
+}
+
+/* ---------- Navigation: jede Station jederzeit erreichbar ---------- */
+const sqBox = document.getElementById("squares");
+const prevBtn = document.getElementById("prevBtn"), nextBtn = document.getElementById("nextBtn"), navMid = document.getElementById("navMid");
+function renderChrome(){
+  sqBox.innerHTML = "";
+  ST.forEach((s,i)=>{
+    const b = el("button","sq8",String(i+1)); b.type="button";
+    b.title = `Station ${i+1}: ${s.title}`; b.setAttribute("aria-label", b.title + (isDone(i)?" (erledigt)":""));
+    if(state.cur===i+1){ b.classList.add("cur"); b.setAttribute("aria-current","page"); }
+    if(isDone(i)) b.classList.add("done");
+    b.onclick = () => go(i+1);
+    sqBox.append(b);
+  });
+  tileEls.forEach((t,i)=>t.classList.toggle("done", isDone(i)));
+  const c = state.cur;
+  prevBtn.disabled = c===0;
+  if(c===0){ navMid.innerHTML="Start"; nextBtn.hidden=false; nextBtn.textContent="Station 1"; }
+  else if(c===ST.length+1){ navMid.innerHTML="Checkliste"; nextBtn.hidden=true; }
+  else {
+    navMid.innerHTML = `<span>Station ${c} / ${ST.length}</span><span class="nt">${ST[c-1].short}</span>`;
+    nextBtn.hidden=false; nextBtn.textContent = c===ST.length ? "Checkliste" : "Weiter";
+  }
+}
+/* ---------- Kompakte Merkhilfe ---------- */
+const quickEl = document.getElementById("quick"), quickList = document.getElementById("quickList");
+const quickBtn = document.getElementById("quickBtn"), quickClose = document.getElementById("quickClose");
+let quickObs = null, quickSent = null;
+function setQuickOpen(open){
+  document.body.classList.toggle("quick-open", open);
+  quickBtn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+function setQuickOn(on){
+  document.body.classList.toggle("quick-on", on);
+  if(!on) setQuickOpen(false);
+}
+function onQuickEntries(entries){
+  for(const e of entries){
+    if(e.target !== quickSent) continue;
+    /* Der Sensor reicht vom oberen Rand des Merkkastens bis 90 px vor dessen Ende. Ist er komplett oben aus dem Bild, ist der Kasten weitgehend weg. */
+    const top = e.rootBounds ? e.rootBounds.top : 0;
+    setQuickOn(!e.isIntersecting && e.boundingClientRect.bottom < top);
+  }
+}
+function headHeight(){ return document.getElementById("top").getBoundingClientRect().height || 64; }
+function watchQuick(n){
+  if(quickObs) quickObs.disconnect();
+  quickSent = null; setQuickOn(false);
+  const isStation = n>=1 && n<=ST.length;
+  document.body.classList.toggle("st-page", isStation);
+  if(!isStation) return;
+  const s = ST[n-1];
+  quickList.innerHTML = s.quick.map(q=>`<li>${q}</li>`).join("");
+  document.getElementById("quickTitle").textContent = "Merkhilfe";
+  quickEl.setAttribute("aria-label", `Merkhilfe zu Station ${n}`);
+  if(!("IntersectionObserver" in window)) return;
+  quickObs = new IntersectionObserver(onQuickEntries, {rootMargin:`-${Math.round(headHeight())}px 0px 0px 0px`, threshold:0});
+  quickSent = s._sent;
+  quickObs.observe(quickSent);
+}
+quickBtn.onclick = () => setQuickOpen(!document.body.classList.contains("quick-open"));
+quickClose.onclick = () => { setQuickOpen(false); quickBtn.focus(); };
+document.addEventListener("keydown", e => { if(e.key==="Escape" && document.body.classList.contains("quick-open")) setQuickOpen(false); });
+let resizeT = null;
+window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(()=>{ if(state.cur>=1 && state.cur<=ST.length){ const keep = document.body.classList.contains("quick-on"); watchQuick(state.cur); if(keep) setQuickOn(true); } }, 200); });
+
+function go(n){
+  state.cur = n;
+  state.pages.forEach((p,i)=>p.classList.toggle("on", i===n));
+  renderChrome();
+  window.scrollTo(0,0);
+  watchQuick(n);
+}
+prevBtn.onclick = () => go(Math.max(0,state.cur-1));
+nextBtn.onclick = () => go(Math.min(ST.length+1, state.cur+1));
+document.getElementById("homeBtn").onclick = () => go(0);
+
+state.pages.push(buildIntro());
+ST.forEach((s,i)=>state.pages.push(buildStation(i)));
+state.pages.push(buildFinal());
+state.pages.forEach(p=>main.append(p));
+go(0);
+</script>
+</body>
+</html>
