@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Integralfunktion I₀ – Experiment</title>
+<style>
+:root{
+  --ui:"Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --math:"Cambria Math","STIX Two Math","Times New Roman",Times,serif;
+  --paper:#f3f6fa; --panel:#ffffff; --plotbg:#ffffff; --ink:#18222e; --muted:#586677; --line:#d3dce7;
+  --grid:#e6edf5; --grid-major:#c7d4e3; --axis:#26313d;
+  --f:#1f56c3; --f-faint:rgba(31,86,195,.38);
+  --i0:#b0245c; --im1:#1f7f47; --i3:#bd6608;
+  --pos:rgba(31,86,195,.20); --neg:rgba(226,96,32,.28); --pos-line:#1f56c3; --neg-line:#c9541c;
+  --accent:#1f56c3; --on-accent:#ffffff;
+  --top:110px;
+  color-scheme:light dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141a22; --panel:#1b232e; --plotbg:#18202a; --ink:#e4ebf3; --muted:#9aa8b8; --line:#2d3947;
+    --grid:#212b37; --grid-major:#324150; --axis:#c3cfdb;
+    --f:#79a4ff; --f-faint:rgba(121,164,255,.42);
+    --i0:#ff79a8; --im1:#5ccf8b; --i3:#f3a64c;
+    --pos:rgba(121,164,255,.22); --neg:rgba(255,142,84,.26); --pos-line:#79a4ff; --neg-line:#ff9a63;
+    --accent:#79a4ff; --on-accent:#0e1520;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141a22; --panel:#1b232e; --plotbg:#18202a; --ink:#e4ebf3; --muted:#9aa8b8; --line:#2d3947;
+  --grid:#212b37; --grid-major:#324150; --axis:#c3cfdb;
+  --f:#79a4ff; --f-faint:rgba(121,164,255,.42);
+  --i0:#ff79a8; --im1:#5ccf8b; --i3:#f3a64c;
+  --pos:rgba(121,164,255,.22); --neg:rgba(255,142,84,.26); --pos-line:#79a4ff; --neg-line:#ff9a63;
+  --accent:#79a4ff; --on-accent:#0e1520;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15.5px/1.5 var(--ui)}
+.m,i.m{font-family:var(--math);font-style:italic}
+.mr{font-family:var(--math);font-style:normal}
+sub,sup{line-height:0}
+
+/* ---------- Kopf ---------- */
+header{max-width:1320px;margin:0 auto;padding:7px 20px 6px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 28px}
+h1{font-size:1.28rem;line-height:1.2;font-weight:600;margin:0;letter-spacing:-.01em}
+.given{margin:1px 0 0;font-size:.95rem;line-height:1.35;color:var(--muted)}
+.given .m,.given .mr{color:var(--ink)}
+.hero{font-family:var(--math);font-size:1.5rem;line-height:1;white-space:nowrap;color:var(--ink)}
+.integral{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .08em}
+.integral .sign{font-size:1.6em;line-height:1;font-style:normal}
+.integral .lim{display:inline-flex;flex-direction:column;justify-content:space-between;font-size:.55em;line-height:1.05;height:2.1em;margin-left:.05em}
+.integral .lim span{font-style:normal}
+.integral .lim .up{font-style:italic}
+
+/* ---------- Tabs ---------- */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+nav.tabs .inner{max-width:1320px;margin:0 auto;padding:0 10px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+nav.tabs .inner::-webkit-scrollbar{display:none}
+nav.tabs a{flex:0 0 auto;display:block;line-height:39px;min-height:42px;padding:0 12px;font-size:.95rem;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+nav.tabs a b{font-weight:600;color:var(--ink)}
+nav.tabs a[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px}
+
+/* ---------- Panels: zwei Spalten ---------- */
+.panel{max-width:1320px;margin:0 auto;padding:12px 20px 14px;display:grid;
+  grid-template-columns:minmax(0,34fr) minmax(0,66fr);grid-template-rows:auto 1fr;
+  grid-template-areas:"task stage" "work stage";gap:12px 26px;align-items:start;
+  min-height:calc(100vh - var(--top));min-height:calc(100dvh - var(--top))}
+.panel[hidden]{display:none}
+.task{grid-area:task}
+.work{grid-area:work}
+.orig{margin:0;padding:1px 0 1px 14px;border-left:3px solid var(--accent);font-size:1rem;line-height:1.5}
+.note{margin:8px 0 0;color:var(--muted);font-size:.94rem;line-height:1.45}
+.work h2{font-size:1rem;font-weight:600;margin:0 0 4px}
+.work ol{margin:0;padding-left:1.35em}
+.work li{margin:0 0 .38em;padding-left:.15em;line-height:1.45}
+.work li:last-child{margin-bottom:0}
+.work li.extra::marker{color:var(--muted)}
+
+/* ---------- Rechte Spalte ---------- */
+.stage{grid-area:stage;display:flex;flex-direction:column;gap:10px;min-width:0}
+.plot{position:relative;width:100%;aspect-ratio:1;margin:0 auto;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--plotbg);flex:none}
+.plot.sized{aspect-ratio:auto}
+.plot canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:ew-resize;display:block}
+.ctrl-main{display:flex;flex-direction:column;gap:6px}
+.ctrl-side{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.ctrl-side>.full{flex:1 1 100%}
+
+/* Laptop quer: Bedienelemente neben dem Graphen, Regler darunter */
+@media (min-width:1180px) and (min-aspect-ratio:13/9){
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) clamp(250px,34%,310px);grid-template-areas:"plot side" "main main";gap:10px 18px;align-items:start}
+  .stage>.plot{grid-area:plot;justify-self:center;margin:0}
+  .stage>.ctrl-main{grid-area:main}
+  .stage>.ctrl-side{grid-area:side;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:10px}
+}
+
+/* ---------- Bedienelemente ---------- */
+.sl{display:grid;grid-template-columns:minmax(2em,auto) 44px minmax(0,1fr) 44px 3.4em;align-items:center;gap:8px}
+.sl label{font-family:var(--math);font-size:1.15rem;white-space:nowrap}
+.sl label.txt{font-family:var(--ui);font-size:.93rem}
+.sl output{font-family:var(--math);font-size:1.08rem;text-align:right;font-variant-numeric:tabular-nums}
+.step{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:500 1.35rem/1 var(--ui);cursor:pointer;touch-action:manipulation;padding:0}
+.step:active{background:var(--line)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;cursor:pointer;min-width:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--accent);border:3px solid var(--panel);box-shadow:0 0 0 1px var(--accent);margin-top:-11px}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--line)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid var(--panel)}
+input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.row{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.check{display:inline-flex;align-items:center;gap:9px;min-height:40px;cursor:pointer;line-height:1.25}
+.check input{width:22px;height:22px;margin:0;flex:none;accent-color:var(--accent);cursor:pointer}
+.btn{min-height:44px;padding:0 15px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:500 .95rem var(--ui);cursor:pointer;touch-action:manipulation}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn:focus-visible,.step:focus-visible,.check input:focus-visible,.guess input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.readout{display:flex;flex-wrap:wrap;gap:2px 22px;align-items:baseline;padding:6px 12px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.readout .big{font-family:var(--math);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.readout .small{font-family:var(--math);font-size:1.04rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.readout .small b{color:var(--ink);font-weight:normal}
+.legend{display:flex;flex-wrap:wrap;gap:3px 16px;font-size:.87rem;color:var(--muted)}
+.legend>span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:16px;height:12px;border-radius:3px;display:inline-block;border:1px solid transparent}
+.sw.pos{background:var(--pos);border-color:var(--pos-line)}
+.sw.neg{background:var(--neg);border-color:var(--neg-line)}
+.sw.line{height:3px;border-radius:2px}
+
+/* Tabelle (b) */
+.tblwrap{overflow-x:auto}
+.tbl{border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{border:1px solid var(--line);padding:3px 10px;text-align:right;font-family:var(--math);line-height:1.35}
+.tbl th{font-weight:normal;background:var(--panel)}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+
+/* Vermutung (d) */
+.guess{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.guess label{font-family:var(--math);font-size:1.1rem}
+.guess input{width:6.5em;min-height:44px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:1.05rem var(--math)}
+.msg{font-size:.9rem;color:var(--neg-line);margin:0}
+.msg:empty{display:none}
+
+/* Streifen (c) */
+.stripbox{display:flex;flex-direction:column;gap:6px}
+.stripbox[hidden]{display:none}
+
+/* Integralfunktionen (f): eine Zeile pro Funktion */
+.frow{display:grid;grid-template-columns:3.9em 44px minmax(0,1fr) 44px 8.4em;align-items:center;gap:6px;padding:1px 10px 1px 10px;border-left:4px solid var(--c);background:var(--panel);border-radius:0 10px 10px 0}
+.frow .check{font-family:var(--math);font-size:1.1rem;gap:7px}
+.frow .val{font-family:var(--math);font-size:1rem;justify-self:end;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ---------- iPad und kleinere Laptops ---------- */
+@media (max-width:999px){
+  body{font-size:15px}
+  header{padding:6px 16px 5px;gap:2px 20px}
+  h1{font-size:1.14rem}
+  .given{font-size:.9rem}
+  .hero{font-size:1.3rem}
+  nav.tabs .inner{padding:0 6px}
+  nav.tabs a{padding:0 10px}
+  .panel{padding:10px 16px 12px;grid-template-columns:minmax(0,33fr) minmax(0,67fr);gap:10px 18px}
+  .frow{grid-template-columns:3.6em 44px minmax(0,1fr) 44px 8em;padding:1px 8px}
+}
+
+/* ---------- Smartphone: einspaltig, Scrollen erlaubt ---------- */
+@media (max-width:679px){
+  .panel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"task" "stage" "work";min-height:0}
+  header{padding:8px 14px 6px}
+  .hero{font-size:1.25rem}
+  .frow{grid-template-columns:3.6em 44px minmax(0,1fr) 44px;row-gap:0;padding:2px 8px 4px}
+  .frow .val{grid-column:1 / -1;justify-self:start}
+}
+@media (max-width:420px){
+  .sl{grid-template-columns:auto 40px minmax(0,1fr) 40px 3.1em;gap:6px}
+  .sl .step{width:40px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Integralfunktion <span class="m">I</span><sub class="mr">0</sub> – digitales Experiment</h1>
+    <p class="given">Gegeben ist die Funktion <i class="m">f</i> mit <i class="m">f</i><span class="mr">(</span><i class="m">x</i><span class="mr">) = −0,5</span><i class="m">x</i><sup class="mr">2</sup><span class="mr"> + </span><i class="m">x</i><span class="mr"> + 1,5</span>.</p>
+  </div>
+  <div class="hero" aria-label="I null von x gleich Integral von 0 bis x über f von t d t">
+    <i>I</i><sub>0</sub>(<i>x</i>) = <span class="integral"><span class="sign">∫</span><span class="lim"><span class="up">x</span><span>0</span></span></span> <i>f</i>(<i>t</i>) d<i>t</i>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Teilaufgaben">
+  <div class="inner" role="tablist">
+    <a href="#a" role="tab" data-tab="a"><b>a)</b> Graph von <i class="m">f</i></a>
+    <a href="#b" role="tab" data-tab="b"><b>b)</b> Werte von <i class="m">I</i><sub>0</sub></a>
+    <a href="#c" role="tab" data-tab="c"><b>c)</b> Negativer Wert</a>
+    <a href="#d" role="tab" data-tab="d"><b>d)</b> Maximum</a>
+    <a href="#e" role="tab" data-tab="e"><b>e)</b> Spur</a>
+    <a href="#f" role="tab" data-tab="f"><b>f)</b> Vergleich</a>
+  </div>
+</nav>
+
+<!-- ============ a ============ -->
+<section class="panel" id="t-a" hidden>
+  <div class="task">
+    <p class="orig">Zeichnen Sie den Graphen der Funktion <i class="m">f</i> mithilfe einer dynamischen Mathematiksoftware.</p>
+    <p class="note">Der Graph ist hier bereits gezeichnet. Bewegen Sie den Punkt <i class="m">P</i> mit dem Schieberegler oder ziehen Sie direkt im Koordinatensystem.</p>
+  </div>
+  <div class="stage">
+    <div class="plot" id="plot-a" data-armin="1" data-armax="1.15"><canvas aria-label="Graph der Funktion f mit beweglichem Punkt P"></canvas></div>
+    <div class="ctrl-main">
+      <div class="sl" id="sl-a">
+        <label for="r-a"><i>x</i></label>
+        <button class="step" data-dec aria-label="x verkleinern">−</button>
+        <input type="range" id="r-a">
+        <button class="step" data-inc aria-label="x vergrößern">+</button>
+        <output data-out></output>
+      </div>
+    </div>
+    <div class="ctrl-side">
+      <div class="readout"><span class="big" id="out-a"></span></div>
+    </div>
+  </div>
+  <div class="work">
+    <h2>Arbeitsauftrag</h2>
+    <ol>
+      <li>Bestimmen Sie die Nullstellen von <i class="m">f</i> und den Scheitelpunkt des Graphen.</li>
+      <li>Geben Sie an, in welchen Bereichen der Graph oberhalb und in welchen er unterhalb der <i class="m">x</i>-Achse verläuft.</li>
+      <li>Bestätigen Sie die abgelesenen Nullstellen durch eine Rechnung.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ b ============ -->
+<section class="panel" id="t-b" hidden>
+  <div class="task">
+    <p class="orig">Gegeben ist die Integralfunktion <i class="m">I</i><sub class="mr">0</sub> mit <i class="m">I</i><sub class="mr">0</sub><span class="mr">(</span><i class="m">x</i><span class="mr">) = </span><span class="integral mr"><span class="sign">∫</span><span class="lim"><span class="up">x</span><span>0</span></span></span><i class="m">f</i><span class="mr">(</span><i class="m">t</i><span class="mr">)&thinsp;d</span><i class="m">t</i>. Bestimmen Sie Werte <i class="m">I</i><sub class="mr">0</sub><span class="mr">(</span><i class="m">b</i><span class="mr">)</span> der Integralfunktion mithilfe eines Schiebereglers für die obere Grenze <i class="m">b</i>.</p>
+  </div>
+  <div class="stage">
+    <div class="plot" id="plot-b" data-armin="1" data-armax="1.15"><canvas aria-label="Fläche unter dem Graphen von f zwischen 0 und b"></canvas></div>
+    <div class="ctrl-main">
+      <div class="sl" id="sl-b">
+        <label for="r-b"><i>b</i></label>
+        <button class="step" data-dec aria-label="b verkleinern">−</button>
+        <input type="range" id="r-b">
+        <button class="step" data-inc aria-label="b vergrößern">+</button>
+        <output data-out></output>
+      </div>
+    </div>
+    <div class="ctrl-side">
+      <div class="readout"><span class="big" id="out-b"></span></div>
+      <label class="check"><input type="checkbox" id="hide-b"><span>Wert verdecken (zuerst schätzen)</span></label>
+      <div class="legend"><span><i class="sw pos"></i><span>Fläche oberhalb der <i class="m">x</i>-Achse</span></span><span><i class="sw neg"></i><span>Fläche unterhalb der <i class="m">x</i>-Achse</span></span></div>
+      <div class="row">
+        <button class="btn primary" id="take-b">Wert in Tabelle übernehmen</button>
+        <button class="btn" id="clear-b">Tabelle leeren</button>
+      </div>
+      <div class="tblwrap full" id="tbl-b"></div>
+    </div>
+  </div>
+  <div class="work">
+    <h2>Arbeitsauftrag</h2>
+    <ol>
+      <li>Stellen Sie <i class="m">b</i> = 1, <i class="m">b</i> = 2 und <i class="m">b</i> = 3 ein. Schätzen Sie <i class="m">I</i><sub class="mr">0</sub>(<i class="m">b</i>) zuerst mithilfe der Kästchen (ein kleines Kästchen hat den Flächeninhalt 0,25&nbsp;FE) und vergleichen Sie dann mit dem angezeigten Wert.</li>
+      <li>Stellen Sie <i class="m">b</i> = 0 ein. Begründen Sie den angezeigten Wert.</li>
+      <li>Untersuchen Sie zusätzlich geeignete Werte von <i class="m">b</i>, darunter mindestens einen Wert mit <i class="m">b</i> &lt; 0 und einen Wert mit <i class="m">b</i> &gt; 3. Übernehmen Sie insgesamt etwa fünf aussagekräftige Werte in die Tabelle und beschreiben Sie, was Ihnen auffällt.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ c ============ -->
+<section class="panel" id="t-c" hidden>
+  <div class="task">
+    <p class="orig">Erläutern Sie, warum der Wert <i class="m">I</i><sub class="mr">0</sub><span class="mr">(−1)</span> negativ ist, obwohl der Graph von <i class="m">f</i> mit der <i class="m">x</i>-Achse über dem Intervall <span class="mr">[−1; 0]</span> eine Fläche oberhalb der <i class="m">x</i>-Achse einschließt.</p>
+  </div>
+  <div class="stage">
+    <div class="plot" id="plot-c" data-armin="1" data-armax="1.15"><canvas aria-label="Fläche zwischen 0 und b mit Integrationsrichtung und Streifen"></canvas></div>
+    <div class="ctrl-main">
+      <div class="sl" id="sl-c">
+        <label for="r-c"><i>b</i></label>
+        <button class="step" data-dec aria-label="b verkleinern">−</button>
+        <input type="range" id="r-c">
+        <button class="step" data-inc aria-label="b vergrößern">+</button>
+        <output data-out></output>
+      </div>
+    </div>
+    <div class="ctrl-side">
+      <div class="readout">
+        <span class="big" id="out-c1"></span>
+        <span class="small" id="out-c2"></span>
+      </div>
+      <div class="legend" id="legend-c"></div>
+      <div class="row full">
+        <button class="btn" id="set-c">b = −1 einstellen</button>
+        <label class="check"><input type="checkbox" id="dir-c"><span>Integrationsrichtung zeigen</span></label>
+        <label class="check"><input type="checkbox" id="strip-c"><span>Streifen zeigen</span></label>
+      </div>
+      <div class="stripbox full" id="strip-box-c" hidden>
+        <div class="sl" id="sl-cn">
+          <label for="r-cn" class="txt">Streifen <i class="m">n</i></label>
+          <button class="step" data-dec aria-label="weniger Streifen">−</button>
+          <input type="range" id="r-cn">
+          <button class="step" data-inc aria-label="mehr Streifen">+</button>
+          <output data-out></output>
+        </div>
+        <div class="readout"><span class="small" id="out-c3"></span><span class="small" id="out-c4"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="work">
+    <h2>Arbeitsauftrag</h2>
+    <ol>
+      <li>Vergleichen Sie den Wert <i class="m">I</i><sub class="mr">0</sub>(−1) mit dem Flächeninhalt <i class="m">A</i>, den der Graph über dem Intervall [−1;&nbsp;0] mit der <i class="m">x</i>-Achse einschließt.</li>
+      <li>Blenden Sie die Integrationsrichtung ein. Von welcher Grenze zu welcher Grenze wird bei <i class="m">I</i><sub class="mr">0</sub>(−1) integriert? Vergleichen Sie mit <i class="m">I</i><sub class="mr">0</sub>(1).</li>
+      <li>Blenden Sie die Streifen ein. Welches Vorzeichen haben die Funktionswerte <i class="m">f</i>(<i class="m">t</i><sub class="mr">i</sub>), die Streifenbreite Δ<i class="m">t</i> und das Produkt <i class="m">f</i>(<i class="m">t</i><sub class="mr">i</sub>)·Δ<i class="m">t</i>?</li>
+      <li>Formulieren Sie Ihre Erläuterung in zwei bis drei Sätzen. Verwenden Sie die Begriffe untere Grenze, obere Grenze und Vorzeichen.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ d ============ -->
+<section class="panel" id="t-d" hidden>
+  <div class="task">
+    <p class="orig">Erklären Sie, wie man am Graphen von <i class="m">f</i> erkennen kann, an welcher Stelle <i class="m">x</i><sub class="mr">0</sub> die Integralfunktion <i class="m">I</i><sub class="mr">0</sub> ein lokales Maximum besitzt. Geben Sie <i class="m">x</i><sub class="mr">0</sub> an und überprüfen Sie Ihr Ergebnis mithilfe des Schiebereglers für <i class="m">b</i>.</p>
+  </div>
+  <div class="stage">
+    <div class="plot" id="plot-d" data-armin="1" data-armax="1.15"><canvas aria-label="Fläche zwischen 0 und b"></canvas></div>
+    <div class="ctrl-main">
+      <div class="sl" id="sl-d">
+        <label for="r-d"><i>b</i></label>
+        <button class="step" data-dec aria-label="b verkleinern">−</button>
+        <input type="range" id="r-d">
+        <button class="step" data-inc aria-label="b vergrößern">+</button>
+        <output data-out></output>
+      </div>
+    </div>
+    <div class="ctrl-side">
+      <div class="readout"><span class="big" id="out-d"></span></div>
+      <div class="guess">
+        <label for="guess-d"><i>x</i><sub class="mr">0</sub> =</label>
+        <input id="guess-d" type="text" inputmode="decimal" autocomplete="off" placeholder="Vermutung">
+        <button class="btn primary" id="guess-btn-d">b auf <span class="m">x</span><sub>0</sub> setzen</button>
+      </div>
+      <div class="legend"><span><i class="sw pos"></i><span>Fläche oberhalb der <i class="m">x</i>-Achse</span></span><span><i class="sw neg"></i><span>Fläche unterhalb der <i class="m">x</i>-Achse</span></span></div>
+      <p class="msg full" id="msg-d" role="status"></p>
+    </div>
+  </div>
+  <div class="work">
+    <h2>Arbeitsauftrag</h2>
+    <ol>
+      <li>Bewegen Sie <i class="m">b</i> langsam von 0 nach rechts und beobachten Sie <i class="m">I</i><sub class="mr">0</sub>(<i class="m">b</i>). In welchem Bereich nimmt der Wert zu, in welchem nimmt er ab?</li>
+      <li>Erklären Sie mithilfe des Graphen von <i class="m">f</i>, woran man diesen Wechsel erkennt.</li>
+      <li>Geben Sie <i class="m">x</i><sub class="mr">0</sub> an. Tragen Sie Ihre Vermutung ein und vergleichen Sie <i class="m">I</i><sub class="mr">0</sub>(<i class="m">x</i><sub class="mr">0</sub>) mit Werten links und rechts davon (Tasten − und +).</li>
+      <li class="extra">Zusatz: Besitzt <i class="m">I</i><sub class="mr">0</sub> auch ein lokales Minimum? Begründen Sie auf dieselbe Weise.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ e ============ -->
+<section class="panel" id="t-e" hidden>
+  <div class="task">
+    <p class="orig">Erzeugen Sie Punkte <i class="m">P</i><span class="mr">(</span><i class="m">b</i><span class="mr"> | </span><i class="m">I</i><sub class="mr">0</sub><span class="mr">(</span><i class="m">b</i><span class="mr">))</span> mit dem Schieberegler und veranschaulichen Sie den Graphen von <i class="m">I</i><sub class="mr">0</sub> durch die Spur dieser Punkte.</p>
+    <p class="note">Jede Stellung von <i class="m">b</i> hinterlässt einen Punkt der Spur.</p>
+  </div>
+  <div class="stage">
+    <div class="plot" id="plot-e" data-armin="0.85" data-armax="1.1"><canvas aria-label="Graph von f und Spur der Punkte P"></canvas></div>
+    <div class="ctrl-main">
+      <div class="sl" id="sl-e">
+        <label for="r-e"><i>b</i></label>
+        <button class="step" data-dec aria-label="b verkleinern">−</button>
+        <input type="range" id="r-e">
+        <button class="step" data-inc aria-label="b vergrößern">+</button>
+        <output data-out></output>
+      </div>
+    </div>
+    <div class="ctrl-side">
+      <div class="readout"><span class="big" id="out-e"></span></div>
+      <div class="row">
+        <button class="btn primary" id="play-e">Durchlauf starten</button>
+        <button class="btn" id="clear-e">Spur löschen</button>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="showf-e" checked><span>Graph von <i class="m">f</i></span></label>
+        <label class="check"><input type="checkbox" id="showa-e" checked><span>Fläche</span></label>
+        <label class="check"><input type="checkbox" id="showi-e"><span>Graph von <i class="m">I</i><sub>0</sub> zur Kontrolle</span></label>
+      </div>
+      <div class="legend"><span><i class="sw line" style="background:var(--f)"></i><span>Graph von <i class="m">f</i></span></span><span><i class="sw line" style="background:var(--i0)"></i><span>Spur der Punkte <i class="m">P</i></span></span></div>
+    </div>
+  </div>
+  <div class="work">
+    <h2>Arbeitsauftrag</h2>
+    <ol>
+      <li>Erzeugen Sie die Spur über den gesamten Bereich. Beschreiben Sie den Verlauf des Graphen von <i class="m">I</i><sub class="mr">0</sub>.</li>
+      <li>Vergleichen Sie mit dem Graphen von <i class="m">f</i>: Wo hat <i class="m">f</i> Nullstellen, wo hat <i class="m">I</i><sub class="mr">0</sub> Extremstellen? Wo ist <i class="m">f</i> positiv, wo steigt <i class="m">I</i><sub class="mr">0</sub>?</li>
+      <li>Begründen Sie, warum der Graph von <i class="m">I</i><sub class="mr">0</sub> durch den Ursprung verläuft.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ f ============ -->
+<section class="panel" id="t-f" hidden>
+  <div class="task">
+    <p class="orig">Veranschaulichen Sie die Graphen der Integralfunktionen <i class="m">I</i><sub class="mr">−1</sub> und <i class="m">I</i><sub class="mr">3</sub> mit zwei weiteren Schiebereglern und vergleichen Sie die Graphen der drei Integralfunktionen. Geben Sie Gemeinsamkeiten und Unterschiede an.</p>
+    <p class="note">Jede Integralfunktion hat ihren eigenen Schieberegler für die obere Grenze. Die Punkte hinterlassen eine Spur.</p>
+  </div>
+  <div class="stage">
+    <div class="plot" id="plot-f" data-armin="0.75" data-armax="1.05"><canvas aria-label="Spuren der drei Integralfunktionen"></canvas></div>
+    <div class="ctrl-main" id="rows-f"></div>
+    <div class="ctrl-side">
+      <div class="row">
+        <label class="check"><input type="checkbox" id="couple-f"><span>Schieberegler koppeln</span></label>
+        <label class="check"><input type="checkbox" id="showf-f" checked><span>Graph von <i class="m">f</i></span></label>
+        <label class="check"><input type="checkbox" id="full-f"><span>Vollständige Graphen</span></label>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="play-f">Durchlauf starten</button>
+        <button class="btn" id="clear-f">Spuren löschen</button>
+      </div>
+    </div>
+  </div>
+  <div class="work">
+    <h2>Arbeitsauftrag</h2>
+    <ol>
+      <li>Erzeugen Sie für alle drei Integralfunktionen die Spur. Mit „Schieberegler koppeln“ bewegen sich alle drei Punkte gemeinsam.</li>
+      <li>Geben Sie Gemeinsamkeiten an, zum Beispiel zur Form der Graphen, zum Monotonieverhalten und zur Lage der Extremstellen.</li>
+      <li>Geben Sie Unterschiede an, zum Beispiel zu den Nullstellen und zur Lage im Koordinatensystem. Um wie viel sind die Graphen gegeneinander verschoben?</li>
+      <li>Begründen Sie: Jede Integralfunktion <i class="m">I</i><sub class="mr">a</sub> besitzt an der Stelle <i class="m">a</i> eine Nullstelle.</li>
+    </ol>
+  </div>
+</section>
+
+<script>
+(function(){
+"use strict";
+var UI='"Avenir Next","Segoe UI",system-ui,-apple-system,Arial,sans-serif';
+var MATH='"Cambria Math","STIX Two Math","Times New Roman",Times,serif';
+
+/* ---------- Mathematik ---------- */
+function f(x){ return -0.5*x*x + x + 1.5; }
+function F(x){ return -x*x*x/6 + x*x/2 + 1.5*x; }        // I0
+function I(a,x){ return F(x) - F(a); }
+var ZEROS=[-1,3];
+function absArea(a,b){
+  var lo=Math.min(a,b), hi=Math.max(a,b), p=[lo], s=0, i;
+  ZEROS.forEach(function(z){ if(z>lo && z<hi) p.push(z); });
+  p.push(hi);
+  for(i=0;i<p.length-1;i++) s+=Math.abs(F(p[i+1])-F(p[i]));
+  return s;
+}
+function r1(v){ return Math.round(v*10)/10; }
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function fmt(v,d){
+  if(d===undefined) d=2;
+  if(Math.abs(v) < 0.5*Math.pow(10,-d)) v=0;
+  return v.toFixed(d).replace('.',',').replace('-','−');
+}
+function $(s){ return document.querySelector(s); }
+function I0html(){ return '<i>I</i><sub class="mr">0</sub>'; }
+
+/* ---------- Farben aus CSS ---------- */
+function colors(){
+  var s=getComputedStyle(document.documentElement);
+  function g(n){ return s.getPropertyValue('--'+n).trim(); }
+  return {plotbg:g('plotbg'),grid:g('grid'),gridMajor:g('grid-major'),axis:g('axis'),muted:g('muted'),ink:g('ink'),
+    f:g('f'),fFaint:g('f-faint'),i0:g('i0'),im1:g('im1'),i3:g('i3'),pos:g('pos'),neg:g('neg'),
+    posLine:g('pos-line'),negLine:g('neg-line'),accent:g('accent')};
+}
+
+/* ---------- Koordinatensystem ---------- */
+function Plot(box, view){
+  var self=this;
+  this.box=box; this.c=box.querySelector('canvas'); this.ctx=this.c.getContext('2d');
+  this.v=view; this.handles=[]; this.drawFn=null; this.drag=null; this.w=0; this.h=0;
+  if(window.ResizeObserver) new ResizeObserver(function(){ self.resize(); }).observe(box);
+  window.addEventListener('resize',function(){ self.resize(); });
+  this.c.addEventListener('pointerdown',function(e){ self.down(e); });
+  this.c.addEventListener('pointermove',function(e){ if(self.drag){ self.apply(e); e.preventDefault(); } });
+  function up(){ self.drag=null; }
+  this.c.addEventListener('pointerup',up);
+  this.c.addEventListener('pointercancel',up);
+}
+Plot.prototype.resize=function(){
+  var r=this.box.getBoundingClientRect();
+  if(r.width<2 || r.height<2) return;
+  var d=window.devicePixelRatio||1;
+  this.w=r.width; this.h=r.height;
+  this.c.width=Math.round(this.w*d); this.c.height=Math.round(this.h*d);
+  this.ctx.setTransform(d,0,0,d,0,0);
+  this.render();
+};
+Plot.prototype.X=function(x){ return (x-this.v.xmin)/(this.v.xmax-this.v.xmin)*this.w; };
+Plot.prototype.Y=function(y){ return (this.v.ymax-y)/(this.v.ymax-this.v.ymin)*this.h; };
+Plot.prototype.xOf=function(px){ return this.v.xmin + px/this.w*(this.v.xmax-this.v.xmin); };
+Plot.prototype.down=function(e){
+  if(!this.handles.length) return;
+  var r=this.c.getBoundingClientRect(), px=e.clientX-r.left, best=null, bd=1e9, self=this;
+  this.handles.forEach(function(h){
+    if(h.enabled && !h.enabled()) return;
+    var d=Math.abs(self.X(h.get())-px);
+    if(d<bd){ bd=d; best=h; }
+  });
+  if(!best) return;
+  this.drag=best;
+  try{ this.c.setPointerCapture(e.pointerId); }catch(err){}
+  this.apply(e); e.preventDefault();
+};
+Plot.prototype.apply=function(e){
+  var r=this.c.getBoundingClientRect(), h=this.drag;
+  var v=clamp(r1(this.xOf(e.clientX-r.left)), h.min, h.max);
+  if(Math.abs(v-h.get())>1e-9) h.set(v);
+};
+Plot.prototype.render=function(){
+  if(!this.w) return;
+  this.k=colors();
+  var c=this.ctx;
+  c.clearRect(0,0,this.w,this.h);
+  c.fillStyle=this.k.plotbg; c.fillRect(0,0,this.w,this.h);
+  this.grid();
+  if(this.drawFn) this.drawFn(this);
+};
+Plot.prototype.grid=function(){
+  var c=this.ctx, v=this.v, k=this.k, x, y, px, py, i;
+  c.lineWidth=1;
+  for(i=Math.ceil(v.xmin*2); i<=Math.floor(v.xmax*2); i++){
+    x=i/2; px=Math.round(this.X(x))+0.5;
+    c.strokeStyle=(i%2===0)?k.gridMajor:k.grid;
+    c.beginPath(); c.moveTo(px,0); c.lineTo(px,this.h); c.stroke();
+  }
+  for(i=Math.ceil(v.ymin*2); i<=Math.floor(v.ymax*2); i++){
+    y=i/2; py=Math.round(this.Y(y))+0.5;
+    c.strokeStyle=(i%2===0)?k.gridMajor:k.grid;
+    c.beginPath(); c.moveTo(0,py); c.lineTo(this.w,py); c.stroke();
+  }
+  var x0=Math.round(this.X(0))+0.5, y0=Math.round(this.Y(0))+0.5;
+  c.strokeStyle=k.axis; c.fillStyle=k.axis; c.lineWidth=1.5;
+  c.beginPath(); c.moveTo(0,y0); c.lineTo(this.w-2,y0); c.moveTo(x0,this.h); c.lineTo(x0,2); c.stroke();
+  c.beginPath(); c.moveTo(this.w-1,y0); c.lineTo(this.w-11,y0-5); c.lineTo(this.w-11,y0+5); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(x0,1); c.lineTo(x0-5,11); c.lineTo(x0+5,11); c.closePath(); c.fill();
+  c.font='12px '+UI; c.fillStyle=k.muted; c.lineWidth=1;
+  c.textAlign='center'; c.textBaseline='top';
+  for(i=Math.ceil(v.xmin); i<=Math.floor(v.xmax); i++){
+    if(i===0) continue; px=this.X(i); if(px>this.w-16) continue;
+    c.beginPath(); c.moveTo(px,y0-4); c.lineTo(px,y0+4); c.strokeStyle=k.axis; c.stroke();
+    c.fillText(String(i).replace('-','−'),px,y0+6);
+  }
+  c.textAlign='right'; c.textBaseline='middle';
+  for(i=Math.ceil(v.ymin); i<=Math.floor(v.ymax); i++){
+    if(i===0) continue; py=this.Y(i); if(py<16) continue;
+    c.beginPath(); c.moveTo(x0-4,py); c.lineTo(x0+4,py); c.strokeStyle=k.axis; c.stroke();
+    c.fillText(String(i).replace('-','−'),x0-7,py);
+  }
+  c.textAlign='right'; c.textBaseline='top'; c.fillText('0',x0-5,y0+5);
+  c.font='italic 16px '+MATH; c.fillStyle=k.axis;
+  c.textAlign='right'; c.textBaseline='top'; c.fillText('x',this.w-6,y0+8);
+  c.textAlign='left'; c.textBaseline='top'; c.fillText('y',x0+9,3);
+};
+Plot.prototype.curve=function(fn,color,o){
+  o=o||{};
+  var c=this.ctx, from=(o.from!==undefined)?o.from:this.v.xmin, to=(o.to!==undefined)?o.to:this.v.xmax;
+  var n=Math.max(80,Math.ceil(Math.abs(this.X(to)-this.X(from))/2)), i, x, y;
+  c.save(); c.strokeStyle=color; c.lineWidth=o.w||2.6; c.lineJoin='round'; c.lineCap='round';
+  if(o.dash) c.setLineDash(o.dash);
+  c.beginPath();
+  for(i=0;i<=n;i++){
+    x=from+(to-from)*i/n; y=clamp(this.Y(fn(x)),-2000,this.h+2000);
+    if(i===0) c.moveTo(this.X(x),y); else c.lineTo(this.X(x),y);
+  }
+  c.stroke(); c.restore();
+};
+Plot.prototype.area=function(a,b){
+  var lo=Math.min(a,b), hi=Math.max(a,b), cuts=[lo], i, j, s, e, n, x, c=this.ctx;
+  if(hi-lo<1e-9) return;
+  ZEROS.forEach(function(z){ if(z>lo && z<hi) cuts.push(z); });
+  cuts.push(hi);
+  for(i=0;i<cuts.length-1;i++){
+    s=cuts[i]; e=cuts[i+1];
+    var pos=f((s+e)/2)>=0;
+    n=Math.max(20,Math.ceil((this.X(e)-this.X(s))/2));
+    c.beginPath(); c.moveTo(this.X(s),this.Y(0));
+    for(j=0;j<=n;j++){ x=s+(e-s)*j/n; c.lineTo(this.X(x),clamp(this.Y(f(x)),-2000,this.h+2000)); }
+    c.lineTo(this.X(e),this.Y(0)); c.closePath();
+    c.fillStyle=pos?this.k.pos:this.k.neg; c.fill();
+  }
+};
+Plot.prototype.strips=function(a,b,n){
+  var c=this.ctx, dt=(b-a)/n, i, t0, t1, h, prod, x1, x2, y0=this.Y(0), yh;
+  if(Math.abs(dt)<1e-9) return;
+  for(i=0;i<n;i++){
+    t0=a+i*dt; t1=t0+dt; h=f((t0+t1)/2); prod=h*dt;
+    x1=this.X(Math.min(t0,t1)); x2=this.X(Math.max(t0,t1)); yh=clamp(this.Y(h),-2000,this.h+2000);
+    c.fillStyle=prod>=0?this.k.pos:this.k.neg;
+    c.strokeStyle=prod>=0?this.k.posLine:this.k.negLine;
+    c.lineWidth=1.2;
+    c.fillRect(x1,Math.min(y0,yh),x2-x1,Math.abs(yh-y0));
+    c.strokeRect(x1+0.5,Math.min(y0,yh)+0.5,x2-x1-1,Math.abs(yh-y0)-1);
+  }
+};
+Plot.prototype.seg=function(x1,y1,x2,y2,color,w,dash){
+  var c=this.ctx; c.save(); c.strokeStyle=color; c.lineWidth=w||2; if(dash) c.setLineDash(dash);
+  c.beginPath(); c.moveTo(this.X(x1),this.Y(y1)); c.lineTo(this.X(x2),this.Y(y2)); c.stroke(); c.restore();
+};
+Plot.prototype.point=function(x,y,color,r){
+  var c=this.ctx; c.save(); c.fillStyle=color; c.strokeStyle=this.k.plotbg; c.lineWidth=2.5;
+  c.beginPath(); c.arc(this.X(x),this.Y(y),r||6.5,0,Math.PI*2); c.fill(); c.stroke(); c.restore();
+};
+Plot.prototype.dots=function(pts,color){
+  var c=this.ctx, self=this; c.save(); c.fillStyle=color;
+  pts.forEach(function(p){ c.beginPath(); c.arc(self.X(p[0]),self.Y(p[1]),2.6,0,Math.PI*2); c.fill(); });
+  c.restore();
+};
+Plot.prototype.label=function(t,px,py,o){
+  o=o||{};
+  var c=this.ctx, align=o.align||'left', base=o.base||'middle';
+  c.save(); c.font=o.font||('600 14px '+UI); c.textAlign=align; c.textBaseline=base;
+  if(o.bg!==false){
+    var w=c.measureText(t).width+10, h=22, x0, y0;
+    x0= align==='left'?px-5 : align==='center'?px-w/2 : px-w+5;
+    y0= base==='middle'?py-h/2 : base==='top'?py-3 : py-h+3;
+    c.globalAlpha=.88; c.fillStyle=this.k.plotbg; c.fillRect(x0,y0,w,h); c.globalAlpha=1;
+  }
+  c.fillStyle=o.color||this.k.ink; c.fillText(t,px,py); c.restore();
+};
+/* Label neben einem Punkt, das im Bild bleibt */
+Plot.prototype.tag=function(t,x,y,color){
+  var px=this.X(x), py=this.Y(y), right=px<this.w-150;
+  py=clamp(py-16,14,this.h-14);
+  this.label(t, right?px+12:px-12, py, {align:right?'left':'right', color:color, font:'italic 600 15px '+MATH});
+};
+Plot.prototype.bMarker=function(b,color,text){
+  var c=this.ctx, x=this.X(b), y=this.Y(0);
+  color=color||this.k.accent;
+  c.save(); c.fillStyle=color; c.strokeStyle=this.k.plotbg; c.lineWidth=2.5;
+  c.beginPath(); c.arc(x,y,8,0,Math.PI*2); c.fill(); c.stroke(); c.restore();
+  this.label(text||'b',x,y+13,{align:'center',base:'top',color:color,font:'italic 600 16px '+MATH});
+};
+Plot.prototype.dirArrow=function(a,b,color){
+  var c=this.ctx, x1=this.X(a), x2=this.X(b), y=this.Y(0)+50, s=x2>x1?1:-1;
+  if(Math.abs(x2-x1)<14) return;
+  c.save(); c.strokeStyle=color; c.fillStyle=color; c.lineWidth=3; c.lineCap='round';
+  c.beginPath(); c.moveTo(x1,y-7); c.lineTo(x1,y+7); c.stroke();
+  c.beginPath(); c.moveTo(x1,y); c.lineTo(x2-s*10,y); c.stroke();
+  c.beginPath(); c.moveTo(x2,y); c.lineTo(x2-s*13,y-7); c.lineTo(x2-s*13,y+7); c.closePath(); c.fill();
+  c.restore();
+  this.label('Integrationsrichtung',(x1+x2)/2,y+10,{align:'center',base:'top',color:color,font:'13px '+UI});
+};
+
+/* ---------- Schieberegler ---------- */
+function slider(root,o){
+  var r=root.querySelector('input[type=range]'), out=root.querySelector('[data-out]'), dec=o.dec===undefined?1:o.dec;
+  r.min=o.min; r.max=o.max; r.step=o.step;
+  r.addEventListener('input',function(){ o.set(+r.value); });
+  function st(d){ o.set(clamp(Math.round((o.get()+d)*1e6)/1e6,o.min,o.max)); }
+  root.querySelector('[data-dec]').addEventListener('click',function(){ st(-o.step); });
+  root.querySelector('[data-inc]').addEventListener('click',function(){ st(o.step); });
+  return function(){ r.value=o.get(); if(out) out.textContent=fmt(o.get(),dec); };
+}
+
+var mqSide=window.matchMedia('(min-width:1180px) and (min-aspect-ratio:13/9)');
+var mqPhone=window.matchMedia('(max-width:679px)');
+function isSide(){ return mqSide.matches; }
+function onMQ(mq,fn){ if(mq.addEventListener) mq.addEventListener('change',fn); else if(mq.addListener) mq.addListener(fn); }
+
+var VIEW_AD={xmin:-2.5,xmax:5.5,ymin:-4.5,ymax:3.5};
+var BMIN=-2, BMAX=4.5;
+var tabs={};
+
+/* ================= a ================= */
+(function(){
+  var s={x:1};
+  var P=new Plot($('#plot-a'),VIEW_AD);
+  function set(v){ s.x=r1(v); upd(); }
+  var sync=slider($('#sl-a'),{min:-2.5,max:5.5,step:0.1,get:function(){return s.x;},set:set});
+  P.handles=[{get:function(){return s.x;},set:set,min:-2.5,max:5.5}];
+  P.drawFn=function(p){
+    var y=f(s.x);
+    p.curve(f,p.k.f);
+    p.label('f',p.X(4.25)+10,p.Y(f(4.25)),{color:p.k.f,font:'italic 600 18px '+MATH});
+    p.seg(s.x,0,s.x,y,p.k.muted,1.3,[5,4]);
+    p.seg(0,y,s.x,y,p.k.muted,1.3,[5,4]);
+    p.point(s.x,y,p.k.f,7);
+    p.tag('P',s.x,y,p.k.ink);
+  };
+  function upd(){
+    sync();
+    $('#out-a').innerHTML='<i>P</i>('+fmt(s.x,1)+' | '+fmt(f(s.x))+')';
+    P.render();
+  }
+  upd();
+  tabs.a={plot:P};
+})();
+
+/* ================= b ================= */
+(function(){
+  var s={b:2,hide:false,rows:[]};
+  var P=new Plot($('#plot-b'),VIEW_AD);
+  function set(v){ s.b=r1(v); upd(); }
+  var sync=slider($('#sl-b'),{min:BMIN,max:BMAX,step:0.1,get:function(){return s.b;},set:set});
+  P.handles=[{get:function(){return s.b;},set:set,min:BMIN,max:BMAX}];
+  P.drawFn=function(p){
+    p.area(0,s.b);
+    p.curve(f,p.k.f);
+    p.label('f',p.X(4.25)+10,p.Y(f(4.25)),{color:p.k.f,font:'italic 600 18px '+MATH});
+    p.seg(s.b,0,s.b,f(s.b),p.k.accent,2);
+    p.bMarker(s.b);
+  };
+  function table(){
+    var box=$('#tbl-b');
+    if(!s.rows.length){ box.innerHTML='<p class="empty">Noch keine Werte übernommen.</p>'; return; }
+    if(isSide()){
+      var t='<table class="tbl"><tr><th><i>b</i></th><th>'+I0html()+'(<i>b</i>)</th></tr>';
+      s.rows.forEach(function(r){ t+='<tr><td>'+fmt(r[0],1)+'</td><td>'+fmt(r[1])+'</td></tr>'; });
+      box.innerHTML=t+'</table>';
+      return;
+    }
+    var h='<table class="tbl"><tr><th><i>b</i></th>', v='<tr><th>'+I0html()+'(<i>b</i>)</th>';
+    s.rows.forEach(function(r){ h+='<td>'+fmt(r[0],1)+'</td>'; v+='<td>'+fmt(r[1])+'</td>'; });
+    box.innerHTML=h+'</tr>'+v+'</tr></table>';
+  }
+  function upd(){
+    sync();
+    $('#out-b').innerHTML=I0html()+'('+fmt(s.b,1)+') ≈ '+(s.hide?'?':fmt(F(s.b)));
+    P.render();
+  }
+  $('#hide-b').addEventListener('change',function(e){ s.hide=e.target.checked; upd(); });
+  $('#take-b').addEventListener('click',function(){
+    var b=s.b;
+    s.rows=s.rows.filter(function(r){ return Math.abs(r[0]-b)>1e-9; });
+    s.rows.push([b,F(b)]);
+    s.rows.sort(function(p,q){ return p[0]-q[0]; });
+    table();
+  });
+  $('#clear-b').addEventListener('click',function(){ s.rows=[]; table(); });
+  table(); upd();
+  onMQ(mqSide,table);
+  tabs.b={plot:P};
+})();
+
+/* ================= c ================= */
+(function(){
+  var s={b:-1,dir:false,strips:false,n:8};
+  var P=new Plot($('#plot-c'),VIEW_AD);
+  function set(v){ s.b=r1(v); upd(); }
+  var sync=slider($('#sl-c'),{min:BMIN,max:BMAX,step:0.1,get:function(){return s.b;},set:set});
+  var syncN=slider($('#sl-cn'),{min:2,max:24,step:2,dec:0,get:function(){return s.n;},set:function(v){ s.n=Math.round(v); upd(); }});
+  P.handles=[{get:function(){return s.b;},set:set,min:BMIN,max:BMAX}];
+  P.drawFn=function(p){
+    if(s.strips) p.strips(0,s.b,s.n); else p.area(0,s.b);
+    p.curve(f,p.k.f);
+    p.label('f',p.X(4.25)+10,p.Y(f(4.25)),{color:p.k.f,font:'italic 600 18px '+MATH});
+    p.seg(s.b,0,s.b,f(s.b),p.k.accent,2);
+    if(s.dir) p.dirArrow(0,s.b,p.k.ink);
+    p.bMarker(s.b);
+  };
+  function upd(){
+    sync(); syncN();
+    $('#out-c1').innerHTML=I0html()+'('+fmt(s.b,1)+') ≈ '+fmt(F(s.b));
+    $('#out-c2').innerHTML='Flächeninhalt <i>A</i> ≈ <b>'+fmt(absArea(0,s.b))+'</b> FE';
+    $('#strip-box-c').hidden=!s.strips;
+    if(s.strips){
+      var dt=s.b/s.n, sum=0, i, t;
+      for(i=0;i<s.n;i++){ t=i*dt+dt/2; sum+=f(t)*dt; }
+      $('#out-c3').innerHTML='Streifenbreite Δ<i>t</i> = (<i>b</i> − 0) : <i>n</i> ≈ <b>'+fmt(dt,3)+'</b>';
+      $('#out-c4').innerHTML='Summe der Produkte <i>f</i>(<i>t</i><sub class="mr">i</sub>)·Δ<i>t</i> ≈ <b>'+fmt(sum)+'</b>';
+      $('#legend-c').innerHTML='<span><i class="sw pos"></i><span>Produkt <i class="m">f</i>(<i class="m">t</i><sub>i</sub>)·Δ<i class="m">t</i> positiv</span></span><span><i class="sw neg"></i><span>Produkt <i class="m">f</i>(<i class="m">t</i><sub>i</sub>)·Δ<i class="m">t</i> negativ</span></span>';
+    } else {
+      $('#legend-c').innerHTML='<span><i class="sw pos"></i><span>Fläche oberhalb der <i class="m">x</i>-Achse</span></span><span><i class="sw neg"></i><span>Fläche unterhalb der <i class="m">x</i>-Achse</span></span>';
+    }
+    P.render();
+  }
+  $('#set-c').addEventListener('click',function(){ set(-1); });
+  $('#dir-c').addEventListener('change',function(e){ s.dir=e.target.checked; upd(); });
+  $('#strip-c').addEventListener('change',function(e){ s.strips=e.target.checked; upd(); });
+  upd();
+  tabs.c={plot:P};
+})();
+
+/* ================= d ================= */
+(function(){
+  var s={b:0};
+  var P=new Plot($('#plot-d'),VIEW_AD);
+  function set(v){ s.b=r1(v); upd(); }
+  var sync=slider($('#sl-d'),{min:BMIN,max:BMAX,step:0.1,get:function(){return s.b;},set:set});
+  P.handles=[{get:function(){return s.b;},set:set,min:BMIN,max:BMAX}];
+  P.drawFn=function(p){
+    p.area(0,s.b);
+    p.curve(f,p.k.f);
+    p.label('f',p.X(4.25)+10,p.Y(f(4.25)),{color:p.k.f,font:'italic 600 18px '+MATH});
+    p.seg(s.b,0,s.b,f(s.b),p.k.accent,2);
+    p.bMarker(s.b);
+  };
+  function upd(){
+    sync();
+    $('#out-d').innerHTML=I0html()+'('+fmt(s.b,1)+') ≈ '+fmt(F(s.b));
+    P.render();
+  }
+  function tryGuess(){
+    var raw=$('#guess-d').value.trim().replace(',','.').replace('−','-'), v=parseFloat(raw);
+    if(raw==='' || isNaN(v) || !/^[-+]?\d*\.?\d+$/.test(raw)){ $('#msg-d').textContent='Bitte eine Zahl eingeben, zum Beispiel 2,5.'; return; }
+    if(v<BMIN || v>BMAX){ $('#msg-d').textContent='Bitte einen Wert zwischen −2 und 4,5 eingeben.'; return; }
+    $('#msg-d').textContent=(Math.abs(r1(v)-v)>1e-9)?'Der Schieberegler wurde auf eine Nachkommastelle gerundet.':'';
+    set(v);
+  }
+  $('#guess-btn-d').addEventListener('click',tryGuess);
+  $('#guess-d').addEventListener('keydown',function(e){ if(e.key==='Enter') tryGuess(); });
+  upd();
+  tabs.d={plot:P};
+})();
+
+/* ================= e ================= */
+(function(){
+  var s={b:BMIN,trace:{},showF:true,showA:true,showI:false,timer:null};
+  var P=new Plot($('#plot-e'),{xmin:-2.5,xmax:5.5,ymin:-4,ymax:5});
+  function addTrace(){ s.trace[Math.round(s.b*10)]=[s.b,F(s.b)]; }
+  function set(v){ s.b=r1(v); addTrace(); upd(); }
+  var sync=slider($('#sl-e'),{min:BMIN,max:BMAX,step:0.1,get:function(){return s.b;},set:set});
+  P.handles=[{get:function(){return s.b;},set:set,min:BMIN,max:BMAX}];
+  P.drawFn=function(p){
+    var k=p.k, y=F(s.b), pts=Object.keys(s.trace).map(function(key){ return s.trace[key]; });
+    if(s.showA) p.area(0,s.b);
+    if(s.showF){ p.curve(f,k.f,{w:2}); p.label('f',p.X(4.1)+10,p.Y(f(4.1)),{color:k.f,font:'italic 600 18px '+MATH}); }
+    if(s.showI) p.curve(F,k.i0,{w:1.8,dash:[7,6]});
+    p.dots(pts,k.i0);
+    p.seg(s.b,0,s.b,y,k.i0,1.4,[5,4]);
+    p.point(s.b,y,k.i0,7);
+    p.tag('P',s.b,y,k.i0);
+    p.bMarker(s.b);
+  };
+  function upd(){
+    sync();
+    $('#out-e').innerHTML='<i>P</i>('+fmt(s.b,1)+' | '+fmt(F(s.b))+')';
+    P.render();
+  }
+  function stop(){ if(s.timer){ clearInterval(s.timer); s.timer=null; } $('#play-e').textContent='Durchlauf starten'; }
+  function play(){
+    if(s.timer){ stop(); return; }
+    if(s.b>=BMAX-1e-9) set(BMIN);
+    $('#play-e').textContent='Anhalten';
+    s.timer=setInterval(function(){
+      var nb=r1(s.b+0.1);
+      if(nb>BMAX+1e-9){ stop(); return; }
+      set(nb);
+      if(nb>=BMAX-1e-9) stop();
+    },70);
+  }
+  $('#play-e').addEventListener('click',play);
+  $('#clear-e').addEventListener('click',function(){ s.trace={}; addTrace(); upd(); });
+  $('#showf-e').addEventListener('change',function(e){ s.showF=e.target.checked; upd(); });
+  $('#showa-e').addEventListener('change',function(e){ s.showA=e.target.checked; upd(); });
+  $('#showi-e').addEventListener('change',function(e){ s.showI=e.target.checked; upd(); });
+  addTrace(); upd();
+  tabs.e={plot:P,stop:stop};
+})();
+
+/* ================= f ================= */
+(function(){
+  var FMIN=-3, FMAX=5;
+  var fns=[
+    {id:'m1',a:-1,name:'I₋₁',html:'<i>I</i><sub class="mr">−1</sub>',col:'im1',b:-1,on:true,trace:{}},
+    {id:'z', a:0, name:'I₀', html:'<i>I</i><sub class="mr">0</sub>', col:'i0', b:0, on:true,trace:{}},
+    {id:'t3',a:3, name:'I₃', html:'<i>I</i><sub class="mr">3</sub>', col:'i3', b:3, on:true,trace:{}}
+  ];
+  var s={couple:false,showF:true,full:false,timer:null};
+  var P=new Plot($('#plot-f'),{xmin:-3.5,xmax:5.5,ymin:-6.5,ymax:6.5});
+  function addTrace(fn){ fn.trace[Math.round(fn.b*10)]=[fn.b,I(fn.a,fn.b)]; }
+  function setB(fn,v){
+    v=r1(v);
+    if(s.couple) fns.forEach(function(g){ g.b=v; addTrace(g); });
+    else { fn.b=v; addTrace(fn); }
+    upd();
+  }
+  var box=$('#rows-f');
+  fns.forEach(function(fn){
+    var d=document.createElement('div');
+    d.className='frow';
+    d.style.setProperty('--c','var(--'+fn.col+')');
+    d.style.setProperty('--accent','var(--'+fn.col+')');
+    d.innerHTML=
+      '<label class="check"><input type="checkbox" checked aria-label="'+fn.name+' anzeigen"><span>'+fn.html+'</span></label>'+
+      '<button class="step" data-dec aria-label="obere Grenze von '+fn.name+' verkleinern">−</button>'+
+      '<input type="range" aria-label="obere Grenze b von '+fn.name+'">'+
+      '<button class="step" data-inc aria-label="obere Grenze von '+fn.name+' vergrößern">+</button>'+
+      '<span class="val"></span>';
+    box.appendChild(d);
+    fn.val=d.querySelector('.val');
+    fn.sync=slider(d,{min:FMIN,max:FMAX,step:0.1,get:function(){return fn.b;},set:function(v){ setB(fn,v); }});
+    d.querySelector('input[type=checkbox]').addEventListener('change',function(e){ fn.on=e.target.checked; upd(); });
+    addTrace(fn);
+  });
+  P.handles=fns.map(function(fn){
+    return {get:function(){return fn.b;},set:function(v){ setB(fn,v); },min:FMIN,max:FMAX,enabled:function(){return fn.on;}};
+  });
+  P.drawFn=function(p){
+    var k=p.k;
+    if(s.showF){ p.curve(f,k.fFaint,{w:1.8}); p.label('f',p.X(-2.95)+8,p.Y(f(-2.95)),{color:k.fFaint,font:'italic 600 17px '+MATH}); }
+    fns.forEach(function(fn){
+      if(!fn.on) return;
+      if(s.full) p.curve(function(x){ return I(fn.a,x); },k[fn.col],{w:1.6,dash:[7,6]});
+      p.dots(Object.keys(fn.trace).map(function(key){ return fn.trace[key]; }),k[fn.col]);
+    });
+    fns.forEach(function(fn){
+      if(!fn.on) return;
+      var y=I(fn.a,fn.b);
+      p.point(fn.b,y,k[fn.col],7);
+      p.tag(fn.name,fn.b,y,k[fn.col]);
+    });
+  };
+  function upd(){
+    fns.forEach(function(fn){
+      fn.sync();
+      fn.val.innerHTML=fn.html+'('+fmt(fn.b,1)+') ≈ '+fmt(I(fn.a,fn.b));
+    });
+    P.render();
+  }
+  function stop(){ if(s.timer){ clearInterval(s.timer); s.timer=null; } $('#play-f').textContent='Durchlauf starten'; }
+  function play(){
+    if(s.timer){ stop(); return; }
+    // Durchlauf bewegt alle drei Punkte gemeinsam von links nach rechts
+    var cur=Math.min.apply(null,fns.map(function(g){return g.b;}));
+    if(!s.couple || cur>=FMAX-1e-9) cur=FMIN;
+    fns.forEach(function(g){ g.b=cur; addTrace(g); });
+    upd();
+    $('#play-f').textContent='Anhalten';
+    s.timer=setInterval(function(){
+      var nb=r1(fns[0].b+0.1);
+      if(nb>FMAX+1e-9){ stop(); return; }
+      fns.forEach(function(g){ g.b=nb; addTrace(g); });
+      upd();
+      if(nb>=FMAX-1e-9) stop();
+    },70);
+  }
+  $('#couple-f').addEventListener('change',function(e){
+    s.couple=e.target.checked;
+    if(s.couple){ var v=fns[1].b; fns.forEach(function(g){ g.b=v; addTrace(g); }); }
+    upd();
+  });
+  $('#showf-f').addEventListener('change',function(e){ s.showF=e.target.checked; upd(); });
+  $('#full-f').addEventListener('change',function(e){ s.full=e.target.checked; upd(); });
+  $('#play-f').addEventListener('click',play);
+  $('#clear-f').addEventListener('click',function(){ fns.forEach(function(g){ g.trace={}; addTrace(g); }); upd(); });
+  upd();
+  tabs.f={plot:P,stop:stop};
+})();
+
+/* ---------- Größe der Graphen an den Bildschirm anpassen ---------- */
+var IDS=['a','b','c','d','e','f'], current='a', raf=0;
+function chromeHeight(){
+  var cs=getComputedStyle(document.documentElement);
+  return $('header').offsetHeight + $('nav.tabs').offsetHeight +
+    (parseFloat(cs.paddingTop)||0) + (parseFloat(cs.paddingBottom)||0);
+}
+function layout(){
+  var top=chromeHeight();
+  document.documentElement.style.setProperty('--top',top+'px');
+  var panel=$('#t-'+current), stage=panel.querySelector('.stage'), box=stage.querySelector('.plot');
+  var main=stage.querySelector('.ctrl-main'), side=stage.querySelector('.ctrl-side');
+  var armin=parseFloat(box.getAttribute('data-armin'))||1, armax=parseFloat(box.getAttribute('data-armax'))||armin;
+  var st=getComputedStyle(stage), rg=parseFloat(st.rowGap)||10, cg=parseFloat(st.columnGap)||16;
+  var sw=stage.clientWidth, w, h;
+  if(!sw) return;
+  if(mqPhone.matches){
+    w=sw; h=w/armin;
+  } else {
+    var ps=getComputedStyle(panel);
+    var avail=window.innerHeight - top - (parseFloat(ps.paddingTop)||0) - (parseFloat(ps.paddingBottom)||0);
+    var cw, ch;
+    if(isSide()){ cw=sw - side.offsetWidth - cg; ch=avail - main.offsetHeight - rg; }
+    else { cw=sw; ch=avail - main.offsetHeight - side.offsetHeight - 2*rg; }
+    ch=Math.max(ch,250);
+    w=Math.min(cw, ch*armax);
+    h=Math.min(ch, w/armin);
+  }
+  box.classList.add('sized');
+  box.style.width=Math.floor(w)+'px';
+  box.style.height=Math.floor(h)+'px';
+}
+function scheduleLayout(){ if(raf) return; raf=requestAnimationFrame(function(){ raf=0; layout(); }); }
+var ctrlRO=window.ResizeObserver ? new ResizeObserver(scheduleLayout) : null;
+function observeControls(){
+  if(!ctrlRO) return;
+  ctrlRO.disconnect();
+  var stage=$('#t-'+current+' .stage');
+  ctrlRO.observe(stage.querySelector('.ctrl-main'));
+  ctrlRO.observe(stage.querySelector('.ctrl-side'));
+  ctrlRO.observe($('header'));
+}
+window.addEventListener('resize',scheduleLayout);
+onMQ(mqSide,scheduleLayout);
+onMQ(mqPhone,scheduleLayout);
+
+/* ---------- Navigation über Hash (#a … #f) ---------- */
+function show(id){
+  if(IDS.indexOf(id)<0) id='a';
+  current=id;
+  IDS.forEach(function(t){
+    $('#t-'+t).hidden=(t!==id);
+    var a=document.querySelector('[data-tab="'+t+'"]');
+    a.setAttribute('aria-selected',t===id?'true':'false');
+    if(t!==id && tabs[t].stop) tabs[t].stop();
+  });
+  var link=document.querySelector('[data-tab="'+id+'"]');
+  if(link && link.scrollIntoView) link.scrollIntoView({block:'nearest',inline:'nearest'});
+  layout();
+  observeControls();
+  requestAnimationFrame(function(){ tabs[id].plot.resize(); });
+}
+window.addEventListener('hashchange',function(){ show(location.hash.slice(1)); });
+show(location.hash.slice(1));
+
+/* ---------- Hell/Dunkel-Wechsel ---------- */
+function renderAll(){ IDS.forEach(function(t){ tabs[t].plot.render(); }); }
+if(window.matchMedia){
+  var mq=window.matchMedia('(prefers-color-scheme: dark)');
+  if(mq.addEventListener) mq.addEventListener('change',renderAll); else if(mq.addListener) mq.addListener(renderAll);
+}
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+</body>
+</html>
