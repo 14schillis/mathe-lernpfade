@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kinderspiele</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#EEF2FB; --blob1:#E2E8FF; --blob2:#E6F6EF;
+  --card:#FFFFFF; --soft:#EEF0F8; --ink:#23264A; --muted:#6A6F8E; --line:#DCE1F0;
+  --shadow:0 10px 30px rgba(45,50,120,.10), 0 2px 6px rgba(45,50,120,.06);
+  --shadow-hover:0 16px 38px rgba(45,50,120,.16), 0 3px 8px rgba(45,50,120,.08);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1A1C2E; --blob1:#23264A; --blob2:#1D3330;
+    --card:#262941; --soft:#1F2238; --ink:#EEF0FA; --muted:#A7ABC6; --line:#383C5C;
+    --shadow:0 10px 30px rgba(0,0,0,.35); --shadow-hover:0 16px 38px rgba(0,0,0,.5);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100vh;color:var(--ink);
+  background:radial-gradient(circle at 8% 0%,var(--blob1),transparent 42%),radial-gradient(circle at 100% 100%,var(--blob2),transparent 45%),var(--bg);
+  font-family:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI Rounded","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(28px,6vw,64px) clamp(16px,4vw,32px) 48px}
+header{text-align:center;margin-bottom:clamp(24px,5vw,44px)}
+h1{font-size:clamp(2.2rem,7vw,3.4rem);line-height:1.05;margin:0 0 .25em;font-weight:900;letter-spacing:-.015em}
+.sub{margin:0;color:var(--muted);font-size:clamp(1.05rem,3.2vw,1.25rem)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:clamp(14px,3vw,24px)}
+.game{
+  --accent:#4B4BCF;
+  display:flex;flex-direction:column;text-decoration:none;color:inherit;
+  background:var(--card);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;
+  border:3px solid transparent;
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+}
+.game:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--accent)}
+.game:active{transform:translateY(-1px)}
+.game:focus-visible{outline:4px solid #FFB020;outline-offset:3px}
+.art{
+  display:flex;align-items:center;justify-content:center;gap:.3em;padding:30px 16px;
+  font-size:clamp(2.2rem,8vw,2.8rem);
+  background:var(--soft);
+  background:color-mix(in srgb,var(--accent) 14%,var(--card));
+}
+.art span{display:inline-block;animation:floaty 3.2s ease-in-out infinite}
+.art span:nth-child(2){animation-delay:.4s}
+.art span:nth-child(3){animation-delay:.8s}
+.body{display:flex;flex-direction:column;gap:10px;padding:20px 22px 24px;flex:1}
+.topic{align-self:flex-start;font-size:.85rem;font-weight:800;padding:.3em .85em;border-radius:999px;color:var(--accent);background:var(--soft);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+h2{margin:0;font-size:1.5rem;line-height:1.15;font-weight:900;text-wrap:balance}
+.text{margin:0;color:var(--muted);font-size:1.02rem;line-height:1.45;flex:1}
+.play{
+  margin-top:8px;align-self:flex-start;
+  background:var(--accent);color:#fff;font-weight:800;font-size:1.1rem;
+  padding:.65em 1.5em;border-radius:16px;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 70%,#000);
+  transition:transform .08s ease,box-shadow .08s ease;
+}
+.game:active .play{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+footer{margin-top:clamp(28px,5vw,48px);text-align:center;color:var(--muted);font-size:.95rem}
+noscript p{text-align:center;color:var(--muted)}
+@keyframes floaty{50%{transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.art span{animation:none}.game,.play{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Kinderspiele</h1>
+    <p class="sub">Rechnen üben, Mission für Mission.</p>
+  </header>
+
+  <main id="games" class="grid" aria-label="Spiele"></main>
+  <noscript><p>Für die Übersicht wird JavaScript benötigt. Die Spiele selbst liegen in den Unterordnern.</p></noscript>
+
+  <footer>Alle Spiele laufen direkt im Browser.</footer>
+</div>
+
+<script>
+/* =========================================================
+   Neues Spiel hinzufügen: einen Block kopieren, Werte ändern, fertig.
+   ordner  = Name des Ordners im Repository (Sonderzeichen wie ß sind erlaubt)
+   emojis  = bis zu drei Symbole für das Bild oben auf der Karte
+   farbe   = Akzentfarbe der Karte (Hex)
+   ========================================================= */
+var GAMES = [
+  {
+    ordner: 'plus-minus10',
+    titel:  'Plus und Minus bis 10',
+    thema:  'Addition und Subtraktion',
+    text:   'Addieren und Subtrahieren im Zahlenraum bis 10.',
+    emojis: ['➕', '➖', '🔟'],
+    farbe:  '#0F8660'
+  },
+  {
+    ordner: 'einmaleins',
+    titel:  'Einmaleins',
+    thema:  'Kleines Einmaleins',
+    text:   'Zehn richtige Aufgaben schaffen eine Mission: Eine Rakete startet, ein Dino schlüpft, der Schneemann wird fertig.',
+    emojis: ['🚀', '🦕', '⛄'],
+    farbe:  '#4B4BCF'
+  },
+  {
+    ordner: 'großes-einmaleins',
+    titel:  'Großes Einmaleins',
+    thema:  'Einstellig mal zweistellig',
+    text:   'Aufgaben wie 7 · 46. Bei Fehlern zeigt das Spiel die halbschriftliche Zerlegung. Acht Missionen mit eigener Melodie, vom Disco-Hund bis zum Eimer-Streich.',
+    emojis: ['🐕', '🍌', '🎂'],
+    farbe:  '#D04468'
+  }
+];
+
+(function(){
+  var box = document.getElementById('games');
+  GAMES.forEach(function(g){
+    var a = document.createElement('a');
+    a.className = 'game';
+    a.href = encodeURI(g.ordner) + '/';
+    a.style.setProperty('--accent', g.farbe);
+    a.setAttribute('aria-label', g.titel + ' – ' + g.thema);
+
+    var art = document.createElement('div'); art.className = 'art'; art.setAttribute('aria-hidden', 'true');
+    g.emojis.forEach(function(e){ var s = document.createElement('span'); s.textContent = e; art.appendChild(s); });
+
+    var body = document.createElement('div'); body.className = 'body';
+    var topic = document.createElement('span'); topic.className = 'topic'; topic.textContent = g.thema;
+    var h = document.createElement('h2'); h.textContent = g.titel;
+    var p = document.createElement('p'); p.className = 'text'; p.textContent = g.text;
+    var play = document.createElement('span'); play.className = 'play'; play.textContent = 'Spielen';
+    body.appendChild(topic); body.appendChild(h); body.appendChild(p); body.appendChild(play);
+
+    a.appendChild(art); a.appendChild(body);
+    box.appendChild(a);
+  });
+})();
+</script>
+</body>
+</html>
