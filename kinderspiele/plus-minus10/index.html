@@ -1,1 +1,1022 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plus-Minus-Abenteuer</title>
+<style>
+:root{
+  --bg:#EEF2FB; --blob1:#E2E8FF; --blob2:#E6F6EF;
+  --card:#FFFFFF; --soft:#EEF0F8; --ink:#23264A; --muted:#6A6F8E; --line:#DCE1F0;
+  --primary:#4B4BCF; --primary-dark:#3434A8; --primary-ink:#FFFFFF;
+  --dot:#FF7A59; --star:#FFB020; --star-off:#D9DDEB;
+  --good:#12936A; --good-bg:#DDF5EB; --hint:#A86A00; --hint-bg:#FFF1D6; --info:#2F6FB5; --info-bg:#E3EEFB;
+  --shadow:0 10px 30px rgba(45,50,120,.10), 0 2px 6px rgba(45,50,120,.06);
+  --key-edge:#D3D9EC;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A1C2E; --blob1:#23264A; --blob2:#1D3330;
+    --card:#262941; --soft:#1F2238; --ink:#EEF0FA; --muted:#A7ABC6; --line:#383C5C;
+    --primary:#7C7CF2; --primary-dark:#5656C8; --dot:#FF9577; --star-off:#43476A;
+    --good:#4FD1A0; --good-bg:#173B30; --hint:#F2BD5B; --hint-bg:#3A3020; --info:#7DB3F0; --info-bg:#1E3148;
+    --shadow:0 10px 30px rgba(0,0,0,.35); --key-edge:#15172A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1A1C2E; --blob1:#23264A; --blob2:#1D3330;
+  --card:#262941; --soft:#1F2238; --ink:#EEF0FA; --muted:#A7ABC6; --line:#383C5C;
+  --primary:#7C7CF2; --primary-dark:#5656C8; --dot:#FF9577; --star-off:#43476A;
+  --good:#4FD1A0; --good-bg:#173B30; --hint:#F2BD5B; --hint-bg:#3A3020; --info:#7DB3F0; --info-bg:#1E3148;
+  --shadow:0 10px 30px rgba(0,0,0,.35); --key-edge:#15172A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;display:flex;flex-direction:column;color:var(--ink);
+  background:radial-gradient(circle at 8% 0%,var(--blob1),transparent 42%),radial-gradient(circle at 100% 100%,var(--blob2),transparent 45%),var(--bg);
+  font-family:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI Rounded","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  -webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;
+}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+.app{flex:1 0 auto;display:flex;flex-direction:column}
+
+/* ---------- Buttons ---------- */
+.btn{border:0;border-radius:18px;padding:.75em 1.4em;font-weight:800;font-size:1.25rem;cursor:pointer;
+  transition:transform .08s ease,box-shadow .08s ease,background .2s;touch-action:manipulation}
+.btn.primary{background:var(--primary);color:var(--primary-ink);box-shadow:0 5px 0 var(--primary-dark)}
+.btn.primary:active{transform:translateY(4px);box-shadow:0 1px 0 var(--primary-dark)}
+.btn.big{font-size:1.5rem;padding:.8em 1.8em}
+.btn.ghost{background:var(--soft);color:var(--ink);font-size:1rem;padding:.7em 1.1em;box-shadow:none}
+.btn.ghost.warn{background:var(--hint-bg);color:var(--hint)}
+.btn:focus-visible,.icon-btn:focus-visible,.seg input:focus-visible+span{outline:3px solid var(--star);outline-offset:3px}
+
+/* ---------- Segment (Moduswahl) ---------- */
+.seg{display:flex;gap:6px;background:var(--soft);padding:5px;border-radius:16px;border:0;margin:0}
+.seg label{flex:1;position:relative}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;padding:.6em .7em;border-radius:12px;font-weight:700;font-size:.98rem;text-align:center;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.seg input:checked+span{background:var(--card);color:var(--primary);box-shadow:0 2px 8px rgba(45,50,120,.12)}
+
+/* ---------- Start ---------- */
+.start{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.start-card{width:min(540px,100%);background:var(--card);border-radius:32px;box-shadow:var(--shadow);padding:clamp(28px,6vw,48px) clamp(20px,5vw,40px);text-align:center}
+.start-art{display:flex;justify-content:center;gap:.35em;font-size:clamp(1.6rem,6vw,2.2rem);margin-bottom:14px}
+.start-art span{display:inline-block;animation:floaty 3.2s ease-in-out infinite}
+.start-art span:nth-child(2n){animation-delay:.4s}.start-art span:nth-child(3n){animation-delay:.8s}
+.start h1{font-size:clamp(2.1rem,7vw,3.1rem);line-height:1.05;margin:0 0 .3em;font-weight:900;letter-spacing:-.015em}
+.start .sub{font-size:clamp(1.05rem,3.4vw,1.25rem);color:var(--muted);margin:0 0 1.6em;line-height:1.4}
+.start .mode{margin:1.8em auto 0;max-width:380px;text-align:left}
+.mode-title{font-size:.95rem;color:var(--muted);font-weight:700;margin:0 0 .5em .2em}
+.start-stats{margin:1.4em 0 0;color:var(--muted);font-size:1rem;min-height:1.2em}
+
+/* ---------- Training ---------- */
+.train{flex:1;display:flex;flex-direction:column}
+.topbar{width:100%;max-width:1120px;margin:0 auto;padding:12px 16px 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mission-label{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.mission-label #missionNo{font-weight:900;font-size:1.05rem}
+.mission-label #missionName{color:var(--muted);font-size:.92rem;white-space:nowrap}
+.progress{flex:1;display:flex;align-items:center;justify-content:center;gap:12px}
+.stars{display:flex;gap:2px}
+.stars span{font-size:clamp(1.15rem,2.6vw,1.5rem);color:var(--star-off);transition:color .25s;display:inline-block;line-height:1}
+.stars span.on{color:var(--star)}
+.stars span.pop{animation:starPop .55s ease}
+#progText{font-weight:900;font-variant-numeric:tabular-nums;font-size:1.05rem;min-width:3.4em}
+.tools{display:flex;gap:8px}
+.icon-btn{width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-size:1.2rem;cursor:pointer;display:grid;place-items:center;padding:0}
+
+.play{flex:1;width:100%;max-width:1120px;margin:0 auto;padding:10px 16px 16px;display:grid;grid-template-columns:1fr;grid-template-areas:"task" "pad" "scene";gap:14px;align-content:start}
+.task-card{grid-area:task}.pad{grid-area:pad}.scene-card{grid-area:scene}
+.task-card{background:var(--card);border-radius:30px;box-shadow:var(--shadow);padding:clamp(18px,3.5vw,36px) clamp(16px,3vw,32px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:3px solid transparent;transition:border-color .25s,box-shadow .25s}
+.task-card.ok{border-color:var(--good);box-shadow:0 0 0 6px var(--good-bg),var(--shadow)}
+.task-card.try{border-color:var(--star)}
+.task-card.nudge{animation:nudge .35s ease}
+.task-area{width:100%;display:flex;flex-direction:column;align-items:center}
+.task{font-size:clamp(2.4rem,min(13vw,14vh),6.8rem);font-weight:900;line-height:1.05;letter-spacing:.01em;font-variant-numeric:tabular-nums;white-space:nowrap;margin:.05em 0 .3em}
+.task .op{color:var(--dot);margin:0 .08em}
+.task .eq{color:var(--muted);margin:0 .08em}
+.task.enter{animation:taskIn .3s ease-out}
+.ans{display:inline-block;min-width:1.3ch;text-align:center}
+.ans.q{color:var(--primary);opacity:.55}
+.ans.good{color:var(--good);animation:pop .45s ease}
+.ans.show{color:var(--info);animation:pop .45s ease}
+.answer-box{width:min(240px,100%);height:clamp(52px,8vh,76px);display:flex;align-items:center;justify-content:center;gap:2px;font-size:clamp(2rem,min(6vw,5.2vh),2.8rem);font-weight:800;color:var(--ink);background:var(--soft);border:3px solid var(--primary);border-radius:20px;font-variant-numeric:tabular-nums;user-select:none;-webkit-user-select:none;box-shadow:0 0 0 5px color-mix(in srgb,var(--primary) 14%,transparent)}
+.answer-box.empty::after{content:"";width:3px;height:1.05em;border-radius:2px;background:var(--primary);animation:caret 1.1s steps(1) infinite}
+.answer-box.bump{animation:keyIn .18s ease-out}
+.feedback{min-height:2.8em;margin-top:10px;display:flex;align-items:center;justify-content:center}
+.pill{display:inline-block;padding:.45em 1em;border-radius:999px;font-weight:800;font-size:clamp(1.05rem,2.8vw,1.25rem);animation:pop .35s ease}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.hint{background:var(--hint-bg);color:var(--hint)}
+.pill.info{background:var(--info-bg);color:var(--info)}
+
+.done{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;animation:doneIn .5s cubic-bezier(.34,1.56,.64,1)}
+.done h2{font-size:clamp(1.9rem,5.5vw,2.8rem);margin:0;font-weight:900;line-height:1.1}
+.done .line{font-size:clamp(1.1rem,3vw,1.3rem);font-weight:700;margin:.2em 0 0}
+.done .extra{color:var(--muted);margin:0 0 .8em;font-size:1.05rem}
+.done .today{color:var(--muted);font-size:.95rem;margin:.9em 0 0;min-height:1.2em}
+
+.scene-card{background:var(--card);border-radius:30px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.scene{position:relative;height:clamp(170px,32vh,360px);overflow:hidden}
+.scene svg{display:block;width:100%;height:100%}
+.scene-caption{border-top:1px solid var(--line);padding:12px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+#caption{font-weight:800;font-size:1.1rem;display:inline-block}
+#caption.bump{animation:bump .45s ease}
+#goal{color:var(--muted);font-size:.95rem;min-height:1.2em}
+
+@media (max-height:520px){
+  .topbar{padding:6px 16px 0}
+  .play{padding:6px 16px 10px;gap:10px}
+  .task-card{padding:10px 14px}
+  .feedback{min-height:2.4em;margin-top:6px}
+  .scene{min-height:160px}
+  .scene-caption{padding:6px 12px 8px}
+}
+@media (max-width:560px){
+  .progress{order:3;flex-basis:100%;justify-content:flex-start}
+  .mission-label{flex:1}
+  .topbar{gap:6px 12px}
+}
+
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1.3vh,12px);width:100%;max-width:440px;justify-self:center;align-self:start;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:opacity .3s}
+.key{height:clamp(52px,7.2vh,80px);border:0;border-radius:18px;background:var(--card);color:var(--ink);font:inherit;font-size:clamp(1.6rem,min(4.2vh,7vw),2.3rem);font-weight:800;font-variant-numeric:tabular-nums;cursor:pointer;
+  box-shadow:0 5px 0 var(--key-edge),0 8px 16px rgba(45,50,120,.08);transition:transform .07s ease,box-shadow .07s ease,background .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;display:grid;place-items:center;padding:0}
+.key:active,.key.press{transform:translateY(4px);box-shadow:0 1px 0 var(--key-edge),0 2px 6px rgba(45,50,120,.06)}
+.key.del{background:var(--soft);color:var(--muted);font-size:clamp(1.4rem,min(3.6vh,6vw),2rem)}
+.key.ok{background:var(--primary);color:var(--primary-ink);box-shadow:0 5px 0 var(--primary-dark),0 8px 16px rgba(75,75,207,.25)}
+.key.ok:active,.key.ok.press{box-shadow:0 1px 0 var(--primary-dark)}
+.key:focus-visible{outline:3px solid var(--star);outline-offset:3px}
+.play.is-done .pad{opacity:.3;pointer-events:none}
+
+/* Tablet hochkant: Aufgabe oben, darunter Tastatur und Missionsbild nebeneinander */
+@media (min-width:600px) and (max-aspect-ratio:1/1){
+  .play{grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(auto,520px);grid-template-areas:"task task" "pad scene";align-content:start}
+  .pad{max-width:none;align-self:stretch;grid-auto-rows:1fr}
+  .key{height:auto;min-height:clamp(60px,7.4vh,96px)}
+  .scene{height:auto;flex:1;min-height:200px}
+}
+/* Querformat (Tablet/Laptop): links Aufgabe + Tastatur, rechts Missionsbild */
+@media (min-width:760px) and (min-aspect-ratio:1/1){
+  .play{grid-template-columns:1.12fr 1fr;grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"task scene" "pad scene";align-items:stretch;align-content:stretch;max-height:820px}
+  .task{font-size:clamp(2.6rem,min(7.5vw,13vh),6.6rem)}
+  .scene{height:auto;flex:1;min-height:240px}
+  .key{height:clamp(50px,8.2vh,78px)}
+}
+/* Flache Querformate (Handy quer): drei Spalten */
+@media (min-aspect-ratio:1/1) and (max-height:520px){
+  .play{grid-template-columns:1.15fr 1fr 1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"task pad scene";max-height:none}
+  .pad{align-self:center;grid-auto-rows:1fr}
+  .key{height:clamp(40px,14.5vh,66px);font-size:clamp(1.3rem,6vh,1.9rem)}
+  .task{font-size:clamp(2rem,min(5.8vw,14vh),4.4rem)}
+  .answer-box{height:46px}
+  .icon-btn{width:38px;height:38px}
+  .play{padding-bottom:8px}
+}
+@media (max-width:560px) and (max-aspect-ratio:1/1){
+  .task-card{padding:14px 14px}
+  .task{margin:0 0 .2em}
+  .feedback{min-height:2.4em;margin-top:8px}
+  .scene{height:clamp(110px,18vh,300px)}
+  .scene-caption{padding:8px 12px 10px}
+  .play{gap:10px;padding-bottom:10px}
+  .pad{gap:8px}
+  .key{height:clamp(48px,6.4vh,80px)}
+}
+
+/* ---------- Modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(20,22,48,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:40}
+.modal-card{width:min(440px,100%);max-height:100%;overflow:auto;background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:18px;animation:doneIn .3s ease}
+.modal-card h2{margin:0;font-size:1.5rem;font-weight:900}
+.set-label{font-weight:800;margin-bottom:.5em}
+.achv{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:1.05rem}
+.achv b{font-variant-numeric:tabular-nums}
+.set-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- Konfetti ---------- */
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:30}
+.confetti i{position:absolute;top:-18px;width:9px;height:14px;border-radius:2px;animation:fall var(--t) linear var(--d) forwards}
+
+/* ---------- Szenen-Bausteine ---------- */
+.scene [data-s]{opacity:0;transform:scale(.3);transform-box:fill-box;transform-origin:50% 50%;transition:opacity .4s ease,transform .6s cubic-bezier(.34,1.56,.64,1)}
+.scene [data-s].ob{transform-origin:50% 100%}
+.scene [data-s].gy{transform:scaleY(0);transform-origin:50% 100%}
+.scene [data-s].fade,.scene [data-s].draw{transform:none}
+.scene .draw path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .8s ease}
+.scene [data-s].on{opacity:1;transform:none}
+.scene [data-s].draw.on path{stroke-dashoffset:0}
+.scene.noanim *{transition:none!important}
+.scene .fx{opacity:0;transition:opacity .4s}
+.scene.finale .fx{opacity:1}
+.tw{transform-box:fill-box;transform-origin:center;animation:twinkle 1.3s ease-in-out infinite}
+
+.flame{transform-box:fill-box;transform-origin:50% 0;animation:flicker .18s ease-in-out infinite alternate}
+.flame.up{transform-origin:50% 100%}
+.blink{animation:blink 1.1s ease-in-out infinite}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 14s linear infinite}
+.cd{opacity:0;transform-box:fill-box;transform-origin:center;animation:cd 3s infinite}
+.cd.cd2{animation-delay:1s}.cd.cd1{animation-delay:2s}
+.smoke{transform-box:fill-box;transform-origin:50% 100%}
+.drift{animation:drift 6s ease-in-out infinite alternate}.drift.d2{animation-duration:8s}
+
+/* Rakete */
+.scene.finale .rocket{animation:launch 2.6s cubic-bezier(.5,0,.75,.2) .15s forwards}
+.scene.finale .rocket .flame{animation:flameBig .12s infinite alternate}
+.scene.finale .smoke{animation:puff 1.8s ease-out .2s forwards}
+.scene.finale .cd{animation:none;opacity:0}
+/* Blume */
+.scene.finale .bloom{transform-box:fill-box;transform-origin:center;animation:bloomSpin 1.4s ease-out}
+.bfly{transform:translate(-80px,40px)}
+.scene.finale .bfly{animation:bfly 3s ease-in-out .3s forwards}
+.flap{transform-box:fill-box;transform-origin:center;animation:flap .22s ease-in-out infinite alternate}
+/* Dino */
+.st-9 .eggwob{transform-box:fill-box;transform-origin:50% 100%;animation:wobble .9s ease-in-out infinite}
+.dino{opacity:0;transform:translateY(40px)}
+.scene.finale .dino{animation:dinoIn .8s cubic-bezier(.34,1.56,.64,1) .55s forwards}
+.scene.finale .dinobob{animation:bob 1.4s ease-in-out 1.5s infinite}
+.shell-top{transform-box:fill-box;transform-origin:50% 100%}
+.scene.finale .shell-top{animation:popoff 1.1s ease-out .15s forwards}
+.scene.finale .egg-outline,.scene.finale .egg-under{opacity:0;transition:opacity .15s}
+.scene.finale [data-s].crack{opacity:0;transition:opacity .15s}
+/* Truhe */
+.lid{transform-box:view-box;transform-origin:93px 130px}
+.scene.finale .lid{animation:lidOpen 1s cubic-bezier(.34,1.4,.64,1) .3s forwards}
+.keymove{transition:transform .9s cubic-bezier(.34,1.3,.64,1)}
+.st-9 .keymove,.scene.finale .keymove{transform:translate(-66px,-27px)}
+.treasure{opacity:0;transition:opacity .5s .55s}
+.scene.finale .treasure{opacity:1}
+.coin{opacity:0}
+.scene.finale .coin{animation:coinUp 1.2s cubic-bezier(.2,.8,.3,1) var(--dl) forwards}
+.gemglow{transform-box:fill-box;transform-origin:center;animation:twinkle 1.8s ease-in-out infinite}
+/* Ballon */
+.st-9 .balloon{animation:hover 1.4s ease-in-out infinite}
+.scene.finale .balloon{animation:liftoff 3s cubic-bezier(.45,0,.7,.4) .1s forwards}
+/* Regenbogen */
+.scene.finale .arcs{animation:shimmer 1.1s ease-in-out 2}
+.birds{animation:birds 3s ease-in-out infinite alternate}
+/* Schneemann */
+.wave{transform-box:view-box;transform-origin:170px 131px}
+.scene.finale .wave{animation:wave .45s ease-in-out 6 alternate}
+.scene.finale .flake{animation:flake var(--t) linear var(--dl) infinite}
+
+@keyframes caret{50%{opacity:0}}
+@keyframes keyIn{from{transform:scale(1.06)}to{transform:none}}
+@keyframes floaty{50%{transform:translateY(-6px)}}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes taskIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes nudge{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+@keyframes bump{40%{transform:scale(1.08)}}
+@keyframes starPop{40%{transform:scale(1.6) rotate(15deg)}}
+@keyframes doneIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes fall{to{transform:translate(var(--x),110vh) rotate(var(--r))}}
+@keyframes twinkle{0%,100%{transform:scale(.5);opacity:.55}50%{transform:scale(1.2);opacity:1}}
+@keyframes flicker{from{transform:scaleY(.85)}to{transform:scaleY(1.12)}}
+@keyframes flameBig{from{transform:scale(1.1,1.6)}to{transform:scale(1.2,2.1)}}
+@keyframes blink{50%{opacity:.55}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes cd{0%{opacity:0;transform:scale(.6)}6%{opacity:1;transform:scale(1)}28%{opacity:1}33%,100%{opacity:0}}
+@keyframes launch{0%{transform:translate(0,0)}6%{transform:translate(-1.5px,0)}10%{transform:translate(1.5px,0)}14%{transform:translate(-1px,0)}18%{transform:translate(0,0)}100%{transform:translate(0,-440px)}}
+@keyframes puff{to{transform:scale(1.9);opacity:0}}
+@keyframes bloomSpin{0%{transform:scale(.6) rotate(-30deg)}60%{transform:scale(1.15) rotate(8deg)}100%{transform:none}}
+@keyframes bfly{0%{transform:translate(-80px,40px)}50%{transform:translate(20px,-14px)}100%{transform:translate(78px,6px)}}
+@keyframes flap{to{transform:scaleX(.35)}}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+@keyframes dinoIn{to{opacity:1;transform:translateY(0)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes popoff{0%{transform:none}30%{transform:translate(0,-18px) rotate(-8deg)}100%{transform:translate(70px,-150px) rotate(60deg);opacity:0}}
+@keyframes lidOpen{to{transform:translate(-4px,-18px) rotate(-24deg)}}
+@keyframes coinUp{0%{transform:translate(0,0);opacity:0}20%{opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:1}}
+@keyframes hover{50%{transform:translateY(-6px)}}
+@keyframes liftoff{to{transform:translate(35px,-420px)}}
+@keyframes drift{to{transform:translateX(12px)}}
+@keyframes shimmer{50%{filter:brightness(1.15) saturate(1.25)}}
+@keyframes birds{to{transform:translate(26px,-6px)}}
+@keyframes wave{to{transform:rotate(-18deg)}}
+@keyframes flake{from{transform:translateY(-20px)}to{transform:translateY(270px)}}
+
+@media (prefers-reduced-motion:reduce){
+  .start-art span,.spin,.drift,.birds,.tw,.gemglow{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Startbildschirm ===== -->
+  <section id="start" class="start">
+    <div class="start-card">
+      <div class="start-art" aria-hidden="true"><span>🚀</span><span>🌸</span><span>🦕</span><span>💰</span><span>🎈</span><span>🌈</span><span>⛄</span></div>
+      <h1>Plus-Minus-Abenteuer</h1>
+      <p class="sub">10 richtige Aufgaben – schaffst du die Mission?</p>
+      <button id="goBtn" class="btn primary big">Los geht's 🚀</button>
+      <div class="mode">
+        <p class="mode-title" id="modeTitle">Trainingsmodus</p>
+        <div class="seg" role="radiogroup" aria-labelledby="modeTitle">
+          <label><input type="radio" name="mode" value="core"><span>Kerntraining</span></label>
+          <label><input type="radio" name="mode" value="tricky"><span>Knifflige Aufgaben</span></label>
+        </div>
+      </div>
+      <p id="startStats" class="start-stats"></p>
+    </div>
+  </section>
+
+  <!-- ===== Trainingsbildschirm ===== -->
+  <section id="train" class="train" hidden>
+    <header class="topbar">
+      <div class="mission-label"><span id="missionNo">Mission 1</span><span id="missionName"></span></div>
+      <div class="progress" aria-live="polite">
+        <div id="stars" class="stars" aria-hidden="true"></div>
+        <span id="progText">0 / 10</span>
+      </div>
+      <div class="tools">
+        <button id="soundBtn" class="icon-btn" aria-label="Sound ein- oder ausschalten" aria-pressed="true">🔊</button>
+        <button id="settingsBtn" class="icon-btn" aria-label="Einstellungen">⚙️</button>
+      </div>
+    </header>
+
+    <main class="play">
+      <div id="taskCard" class="task-card">
+        <div id="taskArea" class="task-area">
+          <div id="task" class="task" aria-live="polite"><span id="ta">6</span><span id="top" class="op">+</span><span id="tb">7</span><span class="eq">=</span><span id="tans" class="ans q">?</span></div>
+          <div id="answer" class="answer-box empty" role="status" aria-live="polite" aria-label="Deine Antwort"></div>
+          <div id="feedback" class="feedback" aria-live="assertive"></div>
+        </div>
+        <div id="donePanel" class="done" hidden>
+          <h2>Mission geschafft! 🎉</h2>
+          <p class="line">10 richtige Aufgaben – stark!</p>
+          <p id="doneExtra" class="extra"></p>
+          <button id="nextMissionBtn" class="btn primary big">Nächste Mission</button>
+          <p id="todayLine" class="today"></p>
+        </div>
+      </div>
+
+      <div id="pad" class="pad" role="group" aria-label="Zahlentastatur">
+        <button class="key" data-key="1" tabindex="-1">1</button><button class="key" data-key="2" tabindex="-1">2</button><button class="key" data-key="3" tabindex="-1">3</button>
+        <button class="key" data-key="4" tabindex="-1">4</button><button class="key" data-key="5" tabindex="-1">5</button><button class="key" data-key="6" tabindex="-1">6</button>
+        <button class="key" data-key="7" tabindex="-1">7</button><button class="key" data-key="8" tabindex="-1">8</button><button class="key" data-key="9" tabindex="-1">9</button>
+        <button class="key del" data-key="del" tabindex="-1" aria-label="Letzte Ziffer löschen">⌫</button><button class="key" data-key="0" tabindex="-1">0</button><button class="key ok" data-key="ok" tabindex="-1" aria-label="Prüfen">✓</button>
+      </div>
+
+      <div class="scene-card">
+        <div id="scene" class="scene" role="img" aria-label="Missionsbild"></div>
+        <div class="scene-caption"><span id="caption"></span><span id="goal"></span></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ===== Einstellungen ===== -->
+  <div id="settings" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div class="modal-card">
+      <h2 id="setTitle">Einstellungen</h2>
+      <div>
+        <div class="set-label">Trainingsmodus</div>
+        <div class="seg" role="radiogroup" aria-label="Trainingsmodus">
+          <label><input type="radio" name="mode2" value="core"><span>Kerntraining</span></label>
+          <label><input type="radio" name="mode2" value="tricky"><span>Knifflige Aufgaben</span></label>
+        </div>
+      </div>
+      <div>
+        <div class="set-label">Meine Erfolge</div>
+        <ul class="achv">
+          <li>🚀 Missionen geschafft: <b id="aMissions">0</b></li>
+          <li>⭐ Richtige Aufgaben heute: <b id="aToday">0</b></li>
+          <li>🏅 Richtige Aufgaben insgesamt: <b id="aTotal">0</b></li>
+        </ul>
+      </div>
+      <div class="set-actions">
+        <button id="toStartBtn" class="btn ghost">Zum Startbildschirm</button>
+        <button id="resetBtn" class="btn ghost">Fortschritt zurücksetzen</button>
+      </div>
+      <button id="closeSet" class="btn primary">Weiter üben</button>
+    </div>
+  </div>
+
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* =========================================================
+   1. Aufgabenpool: Plus und Minus im Zahlenraum bis 10
+      Addition:    a + b  mit a >= 1, b >= 1, a + b <= 10   (45 Aufgaben)
+      Subtraktion: a - b  mit b >= 1, a <= 10, a - b >= 0   (55 Aufgaben)
+   ========================================================= */
+var GOAL = 10;
+var POOL = [];
+for (var a = 1; a <= 9; a++) for (var b = 1; a + b <= 10; b++) POOL.push({a:a, b:b, op:'+', key:a+'+'+b, res:a+b});
+for (var a = 1; a <= 10; a++) for (var b = 1; b <= a; b++) POOL.push({a:a, b:b, op:'-', key:a+'-'+b, res:a-b});
+console.assert(POOL.length === 100, 'Pool muss 100 Aufgaben haben');
+console.assert(POOL.every(function(p){
+  return p.b >= 1 && p.res >= 0 && p.res <= 10 && p.a <= 10 &&
+         (p.op === '+' ? (p.a >= 1 && p.res === p.a + p.b) : p.res === p.a - p.b);
+}), 'Pool fehlerhaft');
+function signOf(p){ return p.op === '+' ? '+' : '\u2212'; }
+var PRAISE = ['Richtig! ⭐','Super!','Stark!','Genau!','Klasse!','Weiter so!','Geschafft!'];
+var TRY = ["Fast – probier's nochmal.",'Noch ein Versuch!','Du schaffst das.','Schau noch einmal genau.'];
+
+/* =========================================================
+   2. Speicher (localStorage, mit Absicherung)
+   ========================================================= */
+var STORE = 'plusminus-abenteuer-v1';   // eigener Speicher, getrennt vom Einmaleins-Spiel
+function todayStr(){ var d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function fresh(){
+  return {v:1, stats:{}, totalCorrect:0, missionsDone:0, sound:true, mode:'core', current:null,
+          today:{date:todayStr(), correct:0}, turn:0, queue:[], lastKeys:[], lastMissions:[]};
+}
+function load(){
+  var d = fresh();
+  try {
+    var raw = localStorage.getItem(STORE);
+    if (raw) { var p = JSON.parse(raw); if (p && typeof p === 'object') for (var k in p) d[k] = p[k]; }
+  } catch(e) {}
+  if (!d.stats || typeof d.stats !== 'object') d.stats = {};
+  POOL.forEach(function(p){
+    var s = d.stats[p.key];
+    if (!s || typeof s !== 'object') s = d.stats[p.key] = {};
+    ['asked','right','wrong','last','score'].forEach(function(f){ if (typeof s[f] !== 'number') s[f] = 0; });
+  });
+  if (!Array.isArray(d.queue)) d.queue = [];
+  if (!Array.isArray(d.lastKeys)) d.lastKeys = [];
+  if (!Array.isArray(d.lastMissions)) d.lastMissions = [];
+  if (typeof d.turn !== 'number') d.turn = 0;
+  if (d.mode !== 'tricky') d.mode = 'core';
+  if (!d.today || d.today.date !== todayStr()) d.today = {date:todayStr(), correct:0};
+  return d;
+}
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(D)); } catch(e) {} }
+var D = load();
+
+function rollToday(){ if (D.today.date !== todayStr()) D.today = {date:todayStr(), correct:0}; }
+function randInt(min, max){ return min + Math.floor(Math.random() * (max - min + 1)); }
+var lastPicked = {};
+function pick(arr, tag){
+  var opts = arr.length > 1 ? arr.filter(function(x){ return x !== lastPicked[tag]; }) : arr;
+  var v = opts[Math.floor(Math.random() * opts.length)];
+  lastPicked[tag] = v; return v;
+}
+function plural(n, one, many){ return n === 1 ? one : many; }
+
+/* =========================================================
+   3. Adaptive Aufgabenwahl
+   ========================================================= */
+function baseWeight(p){
+  if (D.mode !== 'tricky') return 1;
+  // Knifflig: größere Zahlen; leicht: +1, -1, Ergebnis 0
+  var hard, easy;
+  if (p.op === '+') { var m = Math.min(p.a, p.b); easy = m === 1; hard = m >= 3 && p.res >= 7; }
+  else { easy = p.b === 1 || p.res === 0; hard = p.a >= 6 && p.b >= 3 && p.res >= 2; }
+  return hard ? 3 : (easy ? 0.4 : 1);
+}
+function weightOf(p, last){
+  if (p.key === last) return 0;                        // nie zweimal hintereinander
+  var s = D.stats[p.key];
+  var w = baseWeight(p);
+  w *= s.score > 0 ? 1 + 0.7 * s.score : 1 + 0.12 * s.score;   // Fehler -> häufiger, sicher -> etwas seltener
+  if (s.asked === 0) w *= 1.4;                         // Neues bevorzugt einstreuen
+  var idx = D.lastKeys.lastIndexOf(p.key);
+  if (idx >= 0) { var ago = D.lastKeys.length - idx; if (ago <= 4) w *= 0.2 + 0.15 * (ago - 1); }
+  if (D.queue.some(function(q){ return q.key === p.key; })) w *= 0.3;   // kommt ohnehin über die Warteschlange
+  return Math.max(w, 0.02);
+}
+function enqueue(key, min, max){
+  var due = D.turn + randInt(min, max);
+  var ex = D.queue.filter(function(q){ return q.key === key; })[0];
+  if (ex) ex.due = Math.min(ex.due, due); else D.queue.push({key:key, due:due});
+}
+function pickTask(){
+  D.turn++;
+  var last = D.lastKeys[D.lastKeys.length - 1];
+  var chosen = null;
+  var due = D.queue.filter(function(q){ return q.due <= D.turn && q.key !== last; })
+                   .sort(function(x, y){ return x.due - y.due; });
+  if (due.length) {
+    var item = due[0];
+    chosen = POOL.filter(function(p){ return p.key === item.key; })[0] || null;
+    D.queue = D.queue.filter(function(q){ return q !== item; });
+  }
+  if (!chosen) {
+    var ws = POOL.map(function(p){ return weightOf(p, last); });
+    var sum = ws.reduce(function(x, y){ return x + y; }, 0);
+    var r = Math.random() * sum;
+    for (var i = 0; i < POOL.length; i++) { r -= ws[i]; if (r <= 0 && ws[i] > 0) { chosen = POOL[i]; break; } }
+    if (!chosen) chosen = POOL.filter(function(p){ return p.key !== last; })[0];
+  }
+  D.lastKeys.push(chosen.key); if (D.lastKeys.length > 8) D.lastKeys.shift();
+  var s = D.stats[chosen.key]; s.asked++; s.last = Date.now();
+  save();
+  return chosen;
+}
+
+/* =========================================================
+   4. Missionen (SVG, 10 Schritte + Finale)
+   ========================================================= */
+function sky(id, c1, c2){
+  return '<defs><linearGradient id="'+id+'" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="240"><stop offset="0" stop-color="'+c1+'"/><stop offset="1" stop-color="'+c2+'"/></linearGradient></defs>'+
+         '<rect x="-500" y="-300" width="1300" height="840" fill="url(#'+id+')"/>';
+}
+function sparkles(pts, col){
+  return '<g class="fx">' + pts.map(function(p, i){
+    return '<g transform="translate('+p[0]+' '+p[1]+') scale('+(p[2]||1)+')"><path class="tw" style="animation-delay:'+(i*0.17).toFixed(2)+'s" d="M0-7L1.8-1.8L7 0L1.8 1.8L0 7L-1.8 1.8L-7 0L-1.8-1.8Z" fill="'+(col||'#FFD166')+'"/></g>';
+  }).join('') + '</g>';
+}
+var SPARKS = sparkles([[36,36,1],[262,34,.8],[58,110,.7],[244,120,1],[150,22,.9],[20,170,.6],[282,176,.7]]);
+function svg(inner){ return '<svg viewBox="0 0 300 240" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+inner+SPARKS+'</svg>'; }
+
+var petals = [0,60,120,180,240,300].map(function(a){ return '<ellipse cx="150" cy="76" rx="9" ry="15" transform="rotate('+a+' 150 92)"/>'; }).join('');
+var coins = [[-52,-70,0],[-20,-88,.1],[14,-92,.2],[46,-72,.05],[-36,-50,.25],[30,-48,.3]].map(function(c){
+  return '<circle class="coin" cx="150" cy="122" r="6.5" fill="#F2C14E" stroke="#C9962A" stroke-width="1.5" style="--dx:'+c[0]+'px;--dy:'+c[1]+'px;--dl:'+(0.6+c[2])+'s"/>';
+}).join('');
+var gems = [[130,184,'#FF5C8A'],[140,188,'#FFB020'],[150,189.5,'#3DBE6A'],[160,188,'#4D96FF'],[170,184,'#A77BEF']].map(function(g, i){
+  return '<g data-s="'+(i+4)+'"><circle class="gemglow" cx="'+g[0]+'" cy="'+g[1]+'" r="9" fill="'+g[2]+'" opacity=".35"/><circle cx="'+g[0]+'" cy="'+g[1]+'" r="5.5" fill="'+g[2]+'"/><circle cx="'+(g[0]-1.6)+'" cy="'+(g[1]-1.6)+'" r="1.6" fill="#fff" opacity=".8"/></g>';
+}).join('');
+var arcs = [[110,'#FF6B6B'],[99,'#FFA24C'],[88,'#FFD84D'],[77,'#6BCB77'],[66,'#4D96FF'],[55,'#9B72CF']].map(function(r, i){
+  return '<g data-s="'+(i+2)+'" class="draw"><path pathLength="1" d="M'+(150-r[0])+' 212A'+r[0]+' '+r[0]+' 0 0 1 '+(150+r[0])+' 212" stroke="'+r[1]+'"/></g>';
+}).join('');
+var flakes = ''; for (var f = 0; f < 14; f++) {
+  flakes += '<circle class="flake" cx="'+(12+f*21)+'" cy="-10" r="'+(2+(f%3)*0.6)+'" fill="#fff" style="--t:'+(2.4+(f%4)*0.5)+'s;--dl:'+((f*0.23)%1.6).toFixed(2)+'s"/>';
+}
+
+var MISSIONS = [
+{ id:'rocket', name:'Rakete', emoji:'🚀', bg:'#C9DDFF', goal:'bis zum Raketenstart', finale:'Die Rakete fliegt ins All!',
+  steps:['Die Rakete steht auf der Rampe','Fenster eingebaut','Spitze montiert','Treibstoff getankt','Kontrollleuchten an','Erste Rauchwolke','Mehr Rauch!','Das Triebwerk glüht','Countdown läuft …','Start! 🚀'],
+  svg: svg(sky('gRk','#C9DDFF','#EEF4FF')+
+  '<g fill="#fff" opacity=".85"><circle cx="40" cy="30" r="1.8"/><circle cx="86" cy="56" r="1.2"/><circle cx="252" cy="24" r="1.6"/><circle cx="276" cy="72" r="1.1"/><circle cx="22" cy="96" r="1.3"/><circle cx="110" cy="20" r="1"/></g>'+
+  '<path d="M-500 206Q150 190 800 206V540H-500Z" fill="#BCDDAA"/>'+
+  '<g stroke="#8C95B5" stroke-width="3" fill="none" stroke-linecap="round"><path d="M200 196V90M214 196V90M199 90H215M200 108L214 126M214 108L200 126M200 138L214 156M214 138L200 156M200 168L214 186M214 168L200 186M200 122H174"/></g>'+
+  '<text x="235" y="100" font-size="10" font-weight="800" text-anchor="middle" fill="#6B7291" font-family="system-ui,sans-serif">Tank</text>'+
+  '<rect x="226" y="108" width="18" height="74" rx="7" fill="#fff" stroke="#8C95B5" stroke-width="2.5"/>'+
+  '<rect data-s="4" class="gy" x="229.5" y="111.5" width="11" height="67" rx="4.5" fill="#FF8A5B"/>'+
+  '<rect x="54" y="176" width="44" height="24" rx="6" fill="#5B6282"/>'+
+  '<g fill="#3E4360"><circle cx="65" cy="188" r="4.2"/><circle cx="76" cy="188" r="4.2"/><circle cx="87" cy="188" r="4.2"/></g>'+
+  '<g data-s="5"><g class="blink"><circle cx="65" cy="188" r="4.2" fill="#4ADE80"/><circle cx="76" cy="188" r="4.2" fill="#FACC15"/><circle cx="87" cy="188" r="4.2" fill="#4ADE80"/></g></g>'+
+  '<rect x="112" y="192" width="76" height="8" rx="3" fill="#7A86A8"/><path d="M120 200L116 210M180 200L184 210" stroke="#7A86A8" stroke-width="4" stroke-linecap="round"/>'+
+  '<g data-s="9" class="fade" font-family="system-ui,sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#4B4BCF"><text class="cd" x="62" y="86">3</text><text class="cd cd2" x="62" y="86">2</text><text class="cd cd1" x="62" y="86">1</text></g>'+
+  '<g data-s="6" class="ob"><g class="smoke" fill="#fff" stroke="#D5DCEB" stroke-width="1.5"><circle cx="124" cy="197" r="11"/><circle cx="109" cy="202" r="8"/></g></g>'+
+  '<g data-s="7" class="ob"><g class="smoke" fill="#fff" stroke="#D5DCEB" stroke-width="1.5"><circle cx="176" cy="197" r="11"/><circle cx="191" cy="202" r="8"/><circle cx="150" cy="207" r="9"/></g></g>'+
+  '<g class="rocket">'+
+    '<g data-s="8" class="fade"><g class="flame"><path d="M139 188Q150 230 161 188Z" fill="#FFA940"/><path d="M144 188Q150 213 156 188Z" fill="#FFE27A"/></g></g>'+
+    '<g data-s="1" class="ob"><path d="M131 160L111 193L133 189Z" fill="#FF8A5B" stroke="#5B6282" stroke-width="2" stroke-linejoin="round"/><path d="M169 160L189 193L167 189Z" fill="#FF8A5B" stroke="#5B6282" stroke-width="2" stroke-linejoin="round"/><rect x="130" y="106" width="40" height="86" rx="13" fill="#F7F8FC" stroke="#5B6282" stroke-width="2.5"/><rect x="131.3" y="168" width="37.4" height="8" fill="#4B4BCF"/></g>'+
+    '<g data-s="2"><circle cx="150" cy="135" r="10.5" fill="#9CCBFF" stroke="#5B6282" stroke-width="3"/><circle cx="146.5" cy="131.5" r="3" fill="#fff" opacity=".85"/></g>'+
+    '<g data-s="3" class="ob"><path d="M131 113Q134 80 150 62Q166 80 169 113Z" fill="#FF8A5B" stroke="#5B6282" stroke-width="2.5" stroke-linejoin="round"/></g>'+
+  '</g>')
+},
+{ id:'flower', name:'Blume', emoji:'🌸', bg:'#DDF0FF', goal:'bis zur Blüte', finale:'Deine Blume blüht!',
+  steps:['Samen gepflanzt','Ein Keim!','Der Stängel wächst','Noch höher!','Das erste Blatt','Das zweite Blatt','Eine Knospe','Die Sonne scheint','Die Knospe färbt sich','Aufgeblüht! 🌸'],
+  svg: svg(sky('gFl','#DDF0FF','#F5FBFF')+
+  '<g data-s="8"><g class="spin"><g stroke="#FFC23D" stroke-width="3" stroke-linecap="round"><path d="M250 18V25M250 65V72M223 45H230M270 45H277M231 26L236 31M269 26L264 31M231 64L236 59M269 64L264 59"/></g></g><circle cx="250" cy="45" r="15" fill="#FFD166"/></g>'+
+  '<path d="M-500 214Q150 200 800 214V540H-500Z" fill="#BFE3A9"/>'+
+  '<g fill="#A6D68F"><path d="M30 214Q34 196 38 214Z"/><path d="M262 212Q267 192 272 212Z"/><path d="M48 214Q50 202 54 214Z"/></g>'+
+  '<path data-s="3" class="gy" d="M150 190V142" stroke="#4CAF6A" stroke-width="5" stroke-linecap="round" fill="none"/>'+
+  '<path data-s="4" class="gy" d="M150 144Q147 124 150 102" stroke="#4CAF6A" stroke-width="5" stroke-linecap="round" fill="none"/>'+
+  '<g data-s="5"><path d="M149 162Q126 145 113 155Q128 174 149 162Z" fill="#5DBB78"/><path d="M147 161Q131 156 118 156" stroke="#3E9A5A" stroke-width="1.5" fill="none"/></g>'+
+  '<g data-s="6"><path d="M151 136Q174 119 187 129Q172 148 151 136Z" fill="#5DBB78"/><path d="M153 135Q169 130 182 130" stroke="#3E9A5A" stroke-width="1.5" fill="none"/></g>'+
+  '<g data-s="7" class="ob"><ellipse cx="150" cy="96" rx="8" ry="11" fill="#6CC785"/></g>'+
+  '<g data-s="9" class="ob"><ellipse cx="150" cy="92" rx="8" ry="11" fill="#FF8FB1"/><path d="M141 95Q150 112 159 95Q150 101 141 95Z" fill="#5DBB78"/></g>'+
+  '<g data-s="10"><g class="bloom"><g fill="#FF8FB1">'+petals+'</g><circle cx="150" cy="92" r="9" fill="#FFD166"/><circle cx="147" cy="89" r="2.5" fill="#fff" opacity=".6"/></g></g>'+
+  '<path d="M118 196H182L174 234H126Z" fill="#D9825B"/><rect x="112" y="186" width="76" height="12" rx="5" fill="#E89A6E"/><ellipse cx="150" cy="188" rx="31" ry="3.5" fill="#6B4A34"/>'+
+  '<ellipse data-s="1" cx="150" cy="186" rx="6" ry="3.5" fill="#8B5E3C"/>'+
+  '<g data-s="2" class="ob"><path d="M150 187Q149 177 150 170" stroke="#4CAF6A" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M150 172Q142 165 139 170Q145 175 150 172Z" fill="#6CC785"/><path d="M150 172Q158 165 161 170Q155 175 150 172Z" fill="#6CC785"/></g>'+
+  '<g class="fx bfly"><g class="flap"><path d="M100 62Q88 50 86 62Q90 70 100 64Z" fill="#9B72CF"/><path d="M100 62Q112 50 114 62Q110 70 100 64Z" fill="#B794F4"/></g><path d="M100 56V70" stroke="#4A3B6B" stroke-width="2" stroke-linecap="round"/></g>')
+},
+{ id:'dino', name:'Dino-Ei', emoji:'🦕', bg:'#FFEFD6', goal:'bis der Dino schlüpft', finale:'Hallo, kleiner Dino!',
+  steps:['Ein geheimnisvolles Ei','Es hat Punkte','Ein erster Riss','Knacks!','Der Riss wird länger','Noch ein Riss','Es knistert …','Überall Risse','Das Ei wackelt!','Der Dino schlüpft! 🦕'],
+  svg: svg(sky('gDi','#FFEFD6','#FFF9EF')+
+  '<g fill="#CFE6B8"><path d="M-10 214Q10 150 30 214Z"/><path d="M14 214Q40 160 56 214Z"/><path d="M250 214Q272 150 292 214Z"/><path d="M276 214Q300 170 316 214Z"/></g>'+
+  '<path d="M-500 206Q150 196 800 206V540H-500Z" fill="#EAD7B4"/>'+
+  '<ellipse cx="150" cy="196" rx="66" ry="15" fill="#8E6038"/>'+
+  '<g class="dino"><g class="dinobob">'+
+    '<ellipse cx="150" cy="156" rx="28" ry="24" fill="#7DCB8A"/>'+
+    '<path d="M133 96L139 82L145 94ZM146 92L152 77L158 91ZM159 94L166 82L169 97Z" fill="#5AAE6B"/>'+
+    '<circle cx="150" cy="118" r="27" fill="#7DCB8A"/>'+
+    '<circle cx="140" cy="113" r="6.5" fill="#fff"/><circle cx="160" cy="113" r="6.5" fill="#fff"/>'+
+    '<circle cx="141" cy="114" r="3.3" fill="#2B2D42"/><circle cx="161" cy="114" r="3.3" fill="#2B2D42"/>'+
+    '<circle cx="142.3" cy="112.5" r="1.1" fill="#fff"/><circle cx="162.3" cy="112.5" r="1.1" fill="#fff"/>'+
+    '<ellipse cx="133" cy="125" rx="4.5" ry="3" fill="#FF9DB0" opacity=".75"/><ellipse cx="167" cy="125" rx="4.5" ry="3" fill="#FF9DB0" opacity=".75"/>'+
+    '<path d="M143 126Q150 132 157 126" stroke="#2F6B3D" stroke-width="2.5" fill="none" stroke-linecap="round"/>'+
+    '<ellipse cx="124" cy="140" rx="7" ry="5" fill="#7DCB8A"/><ellipse cx="176" cy="140" rx="7" ry="5" fill="#7DCB8A"/>'+
+  '</g></g>'+
+  '<g data-s="1" class="ob"><g class="eggwob">'+
+    '<path class="egg-under" d="M110 140C112 88 188 88 190 140C190 175 175 202 150 202C125 202 110 175 110 140Z" fill="#FFF8EC"/>'+
+    '<path d="M110 140L120 132L130 142L140 131L150 142L160 131L170 142L180 132L190 140C190 175 175 202 150 202C125 202 110 175 110 140Z" fill="#FFF8EC"/>'+
+    '<g data-s="2" class="fade"><circle cx="128" cy="166" r="6" fill="#A8D8B9"/><circle cx="170" cy="178" r="7" fill="#A8D8B9"/><circle cx="152" cy="188" r="4" fill="#A8D8B9"/></g>'+
+    '<g class="shell-top"><path d="M110 140L120 132L130 142L140 131L150 142L160 131L170 142L180 132L190 140C188 88 112 88 110 140Z" fill="#FFF8EC"/>'+
+      '<g data-s="2" class="fade"><circle cx="132" cy="113" r="7" fill="#A8D8B9"/><circle cx="165" cy="104" r="5" fill="#A8D8B9"/><circle cx="171" cy="124" r="5.5" fill="#A8D8B9"/><circle cx="148" cy="99" r="3.5" fill="#A8D8B9"/></g></g>'+
+    '<path class="egg-outline" d="M110 140C112 88 188 88 190 140C190 175 175 202 150 202C125 202 110 175 110 140Z" fill="none" stroke="#D9C3A0" stroke-width="2.5"/>'+
+    '<g fill="none" stroke="#8A6A48" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">'+
+      '<g data-s="3" class="draw crack"><path pathLength="1" d="M110 140L120 132L130 142L140 131"/></g>'+
+      '<g data-s="4" class="draw crack"><path pathLength="1" d="M140 131L150 142L160 131"/></g>'+
+      '<g data-s="5" class="draw crack"><path pathLength="1" d="M160 131L170 142L180 132L190 140"/></g>'+
+      '<g data-s="6" class="draw crack"><path pathLength="1" d="M130 142L127 152L133 159"/></g>'+
+      '<g data-s="7" class="draw crack"><path pathLength="1" d="M160 131L164 121L158 113"/></g>'+
+      '<g data-s="8" class="draw crack"><path pathLength="1" d="M170 142L175 152L169 161"/></g>'+
+    '</g>'+
+  '</g></g>'+
+  '<path d="M84 196Q150 224 216 196Q213 212 150 218Q87 212 84 196Z" fill="#B7834F"/>'+
+  '<g stroke="#8E6038" stroke-width="1.5" stroke-linecap="round"><path d="M100 204L116 208M130 210L146 212M160 212L176 209M188 206L202 202"/></g>')
+},
+{ id:'chest', name:'Schatztruhe', emoji:'💰', bg:'#ECE6FF', goal:'bis die Truhe aufgeht', finale:'Der Schatz gehört dir!',
+  steps:['Eine alte Truhe','Ein goldenes Schloss','Da liegt ein Schlüssel','Der erste Edelstein leuchtet','Der zweite Edelstein','Der dritte Edelstein','Der vierte Edelstein','Alle Edelsteine leuchten','Der Schlüssel steckt im Schloss','Die Truhe ist offen! 💰'],
+  svg: svg(sky('gTr','#ECE6FF','#FAF7FF')+
+  '<path d="M-500 204Q150 194 800 204V540H-500Z" fill="#E4D6BC"/>'+
+  '<g fill="#D2C5F2"><circle cx="40" cy="60" r="3"/><circle cx="262" cy="46" r="2.5"/><circle cx="230" cy="92" r="2"/><circle cx="70" cy="104" r="2"/></g>'+
+  '<g data-s="1" class="ob">'+
+    '<g class="treasure"><ellipse cx="150" cy="128" rx="50" ry="16" fill="#FFE08A" opacity=".9"/><g fill="#F2C14E" stroke="#C9962A" stroke-width="1.5"><circle cx="120" cy="126" r="7"/><circle cx="134" cy="121" r="7"/><circle cx="149" cy="124" r="7"/><circle cx="164" cy="120" r="7"/><circle cx="179" cy="126" r="7"/></g><path d="M140 114L146 106L152 114L146 120Z" fill="#4D96FF"/><path d="M168 112L173 105L178 112L173 117Z" fill="#FF5C8A"/></g>'+
+    '<rect x="95" y="128" width="110" height="72" rx="8" fill="#B7703F" stroke="#7A4726" stroke-width="3"/>'+
+    '<rect x="110" y="129.5" width="10" height="69" fill="#E0AE45"/><rect x="180" y="129.5" width="10" height="69" fill="#E0AE45"/>'+
+    '<g fill="#6B3E20"><circle cx="130" cy="184" r="5.5"/><circle cx="140" cy="188" r="5.5"/><circle cx="150" cy="189.5" r="5.5"/><circle cx="160" cy="188" r="5.5"/><circle cx="170" cy="184" r="5.5"/></g>'+
+    '<g class="lid"><path d="M93 130V112Q150 78 207 112V130Z" fill="#C98249" stroke="#7A4726" stroke-width="3" stroke-linejoin="round"/><rect x="110" y="104" width="10" height="25" fill="#E0AE45"/><rect x="180" y="104" width="10" height="25" fill="#E0AE45"/></g>'+
+  '</g>'+
+  '<g data-s="2"><rect x="138" y="118" width="24" height="30" rx="5" fill="#F2C14E" stroke="#A57A1C" stroke-width="2.5"/><circle cx="150" cy="130" r="4" fill="#5A3A1E"/><path d="M148 131H152L153.5 140H146.5Z" fill="#5A3A1E"/></g>'+
+  gems+
+  '<g data-s="3"><g class="keymove"><circle cx="252" cy="160" r="8.5" fill="none" stroke="#E0AE45" stroke-width="5"/><rect x="214" y="158" width="31" height="5" rx="2.5" fill="#E0AE45"/><rect x="218" y="162" width="4" height="7" rx="1" fill="#E0AE45"/><rect x="226" y="162" width="4" height="5" rx="1" fill="#E0AE45"/></g></g>'+
+  '<g class="fx">'+coins+'</g>')
+},
+{ id:'balloon', name:'Heißluftballon', emoji:'🎈', bg:'#BFE2FF', goal:'bis der Ballon abhebt', finale:'Der Ballon schwebt davon!',
+  steps:['Der Korb steht bereit','Die Seile sind fest','Die Ballonhülle','Bunte Streifen','Ein blaues Band','Der Brenner ist da','Flamme an – heiße Luft!','Sandsäcke dran','Fähnchen oben – er wackelt!','Abheben! 🎈'],
+  svg: svg(sky('gBa','#BFE2FF','#EAF6FF')+
+  '<defs><clipPath id="clBa"><path d="M126 152C92 128 92 50 150 46C208 50 208 128 174 152Z"/></clipPath></defs>'+
+  '<g fill="#fff" opacity=".95"><g class="drift"><ellipse cx="52" cy="54" rx="22" ry="9"/><circle cx="46" cy="48" r="9"/><circle cx="58" cy="46" r="11"/></g><g class="drift d2"><ellipse cx="246" cy="84" rx="24" ry="9"/><circle cx="240" cy="78" r="10"/><circle cx="254" cy="76" r="12"/></g></g>'+
+  '<path d="M-500 204Q60 176 150 196Q240 178 800 200V540H-500Z" fill="#A9D69A"/>'+
+  '<path d="M-500 216Q150 202 800 216V540H-500Z" fill="#93C985"/>'+
+  '<g class="balloon">'+
+    '<g data-s="2" class="fade"><path d="M137 186L126 151M163 186L174 151M146 186L141 153M154 186L159 153" stroke="#7A5530" stroke-width="1.6" stroke-linecap="round"/></g>'+
+    '<g data-s="3" class="ob"><path d="M126 152C92 128 92 50 150 46C208 50 208 128 174 152Z" fill="#FF8A5B"/></g>'+
+    '<g data-s="4" class="fade"><g clip-path="url(#clBa)"><path d="M150 46C133 62 130 120 142 152H158C170 120 167 62 150 46Z" fill="#FFD166"/><path d="M150 46C114 58 106 118 124 152H131C118 118 122 64 150 46Z" fill="#FFB3C7"/><path d="M150 46C186 58 194 118 176 152H169C182 118 178 64 150 46Z" fill="#FFB3C7"/></g></g>'+
+    '<g data-s="5" class="fade"><g clip-path="url(#clBa)"><path d="M80 100Q150 114 220 100V112Q150 126 80 112Z" fill="#4B4BCF"/></g></g>'+
+    '<g data-s="6"><rect x="143" y="160" width="14" height="8" rx="2" fill="#8C95B5"/><path d="M138 185L144 168M162 185L156 168" stroke="#8C95B5" stroke-width="1.5"/></g>'+
+    '<g data-s="7" class="fade"><g class="flame up"><path d="M143.5 161Q150 134 156.5 161Z" fill="#FFA940"/><path d="M146.5 161Q150 147 153.5 161Z" fill="#FFE27A"/></g></g>'+
+    '<g data-s="1" class="ob"><rect x="134" y="184" width="32" height="22" rx="4" fill="#C08A55" stroke="#7A5530" stroke-width="2"/><path d="M134 192H166M134 199H166M142 184V206M150 184V206M158 184V206" stroke="#9C6B3F" stroke-width="1.2"/></g>'+
+    '<g data-s="8"><path d="M135 190L127 195M165 190L173 195" stroke="#7A5530" stroke-width="1.5"/><ellipse cx="126" cy="200" rx="5" ry="6.5" fill="#A67C52"/><ellipse cx="174" cy="200" rx="5" ry="6.5" fill="#A67C52"/></g>'+
+    '<g data-s="9" class="ob"><path d="M150 46V28" stroke="#5B6282" stroke-width="2" stroke-linecap="round"/><path d="M150 28L167 33L150 38Z" fill="#4B4BCF"/></g>'+
+  '</g>')
+},
+{ id:'rainbow', name:'Regenbogen', emoji:'🌈', bg:'#D6ECFF', goal:'bis der Regenbogen fertig ist', finale:'Was für ein Regenbogen!',
+  steps:['Die Sonne kommt heraus','Rot','Orange','Gelb','Grün','Blau','Lila','Eine Wolke links','Eine Wolke rechts','Der Regenbogen ist fertig! 🌈'],
+  svg: svg(sky('gRb','#D6ECFF','#F3FAFF')+
+  '<g data-s="1"><g class="spin"><g stroke="#FFC23D" stroke-width="3.5" stroke-linecap="round"><path d="M255 16V23M255 67V74M226 45H233M277 45H284M234 24L239 29M276 24L271 29M234 66L239 61M276 66L271 61"/></g></g><circle cx="255" cy="45" r="17" fill="#FFD166"/></g>'+
+  '<g class="arcs" fill="none" stroke-width="11.5">'+arcs+'</g>'+
+  '<path d="M-500 212Q150 198 800 212V540H-500Z" fill="#A9D69A"/>'+
+  '<g data-s="8" class="ob"><g fill="#fff"><ellipse cx="66" cy="206" rx="38" ry="14"/><circle cx="52" cy="196" r="15"/><circle cx="76" cy="191" r="18"/><circle cx="96" cy="200" r="11"/></g></g>'+
+  '<g data-s="9" class="ob"><g fill="#fff"><ellipse cx="234" cy="206" rx="38" ry="14"/><circle cx="248" cy="196" r="15"/><circle cx="224" cy="191" r="18"/><circle cx="204" cy="200" r="11"/></g></g>'+
+  '<g data-s="10" class="fade"><g class="birds" fill="none" stroke="#5B6282" stroke-width="2" stroke-linecap="round"><path d="M60 70q5-5 10 0q5-5 10 0"/><path d="M92 50q4-4 8 0q4-4 8 0"/></g></g>')
+},
+{ id:'snowman', name:'Schneemann', emoji:'⛄', bg:'#CADCF2', goal:'bis der Schneemann fertig ist', finale:'Der Schneemann winkt dir zu!',
+  steps:['Die große Kugel','Die mittlere Kugel','Der Kopf','Zwei Augen','Eine Karottennase','Ein Lächeln','Knöpfe','Arme aus Ästen','Ein warmer Schal','Hut auf – fertig! ⛄'],
+  svg: svg(sky('gSn','#CADCF2','#EEF4FB')+
+  '<g fill="#B3C9E3"><path d="M20 206L40 150L60 206Z"/><path d="M44 206L60 166L76 206Z"/><path d="M236 206L256 144L276 206Z"/><path d="M262 206L276 170L290 206Z"/></g>'+
+  '<path d="M-500 204Q150 188 800 204V540H-500Z" fill="#fff"/>'+
+  '<g fill="#fff"><circle cx="30" cy="40" r="2"/><circle cx="96" cy="26" r="1.6"/><circle cx="210" cy="30" r="2"/><circle cx="270" cy="60" r="1.6"/><circle cx="120" cy="60" r="1.3"/><circle cx="190" cy="80" r="1.5"/></g>'+
+  '<circle data-s="1" cx="150" cy="180" r="32" fill="#fff" stroke="#C3D3E8" stroke-width="2.5"/>'+
+  '<g data-s="8"><path d="M130 131L103 113M110 118L101 121M109 117L106 108" stroke="#7A5530" stroke-width="3" stroke-linecap="round" fill="none"/><g class="wave"><path d="M170 131L197 113M190 118L199 121M191 117L194 108" stroke="#7A5530" stroke-width="3" stroke-linecap="round" fill="none"/></g></g>'+
+  '<circle data-s="2" cx="150" cy="132" r="23" fill="#fff" stroke="#C3D3E8" stroke-width="2.5"/>'+
+  '<circle data-s="3" cx="150" cy="96" r="17" fill="#fff" stroke="#C3D3E8" stroke-width="2.5"/>'+
+  '<g data-s="4" fill="#2B2D42"><circle cx="144" cy="92" r="2.6"/><circle cx="156" cy="92" r="2.6"/></g>'+
+  '<path data-s="5" d="M150 97L167 100.5L150 102Z" fill="#FF8A3D"/>'+
+  '<g data-s="6" fill="#2B2D42"><circle cx="143" cy="104" r="1.4"/><circle cx="146.5" cy="106.5" r="1.4"/><circle cx="150" cy="107.3" r="1.4"/><circle cx="153.5" cy="106.5" r="1.4"/><circle cx="157" cy="104" r="1.4"/></g>'+
+  '<g data-s="9"><path d="M133 112Q150 121 167 112L168 119Q150 128 132 119Z" fill="#FF6B8A"/><path d="M157 119L164 138L156 139.5L152 121Z" fill="#E4577A"/></g>'+
+  '<g data-s="7" fill="#2B2D42"><circle cx="150" cy="130" r="2.8"/><circle cx="150" cy="140" r="2.8"/><circle cx="150" cy="150" r="2.8"/><circle cx="150" cy="170" r="3"/><circle cx="150" cy="182" r="3"/></g>'+
+  '<g data-s="10" class="ob"><rect x="133" y="78" width="34" height="5" rx="2.5" fill="#2B2D42"/><rect x="139" y="56" width="22" height="24" rx="3" fill="#2B2D42"/><rect x="139" y="72" width="22" height="4" fill="#4B4BCF"/></g>'+
+  '<g class="fx">'+flakes+'</g>')
+}
+];
+function missionById(id){ return MISSIONS.filter(function(m){ return m.id === id; })[0] || null; }
+function mission(){ return D.current ? missionById(D.current.id) : null; }
+
+/* =========================================================
+   5. DOM
+   ========================================================= */
+function $(id){ return document.getElementById(id); }
+var startEl=$('start'), trainEl=$('train'), goBtn=$('goBtn'), startStats=$('startStats');
+var missionNo=$('missionNo'), missionName=$('missionName'), starsEl=$('stars'), progText=$('progText');
+var soundBtn=$('soundBtn'), settingsBtn=$('settingsBtn');
+var card=$('taskCard'), taskArea=$('taskArea'), taskEl=$('task'), ta=$('ta'), tb=$('tb'), ans=$('tans');
+var ansBox=$('answer'), padEl=$('pad'), playEl=document.querySelector('.play'), fb=$('feedback');
+var MAXLEN = 2;   // größtes Ergebnis: 81
+var donePanel=$('donePanel'), doneExtra=$('doneExtra'), nextBtn=$('nextMissionBtn'), todayLine=$('todayLine');
+var scene=$('scene'), caption=$('caption'), goalEl=$('goal');
+var modal=$('settings'), closeSet=$('closeSet'), resetBtn=$('resetBtn'), toStartBtn=$('toStartBtn');
+var confEl=$('confetti');
+var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var starEls = [];
+for (var i = 0; i < GOAL; i++) { var sp = document.createElement('span'); sp.textContent = '★'; starsEl.appendChild(sp); starEls.push(sp); }
+
+var state = { screen:'start', task:null, attempts:0, locked:false, timer:null, entry:'' };
+function later(fn, ms){ clearTimeout(state.timer); state.timer = setTimeout(fn, ms); }
+function modalOpen(){ return !modal.hidden; }
+
+/* =========================================================
+   6. Sound (Web Audio, keine Dateien)
+   ========================================================= */
+var AC = null;
+function audio(){
+  if (!D.sound) return null;
+  try {
+    if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); }
+    if (AC.state === 'suspended') AC.resume();
+    return AC;
+  } catch(e) { return null; }
+}
+function tone(ac, freq, t, dur, type, vol){
+  var o = ac.createOscillator(), g = ac.createGain(), now = ac.currentTime + t;
+  o.type = type || 'sine'; o.frequency.setValueAtTime(freq, now);
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.exponentialRampToValueAtTime(vol || 0.07, now + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  o.connect(g); g.connect(ac.destination);
+  o.start(now); o.stop(now + dur + 0.05);
+}
+function sfx(kind){
+  var ac = audio(); if (!ac) return;
+  try {
+    if (kind === 'good') { tone(ac, 660, 0, .14, 'sine', .06); tone(ac, 990, .08, .2, 'sine', .05); }
+    else if (kind === 'mission') {
+      [523.25, 659.25, 783.99, 1046.5].forEach(function(f, i){ tone(ac, f, i * .12, i === 3 ? .6 : .2, 'triangle', .06); });
+      tone(ac, 1318.5, .5, .5, 'sine', .025);
+    }
+  } catch(e) {}
+}
+function updateSoundBtn(){ soundBtn.textContent = D.sound ? '🔊' : '🔇'; soundBtn.setAttribute('aria-pressed', D.sound ? 'true' : 'false'); }
+
+/* =========================================================
+   7. Anzeige
+   ========================================================= */
+function showFb(text, kind){ fb.innerHTML = ''; if (!text) return; var s = document.createElement('span'); s.className = 'pill ' + kind; s.textContent = text; fb.appendChild(s); }
+function renderEntry(bump){
+  ansBox.textContent = state.entry;
+  ansBox.classList.toggle('empty', state.entry === '');
+  ansBox.setAttribute('aria-label', 'Deine Antwort: ' + (state.entry || 'leer'));
+  if (bump) { ansBox.classList.remove('bump'); void ansBox.offsetWidth; ansBox.classList.add('bump'); }
+}
+function clearEntry(){ state.entry = ''; renderEntry(false); }
+function canType(){ return state.screen === 'train' && !state.locked && !!state.task && !modalOpen(); }
+function pressDigit(d){
+  if (!canType() || state.entry.length >= MAXLEN) return;
+  state.entry = (state.entry === '0' ? '' : state.entry) + d;
+  renderEntry(true);
+}
+function pressDel(){
+  if (!canType() || !state.entry) return;
+  state.entry = state.entry.slice(0, -1);
+  renderEntry(false);
+}
+function flashKey(k){
+  var b = padEl.querySelector('[data-key="' + k + '"]'); if (!b) return;
+  b.classList.add('press'); setTimeout(function(){ b.classList.remove('press'); }, 110);
+}
+
+function updateStars(animate){
+  var p = D.current ? Math.min(D.current.progress, GOAL) : 0;
+  starEls.forEach(function(el, i){
+    var on = i < p;
+    if (on && animate && !el.classList.contains('on')) { el.classList.add('pop'); setTimeout(function(){ el.classList.remove('pop'); }, 600); }
+    el.classList.toggle('on', on);
+  });
+  progText.textContent = p + ' / ' + GOAL;
+}
+
+function applyStep(step, animate){
+  var m = mission(); if (!m) return;
+  if (!animate) scene.classList.add('noanim');
+  var els = scene.querySelectorAll('[data-s]');
+  for (var i = 0; i < els.length; i++) els[i].classList.toggle('on', parseInt(els[i].getAttribute('data-s'), 10) <= step);
+  for (var s = 0; s <= GOAL; s++) scene.classList.remove('st-' + s);
+  scene.classList.add('st-' + step);
+  if (!animate) { void scene.offsetWidth; requestAnimationFrame(function(){ requestAnimationFrame(function(){ scene.classList.remove('noanim'); }); }); }
+  caption.textContent = step === 0 ? 'Neue Mission: ' + m.name + ' ' + m.emoji : m.steps[step - 1];
+  var left = GOAL - step;
+  goalEl.textContent = left > 1 ? 'Noch ' + left + ' richtige ' + m.goal : (left === 1 ? 'Nur noch eine richtige ' + m.goal + '!' : '');
+  scene.setAttribute('aria-label', m.name + ': Schritt ' + step + ' von ' + GOAL);
+  if (animate) { caption.classList.remove('bump'); void caption.offsetWidth; caption.classList.add('bump'); }
+}
+
+function renderMission(){
+  var m = mission(); if (!m) return;
+  scene.className = 'scene';
+  scene.innerHTML = m.svg;
+  scene.style.background = m.bg;
+  missionNo.textContent = 'Mission ' + (D.missionsDone + 1);
+  missionName.textContent = m.emoji + ' ' + m.name;
+  updateStars(false);
+  applyStep(D.current.progress, false);
+}
+
+function newMission(){
+  var avoid = {};
+  D.lastMissions.slice(-2).forEach(function(id){ avoid[id] = 1; });
+  if (D.current) avoid[D.current.id] = 1;
+  var opts = MISSIONS.filter(function(m){ return !avoid[m.id]; });
+  if (!opts.length) opts = MISSIONS;
+  var m = opts[Math.floor(Math.random() * opts.length)];
+  D.current = {id:m.id, progress:0};
+  save();
+}
+
+/* =========================================================
+   8. Spielablauf
+   ========================================================= */
+function nextTask(){
+  if (state.screen !== 'train') return;
+  state.task = pickTask(); state.attempts = 0; state.locked = false;
+  ta.textContent = state.task.a; tb.textContent = state.task.b; $('top').textContent = signOf(state.task);
+  ans.textContent = '?'; ans.className = 'ans q';
+  card.classList.remove('ok', 'try', 'nudge');
+  taskEl.classList.remove('enter'); void taskEl.offsetWidth; taskEl.classList.add('enter');
+  clearEntry(); showFb('', '');
+}
+
+function check(){
+  if (state.screen !== 'train' || state.locked || !state.task || modalOpen()) return;
+  var v = state.entry;
+  if (!/^\d{1,2}$/.test(v)) { showFb('Tippe zuerst eine Zahl ein.', 'info'); return; }
+  var n = parseInt(v, 10), t = state.task, s = D.stats[t.key];
+  state.attempts++; s.last = Date.now();
+
+  if (n === t.res) {
+    state.locked = true;
+    s.right++;
+    if (state.attempts === 1) s.score = Math.max(-4, s.score - 1);
+    else { s.score = Math.min(6, s.score + 1); enqueue(t.key, 7, 10); }   // erst beim 2. Versuch: später nochmal
+    rollToday(); D.totalCorrect++; D.today.correct++;
+    D.current.progress = Math.min(GOAL, D.current.progress + 1);
+    save();
+    clearEntry();
+    ans.textContent = t.res; ans.className = 'ans good';
+    card.classList.remove('try', 'nudge'); card.classList.add('ok');
+    showFb(pick(PRAISE, 'praise'), 'good');
+    sfx('good');
+    updateStars(true);
+    applyStep(D.current.progress, true);
+    if (D.current.progress >= GOAL) later(missionComplete, 800);
+    else later(nextTask, 750);
+  } else {
+    s.wrong++;
+    if (state.attempts === 1) {
+      save();
+      showFb(pick(TRY, 'try'), 'hint');
+      card.classList.remove('ok', 'nudge'); void card.offsetWidth; card.classList.add('try', 'nudge');
+      clearEntry();
+    } else {
+      state.locked = true;
+      s.score = Math.min(6, s.score + 2);
+      enqueue(t.key, 5, 8);                                   // taucht in ca. 5–8 Aufgaben wieder auf
+      save();
+      ans.textContent = t.res; ans.className = 'ans show';
+      card.classList.remove('try', 'nudge');
+      showFb('Merk dir: ' + t.a + ' ' + signOf(t) + ' ' + t.b + ' = ' + t.res, 'info');
+      clearEntry();
+      later(nextTask, 2400);
+    }
+  }
+}
+
+function missionComplete(){
+  var m = mission();
+  D.missionsDone++;
+  D.lastMissions.push(D.current.id); while (D.lastMissions.length > 3) D.lastMissions.shift();
+  save();
+  state.screen = 'done';
+  taskArea.hidden = true; donePanel.hidden = false;
+  card.classList.remove('ok', 'try', 'nudge');
+  playEl.classList.add('is-done');
+  doneExtra.textContent = m ? m.finale : '';
+  todayLine.textContent = D.today.correct >= GOAL ? 'Heute schon ' + D.today.correct + ' Aufgaben geschafft.' : '';
+  scene.classList.add('finale');
+  caption.textContent = m ? m.steps[GOAL - 1] : '';
+  goalEl.textContent = '';
+  sfx('mission'); confetti();
+  if (scene.getBoundingClientRect().bottom > window.innerHeight) { try { scene.scrollIntoView({block:'nearest', behavior:'smooth'}); } catch(e) {} }
+  setTimeout(function(){ if (state.screen === 'done' && !modalOpen()) { try { nextBtn.focus({preventScroll:true}); } catch(e) {} } }, 500);
+}
+
+function nextMission(){
+  newMission();
+  state.screen = 'train';
+  donePanel.hidden = true; taskArea.hidden = false;
+  playEl.classList.remove('is-done');
+  renderMission();
+  nextTask();
+}
+
+function confetti(){
+  if (reduced) return;
+  var cols = ['#FFB020','#FF7A59','#4B4BCF','#12936A','#4D96FF','#FF8FB1'];
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < 46; i++) {
+    var c = document.createElement('i');
+    c.style.left = (Math.random() * 100) + '%';
+    c.style.background = cols[i % cols.length];
+    c.style.setProperty('--x', (Math.random() * 120 - 60) + 'px');
+    c.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+    c.style.setProperty('--t', (1.8 + Math.random() * 1.4) + 's');
+    c.style.setProperty('--d', (Math.random() * .5) + 's');
+    if (i % 3 === 0) { c.style.borderRadius = '50%'; c.style.width = '9px'; c.style.height = '9px'; }
+    frag.appendChild(c);
+  }
+  confEl.appendChild(frag);
+  setTimeout(function(){ confEl.innerHTML = ''; }, 3600);
+}
+
+/* =========================================================
+   9. Bildschirme & Einstellungen
+   ========================================================= */
+function syncModeRadios(){
+  document.querySelectorAll('input[name="mode"],input[name="mode2"]').forEach(function(r){ r.checked = (r.value === D.mode); });
+}
+function refreshStart(){
+  syncModeRadios();
+  rollToday();
+  if (D.missionsDone > 0 || D.today.correct > 0) {
+    startStats.textContent = '🚀 ' + D.missionsDone + ' ' + plural(D.missionsDone, 'Mission', 'Missionen') + ' geschafft   ⭐ heute ' + D.today.correct + ' richtig';
+  } else startStats.textContent = '';
+  goBtn.textContent = (D.current && D.current.progress > 0 && D.current.progress < GOAL) ? "Weiter geht's 🚀" : "Los geht's 🚀";
+}
+function goStart(){
+  clearTimeout(state.timer);
+  state.screen = 'start'; state.locked = false;
+  trainEl.hidden = true; startEl.hidden = false;
+  refreshStart();
+  goBtn.focus();
+}
+function startGame(){
+  audio();                                  // Audio im Klick freischalten
+  startEl.hidden = true; trainEl.hidden = false;
+  state.screen = 'train';
+  var resumed = D.current && missionById(D.current.id) && D.current.progress > 0 && D.current.progress < GOAL;
+  if (!D.current || !missionById(D.current.id) || D.current.progress >= GOAL) newMission();
+  donePanel.hidden = true; taskArea.hidden = false;
+  playEl.classList.remove('is-done');
+  renderMission();
+  if (resumed) caption.textContent = "Weiter geht's mit deiner Mission!";
+  nextTask();
+}
+
+var resetArmed = false, resetTimer = null;
+function openModal(){
+  rollToday();
+  $('aMissions').textContent = D.missionsDone;
+  $('aToday').textContent = D.today.correct;
+  $('aTotal').textContent = D.totalCorrect;
+  syncModeRadios();
+  disarmReset();
+  modal.hidden = false;
+  closeSet.focus();
+}
+function closeModal(){
+  modal.hidden = true; disarmReset();
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (state.screen === 'done') nextBtn.focus();
+}
+function disarmReset(){ resetArmed = false; clearTimeout(resetTimer); resetBtn.textContent = 'Fortschritt zurücksetzen'; resetBtn.classList.remove('warn'); }
+
+/* =========================================================
+   10. Ereignisse
+   ========================================================= */
+goBtn.addEventListener('click', startGame);
+padEl.addEventListener('mousedown', function(e){ e.preventDefault(); });   // Tasten nehmen keinen Fokus
+padEl.addEventListener('click', function(e){
+  var k = e.target.closest ? e.target.closest('.key') : null; if (!k) return;
+  var v = k.getAttribute('data-key');
+  if (v === 'del') pressDel(); else if (v === 'ok') check(); else pressDigit(v);
+});
+nextBtn.addEventListener('click', nextMission);
+soundBtn.addEventListener('click', function(){ D.sound = !D.sound; save(); updateSoundBtn(); if (D.sound) audio(); soundBtn.blur(); });
+settingsBtn.addEventListener('click', openModal);
+closeSet.addEventListener('click', closeModal);
+modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+toStartBtn.addEventListener('click', function(){ modal.hidden = true; disarmReset(); goStart(); });
+resetBtn.addEventListener('click', function(){
+  if (!resetArmed) {
+    resetArmed = true; resetBtn.textContent = 'Wirklich alles löschen?'; resetBtn.classList.add('warn');
+    resetTimer = setTimeout(disarmReset, 4000); return;
+  }
+  var snd = D.sound, mode = D.mode;
+  D = fresh(); D.sound = snd; D.mode = mode;
+  POOL.forEach(function(p){ D.stats[p.key] = {asked:0, right:0, wrong:0, last:0, score:0}; });
+  save(); modal.hidden = true; disarmReset(); goStart();
+});
+document.querySelectorAll('input[name="mode"],input[name="mode2"]').forEach(function(r){
+  r.addEventListener('change', function(){ if (r.checked) { D.mode = r.value === 'tricky' ? 'tricky' : 'core'; save(); syncModeRadios(); } });
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && modalOpen()) { closeModal(); return; }
+  if (e.key === 'Enter' && state.screen === 'done' && !modalOpen() && document.activeElement !== nextBtn) { e.preventDefault(); nextMission(); return; }
+  // Physische Tastatur (Desktop/Laptop): 0–9, Backspace, Enter
+  if (state.screen !== 'train' || modalOpen() || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (/^[0-9]$/.test(e.key)) { e.preventDefault(); flashKey(e.key); pressDigit(e.key); }
+  else if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); flashKey('del'); pressDel(); }
+  else if (e.key === 'Enter') { e.preventDefault(); flashKey('ok'); check(); }
+});
+
+updateSoundBtn();
+refreshStart();
+})();
+</script>
+</body>
+</html>
 
