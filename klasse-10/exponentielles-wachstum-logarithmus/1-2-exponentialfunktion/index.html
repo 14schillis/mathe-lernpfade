@@ -278,6 +278,28 @@ input[type=range]{
 .solved.on{display:flex}
 .tick{font-weight:700;color:var(--ok);flex:0 0 auto}
 
+/* einheitlicher, wieder aufklappbarer Erfolgsblock fuer erledigte Bereiche
+   (Karten, Forschungs- und Multiple-Choice-Bloecke). Der Inhalt bleibt im DOM,
+   nur die Darstellung wechselt - der Fortschritt aendert sich dadurch nie. */
+.completed-summary{
+  display:none;align-items:center;gap:9px;background:var(--ok-bg);
+  border:1px solid #bcdfcb;border-left:4px solid var(--ok);border-radius:8px;
+  padding:3px 6px 3px 13px;margin:8px 0;font-size:.95rem;color:#14603c;font-weight:600;line-height:1.45;
+}
+.completed-summary.on{display:flex}
+.completed-summary.open{background:#f1f8f4}
+.completed-summary .cs-text{flex:1 1 9em;min-width:0}
+.completed-summary .cs-btn{
+  position:relative;flex:0 0 auto;min-height:40px;padding:4px 12px;
+  border:1px solid #9fcbb3;border-radius:8px;background:#fff;color:#14603c;
+  font-weight:600;font-size:.88rem;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+/* Treffer-Flaeche etwas groesser als die sichtbare Schaltflaeche (ca. 48 px) */
+.completed-summary .cs-btn::after{content:"";position:absolute;left:-4px;right:-4px;top:-4px;bottom:-4px}
+.completed-summary .cs-btn:hover{background:#f3fbf6}
+.completed-summary .cs-btn:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.folded{display:none !important}
+
 /* Protokoll der geprueften Faelle – bleibt nach dem Einklappen stehen */
 .prot{display:flex;flex-direction:column;gap:5px;margin:8px 0 2px}
 .prot:empty{margin:0}
@@ -351,8 +373,9 @@ footer.nav{
 .nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
 .bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
-.locknote{font-size:.82rem;color:var(--hint);text-align:center;padding:0 12px 7px;display:none}
-.locknote.show{display:block}
+.posline{line-height:1.3}
+.locknote{display:none;font-size:.82rem;color:var(--hint);font-weight:600}
+.locknote.show{display:inline}
 @media(max-width:560px){
   #prev .lbl,#next .lbl{display:none}
   .btn{padding:10px 14px}
@@ -361,47 +384,96 @@ footer.nav{
   .nav-inner{padding-top:6px;padding-bottom:6px}
   .bar{margin-top:4px;height:5px}
   .nav-mid .pos{font-size:.82rem}
-  .locknote{padding-bottom:5px;font-size:.79rem}
+  .locknote{font-size:.79rem}
   .steps{padding-bottom:0}
 }
+/* ============ Graphhoehe (iPad / Laptop) ============
+   Die SVGs skalieren weiter ueber die Breite (viewBox, preserveAspectRatio meet).
+   Zusaetzlich begrenzt max-height die Hoehe, damit Graph und aktuelle Aufgabe
+   gleichzeitig sichtbar bleiben. Das Seitenverhaeltnis bleibt erhalten, nichts
+   wird abgeschnitten oder verzerrt. */
+:root{--gH:none;--miniH:none}
+svg{max-height:var(--gH)}
+.minipick svg{max-height:var(--miniH)}
+/* iPad Hochformat (z. B. 768 x 1024): ca. 300-360 px */
+@media(min-width:701px) and (max-width:1100px) and (orientation:portrait){
+  :root{--gH:clamp(300px,35vh,360px);--miniH:200px}
+}
+/* iPad Querformat (z. B. 1024 x 768): ca. 270-310 px */
+@media(min-width:701px) and (max-width:1100px) and (orientation:landscape){
+  :root{--gH:clamp(270px,42vh,310px)}
+}
+/* Laptop und groessere Displays (z. B. 1366 x 768): darf wieder wachsen */
+@media(min-width:1101px){
+  :root{--gH:clamp(270px,47vh,460px)}
+}
+
+/* ============ Kopf und Fuss: kompakter ab Tablet-Breite ============ */
+@media(min-width:701px){
+  .steps{padding-bottom:0}
+  .stepsbar{padding-bottom:2px}
+  .nav-inner{padding-top:5px;padding-bottom:5px}  /* Buttons bleiben min. 44 px hoch */
+  .bar{margin-top:3px}
+  .wrap{padding-bottom:calc(var(--footH) + 14px)}
+}
+/* Touch-Geraete: Stationsleiste mit ca. 44 px hoher Treffer-Flaeche */
+@media(min-width:701px) and (pointer:coarse){
+  .steps{margin-top:-13px}
+  .steps button{padding:16px 0 20px}
+  .steps button::after{top:25px}
+}
+/* Kapitelzeile und Titel nebeneinander (nur bei ausreichender Hoehe;
+   bei niedrigen Fenstern bleibt die Kapitelzeile wie bisher ausgeblendet) */
+@media(min-width:701px) and (min-height:701px){
+  .top-inner{padding-top:6px}
+  .kapitel,.titel{display:inline-block;vertical-align:baseline}
+  .kapitel{margin-right:12px}
+  .titel{margin:0 0 6px}
+}
+
+/* ============ iPad (701-1100 px): kompaktere Abstaende ============
+   Fliesstext bleibt bei 16 px, Touch-Ziele bei mindestens 44 px. */
+@media(min-width:701px) and (max-width:1100px){
+  body{font-size:16px}
+  .station h2{font-size:1.3rem;margin:10px 0 1px}
+  .station .meta{margin-bottom:6px}
+  .card{padding:10px 14px;margin:8px 0}
+  .card h3{margin-bottom:5px;font-size:1.02rem}
+  p{margin:.38em 0}
+  .lead{font-size:1rem}
+  .mblock{margin:7px 0}
+  .small{font-size:.94rem}
+  .gap{margin-top:8px}
+  .btnrow{gap:8px;margin:6px 0 0}
+  .opts{gap:6px;margin:6px 0 2px}
+  .opt{padding:8px 12px}
+  .solmc{margin-top:6px}
+  .answer{margin:6px 0}
+  .fb{padding:7px 12px;margin-top:7px;font-size:.96rem}
+  .heft{padding:10px 14px;margin:10px 0 4px}
+  .heft .duo{gap:8px;margin-top:6px}
+  .mono4{gap:5px;margin-top:6px}
+  .sliderbox{margin:0 0 6px}
+  .scale{height:26px;margin-top:-6px}
+  .scale span{line-height:1.25}
+  .valbox{padding:6px 12px;margin:2px 0 6px}
+  .valbox .vnum{font-size:1.32rem}
+  .vals{gap:6px;margin:4px 0 0}
+  .forsch{padding:8px 12px;margin:7px 0}
+  .solved{padding:6px 12px;margin:6px 0;font-size:.95rem}
+  .completed-summary{margin:6px 0}
+  .prot{gap:4px;margin:6px 0 0}
+  .protline{padding:3px 9px;font-size:.93rem}
+  .legend{margin:3px 0 0;gap:12px}
+  .figcap{margin-top:2px;font-size:.88rem}
+  .gstep{padding-top:7px;margin-top:7px}
+  .minigrid{gap:7px;margin:7px 0 0}
+}
+
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto !important}
   .bar i{transition:none}
 }
-
-/* ============ Lokaler Lernfortschritt ============ */
-.resume-overlay{
-  position:fixed;inset:0;z-index:100;
-  display:none;place-items:center;
-  padding:20px;
-  background:rgba(27,36,48,.48);
-}
-.resume-overlay.on{display:grid}
-.resume-box{
-  width:min(520px,100%);
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:22px;
-  box-shadow:0 18px 60px rgba(27,36,48,.22);
-}
-.resume-box h2{
-  margin:0 0 8px;
-  color:var(--accent);
-  font-size:1.25rem;
-}
-.resume-box p{margin:.45em 0}
-.resume-actions{
-  display:flex;flex-wrap:wrap;gap:10px;
-  margin-top:16px;
-}
-.resume-actions .btn{flex:1 1 180px}
-.resume-note{
-  margin-top:12px !important;
-  font-size:.84rem;
-  color:var(--ink-soft);
-}
-
 @media print{footer.nav,header.top{position:static}}
 </style>
 </head>
@@ -422,7 +494,12 @@ footer.nav{
   <h2>Vom Wachstumsprozess zur Funktion</h2>
   <div class="meta">Station 1 von 8 · etwa 5 Minuten</div>
 
-  <div class="card">
+  <div class="completed-summary" id="cs1a">
+    <span class="tick">✓</span>
+    <span class="cs-text">Ausgangspunkt: <span class="mf"><i>B</i>(<i>t</i>) = 2<sup><i>t</i></sup></span> für ganze Zeitschritte</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c1a">noch einmal ansehen</button>
+  </div>
+  <div class="card" id="c1a">
     <div class="work">
       <div class="viz">
         <div id="svg1a"></div>
@@ -445,6 +522,11 @@ footer.nav{
     </div>
   </div>
 
+  <div class="completed-summary" id="cs1f">
+    <span class="tick">✓</span>
+    <span class="cs-text">Experiment abgeschlossen – aus den Punkten wird eine durchgehende Kurve: Zu jeder reellen Zahl <span class="m">x</span> gehört genau ein Funktionswert.</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c1f">Experiment wieder anzeigen</button>
+  </div>
   <div class="card" id="c1f" style="display:none">
     <p class="lead">Nun erweitern wir diese Sicht zu einer <strong>mathematischen Funktion</strong>:</p>
     <p class="mblock big mf"><i>f</i>(<i>x</i>) = 2<sup><i>x</i></sup>
@@ -513,7 +595,12 @@ footer.nav{
   <h2>Das Basis-Labor: Was macht <span class="m">a</span>?</h2>
   <div class="meta">Station 2 von 8 · etwa 6 Minuten · Forschungsstation</div>
 
-  <div class="card">
+  <div class="completed-summary" id="cs2lab">
+    <span class="tick">✓</span>
+    <span class="cs-text">Basis-Labor abgeschlossen – für <span class="mf"><i>a</i> &gt; 1</span> steigt der Graph, für <span class="mf">0 &lt; <i>a</i> &lt; 1</span> fällt er, <span class="mf"><i>a</i> = 1</span> ergibt eine konstante Funktion.</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c2lab">Labor wieder anzeigen</button>
+  </div>
+  <div class="card" id="c2lab">
     <p class="lead">Hier siehst du den Graphen von
       <span class="mf"><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>.
       Mit dem Regler änderst du die Basis <span class="m">a</span>. Der Graph reagiert sofort –
@@ -561,6 +648,11 @@ footer.nav{
         </div>
         <div class="solved" id="sv2b"></div>
 
+        <div class="completed-summary" id="cs2q">
+          <span class="tick">✓</span>
+          <span class="cs-text">Zusammenfassung: <span class="mf"><i>a</i> &gt; 1</span> steigt, <span class="mf">0 &lt; <i>a</i> &lt; 1</span> fällt.</span>
+          <button type="button" class="cs-btn" aria-expanded="false" aria-controls="wrapQ2">ansehen</button>
+        </div>
         <div id="wrapQ2" style="display:none" class="gap"><div id="q2"></div></div>
 
         <div class="forsch" id="f2c" style="display:none">
@@ -571,6 +663,11 @@ footer.nav{
         </div>
         <div class="solved" id="sv2c"></div>
 
+        <div class="completed-summary" id="cs2qc">
+          <span class="tick">✓</span>
+          <span class="cs-text"><span class="mf"><i>a</i> = 1</span> ergibt eine konstante Funktion.</span>
+          <button type="button" class="cs-btn" aria-expanded="false" aria-controls="wrapQ2c">ansehen</button>
+        </div>
         <div id="wrapQ2c" style="display:none" class="gap"><div id="q2c"></div></div>
       </div>
     </div>
@@ -603,7 +700,12 @@ footer.nav{
   <h2>Was haben alle Exponentialfunktionen gemeinsam?</h2>
   <div class="meta">Station 3 von 8 · etwa 7 Minuten · Forschungsstation</div>
 
-  <div class="card">
+  <div class="completed-summary" id="cs3a">
+    <span class="tick">✓</span>
+    <span class="cs-text">Experiment A abgeschlossen – alle Graphen schneiden die <span class="m">y</span>-Achse in <span class="mf"><i>P</i>(0 | 1)</span>.</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c3a">Experiment wieder anzeigen</button>
+  </div>
+  <div class="card" id="c3a">
     <h3 class="sub">Experiment A · Schnittpunkt mit der <span class="m">y</span>-Achse</h3>
     <div class="work stick">
       <div class="viz">
@@ -637,6 +739,11 @@ footer.nav{
     </div>
   </div>
 
+  <div class="completed-summary" id="cs3b">
+    <span class="tick">✓</span>
+    <span class="cs-text">Experiment B abgeschlossen – alle Funktionswerte sind positiv: <span class="mf"><i>a</i><sup><i>x</i></sup> &gt; 0</span>, der Graph hat keine Nullstelle.</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c3b">Experiment wieder anzeigen</button>
+  </div>
   <div class="card" id="c3b" style="display:none">
     <h3 class="sub">Experiment B · Geht es unter die <span class="m">x</span>-Achse?</h3>
     <div class="work stick">
@@ -679,6 +786,11 @@ footer.nav{
     </div>
   </div>
 
+  <div class="completed-summary" id="cs3c">
+    <span class="tick">✓</span>
+    <span class="cs-text">Experiment C1 abgeschlossen – für <span class="mf"><i>a</i> &gt; 1</span> nähert sich der Graph nach links der <span class="m">x</span>-Achse beliebig nah an, erreicht sie aber nie.</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c3c">Experiment wieder anzeigen</button>
+  </div>
   <div class="card" id="c3c" style="display:none">
     <h3 class="sub">Experiment C · Wie nah kommt der Graph der <span class="m">x</span>-Achse?</h3>
     <p>Erster Fall: <span class="mf"><i>a</i> &gt; 1</span>, hier
@@ -716,6 +828,11 @@ footer.nav{
     </div>
   </div>
 
+  <div class="completed-summary" id="cs3d">
+    <span class="tick">✓</span>
+    <span class="cs-text">Experiment C2 abgeschlossen – für <span class="mf">0 &lt; <i>a</i> &lt; 1</span> nähert sich der Graph nach rechts der <span class="m">x</span>-Achse an (<span class="mf"><i>x</i> → +∞</span>).</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c3d">Experiment wieder anzeigen</button>
+  </div>
   <div class="card" id="c3d" style="display:none">
     <h3 class="sub">Experiment C · Und bei <span class="mf">0 &lt; <i>a</i> &lt; 1</span>?</h3>
     <p>Zweiter Fall: <span class="mf"><i>f</i>(<i>x</i>) = 0,5<sup><i>x</i></sup></span>.
@@ -853,7 +970,12 @@ footer.nav{
   <h2>Das <span class="m">b</span>-Labor: <span class="mf"><i>h</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span></h2>
   <div class="meta">Station 5 von 8 · etwa 6 Minuten · Forschungsstation</div>
 
-  <div class="card">
+  <div class="completed-summary" id="cs5lab">
+    <span class="tick">✓</span>
+    <span class="cs-text"><span class="m">b</span>-Labor abgeschlossen – <span class="mf">|&nbsp;<i>b</i>&nbsp;|</span> bestimmt Streckung bzw. Stauchung, <span class="mf"><i>b</i> &lt; 0</span> spiegelt zusätzlich an der <span class="m">x</span>-Achse, <span class="m">b</span> liest man bei <span class="mf"><i>P</i>(0 | <i>b</i>)</span> ab.</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="c5lab">Labor wieder anzeigen</button>
+  </div>
+  <div class="card" id="c5lab">
     <p class="lead">In Sachzusammenhängen ist der Anfangswert häufig nicht 1. Deshalb kommt ein
       zweiter Parameter dazu. Die Basis bleibt hier fest bei <span class="mf"><i>a</i> = 2</span>:
       <span class="mf"><i>h</i>(<i>x</i>) = <i>b</i> · 2<sup><i>x</i></sup></span>.
@@ -892,6 +1014,11 @@ footer.nav{
         </div>
         <div class="prot" id="prot5a"></div>
         <div class="solved" id="sv5a"></div>
+        <div class="completed-summary" id="cs5a">
+          <span class="tick">✓</span>
+          <span class="cs-text">Streckung und Stauchung: <span class="mf">|&nbsp;<i>b</i>&nbsp;|</span> bestimmt die Wirkung in <span class="m">y</span>-Richtung.</span>
+          <button type="button" class="cs-btn" aria-expanded="false" aria-controls="prot5a wrapQ5a">ansehen</button>
+        </div>
         <div id="wrapQ5a" style="display:none"><div id="q5a"></div></div>
 
         <div class="forsch" id="f5b" style="display:none">
@@ -902,7 +1029,17 @@ footer.nav{
         </div>
         <div class="prot" id="prot5b"></div>
         <div class="solved" id="sv5b"></div>
+        <div class="completed-summary" id="cs5b">
+          <span class="tick">✓</span>
+          <span class="cs-text"><span class="mf"><i>b</i> &lt; 0</span>: zusätzliche Spiegelung an der <span class="m">x</span>-Achse.</span>
+          <button type="button" class="cs-btn" aria-expanded="false" aria-controls="prot5b wrapQ5b">ansehen</button>
+        </div>
         <div id="wrapQ5b" style="display:none" class="gap"><div id="q5b"></div></div>
+        <div class="completed-summary" id="cs5c">
+          <span class="tick">✓</span>
+          <span class="cs-text"><span class="m">b</span> liest man bei <span class="mf"><i>P</i>(0 | <i>b</i>)</span> auf der <span class="m">y</span>-Achse ab.</span>
+          <button type="button" class="cs-btn" aria-expanded="false" aria-controls="wrapQ5c">ansehen</button>
+        </div>
         <div id="wrapQ5c" style="display:none" class="gap"><div id="q5c"></div></div>
       </div>
     </div>
@@ -1024,10 +1161,35 @@ footer.nav{
   <h2>Abschlusscheck</h2>
   <div class="meta">Station 8 von 8 · etwa 5 Minuten</div>
 
-  <div class="card narrow"><div id="q8a"></div></div>
+  <div class="completed-summary narrow" id="cs8a">
+    <span class="tick">✓</span>
+    <span class="cs-text">Aufgabe 1 abgeschlossen</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="w8a">ansehen</button>
+  </div>
+  <div class="card narrow" id="w8a"><div id="q8a"></div></div>
+  <div class="completed-summary narrow" id="cs8b">
+    <span class="tick">✓</span>
+    <span class="cs-text">Aufgabe 2 abgeschlossen</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="w8b">ansehen</button>
+  </div>
   <div class="card narrow" id="w8b" style="display:none"><div id="q8b"></div></div>
+  <div class="completed-summary narrow" id="cs8c">
+    <span class="tick">✓</span>
+    <span class="cs-text">Aufgabe 3 abgeschlossen</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="w8c">ansehen</button>
+  </div>
   <div class="card narrow" id="w8c" style="display:none"><div id="q8c"></div></div>
+  <div class="completed-summary narrow" id="cs8d">
+    <span class="tick">✓</span>
+    <span class="cs-text">Aufgabe 4 abgeschlossen</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="w8d">ansehen</button>
+  </div>
   <div class="card narrow" id="w8d" style="display:none"><div id="q8d"></div></div>
+  <div class="completed-summary narrow" id="cs8e">
+    <span class="tick">✓</span>
+    <span class="cs-text">Aufgabe 5 abgeschlossen</span>
+    <button type="button" class="cs-btn" aria-expanded="false" aria-controls="w8e">ansehen</button>
+  </div>
   <div class="card narrow" id="w8e" style="display:none">
     <div class="work">
       <div class="viz"><div id="svg8"></div>
@@ -1065,27 +1227,12 @@ footer.nav{
   <div class="nav-inner">
     <button class="btn ghost" id="prev">←<span class="lbl"> Zurück</span></button>
     <div class="nav-mid">
-      <div class="pos" id="pos">Station 1 von 8</div>
+      <div class="posline"><span class="pos" id="pos">Station 1 von 8</span><span class="locknote" id="locknote"> · Bearbeite zuerst die Aufgabe dieser Station.</span></div>
       <div class="bar"><i id="barfill"></i></div>
     </div>
     <button class="btn" id="next"><span class="lbl">Weiter </span>→</button>
   </div>
-  <div class="locknote" id="locknote">Bearbeite zuerst die Aufgabe dieser Station.</div>
 </footer>
-
-
-<div class="resume-overlay" id="resumeOverlay">
-  <div class="resume-box" role="dialog" aria-modal="true" aria-labelledby="resumeTitle">
-    <h2 id="resumeTitle">Gespeicherten Stand fortsetzen?</h2>
-    <p id="resumeText">Auf diesem Gerät ist bereits ein Lernfortschritt gespeichert.</p>
-    <div class="resume-actions">
-      <button class="btn" id="resumeContinue" type="button">Fortsetzen</button>
-      <button class="btn ghost" id="resumeRestart" type="button">Von vorne beginnen</button>
-    </div>
-    <p class="resume-note">Der Fortschritt wird nur in diesem Browser auf diesem Gerät gespeichert.
-      Es werden keine Antworten oder personenbezogenen Daten übertragen.</p>
-  </div>
-</div>
 
 <script>
 "use strict";
@@ -1128,6 +1275,99 @@ function measureChrome(){
 }
 window.addEventListener("resize",measureChrome);
 window.addEventListener("orientationchange",function(){ setTimeout(measureChrome,250); });
+window.addEventListener("load",measureChrome);
+/* Die Hoehe von Kopf und Fuss aendert sich mit Schriftgroesse, Zeilenumbruch und
+   Sperrhinweis. Der Beobachter haelt --headH (sticky-Abstand der Visualisierung)
+   und --footH exakt synchron. */
+if(window.ResizeObserver){
+  var _chromeRO=new ResizeObserver(function(){ measureChrome(); });
+  var _chromeH=document.querySelector("header.top"), _chromeF=document.querySelector("footer.nav");
+  if(_chromeH) _chromeRO.observe(_chromeH);
+  if(_chromeF) _chromeRO.observe(_chromeF);
+}
+
+/* =========================================================
+   Neuen Bereich sanft in den sichtbaren Bereich holen
+   =========================================================
+   Verschiebt die Seite nur, wenn der neue Bereich nicht bequem sichtbar ist,
+   und beruecksichtigt die feste Kopf- und Fussleiste. Keine aggressive Animation;
+   bei prefers-reduced-motion wird sofort gesprungen. */
+function reveal(el,anchor,span){
+  if(!el) return;
+  window.requestAnimationFrame(function(){
+    var r=el.getBoundingClientRect();
+    if(r.height===0) return;
+    var h=document.querySelector("header.top"), f=document.querySelector("footer.nav");
+    var visTop=(h?h.offsetHeight:0)+6;
+    var visBot=window.innerHeight-(f?f.offsetHeight:0)-6;
+    var top=anchor?anchor.getBoundingClientRect().top:r.top;
+    var delta=0;
+    /* span=true: gesamter Bereich von der Erfolgszeile (Anker) bis zur Unterkante
+       soll moeglichst komplett sichtbar sein; sonst wie bisher nur das Element. */
+    var hgt=span?(r.bottom-top):r.height;
+    if(hgt<=visBot-visTop){
+      if(r.bottom>visBot) delta=r.bottom-visBot;      /* unten abgeschnitten */
+      else if(top<visTop) delta=top-visTop;           /* oben verdeckt */
+    } else if(top<visTop || top>visBot-120){
+      delta=top-visTop;                               /* hoher Bereich: Anfang zeigen */
+    }
+    if(Math.abs(delta)<=2) return;
+    var reduced=window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollBy({top:delta,left:0,behavior:reduced?"auto":"smooth"});
+  });
+}
+
+/* =========================================================
+   Einklappbare Erfolgszeile fuer erledigte Bereiche
+   =========================================================
+   sumId   : id der Erfolgszeile (.completed-summary)
+   bodyIds : id (oder Liste) der Elemente, die eingeklappt werden
+   Das Ein-/Ausklappen aendert nur die Darstellung: es wird nie setDone(),
+   maxReached oder ein Zaehler beruehrt. */
+function foldable(sumId,bodyIds,txtShow,txtHide){
+  var sum=$(sumId), btn=sum.querySelector(".cs-btn");
+  var ids=(typeof bodyIds==="string")?[bodyIds]:bodyIds;
+  var bodies=ids.map(function(i){ return $(i); });
+  var erledigt=false, offen=false;
+  btn.setAttribute("aria-controls",ids.join(" "));
+  btn.textContent=txtShow;
+  function anwenden(){
+    bodies.forEach(function(b){ if(b) b.classList.toggle("folded",!offen); });
+    sum.classList.toggle("open",offen);
+    btn.textContent=offen?txtHide:txtShow;
+    btn.setAttribute("aria-expanded",offen?"true":"false");
+    measureChrome();
+  }
+  btn.onclick=function(){ if(!erledigt) return; offen=!offen; anwenden(); };
+  return {
+    abschliessen:function(){
+      if(erledigt) return;
+      erledigt=true; offen=false;
+      sum.classList.add("on");
+      anwenden();
+    },
+    istErledigt:function(){ return erledigt; }
+  };
+}
+
+var F1a =foldable("cs1a","c1a","noch einmal ansehen","wieder einklappen");
+var FL1 =foldable("cs1f","c1f","Experiment wieder anzeigen","Wieder einklappen");
+var FL2 =foldable("cs2lab","c2lab","Labor wieder anzeigen","Wieder einklappen");
+var FL5 =foldable("cs5lab","c5lab","Labor wieder anzeigen","Wieder einklappen");
+var F2q =foldable("cs2q","wrapQ2","ansehen","einklappen");
+var F2qc=foldable("cs2qc","wrapQ2c","ansehen","einklappen");
+var F3a =foldable("cs3a","c3a","Experiment wieder anzeigen","Wieder einklappen");
+var F3b =foldable("cs3b","c3b","Experiment wieder anzeigen","Wieder einklappen");
+var F3c =foldable("cs3c","c3c","Experiment wieder anzeigen","Wieder einklappen");
+var F3d =foldable("cs3d","c3d","Experiment wieder anzeigen","Wieder einklappen");
+var F5a =foldable("cs5a",["prot5a","wrapQ5a"],"ansehen","einklappen");
+var F5b =foldable("cs5b",["prot5b","wrapQ5b"],"ansehen","einklappen");
+var F5c =foldable("cs5c","wrapQ5c","ansehen","einklappen");
+var F8a =foldable("cs8a","w8a","ansehen","einklappen");
+var F8b =foldable("cs8b","w8b","ansehen","einklappen");
+var F8c =foldable("cs8c","w8c","ansehen","einklappen");
+var F8d =foldable("cs8d","w8d","ansehen","einklappen");
+var F8e =foldable("cs8e","w8e","ansehen","einklappen");
 
 /* =========================================================
    SVG-Werkzeuge (Board-Technik aus dem MASTER, erweitert um
@@ -1379,124 +1619,6 @@ var done=[]; for(var _i=0;_i<TOTAL;_i++) done.push(false);
 done[TOTAL-1]=true;
 var maxReached=0;
 
-/* =========================================================
-   Lokaler Lernfortschritt
-   Speichert nur den Stationsfortschritt im Browser:
-   - abgeschlossene Stationen
-   - freigeschaltete Stationen
-   - zuletzt geöffnete Station
-   Keine Antworten, Namen oder sonstigen personenbezogenen Daten.
-   Im Lehrermodus wird weder gelesen noch geschrieben.
-   ========================================================= */
-var SAVE_KEY="mathe-lernpfad:j10:i2-exponentialfunktionen:v1";
-
-function readProgress(){
-  if(TEACHER) return null;
-  try{
-    var raw=window.localStorage.getItem(SAVE_KEY);
-    if(!raw) return null;
-    var p=JSON.parse(raw);
-    if(!p || !Array.isArray(p.done) || p.done.length!==TOTAL) return null;
-    return p;
-  }catch(e){
-    return null;
-  }
-}
-
-function saveProgress(){
-  if(TEACHER) return;
-  try{
-    window.localStorage.setItem(SAVE_KEY,JSON.stringify({
-      done:done.slice(),
-      maxReached:maxReached,
-      cur:cur
-    }));
-  }catch(e){
-    /* Falls lokaler Speicher nicht verfügbar ist, läuft der Lernpfad normal weiter. */
-  }
-}
-
-function clearProgress(){
-  try{ window.localStorage.removeItem(SAVE_KEY); }catch(e){}
-}
-
-function firstUnfinishedStation(arr){
-  /* Die Abschlussstation hat absichtlich kein "Weiter". */
-  for(var i=0;i<TOTAL-1;i++){
-    if(!arr[i]) return i;
-  }
-  return TOTAL-1;
-}
-
-function meaningfulProgress(p){
-  if(!p) return false;
-  if(Number(p.maxReached)>0) return true;
-  for(var i=0;i<TOTAL-1;i++){
-    if(p.done[i]===true) return true;
-  }
-  return false;
-}
-
-function applyProgress(p){
-  var restored=[];
-  for(var i=0;i<TOTAL;i++) restored[i]=(p.done[i]===true);
-  restored[TOTAL-1]=true;
-  done=restored;
-
-  var target=firstUnfinishedStation(done);
-  var savedMax=Number(p.maxReached);
-  if(!isFinite(savedMax)) savedMax=0;
-  savedMax=Math.max(0,Math.min(TOTAL-1,Math.floor(savedMax)));
-
-  maxReached=Math.max(savedMax,target);
-  cur=target;
-}
-
-function initProgressResume(){
-  if(TEACHER){
-    render();
-    return;
-  }
-
-  var p=readProgress();
-  if(!meaningfulProgress(p)){
-    render();
-    return;
-  }
-
-  var target=firstUnfinishedStation(p.done);
-  var sec=sections[target];
-  var title="";
-  if(sec){
-    var h2=sec.querySelector("h2");
-    if(h2) title=h2.textContent.trim();
-  }
-
-  $("resumeText").innerHTML =
-    "Du hast diesen Lernpfad schon begonnen. Du kannst bei <strong>Station "+
-    (target+1)+(title?": "+title:"")+"</strong> weitermachen.";
-
-  $("resumeOverlay").classList.add("on");
-
-  $("resumeContinue").onclick=function(){
-    applyProgress(p);
-    $("resumeOverlay").classList.remove("on");
-    render();
-  };
-
-  $("resumeRestart").onclick=function(){
-    clearProgress();
-    cur=0;
-    maxReached=0;
-    done=[];
-    for(var i=0;i<TOTAL;i++) done.push(false);
-    done[TOTAL-1]=true;
-    $("resumeOverlay").classList.remove("on");
-    render();
-  };
-}
-
-
 function buildSteps(){
   var ul=$("steps");
   for(var i=0;i<TOTAL;i++){
@@ -1530,16 +1652,11 @@ function updateNext(){
   $("next").disabled=!free;
   $("locknote").classList.toggle("show", !free && cur<TOTAL-1);
 }
-function setDone(i){
-  done[i]=true;
-  if(i===cur) updateNext();
-  saveProgress();
-}
+function setDone(i){ done[i]=true; if(i===cur) updateNext(); }
 function go(i){
   if(i<0||i>=TOTAL) return;
   cur=i; /* Nur die Schuelernavigation schiebt den Fortschritt weiter. */
   if(!TEACHER && cur>maxReached) maxReached=cur;
-  saveProgress();
   render();
 }
 $("prev").onclick=function(){ go(cur-1); };
@@ -1749,7 +1866,9 @@ var S1 = (function(){
   $("btnStep1").onclick=function(){
     $("btnStep1").parentNode.style.display="none";
     $("c1f").style.display="block";
+    F1a.abschliessen();
     measureChrome();
+    reveal($("c1f"),$("cs1a"));
   };
 
   stufenBlock({
@@ -1787,7 +1906,9 @@ var S1 = (function(){
     $("fb1curve").classList.add("show");
     $("def1").style.display="block";
     $("c1mc").style.display="block";
+    FL1.abschliessen();
     measureChrome();
+    reveal($("c1mc"),$("cs1f"),true);
   };
 
   buildScale("scale1",[{x:-2,t:"−2"},{x:-1,t:"−1"},{x:0,t:"0",mark:true},{x:1,t:"1"},
@@ -1854,7 +1975,7 @@ var S2=(function(){
       return {ok:false,msg:"Bei <span class='mf'><i>a</i> = "+mnum(a,1)+
         "</span> steigt der Graph von links nach rechts. Vergleiche <span class='mf'><i>f</i>(−1)</span> und <span class='mf'><i>f</i>(1)</span> und probiere eine <strong>kleinere</strong> Basis."};
     }}],
-    onDone:function(){ $("f2b").style.display="block"; }
+    onDone:function(){ $("f2b").style.display="block"; reveal($("f2b")); }
   });
 
   /* Auftrag B: steigender Graph */
@@ -1869,7 +1990,7 @@ var S2=(function(){
       return {ok:false,msg:"Bei <span class='mf'><i>a</i> = "+mnum(a,1)+
         "</span> fällt der Graph. Probiere eine Basis <strong>größer als 1</strong>."};
     }}],
-    onDone:function(){ $("wrapQ2").style.display="block"; }
+    onDone:function(){ $("wrapQ2").style.display="block"; reveal($("wrapQ2")); }
   });
 
   /* Auftrag C: Grenzfall */
@@ -1882,7 +2003,7 @@ var S2=(function(){
       return {ok:false,msg:"Bei <span class='mf'><i>a</i> = "+mnum(a,1)+"</span> "+
         (a>1?"steigt":"fällt")+" der Graph noch. Gesucht ist genau die Basis, bei der sich gar nichts mehr ändert."};
     }}],
-    onDone:function(){ $("wrapQ2c").style.display="block"; }
+    onDone:function(){ $("wrapQ2c").style.display="block"; reveal($("wrapQ2c")); }
   });
 
   buildScale("scale2",[{x:0.2,t:"0,2"},{x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3"}],0.2,3);
@@ -1899,7 +2020,7 @@ mc("q2","Fasse deine beiden Einstellungen zusammen: Was gilt für <span class='m
   {t:"Für <span class='mf'><i>a</i> &gt; 1</span> steigt der Graph, für <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> fällt er.",
    ok:"<span class='mf'><i>a</i> &gt; 1</span> bedeutet <strong>streng monoton steigend</strong>, <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> bedeutet <strong>streng monoton fallend</strong>."}
 ],2,"Vergleiche für eine feste Basis die drei angezeigten Werte <span class='mf'><i>f</i>(−1)</span>, <span class='mf'><i>f</i>(0)</span>, <span class='mf'><i>f</i>(1)</span>: Werden sie von links nach rechts größer oder kleiner?",
-function(){ $("f2c").style.display="block"; measureChrome(); });
+function(){ $("f2c").style.display="block"; F2q.abschliessen(); measureChrome(); reveal($("f2c"),$("cs2q")); });
 
 /* richtige Antwort: A */
 mc("q2c","Warum wird der Grenzfall <span class='mf'><i>a</i> = 1</span> bei Exponentialfunktionen ausgeschlossen?",[
@@ -1910,7 +2031,7 @@ mc("q2c","Warum wird der Grenzfall <span class='mf'><i>a</i> = 1</span> bei Expo
   {t:"Weil der Graph dann die <span class='m'>x</span>-Achse schneiden würde.",
    no:"Sieh dir den Graphen an: Er liegt als waagrechte Gerade auf der Höhe 1 – also gar nicht auf der <span class='m'>x</span>-Achse."}
 ],0,"Berechne <span class='mf'>1<sup>0</sup></span>, <span class='mf'>1<sup>1</sup></span> und <span class='mf'>1<sup>5</sup></span>. Was fällt dir auf?",
-function(){ $("heft2").style.display="block"; setDone(1); measureChrome(); });
+function(){ $("heft2").style.display="block"; setDone(1); F2qc.abschliessen(); FL2.abschliessen(); measureChrome(); reveal($("heft2"),$("cs2lab"),true); });
 
 /* =========================================================
    STATION 3 – Gemeinsame Eigenschaften
@@ -1954,7 +2075,7 @@ var S3A=(function(){
        }}
     ],
     summary:function(){ return "Beide Fälle geprüft – der Schnittpunkt bleibt <span class='mf'>S(0 | 1)</span>."; },
-    onDone:function(){ $("wrapQ3a").style.display="block"; }
+    onDone:function(){ $("wrapQ3a").style.display="block"; reveal($("wrapQ3a")); }
   });
 
   buildScale("scale3a",[{x:0.2,t:"0,2"},{x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3"}],0.2,3);
@@ -1971,7 +2092,7 @@ mc("q3a","Du hast zwei ganz verschiedene Basen geprüft. Was gilt für den Schni
   {t:"Er liegt bei <span class='mf'><i>P</i>(1 | 0)</span>.",
    no:"Achte auf die Reihenfolge der Koordinaten: Der Schnittpunkt mit der <span class='m'>y</span>-Achse hat immer die <span class='m'>x</span>-Koordinate 0."}
 ],1,"Setze <span class='mf'><i>x</i> = 0</span> in <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span> ein. Was ergibt <span class='mf'><i>a</i><sup>0</sup></span> – egal welche Basis?",
-function(){ $("c3b").style.display="block"; measureChrome(); });
+function(){ $("c3b").style.display="block"; F3a.abschliessen(); measureChrome(); reveal($("c3b"),$("cs3a")); });
 
 /* ---- Experiment B: Positivitaet systematisch ---- */
 var S3B=(function(){
@@ -2024,7 +2145,7 @@ var S3B=(function(){
         "<span class='mf'>0 &lt; <i>a</i> &lt; 1</span>","<span class='mf'><i>x</i> &lt; 0</span>")
     ],
     summary:function(){ return "Alle vier Fälle geprüft – jeder Funktionswert war positiv."; },
-    onDone:function(){ $("wrapQ3b").style.display="block"; }
+    onDone:function(){ $("wrapQ3b").style.display="block"; reveal($("wrapQ3b")); }
   });
 
   buildScale("scale3b1",[{x:0.2,t:"0,2"},{x:1,t:"1",mark:true},{x:2,t:"2"},{x:3,t:"3"}],0.2,3);
@@ -2042,7 +2163,7 @@ mc("q3b","In allen vier Fällen war der Funktionswert positiv. Welche Aussage fo
   {t:"Es gilt <span class='mf'><i>a</i><sup><i>x</i></sup> &gt; 0</span> für jede zulässige Basis und jedes <span class='mf'><i>x</i> ∈ ℝ</span>; der Graph hat keine Nullstelle.",
    ok:"Alle von dir untersuchten Funktionswerte waren positiv, und allgemein ist eine Potenz mit positiver Basis immer positiv: <span class='mf'><i>a</i><sup><i>x</i></sup> &gt; 0</span>. Der Graph liegt also vollständig oberhalb der <span class='m'>x</span>-Achse und hat <strong>keine Nullstelle</strong>."}
 ],2,"Die Basis <span class='m'>a</span> ist positiv. Ein Produkt aus lauter positiven Faktoren – und auch dessen Kehrwert – kann nie negativ oder null werden.",
-function(){ $("c3c").style.display="block"; measureChrome(); });
+function(){ $("c3c").style.display="block"; F3b.abschliessen(); measureChrome(); reveal($("c3c"),$("cs3b")); });
 
 /* ---- Experiment C1: Asymptote bei a > 1 ---- */
 var S3C=(function(){
@@ -2073,7 +2194,7 @@ var S3C=(function(){
       return {ok:false,msg:"Du bist erst bei <span class='mf'><i>x</i> = "+mnum(x,2)+
         "</span>. Schiebe den Regler weiter nach links, mindestens bis <span class='mf'><i>x</i> = −8</span>."};
     }}],
-    onDone:function(){ $("wrapQ3c").style.display="block"; }
+    onDone:function(){ $("wrapQ3c").style.display="block"; reveal($("wrapQ3c")); }
   });
 
   buildScale("scale3c",[{x:-10,t:"−10"},{x:-6,t:"−6"},{x:-2,t:"−2"},{x:0,t:"0",mark:true},{x:3,t:"3"}],-10,3);
@@ -2090,7 +2211,7 @@ mc("q3c","Wie verhält sich der Graph von <span class='mf'><i>f</i>(<i>x</i>) = 
   {t:"Er wird ab einer Stelle negativ.",
    no:"Alle angezeigten Werte sind positiv – nur eben sehr klein. Prüfe das noch einmal bei <span class='mf'><i>x</i> = −9</span>."}
 ],0,"Vergleiche <span class='mf'>2<sup>−4</sup> = 0,0625</span> mit <span class='mf'>2<sup>−8</sup> ≈ 0,0039</span>: kleiner und kleiner, aber nie 0.",
-function(){ $("c3d").style.display="block"; measureChrome(); });
+function(){ $("c3d").style.display="block"; F3c.abschliessen(); measureChrome(); reveal($("c3d"),$("cs3c")); });
 
 /* ---- Experiment C2: zweite Richtung, verpflichtend ---- */
 var S3D=(function(){
@@ -2125,6 +2246,9 @@ var S3D=(function(){
       $("fb3dins").classList.add("show");
       $("heft3").style.display="block";
       setDone(2);
+      F3d.abschliessen();
+      measureChrome();
+      reveal($("heft3"),$("cs3d"));
     }
   });
 
@@ -2276,7 +2400,7 @@ var S5=(function(){
        }}
     ],
     summary:function(){ return "Streckung und Stauchung erzeugt: <span class='mf'><i>b</i> = 2</span> und <span class='mf'><i>b</i> = 0,5</span>."; },
-    onDone:function(){ $("wrapQ5a").style.display="block"; }
+    onDone:function(){ $("wrapQ5a").style.display="block"; reveal($("wrapQ5a")); }
   });
 
   /* ---- Forschung B: Spiegelung ---- */
@@ -2304,7 +2428,7 @@ var S5=(function(){
        }}
     ],
     summary:function(){ return "Spiegelung geprüft: <span class='mf'><i>b</i> = −1</span> und <span class='mf'><i>b</i> = −2</span>."; },
-    onDone:function(){ $("wrapQ5b").style.display="block"; }
+    onDone:function(){ $("wrapQ5b").style.display="block"; reveal($("wrapQ5b")); }
   });
 
   buildScale("scale5",[{x:0,t:"−3"},{x:1,t:"−2"},{x:2,t:"−1"},{x:3,t:"−0,5"},
@@ -2322,7 +2446,7 @@ mc("q5a","Welche Wirkung hat der Betrag <span class='mf'>| <i>b</i> |</span>?",[
   {t:"Die Basis ändert sich von 2 auf <span class='m'>b</span>.",
    no:"Die Basis bleibt fest bei 2. Sieh dir den Term <span class='mf'><i>h</i>(<i>x</i>) = <i>b</i> · 2<sup><i>x</i></sup></span> genau an."}
 ],0,"Vergleiche bei <span class='mf'><i>x</i> = 2</span> den Abstand zur <span class='m'>x</span>-Achse: aus 4 wird mit <span class='mf'><i>b</i> = 2</span> der Wert 8, mit <span class='mf'><i>b</i> = 0,5</span> der Wert 2. Entscheidend für Streckung und Stauchung ist der Betrag von <span class='m'>b</span>.",
-function(){ $("f5b").style.display="block"; measureChrome(); });
+function(){ $("f5b").style.display="block"; F5a.abschliessen(); measureChrome(); reveal($("f5b"),$("cs5a")); });
 
 /* richtige Antwort: B */
 mc("q5b","Was bewirkt ein <strong>negatives</strong> <span class='m'>b</span>?",[
@@ -2333,7 +2457,7 @@ mc("q5b","Was bewirkt ein <strong>negatives</strong> <span class='m'>b</span>?",
   {t:"Es gibt keinen Graphen, weil <span class='mf'>2<sup><i>x</i></sup></span> nie negativ wird.",
    no:"<span class='mf'>2<sup><i>x</i></sup></span> ist tatsächlich immer positiv – aber der Faktor <span class='m'>b</span> darf negativ sein. Das Produkt wird dann negativ."}
 ],1,"Vergleiche <span class='mf'><i>b</i> = 2</span> und <span class='mf'><i>b</i> = −2</span> bei <span class='mf'><i>x</i> = 1</span>: 4 und −4. Gleich weit von der <span class='m'>x</span>-Achse entfernt, nur auf der anderen Seite.",
-function(){ $("wrapQ5c").style.display="block"; measureChrome(); });
+function(){ $("wrapQ5c").style.display="block"; F5b.abschliessen(); measureChrome(); reveal($("wrapQ5c"),$("cs5b")); });
 
 /* richtige Antwort: C */
 mc("q5c","Woran erkennst du <span class='m'>b</span> direkt am Graphen?",[
@@ -2344,7 +2468,7 @@ mc("q5c","Woran erkennst du <span class='m'>b</span> direkt am Graphen?",[
   {t:"Am Schnittpunkt mit der <span class='m'>y</span>-Achse, denn <span class='mf'><i>h</i>(0) = <i>b</i> · <i>a</i><sup>0</sup> = <i>b</i></span>.",
    ok:"Der Graph verläuft durch <span class='mf'><i>P</i>(0 | <i>b</i>)</span>. Damit lässt sich <span class='m'>b</span> sofort ablesen."}
 ],2,"Setze <span class='mf'><i>x</i> = 0</span> ein. Wegen <span class='mf'><i>a</i><sup>0</sup> = 1</span> bleibt nur noch <span class='m'>b</span> übrig.",
-function(){ $("heft5").style.display="block"; setDone(4); measureChrome(); });
+function(){ $("heft5").style.display="block"; setDone(4); F5c.abschliessen(); FL5.abschliessen(); measureChrome(); reveal($("heft5"),$("cs5lab"),true); });
 
 /* =========================================================
    Gemeinsamer Antwortgenerator fuer Terme b · a^x
@@ -2663,7 +2787,7 @@ mc("q8a","<strong>1.</strong> Welche Funktion ist eine <strong>Exponentialfunkti
   {t:"<span class='mf'><i>f</i>(<i>x</i>) = 3<i>x</i></span>",
    no:"Das ist eine lineare Funktion."}
 ],1,"Frage dich: Wo steht das <span class='m'>x</span> – in der Basis oder im Exponenten?",
-function(){ $("w8b").style.display="block"; measureChrome(); });
+function(){ $("w8b").style.display="block"; F8a.abschliessen(); measureChrome(); reveal($("w8b"),$("cs8a")); });
 
 /* richtige Antwort: C */
 mc("q8b","<strong>2.</strong> Gegeben ist <span class='mf'><i>f</i>(<i>x</i>) = 0,7<sup><i>x</i></sup></span>. Welche Aussage stimmt?",[
@@ -2674,7 +2798,7 @@ mc("q8b","<strong>2.</strong> Gegeben ist <span class='mf'><i>f</i>(<i>x</i>) = 
   {t:"Der Graph ist streng monoton fallend, weil <span class='mf'>0 &lt; 0,7 &lt; 1</span> ist.",
    ok:"Die Basis liegt zwischen 0 und 1, und der Faktor vor der Potenz ist 1, also positiv – das bedeutet exponentielle Abnahme."}
 ],2,"Vergleiche die Basis mit 1. Hier ist der Faktor <span class='mf'><i>b</i> = 1</span> positiv, deshalb entscheidet die Basis allein über die Monotonie.",
-function(){ $("w8c").style.display="block"; measureChrome(); });
+function(){ $("w8c").style.display="block"; F8b.abschliessen(); measureChrome(); reveal($("w8c"),$("cs8b")); });
 
 /* richtige Antwort: A */
 mc("q8c","<strong>3.</strong> Welche Aussage gilt für <strong>jede</strong> Exponentialfunktion <span class='mf'><i>f</i>(<i>x</i>) = <i>a</i><sup><i>x</i></sup></span>?",[
@@ -2687,7 +2811,7 @@ mc("q8c","<strong>3.</strong> Welche Aussage gilt für <strong>jede</strong> Exp
   {t:"Alle Funktionswerte sind größer als 1.",
    no:"Prüfe <span class='mf'>2<sup>−2</sup> = 0,25</span>. Positiv ja – aber größer als 1?"}
 ],0,"Setze <span class='mf'><i>x</i> = 0</span> ein. Was ergibt <span class='mf'><i>a</i><sup>0</sup></span> für jede zulässige Basis?",
-function(){ $("w8d").style.display="block"; measureChrome(); });
+function(){ $("w8d").style.display="block"; F8c.abschliessen(); measureChrome(); reveal($("w8d"),$("cs8c")); });
 
 /* richtige Antwort: C */
 mc("q8d","<strong>4.</strong> Gegeben ist <span class='mf'><i>h</i>(<i>x</i>) = −3 · 2<sup><i>x</i></sup></span>. Was lässt sich direkt erkennen?",[
@@ -2698,7 +2822,7 @@ mc("q8d","<strong>4.</strong> Gegeben ist <span class='mf'><i>h</i>(<i>x</i>) = 
   {t:"<span class='mf'><i>h</i>(0) = −3</span>; wegen <span class='mf'><i>b</i> &lt; 0</span> ist der Graph an der <span class='m'>x</span>-Achse gespiegelt und liegt vollständig unterhalb.",
    ok:"<span class='mf'><i>h</i>(0) = −3 · 2<sup>0</sup> = −3</span>. Durch das negative Vorzeichen liegt der Graph unterhalb der <span class='m'>x</span>-Achse und ist streng monoton <strong>fallend</strong> – obwohl die Basis größer als 1 ist."}
 ],2,"Es gilt allgemein <span class='mf'><i>h</i>(0) = <i>b</i></span>. Ein negatives <span class='m'>b</span> bedeutet zusätzlich Spiegelung an der <span class='m'>x</span>-Achse.",
-function(){ $("w8e").style.display="block"; S8G(); measureChrome(); });
+function(){ $("w8e").style.display="block"; S8G(); F8d.abschliessen(); measureChrome(); reveal($("w8e"),$("cs8d")); });
 
 /* kleiner Graph zu Aufgabe 5 */
 function S8G(){
@@ -2723,13 +2847,13 @@ mc("q8e","<strong>5.</strong> Der Graph gehört zu <span class='mf'><i>f</i>(<i>
   {t:"<span class='mf'>−2 · 3<sup><i>x</i></sup></span>",
    no:"Mit negativem Faktor läge der Graph unterhalb der <span class='m'>x</span>-Achse und wäre fallend."}
 ],1,"Erst <span class='mf'><i>b</i> = <i>f</i>(0)</span> ablesen, dann <span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0)</span> berechnen.",
-function(){ $("ende").style.display="block"; measureChrome(); });
+function(){ $("ende").style.display="block"; F8e.abschliessen(); measureChrome(); reveal($("ende"),$("cs8e")); });
 
 /* =========================================================
    Start
    ========================================================= */
 buildSteps();
-initProgressResume();
+render();
 measureChrome();
 
 </script>
