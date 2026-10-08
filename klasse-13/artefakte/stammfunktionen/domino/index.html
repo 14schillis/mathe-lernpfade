@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Domino Stammfunktionen – Lineare Verkettung</title>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+:root{--bg:#f7f7f4;--fg:#1d1d1b;--card:#fff;--sh:#e6e6e0;--bd:#555;--ok:#2e7d32;--bad:#c62828;--ac:#1565c0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b1a;--fg:#eee;--card:#2a2a28;--sh:#3a3a37;--bd:#999;--ok:#66bb6a;--bad:#ef5350;--ac:#64b5f6}}
+:root[data-theme="dark"]{--bg:#1b1b1a;--fg:#eee;--card:#2a2a28;--sh:#3a3a37;--bd:#999;--ok:#66bb6a;--bad:#ef5350;--ac:#64b5f6}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif;padding:16px;max-width:900px;margin:auto}
+h1{font-size:1.3rem;margin:0 0 4px}p{margin:4px 0 12px}
+h2{font-size:1rem;margin:18px 0 8px}
+.dom{display:flex;border:2px solid var(--bd);border-radius:4px;background:var(--card);margin:6px 0;overflow-x:auto;position:relative;cursor:pointer}
+.dom>div{padding:10px 12px;min-width:0;display:flex;align-items:center;justify-content:center;flex:1}
+.dom>div+div{background:var(--sh);border-left:2px solid var(--bd)}
+.dom.fix{cursor:default;font-weight:bold}.dom.ok{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok)}.dom.bad{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad)}
+.tag{position:absolute;top:2px;right:6px;font-size:.75rem;font-weight:bold}
+.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 12px}
+button{font:inherit;padding:8px 14px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--fg);cursor:pointer;margin-right:6px}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+#msg{margin-top:10px;font-weight:bold;min-height:1.4em}
+.small{font-size:.85rem;opacity:.8}
+</style></head><body>
+<h1>Domino: Stammfunktionen – lineare Verkettung</h1>
+<p>Tippe unten ein Kärtchen an, um es an die Kette anzuhängen (nochmal antippen in der Kette entfernt es). Rechts steht jeweils ein Integral, links auf dem nächsten Kärtchen die passende Stammfunktion. Einige Kärtchen gehören nicht in die Kette. Prüfe zur Probe durch Ableiten!</p>
+<div id="chain"></div>
+<div><button class="p" id="chk">Kette prüfen</button><button id="rst">Zurücksetzen</button><button id="shf">Mischen</button></div>
+<div id="msg"></div>
+<h2>Kärtchen</h2>
+<div class="pool" id="pool"></div>
+<script>
+const I={a:'(4-x)^2',b:'(2x+1)^2',c:'2x+1',d:'(2x+1)^3',e:'(2x+1)^{-3}',f:'\\sqrt{2x+1}',g:'e^{5x-12}',h:'\\sin(5x-12)',i:'\\cos(5x-12)'};
+const int=k=>`\\(\\displaystyle\\int ${I[k]}\\,dx=\\)`;
+const C=[
+{id:'E',l:'\\(-\\frac{1}{3}(4-x)^3+C\\)',ans:'a',r:'b'},
+{id:'L',l:'\\(\\frac{1}{6}(2x+1)^3+C\\)',ans:'b',r:'c'},
+{id:'I',l:'\\(\\frac{1}{4}(2x+1)^2+C\\)',ans:'c',r:'d'},
+{id:'D',l:'\\(\\frac{1}{8}(2x+1)^4+C\\)',ans:'d',r:'e'},
+{id:'O1',t:'O',l:'\\(-\\frac{1}{4}(2x+1)^{-2}+C\\)',ans:'e',r:'f'},
+{id:'K1',t:'K',l:'\\(\\frac{1}{3}(2x+1)^{1{,}5}+C\\)',ans:'f',r:'g'},
+{id:'O2',t:'O',l:'\\(\\frac{1}{5}e^{5x-12}+C\\)',ans:'g',r:'h'},
+{id:'R',l:'\\(-\\frac{1}{5}\\cos(5x-12)+C\\)',ans:'h',r:'i'},
+{id:'G',l:'\\(\\frac{1}{12}e^{5x-12}+C\\)',ans:null,r:'h'},
+{id:'H',l:'\\(-5\\cos(5x-12)+C\\)',ans:null,r:'h'},
+{id:'U',l:'\\((2x+1)^4+C\\)',ans:null,r:'h'},
+{id:'F',l:'\\(4\\cdot(2x+1)^4+C\\)',ans:null,r:'d'}
+];
+const ZIEL={id:'Z',t:'K',l:'\\(\\frac{1}{5}\\sin(5x-12)+C\\)',ans:'i',r:null};
+const pool=[...C,ZIEL];let chain=[],order=[];
+const lab=c=>c.t||c.id;
+function shuffle(){order=pool.map((_,i)=>i).sort(()=>Math.random()-.5);render()}
+function card(c,cls,fn,tag){const d=document.createElement('div');d.className='dom '+cls;
+ d.innerHTML=`<div>${c.l}</div><div>${c.r===null?'ZIEL':c.r===undefined?c.rr:int(c.r)}</div>`+(tag?`<span class="tag">${tag}</span>`:'');
+ if(fn)d.onclick=fn;return d}
+function render(res){
+ const ch=document.getElementById('chain');ch.innerHTML='';
+ const s=document.createElement('div');s.className='dom fix';s.innerHTML=`<div>START</div><div>${int('a')}</div>`;ch.appendChild(s);
+ chain.forEach((c,n)=>{const prev=n?chain[n-1].r:'a';
+  const cls=res?(c.ans===prev?'ok':'bad'):'';
+  ch.appendChild(card(c,cls,()=>{chain.splice(n,1);document.getElementById('msg').textContent='';render()},res?(c.ans===prev?'✓':'✗'):''))});
+ const p=document.getElementById('pool');p.innerHTML='';
+ order.forEach(i=>{const c=pool[i];if(!chain.includes(c))p.appendChild(card(c,'',()=>{chain.push(c);document.getElementById('msg').textContent='';render()}))});
+ if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();
+}
+document.getElementById('chk').onclick=()=>{
+ render(true);const m=document.getElementById('msg');
+ let prev='a',bad=chain.findIndex(c=>{const o=c.ans!==prev;prev=c.r;return o});
+ const done=bad<0&&chain.length&&chain[chain.length-1]===ZIEL;
+ if(bad>=0){m.style.color='var(--bad)';m.textContent=`Kärtchen ${bad+1} passt nicht: Leite die Stammfunktion ab – ergibt sich der Integrand davor?`}
+ else if(done){m.style.color='var(--ok)';m.textContent='Geschafft! Die Kette ist vollständig und alle Proben stimmen. 🎉'}
+ else{m.style.color='var(--fg)';m.textContent='Bisher alles richtig – es geht weiter bis zum ZIEL.'}
+};
+document.getElementById('rst').onclick=()=>{chain=[];document.getElementById('msg').textContent='';render()};
+document.getElementById('shf').onclick=shuffle;
+shuffle();
+</script></body></html>
