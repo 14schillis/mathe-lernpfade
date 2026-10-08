@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Integralfunktion skizzieren</title>
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--fg:#17202b;--mut:#5d6b7a;--line:#cfd8e2;--g1:#e6ebf1;--g2:#bcc7d4;--ax:#17202b;--f:#1f6feb;--F:#d6336c;--sk:#0a8f6a;--pos:rgba(31,111,235,.24);--neg:rgba(214,51,108,.22);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151b;--card:#18202a;--fg:#e8edf3;--mut:#9aa8b8;--line:#2c3a49;--g1:#222d39;--g2:#3a4a5c;--ax:#e8edf3;--f:#6ea8ff;--F:#ff7aa8;--sk:#3ddc97;--pos:rgba(110,168,255,.28);--neg:rgba(255,122,168,.25)}}
+:root[data-theme="dark"]{--bg:#10151b;--card:#18202a;--fg:#e8edf3;--mut:#9aa8b8;--line:#2c3a49;--g1:#222d39;--g2:#3a4a5c;--ax:#e8edf3;--f:#6ea8ff;--F:#ff7aa8;--sk:#3ddc97;--pos:rgba(110,168,255,.28);--neg:rgba(255,122,168,.25)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:17px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 270px}
+@media (orientation:portrait),(max-width:759px){#app{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}}
+#gv{min-height:0;min-width:0;overflow:auto;display:flex;background:var(--card)}
+#stage{position:relative;margin:auto;flex:none}
+svg{display:block}
+canvas{position:absolute;left:0;touch-action:none}
+/* Textauswahl, Langdruck-Menü und Ziehen in der gesamten Anwendung aus (Safari/iPadOS) */
+*,*::before,*::after{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;-webkit-tap-highlight-color:transparent}
+::selection{background:transparent}
+#gv{touch-action:pan-x pan-y}
+#sg,#sg *{pointer-events:none}
+aside{padding:12px;background:var(--bg);border-left:1px solid var(--line);overflow:auto;display:flex;flex-direction:column;gap:10px}
+@media (orientation:portrait),(max-width:759px){aside{border-left:0;border-top:1px solid var(--line);max-height:34vh;padding:8px 12px;gap:6px}}
+.tabs,.bar{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{flex:1}
+button{font:inherit;font-size:16px;min-height:46px;min-width:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+button.on,button.pri{background:var(--f);border-color:var(--f);color:#fff}
+button:disabled{opacity:.35}
+button:focus-visible{outline:3px solid var(--f);outline-offset:2px}
+.wide{width:100%}
+.txt p,.task{margin:.3em 0 0}
+.txt b{color:var(--f)}
+.task{color:var(--fg)}
+.g1{stroke:var(--g1);stroke-width:1}.g2{stroke:var(--g2);stroke-width:1}.ax{stroke:var(--ax);stroke-width:1.8}
+.t{fill:var(--mut);font-size:13px}.tl{fill:var(--fg);font-size:14px;font-weight:600}
+.nf{fill:var(--f);font-size:20px;font-weight:700;font-style:italic}.nF{fill:var(--F);font-size:20px;font-weight:700;font-style:italic}
+.cf{fill:none;stroke:var(--f);stroke-width:3.5}.cF{fill:none;stroke:var(--F);stroke-width:3.5}
+.pos{fill:var(--pos)}.neg{fill:var(--neg)}
+.vl{stroke:var(--mut);stroke-width:1.4;stroke-dasharray:6 5}
+.dp{fill:var(--F)}.do{fill:var(--card);stroke:var(--fg);stroke-width:2}.dw{fill:var(--sk);stroke:var(--card);stroke-width:2}
+.tg{stroke:var(--sk);stroke-width:3;stroke-linecap:round}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="gv"><div id="stage"><svg id="sg" role="img" aria-label="Graph von f oben, Koordinatensystem für F unten"></svg><canvas id="cv"></canvas></div></div>
+<aside id="side"></aside>
+</div>
+<script>
+const $=id=>document.getElementById(id),gv=$('gv'),sg=$('sg'),cv=$('cv'),ctx=cv.getContext('2d');
+//MATH
+const ev=(c,x)=>c.reduceRight((s,k)=>s*x+k,0);
+const dv=c=>c.slice(1).map((k,i)=>k*(i+1));
+const An=c=>[0,...c.map((k,i)=>k/(i+1))];
+const I=(c,a,x)=>{const G=An(c);return ev(G,x)-ev(G,a)};
+const fm=v=>(Math.round(v*10)/10).toString().replace('.',',').replace('-','−');
+function roots(c,x0,x1){const r=[],n=3001,lo0=x0+1e-4,w=x1-x0-2e-4;let px=lo0,pv=ev(c,px);
+ for(let i=1;i<=n;i++){const x=lo0+w*i/n,v=ev(c,x);
+  if(pv*v<0){let lo=px,hi=x;for(let k=0;k<50;k++){const m=(lo+hi)/2;if(ev(c,lo)*ev(c,m)<=0)hi=m;else lo=m}r.push((lo+hi)/2)}
+  px=x;pv=v}return r}
+const rng=(lo,hi,min)=>{lo=Math.floor(lo+1e-7);hi=Math.ceil(hi-1e-7);while(hi-lo<min){hi++;if(hi-lo<min)lo--}return[lo,hi]};
+function analyse(E){const {c,a,x0,x1}=E;let fa=0,fb=0,Fa=0,Fb=0;
+ for(let i=0;i<=240;i++){const x=x0+(x1-x0)*i/240,f=ev(c,x),F=I(c,a,x);fa=Math.min(fa,f);fb=Math.max(fb,f);Fa=Math.min(Fa,F);Fb=Math.max(Fb,F)}
+ const zs=roots(c,x0,x1),es=roots(dv(c),x0,x1);
+ return{...E,fy:rng(fa,fb,3),Fy:rng(Fa,Fb,4),zs,zt:zs.map(z=>ev(c,z-.01)>0),es,et:es.map(e=>Math.abs(ev(c,e))<1e-3)}}
+//ENDMATH
+const EX=[
+ {c:[0.75,-0.625,-0.25,0.125],a:-1,x0:-3,x1:4},
+ {c:[0,-1,0.5],a:-1,x0:-2,x1:3},
+ {c:[0,1,0,-0.25],a:1,x0:-2.5,x1:2.5},
+ {c:[0.25,-0.5,0.25],a:0,x0:-2,x1:3},
+ {c:[0.75,0.5,-0.25],a:0,x0:-2,x1:4},
+ {c:[-1,0.5,1,-0.5],a:0,x0:-1.5,x1:2.5}
+];
+const M={l:36,r:10,t:10,b:24},G=10;
+let mode='b',ei=1,st=0,sol=false,tool='pen',P,L,penOnly=true,act=null,cs=null,lastE=null,echg=false;
+const DR=EX.map(()=>({s:[],h:[]})),D=()=>DR[ei];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const PA=EX.map(analyse);
+function lay(){
+ P=PA[mode==='b'?0:ei];
+ const cw=gv.clientWidth||800,ch=gv.clientHeight||560,xr=P.x1-P.x0,yf=P.fy[1]-P.fy[0],yF=P.Fy[1]-P.Fy[0],pv=M.t+M.b;
+ const s=Math.max(22,Math.min((cw-M.l-M.r-4)/xr,(ch-2*pv-G-4)/(yf+yF)));
+ const Hf=pv+yf*s,HF=pv+yF*s;L={s,W:Math.round(M.l+M.r+xr*s),Hf,HF,oy:Hf+G,Ht:Math.round(Hf+G+HF)}}
+function draw(){
+ const {c,a,x0,x1,zs,zt,es,et}=P,s=L.s,f=x=>ev(c,x),F=x=>I(c,a,x),b=mode==='b';
+ const v={a:b&&st>=1,el:b&&st>=2,pt:b&&st>=3,wl:b&&st>=4,cv:b&&st>=5};
+ const X=x=>M.l+(x-x0)*s,Yf=y=>M.t+(P.fy[1]-y)*s,YF=y=>M.t+(P.Fy[1]-y)*s;
+ const vl=x=>`<line x1="${X(x)}" y1="${M.t}" x2="${X(x)}" y2="${L.Ht-M.b}" class="vl"/>`;
+ const dot=(x,y,Y,k)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="6" class="${k}"/>`;
+ const tx=(x,y,Y,t,dx,dy)=>`<text x="${X(x)+dx}" y="${Y(y)+dy}" class="tl">${t}</text>`;
+ const path=(fn,Y)=>{let d='';for(let x=x0;x<=x1+1e-9;x+=.02)d+=(d?'L':'M')+X(x).toFixed(1)+' '+Y(fn(x)).toFixed(1);return d};
+ const grid=(y0,y1,H,nm,cl)=>{const Y=y=>M.t+(y1-y)*s;let g='';
+  for(let x=x0;x<=x1+1e-9;x+=.5){const m=Number.isInteger(x);if(!m&&s<26)continue;
+   g+=`<line x1="${X(x)}" y1="${Y(y1)}" x2="${X(x)}" y2="${Y(y0)}" class="${m?'g2':'g1'}"/>`;if(m)g+=`<text x="${X(x)}" y="${H-7}" class="t" text-anchor="middle">${fm(x)}</text>`}
+  for(let y=y0;y<=y1+1e-9;y+=.5){const m=Number.isInteger(y);if(!m&&s<26)continue;
+   g+=`<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" class="${m?'g2':'g1'}"/>`;if(m)g+=`<text x="${M.l-7}" y="${Y(y)+5}" class="t" text-anchor="end">${fm(y)}</text>`}
+  g+=`<line x1="${X(x0)}" y1="${Y(0)}" x2="${X(x1)}" y2="${Y(0)}" class="ax"/>`;
+  if(x0<=0&&x1>=0)g+=`<line x1="${X(0)}" y1="${Y(y1)}" x2="${X(0)}" y2="${Y(y0)}" class="ax"/>`;
+  return g+`<text x="${X(x1)-6}" y="${M.t+20}" text-anchor="end" class="${cl}">${nm}</text>`};
+ const shade=(p,q)=>{const pts=[p,...zs.filter(z=>z>p+1e-6&&z<q-1e-6),q];let o='';
+  for(let i=0;i<pts.length-1;i++){const u=pts[i],w=pts[i+1],m=(u+w)/2;let d=`M${X(u)} ${Yf(0)}`;
+   for(let x=u;x<w;x+=.02)d+=`L${X(x).toFixed(1)} ${Yf(f(x)).toFixed(1)}`;
+   d+=`L${X(w)} ${Yf(f(w))}L${X(w)} ${Yf(0)}Z`;o+=`<path d="${d}" class="${I(c,u,w)*(m<a?-1:1)>0?'pos':'neg'}"/>`}return o};
+ let gl='',p1=`<g>${grid(P.fy[0],P.fy[1],L.Hf,'f','nf')}${v.pt?shade(x0,a)+shade(a,x1):''}<path d="${path(f,Yf)}" class="cf"/>`;
+ if(v.a)p1+=`<text x="${X(a)-8}" y="${M.t+16}" text-anchor="end" class="t">← rückwärts</text><text x="${X(a)+8}" y="${M.t+16}" class="t">vorwärts →</text>`;
+ if(v.el)zs.forEach(z=>p1+=dot(z,0,Yf,'do'));
+ if(v.wl)es.forEach(e=>p1+=dot(e,f(e),Yf,'dw'));
+ p1+='</g>';
+ let q=grid(P.Fy[0],P.Fy[1],L.HF,'F','nF');
+ if(v.cv)q+=`<path d="${path(F,YF)}" class="cF"/>`;
+ if(v.a){gl+=vl(a);q+=dot(a,0,YF,'dp')+tx(a,0,YF,'F(a) = 0',9,-11)}
+ if(v.el)zs.forEach((z,i)=>{gl+=vl(z);q+=`<text x="${X(z)+6}" y="${M.t+16}" class="tl">${zt[i]?'Hochstelle':'Tiefstelle'}</text>`;
+  if(v.pt)q+=dot(z,F(z),YF,'dp')+tx(z,F(z),YF,`≈ ${fm(F(z))}`,10,zt[i]?-12:24)});
+ if(v.wl)es.forEach((e,i)=>{gl+=vl(e);const y=F(e),k=f(e);
+  q+=`<line x1="${X(e-.8)}" y1="${YF(y-.8*k)}" x2="${X(e+.8)}" y2="${YF(y+.8*k)}" class="tg"/>`+dot(e,y,YF,'dw')+tx(e,y,YF,et[i]?'Terrassenpunkt':'Wendepunkt',10,24)});
+ sg.setAttribute('width',L.W);sg.setAttribute('height',L.Ht);
+ sg.innerHTML=p1+`<g transform="translate(0 ${L.oy})">${q}</g>`+gl;
+ $('stage').style.width=L.W+'px';$('stage').style.height=L.Ht+'px'}
+const px=(x,y)=>[M.l+(x-P.x0)*L.s,M.t+(P.Fy[1]-y)*L.s];
+function cdraw(){
+ const u=mode==='u',d=window.devicePixelRatio||1;cv.style.display=u?'block':'none';if(!u)return;
+ const w=Math.round(L.W*d),hh=Math.round(L.HF*d);if(cv.width!==w||cv.height!==hh){cv.width=w;cv.height=hh}
+ cv.style.top=L.oy+'px';cv.style.width=L.W+'px';cv.style.height=L.HF+'px';cv.style.touchAction='none';
+ ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,L.W,L.HF);ctx.lineCap=ctx.lineJoin='round';
+ ctx.strokeStyle=css('--sk')||'#0a8f6a';ctx.lineWidth=3;
+ for(const k of D().s){ctx.beginPath();k.p.forEach((q,i)=>{const[X,Y]=px(q[0],q[1]);i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)});
+  if(k.p.length===1){const[X,Y]=px(k.p[0][0],k.p[0][1]);ctx.lineTo(X+.1,Y)}ctx.stroke()}
+ if(sol){ctx.strokeStyle=css('--F')||'#d6336c';ctx.lineWidth=3.5;ctx.beginPath();
+  for(let x=P.x0;x<=P.x1+1e-9;x+=.02){const[X,Y]=px(x,I(P.c,P.a,x));x===P.x0?ctx.moveTo(X,Y):ctx.lineTo(X,Y)}ctx.stroke()}}
+function monoT(){const pts=[P.x0,...P.zs,P.x1];return pts.slice(0,-1).map((p,i)=>{const q=pts[i+1];return`${ev(P.c,(p+q)/2)>0?'steigt':'fällt'} auf [${fm(p)}; ${fm(q)}]`}).join(', ')}
+function TT(){const F=x=>I(P.c,P.a,x),W='∫<sub>a</sub><sup>x</sup> f(t) dt';return[
+ ['Aufgabe',`Gegeben ist der Graph von f. Gesucht ist der Graph von F(x) = ${W} mit a = ${fm(P.a)}. Es gilt F′ = f.`],
+ ['1. Startpunkt',`F(a) = 0, denn die Fläche von a bis a hat die Breite 0. Der Graph von F geht durch (${fm(P.a)} | 0). Links von a wird rückwärts integriert, F(x) = −∫<sub>x</sub><sup>a</sup> f(t) dt. Der Graph läuft dort weiter.`],
+ ['2. Extremstellen',P.zs.length?`F′ = f = 0 mit Vorzeichenwechsel: ${P.zs.map((z,i)=>`x ≈ ${fm(z)} (${P.zt[i]?'+ nach −, Hochstelle':'− nach +, Tiefstelle'})`).join('; ')}.`:'f hat keine Nullstelle mit Vorzeichenwechsel, also hat F keine Extremstelle.'],
+ ['3. Funktionswerte',`Rechts von a gilt F(x) = ${W}: Eine Fläche über der x-Achse (f > 0) trägt positiv zu F(x) bei, unter der Achse (f < 0) negativ. Links von a wird rückwärts integriert, F(x) = −∫<sub>x</sub><sup>a</sup> f(t) dt: Der Beitrag kehrt sich um, f > 0 ergibt dort einen negativen, f < 0 einen positiven Beitrag. Blau = positiver, Rot = negativer Beitrag. ${P.zs.map(z=>`F(${fm(z)}) ≈ ${fm(F(z))}`).join('; ')}.`],
+ ['4. Wendestellen',P.es.length?`Extremstellen von f: ${P.es.map(e=>`x ≈ ${fm(e)}`).join(' und ')}. Dort hat F Wendestellen, und die Steigung von F ist f(x) (grüne Tangentenstücke).`:'f hat keine Extremstelle, also hat F keine Wendestelle.'],
+ ['5. Graph von F',`Wegen F′ = f gilt: F ${monoT()}.`]]}
+function side(){
+ let o=`<div class="tabs"><button data-act="mb" class="${mode==='b'?'on':''}">Beispiel</button><button data-act="mu" class="${mode==='u'?'on':''}">Übungen</button></div>`;
+ if(mode==='b'){const t=TT()[st];
+  o+=`<div class="txt"><b>${t[0]}</b><p>${t[1]}</p></div><div class="bar"><button data-act="back" ${st<1?'disabled':''}>Zurück</button><button class="pri" data-act="next" ${st>4?'disabled':''}>Weiter</button><button data-act="rs">Neustart</button></div>`}
+ else{o+=`<div class="tabs">${[1,2,3,4,5].map(i=>`<button data-act="e${i}" class="${i===ei?'on':''}">${i}</button>`).join('')}</div>
+ <p class="task">Skizziere F(x) = ∫<sub>a</sub><sup>x</sup> f(t) dt mit a = ${fm(P.a)}, auch links von a.</p>
+ <div class="bar"><button data-act="pen" class="${tool==='pen'?'on':''}">Stift</button><button data-act="era" class="${tool==='era'?'on':''}">Radierer</button><button data-act="undo">Rückgängig</button><button data-act="clr">Löschen</button><button data-act="inp" class="${penOnly?'on':''}" aria-pressed="${penOnly}">${penOnly?'Nur Apple Pencil':'Finger &amp; Stift'}</button></div>
+ <button class="wide ${sol?'on':'pri'}" data-act="sol" aria-pressed="${sol}">${sol?'Lösung ausblenden':'Lösung anzeigen'}</button>`}
+ $('side').innerHTML=o}
+function render(s=true){lay();draw();cdraw();if(s)side()}
+const push=()=>{const d=D();d.h.push(d.s.slice());if(d.h.length>60)d.h.shift()};
+$('side').onclick=e=>{const a=e.target.dataset.act;if(!a)return;if(act)endStroke(true);
+ if(a==='mb'){mode='b'}else if(a==='mu'){mode='u'}
+ else if(a==='back'){st=Math.max(0,st-1)}else if(a==='next'){st=Math.min(5,st+1)}else if(a==='rs'){st=0}
+ else if(/^e\d$/.test(a)){ei=+a[1];sol=false}
+ else if(a==='pen'||a==='era'){tool=a}
+ else if(a==='undo'){const d=D();if(d.h.length)d.s=d.h.pop()}
+ else if(a==='clr'){if(D().s.length){push();D().s=[]}}
+ else if(a==='sol'){sol=!sol}
+ else if(a==='inp'){penOnly=!penOnly}
+ render()};
+// Zeichnen: Striche liegen in Mathematik-Koordinaten und bleiben bei Größenänderung und Drehung erhalten
+const mp=e=>{const r=cv.getBoundingClientRect();return[P.x0+(e.clientX-r.left-M.l)/L.s,P.Fy[1]-(e.clientY-r.top-M.t)/L.s]};
+const ER=14;
+function cut(p,X,Y){const q=[];
+ for(let i=0;i<p.length;i++){
+  if(i>0){const[a0,b0]=px(p[i-1][0],p[i-1][1]),[a1,b1]=px(p[i][0],p[i][1]),n=Math.ceil(Math.hypot(a1-a0,b1-b0)/4);
+   for(let k=1;k<n;k++){const t=k/n;q.push([p[i-1][0]+(p[i][0]-p[i-1][0])*t,p[i-1][1]+(p[i][1]-p[i-1][1])*t])}}
+  q.push(p[i])}
+ const hit=q.map(r=>{const[a,b]=px(r[0],r[1]);return Math.hypot(a-X,b-Y)<ER});
+ if(!hit.some(Boolean))return null;
+ const out=[];let run=[];
+ q.forEach((r,i)=>{if(hit[i]){if(run.length>1)out.push({p:run});run=[]}else run.push(r)});
+ if(run.length>1)out.push({p:run});return out}
+function eraseAt(X,Y){let ch=false;const o=[];
+ for(const k of D().s){const r=cut(k.p,X,Y);if(r===null)o.push(k);else{ch=true;o.push(...r)}}
+ if(ch){D().s=o;echg=true}}
+function eraseTo(e){const r=cv.getBoundingClientRect(),X=e.clientX-r.left,Y=e.clientY-r.top;
+ if(lastE){const n=Math.max(1,Math.ceil(Math.hypot(X-lastE[0],Y-lastE[1])/(ER/2)));for(let k=1;k<=n;k++)eraseAt(lastE[0]+(X-lastE[0])*k/n,lastE[1]+(Y-lastE[1])*k/n)}else eraseAt(X,Y);
+ lastE=[X,Y]}
+function endStroke(cancel){if(!act)return;const d=D();
+ if(cancel||(tool==='era'&&!echg)){if(d.h.length)d.s=d.h.pop()}
+ act=null;cs=null;lastE=null;echg=false;cdraw()}
+cv.addEventListener('pointerdown',e=>{
+ if(penOnly&&e.pointerType!=='pen')return;
+ if(act){if(e.pointerId===act.id)return;if(e.pointerType==='pen'&&act.type!=='pen')endStroke(true);else return}
+ if(e.pointerType==='touch'&&e.isPrimary===false)return;
+ cv.setPointerCapture(e.pointerId);e.preventDefault();push();act={id:e.pointerId,type:e.pointerType};echg=false;lastE=null;
+ if(tool==='pen'){const[x,y]=mp(e);cs={p:[[x,y]]};D().s=[...D().s,cs]}else eraseTo(e);
+ cdraw()});
+cv.addEventListener('pointermove',e=>{if(!act||e.pointerId!==act.id)return;
+ const ev2=(e.getCoalescedEvents&&e.getCoalescedEvents())||[],list=ev2.length?ev2:[e];
+ for(const q of list){if(tool==='pen'&&cs){const[x,y]=mp(q);cs.p.push([x,y])}else if(tool==='era')eraseTo(q)}
+ cdraw()});
+cv.addEventListener('pointerup',e=>{if(act&&e.pointerId===act.id)endStroke(false)});
+cv.addEventListener('pointercancel',e=>{if(act&&e.pointerId===act.id)endStroke(true)});
+cv.addEventListener('lostpointercapture',e=>{if(act&&e.pointerId===act.id)endStroke(false)});
+// Safari/iPadOS: Auswahl, Ziehen und Kontextmenü in der gesamten Anwendung unterbinden (Pointer-Ereignisse bleiben unberührt)
+['selectstart','dragstart','contextmenu'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
+['gesturestart','gesturechange','gestureend'].forEach(t=>gv.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('selectionchange',()=>{if(typeof getSelection!=='function')return;const q=getSelection();if(q&&q.rangeCount&&!q.isCollapsed)q.removeAllRanges()});
+new ResizeObserver(()=>render(false)).observe(gv);
+render();
+</script>
+</body>
+</html>
