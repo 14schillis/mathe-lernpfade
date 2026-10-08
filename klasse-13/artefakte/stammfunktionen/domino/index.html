@@ -5,28 +5,49 @@
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'}};</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
 <style>
-:root{--bg:#f7f7f4;--fg:#1d1d1b;--card:#fff;--sh:#e6e6e0;--bd:#555;--ok:#2e7d32;--bad:#c62828;--ac:#1565c0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b1a;--fg:#eee;--card:#2a2a28;--sh:#3a3a37;--bd:#999;--ok:#66bb6a;--bad:#ef5350;--ac:#64b5f6}}
-:root[data-theme="dark"]{--bg:#1b1b1a;--fg:#eee;--card:#2a2a28;--sh:#3a3a37;--bd:#999;--ok:#66bb6a;--bad:#ef5350;--ac:#64b5f6}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--ok:#2e7d32;--bad:#c62828}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif;padding:16px;max-width:900px;margin:auto}
-h1{font-size:1.3rem;margin:0 0 4px}p{margin:4px 0 12px}
-h2{font-size:1rem;margin:18px 0 8px}
-.dom{display:flex;border:2px solid var(--bd);border-radius:4px;background:var(--card);margin:6px 0;overflow-x:auto;position:relative;cursor:pointer}
-.dom>div{padding:10px 12px;min-width:0;display:flex;align-items:center;justify-content:center;flex:1}
-.dom>div+div{background:var(--sh);border-left:2px solid var(--bd)}
-.dom.fix{cursor:default;font-weight:bold}.dom.ok{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok)}.dom.bad{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad)}
-.tag{position:absolute;top:2px;right:6px;font-size:.75rem;font-weight:bold}
-.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 12px}
-button{font:inherit;padding:8px 14px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--fg);cursor:pointer;margin-right:6px}
-button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
-#msg{margin-top:10px;font-weight:bold;min-height:1.4em}
-.small{font-size:.85rem;opacity:.8}
-</style></head><body>
+body{margin:0;min-height:100vh;color:#f4f1e6;font-family:Georgia,'Times New Roman',serif;padding:16px;
+background:radial-gradient(ellipse at 50% 30%,#2f7a52 0%,#1e5a3c 60%,#133d29 100%)}
+.wrap{max-width:980px;margin:auto}
+h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 3px rgba(0,0,0,.5)}
+h2{font-size:.95rem;margin:22px 0 6px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+p{margin:4px 0 12px;font-size:.95rem;opacity:.92}
+#chain{display:flex;flex-wrap:wrap;padding:10px 6px;border-radius:12px;background:rgba(0,0,0,.18);box-shadow:inset 0 2px 8px rgba(0,0,0,.45)}
+.pool{display:flex;flex-wrap:wrap;gap:16px 14px;padding:10px 6px}
+.dom{position:relative;display:flex;width:290px;height:84px;margin:6px 0;border-radius:10px;cursor:pointer;color:#1d1d1b;
+background:linear-gradient(160deg,#fffdf4,#ebe4cc);border:1px solid #b9ae8a;
+box-shadow:0 1px 0 #fff inset,0 4px 0 #b7ab84,0 7px 10px rgba(0,0,0,.45);transition:transform .15s,box-shadow .15s}
+.dom>div{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-width:0;overflow:hidden;font-size:.95rem}
+.dom>div+div{background:linear-gradient(160deg,#e3dcc2,#d4ccaa);border-radius:0 9px 9px 0}
+.dom::after{content:'';position:absolute;left:50%;top:10%;bottom:10%;width:3px;margin-left:-1.5px;background:#8f855f;border-radius:2px;box-shadow:1px 0 0 #fff8}
+.dom::before{content:'';position:absolute;left:50%;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;z-index:2;
+background:radial-gradient(circle at 35% 30%,#f3d77a,#a8801f);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+.pool .dom:nth-child(3n+1){transform:rotate(-2deg)}.pool .dom:nth-child(3n+2){transform:rotate(1.5deg)}.pool .dom:nth-child(3n){transform:rotate(-.8deg)}
+.pool .dom:hover{transform:translateY(-4px) rotate(0);box-shadow:0 1px 0 #fff inset,0 4px 0 #b7ab84,0 14px 14px rgba(0,0,0,.45)}
+#chain .dom{margin:6px 0;border-radius:0;animation:pl .25s ease-out}
+#chain .dom:first-child{border-radius:10px 0 0 10px}
+#chain .dom>div+div{border-radius:0}
+@keyframes pl{from{transform:translateY(-20px) scale(1.05);opacity:.3}}
+.fix{cursor:default;background:linear-gradient(160deg,#ffe9a8,#e6c35e)!important;border-color:#a8801f}
+.fix>div:first-child{font-weight:bold;letter-spacing:.2em;font-size:1.05rem}
+.fix>div+div{background:linear-gradient(160deg,#f6dc8a,#e0b94a)!important}
+.zl>div+div{font-weight:bold;letter-spacing:.2em}
+.ok{outline:3px solid #66bb6a;outline-offset:-3px;z-index:1}.bad{outline:3px solid #ef5350;outline-offset:-3px;z-index:1}
+.win{animation:glow 1s ease-in-out 3}
+@keyframes glow{50%{filter:brightness(1.15) drop-shadow(0 0 10px gold)}}
+.tag{position:absolute;top:3px;right:8px;font-size:.9rem;font-weight:bold;font-family:sans-serif;z-index:3}
+.ok .tag{color:var(--ok)}.bad .tag{color:var(--bad)}
+.btns{margin:14px 0 4px}
+button{font:inherit;font-size:.9rem;padding:9px 16px;border:0;border-radius:8px;background:#efe8d0;color:#2b2a24;cursor:pointer;margin:0 6px 6px 0;box-shadow:0 3px 0 #b7ab84,0 5px 6px rgba(0,0,0,.4)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #b7ab84}
+button.p{background:#e6c35e;box-shadow:0 3px 0 #a8801f,0 5px 6px rgba(0,0,0,.4)}
+#msg{margin-top:8px;font-weight:bold;min-height:1.5em;font-size:1.05rem;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+</style></head><body><div class="wrap">
 <h1>Domino: Stammfunktionen – lineare Verkettung</h1>
 <p>Tippe unten ein Kärtchen an, um es an die Kette anzuhängen (nochmal antippen in der Kette entfernt es). Rechts steht jeweils ein Integral, links auf dem nächsten Kärtchen die passende Stammfunktion. Einige Kärtchen gehören nicht in die Kette. Prüfe zur Probe durch Ableiten!</p>
 <div id="chain"></div>
-<div><button class="p" id="chk">Kette prüfen</button><button id="rst">Zurücksetzen</button><button id="shf">Mischen</button></div>
+<div class="btns"><button class="p" id="chk">Kette prüfen</button><button id="rst">Zurücksetzen</button><button id="shf">Mischen</button></div>
 <div id="msg"></div>
 <h2>Kärtchen</h2>
 <div class="pool" id="pool"></div>
@@ -51,7 +72,7 @@ const ZIEL={id:'Z',t:'K',l:'\\(\\frac{1}{5}\\sin(5x-12)+C\\)',ans:'i',r:null};
 const pool=[...C,ZIEL];let chain=[],order=[];
 const lab=c=>c.t||c.id;
 function shuffle(){order=pool.map((_,i)=>i).sort(()=>Math.random()-.5);render()}
-function card(c,cls,fn,tag){const d=document.createElement('div');d.className='dom '+cls;
+function card(c,cls,fn,tag){const d=document.createElement('div');d.className='dom '+cls+(c.r===null?' zl':'');
  d.innerHTML=`<div>${c.l}</div><div>${c.r===null?'ZIEL':c.r===undefined?c.rr:int(c.r)}</div>`+(tag?`<span class="tag">${tag}</span>`:'');
  if(fn)d.onclick=fn;return d}
 function render(res){
@@ -68,11 +89,11 @@ document.getElementById('chk').onclick=()=>{
  render(true);const m=document.getElementById('msg');
  let prev='a',bad=chain.findIndex(c=>{const o=c.ans!==prev;prev=c.r;return o});
  const done=bad<0&&chain.length&&chain[chain.length-1]===ZIEL;
- if(bad>=0){m.style.color='var(--bad)';m.textContent=`Kärtchen ${bad+1} passt nicht: Leite die Stammfunktion ab – ergibt sich der Integrand davor?`}
- else if(done){m.style.color='var(--ok)';m.textContent='Geschafft! Die Kette ist vollständig und alle Proben stimmen. 🎉'}
- else{m.style.color='var(--fg)';m.textContent='Bisher alles richtig – es geht weiter bis zum ZIEL.'}
+ if(bad>=0){m.style.color='#ffb4a8';m.textContent=`Kärtchen ${bad+1} passt nicht: Leite die Stammfunktion ab – ergibt sich der Integrand davor?`}
+ else if(done){document.querySelectorAll('#chain .dom').forEach(e=>{e.classList.remove('win');void e.offsetWidth;e.classList.add('win')});m.style.color='#c8f7c5';m.textContent='Geschafft! Die Kette ist vollständig und alle Proben stimmen. 🎉'}
+ else{m.style.color='#f4f1e6';m.textContent='Bisher alles richtig – es geht weiter bis zum ZIEL.'}
 };
 document.getElementById('rst').onclick=()=>{chain=[];document.getElementById('msg').textContent='';render()};
 document.getElementById('shf').onclick=shuffle;
 shuffle();
-</script></body></html>
+</script></div></body></html>
