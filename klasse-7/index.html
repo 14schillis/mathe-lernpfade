@@ -70,10 +70,11 @@
   .artifact-link{
     position:relative;
     display:block;
-    padding:9px 16px 9px 12px;
+    padding:9px 16px 9px 16px;
     margin:5px 0;
     border-left:3px solid #9fc3de;
-    border-radius:0 7px 7px 0;
+    border-right:3px solid #9fc3de;
+    border-radius:7px;
     background:#f8fbfe;
     color:#1f4e79;
     text-decoration:none;
@@ -86,27 +87,39 @@
     background:#eaf1f8;
   }
 
+  .artifact-link::before,
   .artifact-link::after{
     content:"";
     position:absolute;
     top:0;
-    right:0;
     width:5px;
     height:100%;
   }
 
+  .artifact-link::before{
+    left:0;
+  }
+
+  .artifact-link::after{
+    right:0;
+  }
+
+  .artifact-presentation::before,
   .artifact-presentation::after{
     background:#3b82f6;
   }
 
+  .artifact-student::before,
   .artifact-student::after{
     background:#22a06b;
   }
 
+  .artifact-game::before,
   .artifact-game::after{
     background:#8b5cf6;
   }
 
+  .artifact-experiment::before,
   .artifact-experiment::after{
     background:#f59e0b;
   }
