@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Binomische Formeln – Werkstatt</title>
+<style>
+:root{
+  --sans:"Inter","Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;
+  --serif:"STIX Two Text","STIX Two Math","Latin Modern Roman","Cambria Math",Cambria,"Times New Roman",Georgia,serif;
+  --bg:#f3f5f7;--surface:#fff;--ink:#18232d;--muted:#5d6a76;--line:#d8dfe5;
+  --accent:#0e7490;--accent-d:#0b5d73;--accent-soft:#d9eff4;
+  --good:#15803d;--good-soft:#e0f5e7;--bad:#b42318;--bad-soft:#fde8e5;
+  --warn:#7a4f00;--warn-soft:#fff3d4;--warn-line:#e7b84a;
+  --a:#1d4ed8;--b:#c2410c;
+}
+*{box-sizing:border-box}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.45;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:4px solid #f59e0b;outline-offset:2px}
+#app{max-width:1120px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) clamp(14px,4vw,40px) 64px}
+h1,h2,h3,p{margin:0}
+
+/* ---------- Mathematik ---------- */
+.m{font-family:var(--serif);white-space:nowrap}
+.m i{font-style:italic}
+.m sup{font-size:.62em;line-height:0;vertical-align:baseline;position:relative;top:-.55em;margin-left:.05em;font-style:normal}
+.op{margin:0 .26em}
+.dot{margin:0 .12em}
+.un{margin-right:.03em}
+.sp{display:inline-block;width:1.2em}
+.va{color:var(--a)}.vb{color:var(--b)}
+.hl{display:inline-block;overflow:visible;line-height:1.2;padding:.05em .09em .05em .05em;border-radius:.16em;background:#fde68a}
+.hl-g{background:#bbf7d0}.hl-r{background:#fecaca}.hl-b{background:#cfe9f0}
+
+/* ---------- Grundelemente ---------- */
+.btn{min-height:60px;padding:0 26px;border-radius:16px;border:2px solid var(--line);background:#fff;font-size:1.02rem;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;user-select:none;-webkit-user-select:none;transition:background .15s,transform .1s}
+.btn:active{transform:scale(.98);background:#eef2f5}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:active{background:var(--accent-d)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.tbtn{border-color:var(--accent);color:var(--accent-d)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.bar{height:14px;border-radius:7px;background:#e1e7ec;overflow:hidden}
+.bar>span{display:block;height:100%;background:var(--accent);border-radius:7px;transition:width .3s}
+.seg{display:flex;gap:6px}
+.seg span{flex:1;height:12px;border-radius:6px;background:#e1e7ec}
+.seg span.c{background:var(--accent)}
+.seg span.r{background:#8bbac6}
+.muted{color:var(--muted)}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+.brand{font-weight:700;font-size:1.05rem;color:var(--accent-d)}
+.tbanner{background:var(--warn-soft);border:2px solid var(--warn-line);color:var(--warn);border-radius:14px;padding:10px 16px;font-size:.95rem;font-weight:600}
+
+/* ---------- Startseite ---------- */
+.hero{margin-bottom:26px}
+.hero h1{font-size:clamp(2rem,5vw,2.9rem);line-height:1.1;letter-spacing:-.02em;font-weight:700}
+.hero .sub{margin-top:8px;font-size:1.15rem;color:var(--muted);max-width:46ch}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:18px}
+.flow span.st{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:600;font-size:.95rem}
+.flow span.ar{color:var(--accent-d);font-size:1.1rem}
+.overall{background:#fff;border:2px solid var(--line);border-radius:20px;padding:18px 22px;margin:22px 0}
+.overall .row{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;font-weight:600}
+.mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.mcard{background:#fff;border:2px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.mnum{width:48px;height:48px;border-radius:14px;background:var(--accent-soft);color:var(--accent-d);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700}
+.mcard h2{font-size:1.4rem;line-height:1.2}
+.mcard .goal{color:var(--muted);flex:1}
+.mcard .kinds{font-size:.9rem;color:var(--muted)}
+.mmeta{font-size:.95rem;color:var(--muted)}
+.foot{margin-top:28px;display:flex;justify-content:flex-end}
+
+/* ---------- Modulansicht ---------- */
+.mbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.mtitle{font-size:1.3rem;font-weight:700}
+.tn{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.tn button{min-width:58px;height:58px;border-radius:14px;border:2px solid var(--line);background:#fff;font-size:1.1rem;font-weight:700;cursor:pointer}
+.tn button.cur{border-color:var(--accent);background:var(--accent-soft)}
+.tn button.c::after{content:"✓";margin-left:5px;color:var(--good)}
+.tn button.r::after{content:"•";margin-left:5px;color:var(--muted)}
+.tcard{background:#fff;border:2px solid var(--line);border-radius:24px;padding:clamp(18px,3vw,32px)}
+.tnum{font-size:.95rem;color:var(--muted);font-weight:600}
+.prompt{font-size:1.25rem;font-weight:600;margin-top:6px}
+.bigterm{font-size:clamp(34px,6.2vw,68px);line-height:1.25;margin:14px 0 6px;overflow-x:auto;overflow-y:hidden;padding:4px 0}
+.step{margin-top:18px;padding-top:18px;border-top:2px solid var(--line)}
+.stitle{font-weight:700;color:var(--accent-d);font-size:1.02rem}
+.q{margin:6px 0 14px;font-size:1.12rem}
+.q .m{font-size:1.2em}
+.fmbox{display:inline-block;background:var(--bg);border-radius:12px;padding:8px 16px;margin-bottom:14px}
+.fmbox .m{font-size:1.5rem}
+
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.opts.tf{grid-template-columns:1fr 1fr}
+.opt{min-height:78px;padding:10px 16px;border-radius:18px;border:2px solid var(--line);background:#fff;cursor:pointer;font-size:1.1rem;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;user-select:none;-webkit-user-select:none;transition:background .15s,border-color .15s,opacity .15s}
+.opt .n{font-size:1.9rem;line-height:1.1;font-weight:700}
+.opt .m{font-size:1.5rem}
+.opts.tf .opt{font-size:1.5rem;min-height:92px}
+.opt:active{background:#eef2f5}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.bad{opacity:.45;background:#f1f3f5;border-style:dashed}
+.opt.good{border-color:var(--good);background:var(--good-soft);opacity:1}
+.opt.dim{opacity:.5}
+.opt:disabled{cursor:default}
+.opt.chk{align-items:flex-start;text-align:left;flex-direction:row;justify-content:flex-start;gap:14px;min-height:72px;font-weight:600}
+.opt.chk::before{content:"";flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--muted);background:#fff}
+.opt.chk.sel::before{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 5px #fff}
+
+.prow{display:flex;align-items:center;gap:16px;margin:8px 0;flex-wrap:wrap}
+.plab{min-width:64px;font-size:1.6rem}
+.popts{display:flex;gap:12px;flex-wrap:wrap}
+.chip{min-width:84px;min-height:64px;padding:0 18px;border-radius:16px;border:2px solid var(--line);background:#fff;cursor:pointer;font-size:1.5rem;transition:background .15s,border-color .15s}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.chip.good{border-color:var(--good);background:var(--good-soft)}
+.chip:disabled{cursor:default}
+
+.inrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.inl{font-size:clamp(1.5rem,3.4vw,2.2rem)}
+.ansin{flex:1;min-width:220px;min-height:70px;padding:8px 16px;border-radius:14px;border:2px solid var(--line);font:1.9rem var(--serif);background:#fff;color:var(--ink)}
+.ansin:disabled{background:var(--good-soft);border-color:var(--good)}
+.prev{margin-top:10px;min-height:54px;font-size:1.7rem;color:var(--ink)}
+.prev .ph{font:.95rem var(--sans);color:var(--muted)}
+.keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:520px;margin-top:10px}
+.key{min-height:64px;border-radius:14px;border:2px solid var(--line);background:#fff;font:600 1.5rem var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none}
+.key:active{background:var(--accent-soft)}
+.key.fn{background:#eef2f5;font:600 1rem var(--sans)}
+
+.mpool{display:flex;gap:12px;flex-wrap:wrap;min-height:70px;margin-bottom:14px}
+.mitem{min-height:64px;padding:0 20px;border-radius:16px;border:2px solid var(--line);background:#fff;cursor:pointer;font-size:1.5rem}
+.mitem.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 4px rgba(14,116,144,.18)}
+.mrow{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:14px;align-items:center;margin:8px 0}
+.mlab{font-weight:600}
+.mslot{min-height:68px;border-radius:16px;border:2px dashed var(--muted);background:var(--bg);cursor:pointer;font-size:1.5rem;padding:0 16px;text-align:left}
+.mslot.full{border-style:solid;border-color:var(--line);background:#fff}
+.mslot.flag{border-color:var(--bad);background:var(--bad-soft)}
+.mslot.good{border-color:var(--good);background:var(--good-soft)}
+.mslot .ph{font:.95rem var(--sans);color:var(--muted)}
+
+.ws{margin:16px 0;border:2px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.ws .row{display:grid;grid-template-columns:minmax(110px,190px) 1fr;gap:12px;padding:10px 18px;border-top:1px solid var(--line);align-items:center}
+.ws .row:first-child{border-top:0}
+.ws .k{color:var(--muted);font-size:.95rem}
+.ws .v .m,.ws .row>div:last-child .m{font-size:1.55rem}
+
+.fb{margin-top:18px;padding:14px 20px;border-radius:14px;border-left:8px solid;font-size:1.08rem}
+.fb .t{display:block;font-weight:700;margin-bottom:2px}
+.fb.ok{background:var(--good-soft);border-color:var(--good)}
+.fb.hint{background:var(--warn-soft);border-color:var(--warn-line)}
+.fb.info{background:var(--accent-soft);border-color:var(--accent)}
+.fb .m{font-size:1.2em}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.finbox{margin-top:16px;background:var(--bg);border-radius:16px;padding:16px 20px}
+.finbox .fh{font-weight:700;margin-bottom:4px}
+.finbox .m{font-size:1.2em}
+.sol{margin-top:20px;border:2px solid var(--accent);border-radius:16px;padding:14px 18px}
+.sol .sh{font-weight:700;color:var(--accent-d);margin-bottom:6px}
+
+/* ---------- Zusammenfassung ---------- */
+.sumcard{background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 24px;margin-top:18px}
+.sumcard h2{font-size:1.3rem;margin-bottom:10px}
+.fl{padding:12px 0;border-top:1px solid var(--line);font-size:clamp(1.5rem,3.6vw,2.3rem);overflow-x:auto}
+.fl:first-of-type{border-top:0}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px}
+.stat div{background:var(--bg);border-radius:14px;padding:12px 16px}
+.stat b{display:block;font-size:1.9rem}
+.mstat{padding:10px 0;border-top:1px solid var(--line)}
+.mstat .row{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-weight:600}
+.note{margin-top:12px;color:var(--muted)}
+
+/* ---------- Dialog ---------- */
+.modal{position:fixed;inset:0;background:rgba(24,35,45,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.dlg{background:#fff;border-radius:22px;padding:28px;max-width:520px;width:100%}
+.dlg h2{font-size:1.4rem;margin-bottom:8px}
+.dlgbtn{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;justify-content:flex-end}
+
+@media (max-width:850px){
+  html{font-size:17px}
+  .mrow{grid-template-columns:1fr}
+  .ws .row{grid-template-columns:1fr;gap:2px}
+  .opts.tf{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================================================
+   Mathematik-Markup (HTML/CSS, offline)
+   ===================================================== */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+function M(src,prev0){
+  var out='',i=0,prev=prev0||'',n=src.length;
+  while(i<n){
+    var c=src[i];
+    if(c===' '){i++;continue;}
+    if(c==='['){
+      var j=i+1,cls='';
+      if(src[j+1]===':'&&'grb'.indexOf(src[j])>=0){cls=' hl-'+src[j];j+=2;}
+      var k=src.indexOf(']',j),end=k<0?n:k,inner=src.slice(j,end);
+      out+='<span class="hl'+cls+'">'+M(inner,prev)+'</span>';
+      var tt=inner.replace(/\s/g,'');if(tt){prev=tt[tt.length-1];}
+      i=end+1;continue;
+    }
+    if(c==='^'){
+      var j2=i+1,inn='';
+      if(src[j2]==='{'){var k2=src.indexOf('}',j2);inn=src.slice(j2+1,k2<0?n:k2);j2=(k2<0?n:k2)+1;}
+      else{var mt=/^[0-9]+|^[a-zA-Z]/.exec(src.slice(j2));if(mt){inn=mt[0];j2+=inn.length;}}
+      out+='<sup>'+M(inn)+'</sup>';prev='x';i=j2;continue;
+    }
+    if(c==='²'){out+='<sup>2</sup>';prev='x';i++;continue;}
+    if(c==='+'||c==='-'||c==='−'){
+      var un=prev===''||'(=*,;+-'.indexOf(prev)>=0;
+      out+='<span class="'+(un?'un':'op')+'">'+(c==='+'?'+':'−')+'</span>';
+      prev=(c==='+')?'+':'-';i++;continue;
+    }
+    if(c==='*'||c==='·'){out+='<span class="dot">·</span>';prev='*';i++;continue;}
+    if(c==='='){out+='<span class="op">=</span>';prev='=';i++;continue;}
+    if(c===';'){out+='<span class="sp"></span>';prev=';';i++;continue;}
+    if(c===','){out+=',';prev=',';i++;continue;}
+    if(/[a-zA-Z]/.test(c)){out+='<i'+(c==='a'?' class="va"':(c==='b'?' class="vb"':''))+'>'+c+'</i>';prev=c;i++;continue;}
+    out+=esc(c);prev=c;i++;
+  }
+  return out;
+}
+function m(s){return '<span class="m">'+M(s)+'</span>';}
+function rich(t){return String(t).replace(/\$([^$]+)\$/g,function(_,s){return m(s);});}
+
+/* =====================================================
+   Eingabe-Parser für vereinfachte Ergebnisse
+   ===================================================== */
+function parsePoly(raw){
+  var s=String(raw).toLowerCase().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/²/g,'^2').replace(/[·*×⋅]/g,'');
+  if(!s)return {ok:false,err:'empty'};
+  if(!/^[0-9x^+\-]+$/.test(s))return {ok:false,err:'chars'};
+  var terms=s.match(/[+-]?[^+-]+/g);
+  if(!terms||terms.join('')!==s)return {ok:false,err:'syntax'};
+  var c=[0,0,0],cnt=[0,0,0];
+  for(var i=0;i<terms.length;i++){
+    var tm=terms[i],sg=tm[0]==='-'?-1:1,body=tm.replace(/^[+-]/,'');
+    var mt=/^(\d*)(x(\^2)?)?$/.exec(body);
+    if(!mt||body==='')return {ok:false,err:'syntax'};
+    if(mt[1]===''&&!mt[2])return {ok:false,err:'syntax'};
+    var coef=mt[1]===''?1:parseInt(mt[1],10),pow=mt[2]?(mt[3]?2:1):0;
+    c[pow]+=sg*coef;cnt[pow]++;
+  }
+  if(cnt[0]>1||cnt[1]>1||cnt[2]>1)return {ok:false,err:'combine'};
+  return {ok:true,c2:c[2],c1:c[1],c0:c[0]};
+}
+function normPrev(raw){return String(raw).replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/²/g,'^2');}
+var FMT={
+  empty:'Gib zuerst dein Ergebnis ein, zum Beispiel im Format $2x^2+5x+1$.',
+  chars:'Das kann ich so nicht lesen. Nutze die Tasten unten, zum Beispiel für $2x^2+5x+1$.',
+  syntax:'Das kann ich so nicht lesen. Schreibe das Ergebnis als Summe von Termen, zum Beispiel $2x^2+5x+1$.',
+  combine:'Fasse gleichartige Terme noch zusammen – das Ergebnis soll vereinfacht sein.'
+};
+
+/* =====================================================
+   Daten
+   ===================================================== */
+var FORM={
+  '1':{name:'1. binomische Formel',pat:'(a+b)^2',full:'(a+b)^2=a^2+2*a*b+b^2'},
+  '2':{name:'2. binomische Formel',pat:'(a-b)^2',full:'(a-b)^2=a^2-2*a*b+b^2'},
+  '3':{name:'3. binomische Formel',pat:'(a+b)(a-b)',full:'(a+b)(a-b)=a^2-b^2'}
+};
+var CATLAB={'1':'1. binomische Formel','2':'2. binomische Formel','3':'3. binomische Formel','0':'keine binomische Formel'};
+var CAT={
+  mid:'Doppeltes Produkt fehlt',
+  midwrong:'Doppeltes Produkt falsch berechnet',
+  first:'Erster Term falsch quadriert',
+  sign:'Vorzeichen beim letzten Quadrat falsch',
+  none:'Kein Fehler'
+};
+var CAT_ORDER=['mid','midwrong','first','sign','none'];
+
+/* ---- Modul 1 ---- */
+var M1=[
+  {id:'m1-1',term:'(x+4)^2',ans:'1',
+   tip:'In der Klammer steht die Summe $x+4$, die als Ganzes quadriert wird.',
+   expl:'Eine <b>Summe wird quadriert</b>: $(a+b)^2$ mit $a=x$ und $b=4$. Das ist die 1. binomische Formel.'},
+  {id:'m1-2',term:'(x-7)^2',ans:'2',
+   tip:'In der Klammer steht die Differenz $x-7$, die als Ganzes quadriert wird.',
+   expl:'Eine <b>Differenz wird quadriert</b>: $(a-b)^2$ mit $a=x$ und $b=7$. Das ist die 2. binomische Formel.'},
+  {id:'m1-3',term:'(x+3)(x-3)',ans:'3',
+   tip:'Beide Klammern enthalten $x$ und $3$ – in der einen mit Plus, in der anderen mit Minus.',
+   expl:'Zwei Klammern mit <b>denselben Termen</b>, einmal Plus und einmal Minus: $(a+b)(a-b)$ mit $a=x$ und $b=3$. Das ist die 3. binomische Formel.'},
+  {id:'m1-4',term:'(x+2)(x+5)',ans:'0',
+   tip:'Vergleiche die Zahlen in den Klammern: In der einen steht 2, in der anderen 5. Es sind nicht dieselben Terme.',
+   expl:'Die Klammern enthalten <b>nicht dieselben beiden Terme</b> (2 und 5). Deshalb ist es keine binomische Formel – hier wird normal ausmultipliziert: $x^2+5x+2x+10=x^2+7x+10$.'},
+  {id:'m1-5',term:'(2x-5)^2',ans:'2',
+   tip:'Die ganze Klammer $2x-5$ wird quadriert – das ist eine Differenz im Quadrat.',
+   expl:'Eine Differenz wird quadriert: $(a-b)^2$ mit $a=2x$ und $b=5$. Auch mit einer Zahl vor dem $x$ bleibt die Struktur gleich.'},
+  {id:'m1-6',term:'(3x+1)(3x-1)',ans:'3',
+   tip:'In beiden Klammern stehen $3x$ und $1$ – nur das Vorzeichen in der Mitte ist verschieden.',
+   expl:'Derselbe Term $3x$ und dieselbe Zahl $1$, einmal Plus und einmal Minus: $(a+b)(a-b)$ mit $a=3x$ und $b=1$. Das ist die 3. binomische Formel.'},
+  {id:'m1-7',kind:'match',
+   items:[
+     {term:'(x+3)(x-5)',ans:'0',tip:'In den Klammern stehen 3 und 5 – nicht dieselben Terme.'},
+     {term:'(x-6)^2',ans:'2',tip:'Eine Differenz wird quadriert.'},
+     {term:'(2x+1)(2x-1)',ans:'3',tip:'Gleiche Terme $2x$ und $1$, einmal Plus, einmal Minus.'},
+     {term:'(x+5)^2',ans:'1',tip:'Eine Summe wird quadriert.'}
+   ],
+   expl:'Merke: Zwei Klammern gehören nur dann zur 3. Formel, wenn beide <b>dieselben Terme</b> enthalten und sich nur im Vorzeichen in der Mitte unterscheiden. $(x+3)(x-5)$ sieht ähnlich aus, passt aber zu keiner Formel.'}
+];
+
+/* ---- Modul 2 ---- */
+var M2=[
+  {id:'m2-1',term:'(x+3)^2',f:'1',a:'x',b:'3',aOpts:['x','3','2x','x+3'],
+   plug:[
+     {e:'x^2+2*x*3+3^2'},
+     {e:'x^2+x*3+3^2',why:'Das doppelte Produkt $2ab$ braucht den Faktor 2.'},
+     {e:'x^2+3^2',why:'Die Formel hat drei Teile – hier fehlt der mittlere.'},
+     {e:'x^2-2*x*3+3^2',why:'Bei der 1. Formel steht in der Mitte ein Plus.'}],
+   res:{c2:1,c1:6,c0:9},resStr:'x^2+6x+9',
+   expl:'$(x+3)^2=x^2+2*x*3+3^2=x^2+6x+9$. Das doppelte Produkt $2ab=6x$ darf nicht fehlen.'},
+  {id:'m2-2',term:'(x-5)^2',f:'2',a:'x',b:'5',aOpts:['x','5','-5','x-5'],
+   plug:[
+     {e:'x^2-2*x*5+5^2'},
+     {e:'x^2-2*x*5-5^2',why:'Das letzte Quadrat $b^2$ wird addiert – nur das doppelte Produkt hat ein Minus.'},
+     {e:'x^2+2*x*5+5^2',why:'Bei der 2. Formel steht in der Mitte ein Minus.'},
+     {e:'x^2-5^2',why:'Die Formel hat drei Teile – der mittlere fehlt.'}],
+   res:{c2:1,c1:-10,c0:25},resStr:'x^2-10x+25',
+   expl:'$(x-5)^2=x^2-10x+25$. Nur das doppelte Produkt trägt das Minus, das letzte Glied $+25$ bleibt positiv.'},
+  {id:'m2-3',term:'(2x+3)^2',f:'1',a:'2x',b:'3',aOpts:['2x','3','x','2'],
+   plug:[
+     {e:'(2x)^2+2*(2x)*3+3^2'},
+     {e:'2x^2+2*2x*3+3^2',why:'Die ganze $2x$ wird quadriert: Setze $a=2x$ in Klammern ein.'},
+     {e:'(2x)^2+(2x)*3+3^2',why:'Im doppelten Produkt fehlt der Faktor 2.'},
+     {e:'(2x)^2+2*(2x)*3-3^2',why:'Das letzte Quadrat $b^2$ wird bei der 1. Formel addiert.'}],
+   res:{c2:4,c1:12,c0:9},resStr:'4x^2+12x+9',
+   expl:'Stolperstelle: $(2x)^2=2x*2x=4x^2$ – nicht $2x^2$. Das doppelte Produkt ist $2*(2x)*3=12x$.'},
+  {id:'m2-4',term:'(3x-2)^2',f:'2',a:'3x',b:'2',aOpts:['3x','2','x','-2'],
+   plug:[
+     {e:'(3x)^2-2*(3x)*2+2^2'},
+     {e:'3x^2-2*3x*2+2^2',why:'Die ganze $3x$ wird quadriert: Setze $a=3x$ in Klammern ein.'},
+     {e:'(3x)^2-2*(3x)*2-2^2',why:'Das letzte Quadrat $b^2$ wird addiert.'},
+     {e:'(3x)^2+2*(3x)*2+2^2',why:'Bei der 2. Formel steht in der Mitte ein Minus.'}],
+   res:{c2:9,c1:-12,c0:4},resStr:'9x^2-12x+4',
+   expl:'$(3x)^2=9x^2$ und $2*(3x)*2=12x$. Das letzte Glied $2^2=4$ ist positiv: $(3x-2)^2=9x^2-12x+4$.'},
+  {id:'m2-5',term:'(x+6)(x-6)',f:'3',a:'x',b:'6',aOpts:['x','6','-6','x^2'],
+   plug:[
+     {e:'x^2-6^2'},
+     {e:'x^2+6^2',why:'Bei der 3. Formel wird das zweite Quadrat abgezogen.'},
+     {e:'x^2-2*x*6+6^2',why:'Das wäre die 2. Formel. Bei $(a+b)(a-b)$ gibt es keinen mittleren Teil.'},
+     {e:'x^2-6',why:'Auch die 6 wird quadriert: $b^2=6^2$.'}],
+   res:{c2:1,c1:0,c0:-36},resStr:'x^2-36',
+   expl:'Bei $(a+b)(a-b)$ entsteht kein mittlerer Term: $x^2-6^2=x^2-36$.'},
+  {id:'m2-6',term:'(4x+3)(4x-3)',f:'3',a:'4x',b:'3',aOpts:['4x','3','x','-3'],
+   plug:[
+     {e:'(4x)^2-3^2'},
+     {e:'4x^2-3^2',why:'Die ganze $4x$ wird quadriert: Setze $a=4x$ in Klammern ein.'},
+     {e:'(4x)^2+3^2',why:'Bei der 3. Formel wird das zweite Quadrat abgezogen.'},
+     {e:'(4x)^2-2*(4x)*3+3^2',why:'Das wäre die 2. Formel. Bei $(a+b)(a-b)$ gibt es keinen mittleren Teil.'}],
+   res:{c2:16,c1:0,c0:-9},resStr:'16x^2-9',
+   expl:'$(4x)^2=16x^2$ und $3^2=9$: $(4x+3)(4x-3)=16x^2-9$. Auch hier fällt der mittlere Term weg.'}
+];
+
+/* ---- Modul 3 ---- */
+var M3=[
+  {id:'m3-1',lhs:'(x+4)^2',rhs:'x^2+16',ok:false,errs:['mid'],f:'1',a:'x',b:'4',
+   res:{c2:1,c1:8,c0:16},resStr:'x^2+8x+16',bad:'(x+4)^2=x^2+16',good:'x^2[g:+8x]+16',
+   tip:'Die Formel hat drei Teile. Zähle, wie viele Teile in der Aussage vorkommen.',
+   expl:'Es fehlt das doppelte Produkt $2*x*4=8x$. Beim Quadrieren einer Summe entstehen drei Teile – $(x+4)^2$ ist nicht $x^2+4^2$.'},
+  {id:'m3-2',lhs:'(x-3)^2',rhs:'x^2-9',ok:false,errs:['mid','sign'],f:'2',a:'x',b:'3',
+   res:{c2:1,c1:-6,c0:9},resStr:'x^2-6x+9',bad:'(x-3)^2=x^2[r:-9]',good:'x^2[g:-6x][g:+9]',
+   tip:'Vergleiche mit $x^2-2*x*3+3^2$: Prüfe die Anzahl der Teile und das Vorzeichen des letzten Teils.',
+   expl:'Hier liegen <b>zwei Fehler</b> vor: Das doppelte Produkt $-2*x*3=-6x$ fehlt, und das letzte Quadrat $3^2=9$ ist positiv – es steht kein Minus davor.'},
+  {id:'m3-3',lhs:'(2x+5)^2',rhs:'4x^2+10x+25',ok:false,errs:['midwrong'],f:'1',a:'2x',b:'5',
+   res:{c2:4,c1:20,c0:25},resStr:'4x^2+20x+25',bad:'(2x+5)^2=4x^2[r:+10x]+25',good:'4x^2[g:+20x]+25',
+   tip:'Rechne das doppelte Produkt einzeln: $2*(2x)*5$.',
+   expl:'Das doppelte Produkt ist $2*(2x)*5=20x$, nicht $10x$. Der Faktor 2 aus der Formel wurde vergessen.'},
+  {id:'m3-4',lhs:'(2x+1)(2x-1)',rhs:'4x^2-1',ok:true,errs:['none'],f:'3',a:'2x',b:'1',
+   res:{c2:4,c1:0,c0:-1},resStr:'4x^2-1',
+   expl:'Richtig! 3. binomische Formel mit $a=2x$ und $b=1$: $(2x)^2-1^2=4x^2-1$. Die gemischten Terme heben sich auf.'},
+  {id:'m3-5',lhs:'(x+6)(x-6)',rhs:'x^2+36',ok:false,errs:['sign'],f:'3',a:'x',b:'6',
+   res:{c2:1,c1:0,c0:-36},resStr:'x^2-36',bad:'(x+6)(x-6)=x^2[r:+36]',good:'x^2[g:-36]',
+   tip:'Bei der 3. Formel wird das zweite Quadrat vom ersten abgezogen.',
+   expl:'Bei $(a+b)(a-b)$ steht zwischen den Quadraten ein Minus: $x^2-6^2=x^2-36$.'},
+  {id:'m3-6',lhs:'(3x-2)^2',rhs:'9x^2-12x-4',ok:false,errs:['sign'],f:'2',a:'3x',b:'2',
+   res:{c2:9,c1:-12,c0:4},resStr:'9x^2-12x+4',bad:'(3x-2)^2=9x^2-12x[r:-4]',good:'9x^2-12x[g:+4]',
+   tip:'Erster Teil und mittlerer Teil sind richtig. Prüfe das letzte Quadrat $2^2$: Welches Vorzeichen hat es?',
+   expl:'Das letzte Glied $b^2=2^2=4$ ist immer positiv – nur das doppelte Produkt trägt bei der 2. Formel das Minus.'},
+  {id:'m3-7',lhs:'(3x+2)^2',rhs:'3x^2+12x+4',ok:false,errs:['first'],f:'1',a:'3x',b:'2',
+   res:{c2:9,c1:12,c0:4},resStr:'9x^2+12x+4',bad:'(3x+2)^2=[r:3x^2]+12x+4',good:'[g:9x^2]+12x+4',
+   tip:'Prüfe den ersten Teil $(3x)^2$: Wird dabei auch die 3 quadriert?',
+   expl:'$(3x)^2=3x*3x=9x^2$ – auch die Zahl 3 wird quadriert, nicht nur das $x$.'}
+];
+
+var MODS=[
+  {id:'m1',title:'Welche Formel passt?',goal:'Strukturen erkennen – auch bei Termen, die nur ähnlich aussehen.',kinds:'Auswählen, Zuordnen',tasks:M1},
+  {id:'m2',title:'Formel anwenden',goal:'Die passende Formel auswählen, einsetzen und vereinfachen.',kinds:'Auswählen, Eingeben',tasks:M2},
+  {id:'m3',title:'Fehlerlabor',goal:'Typische Fehler finden, benennen und korrigieren.',kinds:'Fehlerdiagnose, Eingeben',tasks:M3}
+];
+
+/* =====================================================
+   Fortschritt (localStorage, im Lehrermodus nicht)
+   ===================================================== */
+var LS_KEY='binomWerkstatt.v1';
+var teacher=/[?&]teacher=1(?:&|$)/.test(location.search);
+var prog={};
+function load(){
+  if(teacher)return;
+  try{var s=localStorage.getItem(LS_KEY);if(s){var o=JSON.parse(s);if(o&&typeof o==='object')prog=o;}}catch(e){}
+}
+function save(){
+  if(teacher)return;
+  try{localStorage.setItem(LS_KEY,JSON.stringify(prog));}catch(e){}
+}
+function modStats(mod){
+  var d=0,c=0;
+  mod.tasks.forEach(function(t){var p=prog[t.id];if(p){d++;if(p.s==='c')c++;}});
+  return {d:d,c:c,n:mod.tasks.length};
+}
+function totals(){
+  var d=0,c=0,n=0;
+  MODS.forEach(function(mod){var s=modStats(mod);d+=s.d;c+=s.c;n+=s.n;});
+  return {d:d,c:c,n:n};
+}
+function segHTML(mod){
+  return '<div class="seg" aria-hidden="true">'+mod.tasks.map(function(t){
+    var p=prog[t.id];return '<span class="'+(p?(p.s==='c'?'c':'r'):'')+'"></span>';
+  }).join('')+'</div>';
+}
+
+/* =====================================================
+   Hilfsfunktionen für Schritte
+   ===================================================== */
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function aP(a){return a.length>1?'('+a+')':a;}
+function has(arr,x){return arr.indexOf(x)>=0;}
+
+function classifyWhy(ans,ch){
+  var two='Hier stehen zwei verschiedene Klammern, die nicht als Ganzes quadriert werden.';
+  var one='Hier gibt es nur eine Klammer, die als Ganzes quadriert wird.';
+  if(ans==='1'){
+    if(ch==='2')return 'In der Klammer steht ein Plus – die 2. Formel hat dort ein Minus.';
+    if(ch==='3')return one;
+    return 'Eine quadrierte Summe ist genau der Fall einer binomischen Formel.';
+  }
+  if(ans==='2'){
+    if(ch==='1')return 'In der Klammer steht ein Minus – die 1. Formel hat dort ein Plus.';
+    if(ch==='3')return one;
+    return 'Eine quadrierte Differenz ist genau der Fall einer binomischen Formel.';
+  }
+  if(ans==='3'){
+    if(ch==='0')return 'Beide Klammern enthalten dieselben Terme – nur das Vorzeichen in der Mitte ist verschieden.';
+    return two;
+  }
+  if(ch==='3')return 'Prüfe: Kommen in beiden Klammern dieselben beiden Terme vor, nur mit unterschiedlichem Vorzeichen?';
+  return two;
+}
+
+function mkTips(t){
+  var A=aP(t.a),f=t.f;
+  var first=t.a.length>1
+    ?'Der erste Teil ist $'+A+'^2$: Die ganze Klammer wird quadriert, also auch die Zahl vor dem $x$. Es gilt $'+A+'^2='+t.a+'*'+t.a+'$.'
+    :'Der erste Teil ist $a^2$, hier also $x^2$.';
+  var mid=f==='3'
+    ?'Bei der 3. Formel fallen die gemischten Terme weg – ein mittlerer Term darf nicht vorkommen.'
+    :'Das doppelte Produkt ist $2*a*b$. Rechne es einzeln: $2*'+A+'*'+t.b+'$.'+(f==='2'?' Vor dem Produkt steht ein Minus.':'');
+  var last=f==='3'
+    ?'Bei der 3. Formel steht vor dem letzten Quadrat ein Minus: $-'+t.b+'^2$.'
+    :'Das letzte Quadrat ist $b^2$: Rechne $'+t.b+'^2$ einzeln.'+(f==='2'?' Es wird addiert.':'');
+  return {first:first,mid:mid,last:last};
+}
+
+function polyHint(t,T,n,p){
+  var wr=[];
+  if(p.c2!==t.res.c2)wr.push('first');
+  if(p.c1!==t.res.c1)wr.push('mid');
+  if(p.c0!==t.res.c0)wr.push('last');
+  if(n===1){
+    return t.f==='3'
+      ?'Prüfe noch einmal, ob beide Quadrate berücksichtigt wurden und ob die gemischten Terme richtig behandelt sind.'
+      :'Prüfe noch einmal, ob alle drei Teile der binomischen Formel berücksichtigt wurden.';
+  }
+  var lab={first:'der erste Teil (mit $x^2$)',mid:'der mittlere Teil (mit $x$)',last:'das letzte Glied (ohne $x$)'};
+  if(n===2){
+    return wr.length>1
+      ?'Mehrere Teile stimmen noch nicht: '+wr.map(function(k){return lab[k];}).join(', ')+'.'
+      :'Noch nicht ganz: '+lab[wr[0]]+' stimmt nicht.';
+  }
+  return wr.map(function(k){return T[k];}).join(' ');
+}
+
+/* =====================================================
+   Schritte pro Aufgabe
+   ===================================================== */
+function classifyOpts(withNone){
+  var o=[1,2,3].map(function(n){return {v:String(n),html:'<span class="n">'+n+'.</span><span>binomische Formel</span>'};});
+  if(withNone)o.push({v:'0',html:'<span class="n">keine</span><span>binomische Formel</span>'});
+  return o;
+}
+
+function stepsM1(t){
+  if(t.kind==='match'){
+    return [{type:'match',title:'Zuordnen',q:'Tippe zuerst einen Term an, dann die passende Formel.',items:t.items,
+      hint:function(n,wrong){
+        if(n===1)return 'Mindestens eine Zuordnung stimmt noch nicht. Schau auf die Klammern und die Vorzeichen.';
+        if(n===2)return 'Die rot markierten Terme gehören noch nicht zur gewählten Formel.';
+        return '<b>Tipp:</b> '+wrong.map(function(it){return m(it.term)+': '+it.tip;}).join(' ');
+      },
+      reveal:function(){return 'So sieht die richtige Zuordnung aus – schau sie dir in Ruhe an.';}}];
+  }
+  return [{type:'mc',title:'Auswählen',q:'Welche binomische Formel passt zu diesem Term?',opts:classifyOpts(true),ans:t.ans,
+    hint:function(n,ch){
+      if(n===1)return 'Schau auf die Klammern: Wie viele Klammern gibt es, und welche Vorzeichen stehen darin?';
+      var w=classifyWhy(t.ans,ch);
+      return n>=3?w+' <b>Tipp:</b> '+t.tip:w;
+    }}];
+}
+
+function stepsM2(t){
+  var f=FORM[t.f],T=mkTips(t);
+  var defB={'1':'$b$ ist der zweite Term der Klammer.',
+    '2':'In $(a-b)^2$ gehört das Minus zur Formel. $b$ ist die Zahl ohne Vorzeichen.',
+    '3':'$b$ ist die Zahl, die in beiden Klammern vorkommt.'}[t.f];
+  var plugOpts=shuffle(t.plug.map(function(p,i){return {v:String(i),html:m('='+p.e),why:p.why};}));
+  return [
+    {type:'mc',title:'Schritt 1 von 4: Formel auswählen',q:'Welche binomische Formel passt zu diesem Term?',opts:classifyOpts(false),ans:t.f,
+     hint:function(n,ch){return n===1?'Schau dir die Klammern an: Wird eine Summe oder eine Differenz quadriert – oder stehen zwei verschiedene Klammern da?':classifyWhy(t.f,ch);},
+     ok:'Richtig – das ist die '+f.name+'.',
+     log:{k:'Formel',h:m(f.full)}},
+    {type:'pick2',title:'Schritt 2 von 4: $a$ und $b$ erkennen',q:'Vergleiche den Term mit $'+f.pat+'$. Wähle für $a$ und für $b$ je einen Teil.',
+     opts:t.aOpts,ans:{a:t.a,b:t.b},
+     hint:function(n,sel){
+       if(n===1)return 'Vergleiche den Term mit $'+f.pat+'$: Was steht an der Stelle von $a$, was an der Stelle von $b$?';
+       if(sel.a===t.b&&sel.b===t.a)return '$a$ steht in der Klammer vorn, $b$ danach.';
+       if(sel.a!==t.a)return '$a$ ist der erste Term der Klammer – vollständig, mit der Zahl davor.';
+       return defB;
+     },
+     ok:'Richtig: $a='+t.a+'$ und $b='+t.b+'$.',
+     reveal:function(){return 'Hier gilt $a='+t.a+'$ und $b='+t.b+'$.';},
+     log:{k:'a und b',h:m('a='+t.a+',;b='+t.b)}},
+    {type:'mc',title:'Schritt 3 von 4: Einsetzen',q:'Setze $a='+t.a+'$ und $b='+t.b+'$ in die Formel ein. Welche Zeile ist richtig?',
+     note:m(f.full),opts:plugOpts,ans:plugOpts.filter(function(o){return !o.why;})[0].v,
+     hint:function(n,ch){
+       if(n===1)return 'Setze $a$ und $b$ noch einmal genau in die Formel ein – Teil für Teil.';
+       var o=plugOpts.filter(function(x){return x.v===ch;})[0];
+       return o.why;
+     },
+     log:{k:'Einsetzen',h:m('='+t.plug[0].e)}},
+    {type:'input',title:'Schritt 4 von 4: Vereinfachen',q:'Rechne aus und gib das vereinfachte Ergebnis ein.',lhs:t.term+'=',
+     ans:t.res,T:T,
+     hint:function(n,p){return polyHint(t,T,n,p);},
+     reveal:function(){return 'Eine mögliche Lösung: '+m(t.resStr)+'. Versuche nachzuvollziehen, wie sie entsteht.';},
+     revealInput:t.resStr.replace(/\^2/g,'²').replace(/-/g,'−'),
+     log:{k:'Ergebnis',h:m('='+t.resStr)}}
+  ];
+}
+
+function stepsM3(t){
+  var steps=[];
+  steps.push({type:'mc',layout:'tf',title:'Schritt 1: Richtig oder falsch?',q:'Stimmt diese Rechnung?',
+    opts:[{v:'r',html:'Richtig'},{v:'f',html:'Falsch'}],ans:t.ok?'r':'f',
+    hint:function(n){
+      if(n===1)return 'Rechne die Formel noch einmal selbst durch und vergleiche Teil für Teil.';
+      if(n===2)return t.ok?'Vergleiche jeden Teil mit der Formel – stimmt wirklich einer nicht?':'Mindestens ein Teil des Ergebnisses passt nicht zur Formel.';
+      return 'Hier ist $a='+t.a+'$ und $b='+t.b+'$. Schreibe dir die Formel mit diesen Werten auf und vergleiche Teil für Teil.';
+    },
+    ok:t.ok?'Richtig erkannt: Die Aussage stimmt.':'Richtig erkannt: Die Aussage ist falsch.',
+    log:{k:'Aussage',h:t.ok?'stimmt':'ist falsch'}});
+  if(!t.ok){
+    var T=mkTips(t);
+    steps.push({type:'multi',title:'Schritt 2: Fehlerart bestimmen',
+      q:'Welche Fehlerart liegt vor? Wähle alle zutreffenden aus – es kann auch mehr als eine sein.',
+      opts:CAT_ORDER.map(function(k){return {v:k,html:CAT[k]};}),ans:t.errs,
+      hint:function(n,sel){
+        if(n===1)return t.f==='3'
+          ?'Prüfe Teil für Teil: Stimmen beide Quadrate und das Vorzeichen dazwischen?'
+          :'Prüfe Teil für Teil: Stimmen erster Term, doppeltes Produkt und letztes Quadrat mit der Formel überein?';
+        var msg;
+        if(has(sel,'none'))msg='„Kein Fehler“ passt nicht – du hast die Aussage ja als falsch erkannt.';
+        else if(sel.every(function(x){return has(t.errs,x);}))msg='Die gewählte Fehlerart stimmt – aber es liegt noch mehr vor.';
+        else msg='Mindestens eine gewählte Fehlerart trifft hier nicht zu.';
+        return n>=3?msg+' <b>Tipp:</b> '+t.tip:msg;
+      },
+      ok:'Richtig bestimmt.',
+      reveal:function(){return 'Hier trifft zu: '+t.errs.map(function(e){return CAT[e];}).join(' und ')+'.';},
+      log:{k:'Fehlerart',h:t.errs.map(function(e){return CAT[e];}).join('; ')}});
+    steps.push({type:'input',title:'Schritt 3: Korrigieren',q:'Wie lautet das richtige, vereinfachte Ergebnis?',lhs:t.lhs+'=',
+      ans:t.res,T:T,
+      hint:function(n,p){return polyHint(t,T,n,p);},
+      reveal:function(){return 'Eine mögliche Lösung: '+m(t.resStr)+'. Vergleiche sie mit der Aussage.';},
+      revealInput:t.resStr.replace(/\^2/g,'²').replace(/-/g,'−'),
+      log:{k:'Richtig wäre',h:m(t.lhs+'='+t.resStr)}});
+  }
+  return steps;
+}
+
+function buildSteps(mi,t){return mi===0?stepsM1(t):(mi===1?stepsM2(t):stepsM3(t));}
+
+/* =====================================================
+   Zustand & Ansichten
+   ===================================================== */
+var view={n:'home'};
+var tk=null;
+var root=document.getElementById('app'),modal=document.getElementById('modal');
+var NEEDCHECK=['pick2','multi','input','match'];
+
+function cur(){return tk.steps[tk.si];}
+function row(k,v){return '<div class="row"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';}
+
+function topbar(){
+  return '<div class="topbar"><div class="brand">Binomische Formeln – Werkstatt</div>'+
+    (teacher?'<div class="tbanner">Lehrermodus: Fortschritt wird nicht gespeichert</div>':'')+'</div>';
+}
+
+/* ---------- Startseite ---------- */
+function renderHome(){
+  var tot=totals(),pct=tot.n?Math.round(100*tot.d/tot.n):0;
+  var h=topbar();
+  h+='<section class="hero"><h1>Binomische Formeln</h1>'+
+    '<p class="sub">Erkenne die Struktur, wähle die passende Formel und finde typische Fehler – in deinem eigenen Tempo.</p>'+
+    '<div class="flow"><span class="st">Struktur erkennen</span><span class="ar">→</span><span class="st">Formel wählen</span><span class="ar">→</span><span class="st">einsetzen</span><span class="ar">→</span><span class="st">vereinfachen</span></div></section>';
+  h+='<section class="overall" aria-label="Gesamtfortschritt"><div class="row"><span>Gesamtfortschritt</span><span>'+tot.d+' von '+tot.n+' Aufgaben bearbeitet</span></div>'+
+    '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><span style="width:'+pct+'%"></span></div></section>';
+  h+='<section class="mods">';
+  MODS.forEach(function(mod,i){
+    var s=modStats(mod);
+    var lab=s.d===0?'Starten':(s.d===s.n?'Wiederholen':'Weitermachen');
+    h+='<article class="mcard"><div class="mnum">'+(i+1)+'</div><h2>'+mod.title+'</h2><p class="goal">'+mod.goal+'</p>'+
+      '<div class="kinds">'+mod.kinds+'</div>'+segHTML(mod)+
+      '<div class="mmeta">'+s.d+' von '+s.n+' Aufgaben bearbeitet</div>'+
+      '<button class="btn pri" data-act="openmod" data-i="'+i+'">'+lab+'</button></article>';
+  });
+  h+='<article class="mcard"><div class="mnum">★</div><h2>Zusammenfassung</h2><p class="goal">Die drei Formeln, die Strategie und dein Überblick.</p>'+
+    '<div class="kinds">Überblick</div><div class="mmeta">Jederzeit abrufbar</div>'+
+    '<button class="btn" data-act="sum">Öffnen</button></article>';
+  h+='</section>';
+  h+='<div class="foot"><button class="btn" data-act="reset">Fortschritt zurücksetzen</button></div>';
+  root.innerHTML=h;
+}
+
+/* ---------- Zusammenfassung ---------- */
+function renderSummary(){
+  var tot=totals();
+  var h=topbar();
+  h+='<div class="mbar"><button class="btn" data-act="home">‹ Übersicht</button><div class="mtitle">Zusammenfassung</div></div>';
+  h+='<section class="sumcard"><h2>Die drei binomischen Formeln</h2>'+
+    ['1','2','3'].map(function(k){return '<div class="fl m">'+M(FORM[k].full)+'</div>';}).join('')+'</section>';
+  h+='<section class="sumcard"><h2>Strategie</h2><div class="flow"><span class="st">Struktur erkennen</span><span class="ar">→</span><span class="st">Formel wählen</span><span class="ar">→</span><span class="st">einsetzen</span><span class="ar">→</span><span class="st">vereinfachen</span></div>'+
+    '<p class="note">Wenn keine binomische Formel passt: normal ausmultiplizieren.</p></section>';
+  h+='<section class="sumcard"><h2>Dein Überblick</h2><div class="stat"><div><b>'+tot.d+'</b>bearbeitete Aufgaben</div><div><b>'+tot.c+'</b>richtig gelöst</div></div>';
+  MODS.forEach(function(mod,i){
+    var s=modStats(mod);
+    h+='<div class="mstat"><div class="row"><span>Modul '+(i+1)+': '+mod.title+'</span><span>'+s.d+' von '+s.n+' bearbeitet, '+s.c+' richtig</span></div>'+segHTML(mod)+'</div>';
+  });
+  h+='<p class="note">Hell gefärbte Felder zeigen Aufgaben, bei denen du dir die Lösung hast zeigen lassen.</p></section>';
+  h+='<div class="foot"><button class="btn pri" data-act="home">Zur Übersicht</button></div>';
+  root.innerHTML=h;
+}
+
+/* ---------- Modul / Aufgabe ---------- */
+function startTask(mi,ti){
+  var t=MODS[mi].tasks[ti];
+  tk={mi:mi,ti:ti,t:t,steps:buildSteps(mi,t),si:0,wrong:0,total:0,used:false,solvedStep:false,fb:null,st:{},log:[],fin:false,sol:false,review:!!prog[t.id],scrollFb:false};
+  view={n:'mod',mi:mi,ti:ti};
+  renderModule();
+  window.scrollTo(0,0);
+}
+function openMod(i){
+  var mod=MODS[i],ti=0;
+  for(var k=0;k<mod.tasks.length;k++){if(!prog[mod.tasks[k].id]){ti=k;break;}}
+  startTask(i,ti);
+}
+function renderModule(){
+  var mod=MODS[tk.mi],s=modStats(mod);
+  var h=topbar();
+  h+='<div class="mbar"><button class="btn" data-act="home">‹ Übersicht</button><div class="mtitle">Modul '+(tk.mi+1)+': '+mod.title+'</div></div>';
+  h+='<nav class="tn" aria-label="Aufgaben">'+mod.tasks.map(function(t,i){
+    var p=prog[t.id],c=(i===tk.ti?'cur ':'')+(p?(p.s==='c'?'c':'r'):'');
+    return '<button type="button" class="'+c.trim()+'" data-act="task" data-i="'+i+'" aria-label="Aufgabe '+(i+1)+'">'+(i+1)+'</button>';
+  }).join('')+'</nav>';
+  h+='<div id="task"></div>';
+  root.innerHTML=h;
+  renderTask();
+}
+
+function headHTML(mi,t){
+  var h='';
+  if(mi===0){
+    if(t.kind==='match')return '<p class="prompt">Ordne jeden Term der passenden Formel zu.</p>';
+    return '<p class="prompt">Welche binomische Formel passt zu diesem Term?</p><div class="bigterm m">'+M(t.term)+'</div>';
+  }
+  if(mi===1)return '<p class="prompt">Berechne mit der passenden binomischen Formel.</p><div class="bigterm m">'+M(t.term)+'</div>';
+  return '<p class="prompt">Stimmt diese Rechnung?</p><div class="bigterm m">'+M(t.lhs+'='+t.rhs)+'</div>';
+}
+
+function wsHTML(log){
+  return '<div class="ws">'+log.map(function(l){return row(l.k,l.h);}).join('')+'</div>';
+}
+
+function solBlock(mi,t){
+  var h='<div class="sol"><div class="sh">Lösung</div>';
+  if(mi===0){
+    if(t.kind==='match')h+='<div class="ws">'+t.items.map(function(it){return row(CATLAB[it.ans],m(it.term));}).join('')+'</div>';
+    else h+='<p>Richtig ist: <b>'+CATLAB[t.ans]+'</b>.</p>';
+  }else if(mi===1){
+    var f=FORM[t.f];
+    h+='<div class="ws">'+row('Formel',m(f.full))+row('a und b',m('a='+t.a+',;b='+t.b))+row('Einsetzen',m('='+t.plug[0].e))+row('Ergebnis',m('='+t.resStr))+'</div>';
+  }else{
+    h+='<p>Die Aussage ist <b>'+(t.ok?'richtig':'falsch')+'</b>.</p><div class="ws">'+row('Aussage',m(t.bad||(t.lhs+'='+t.rhs)));
+    if(!t.ok)h+=row('Fehlerart',t.errs.map(function(e){return CAT[e];}).join('; '))+row('Richtig wäre',m(t.lhs+'='+t.good));
+    h+='</div>';
+  }
+  return h+'</div>';
+}
+function finBox(t){return '<div class="finbox"><div class="fh">Das steckt dahinter</div><p>'+rich(t.expl)+'</p></div>';}
+function nextBtn(){
+  var n=MODS[tk.mi].tasks.length;
+  return tk.ti<n-1?'<button class="btn pri" data-act="nexttask">Nächste Aufgabe</button>':'<button class="btn pri" data-act="home">Zur Übersicht</button>';
+}
+
+/* ---------- Schritt-Darstellung ---------- */
+function mcHTML(s){
+  var bad=tk.st.bad||[];
+  return '<div class="opts '+(s.layout||'')+'">'+s.opts.map(function(o){
+    var c='opt',isBad=has(bad,o.v),isOk=tk.solvedStep&&tk.st.ok===o.v;
+    if(isBad)c+=' bad';
+    if(isOk)c+=' good';else if(tk.solvedStep)c+=' dim';
+    return '<button type="button" class="'+c+'" data-act="mc" data-v="'+o.v+'"'+((isBad||tk.solvedStep)?' disabled':'')+'>'+o.html+'</button>';
+  }).join('')+'</div>';
+}
+function pickHTML(s){
+  return ['a','b'].map(function(k){
+    return '<div class="prow"><div class="plab m">'+M(k+'=')+'</div><div class="popts">'+s.opts.map(function(o){
+      var c='chip';
+      if(tk.solvedStep&&s.ans[k]===o)c+=' good';else if(tk.st[k]===o)c+=' sel';
+      return '<button type="button" class="'+c+'" data-act="pick" data-k="'+k+'" data-v="'+o+'"'+(tk.solvedStep?' disabled':'')+'><span class="m">'+M(o)+'</span></button>';
+    }).join('')+'</div></div>';
+  }).join('');
+}
+function multiHTML(s){
+  var sel=tk.st.sel||[];
+  return '<div class="opts">'+s.opts.map(function(o){
+    return '<button type="button" class="opt chk'+(has(sel,o.v)?' sel':'')+'" data-act="multi" data-v="'+o.v+'"'+(tk.solvedStep?' disabled':'')+'>'+o.html+'</button>';
+  }).join('')+'</div>';
+}
+function inputHTML(s){
+  var v=tk.st.inp||'';
+  var keys=['7','8','9','BS','4','5','6','+','1','2','3','−','0','x','x²','C'];
+  var kp='<div class="keypad">'+keys.map(function(k){
+    var lab=k==='BS'?'⌫':(k==='C'?'Leeren':k),fn=(k==='BS'||k==='C')?' fn':'';
+    return '<button type="button" class="key'+fn+'" data-act="key" data-k="'+k+'" aria-label="'+(k==='BS'?'Zeichen löschen':(k==='C'?'Eingabe leeren':k))+'"'+(tk.solvedStep?' disabled':'')+'>'+lab+'</button>';
+  }).join('')+'</div>';
+  return '<div class="inrow"><span class="m inl">'+M(s.lhs)+'</span>'+
+    '<input id="ans" class="ansin" type="text" inputmode="none" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Ergebnis" placeholder="Ergebnis eingeben" value="'+esc(v)+'"'+(tk.solvedStep?' disabled':'')+'></div>'+
+    '<div class="prev m" id="prev"></div>'+(tk.solvedStep?'':kp);
+}
+function matchHTML(s){
+  var slots=tk.st.slots||(tk.st.slots=[null,null,null,null]),sel=tk.st.msel,flag=tk.st.flag||[];
+  var placed={};slots.forEach(function(x){if(x!=null)placed[x]=true;});
+  var cats=['1','2','3','0'];
+  var pool='<div class="mpool">'+s.items.map(function(it,i){
+    return placed[i]?'':'<button type="button" class="mitem'+(sel===i?' sel':'')+'" data-act="mitem" data-i="'+i+'"><span class="m">'+M(it.term)+'</span></button>';
+  }).join('')+'</div>';
+  var rows=cats.map(function(c,si){
+    var ii=slots[si],cl='mslot'+(ii!=null?' full':'');
+    if(tk.solvedStep)cl+=' good';else if(ii!=null&&has(flag,ii))cl+=' flag';
+    return '<div class="mrow"><div class="mlab">'+CATLAB[c]+'</div><button type="button" class="'+cl+'" data-act="mslot" data-s="'+si+'"'+(tk.solvedStep?' disabled':'')+'>'+
+      (ii!=null?'<span class="m">'+M(s.items[ii].term)+'</span>':'<span class="ph">hier ablegen</span>')+'</button></div>';
+  }).join('');
+  return pool+rows;
+}
+function stepHTML(s){
+  var h='<div class="step"><div class="stitle">'+rich(s.title)+'</div><p class="q">'+rich(s.q)+'</p>';
+  if(s.note)h+='<div class="fmbox">'+s.note+'</div>';
+  if(s.type==='mc')h+=mcHTML(s);
+  else if(s.type==='pick2')h+=pickHTML(s);
+  else if(s.type==='multi')h+=multiHTML(s);
+  else if(s.type==='input')h+=inputHTML(s);
+  else if(s.type==='match')h+=matchHTML(s);
+  return h+'</div>';
+}
+function fbHTML(){
+  var f=tk.fb,lab=f.t;
+  if(!lab)lab=f.k==='ok'?'Richtig!':(f.k==='hint'?(tk.wrong>=3?'Tipp':'Noch nicht ganz'):'Hinweis');
+  return '<div class="fb '+f.k+'" role="status" aria-live="polite"><span class="t">'+lab+'</span>'+rich(f.h)+'</div>';
+}
+function actionsHTML(){
+  var b='',s=tk.fin?null:cur();
+  if(tk.fin)b+=nextBtn();
+  else if(tk.solvedStep)b+='<button class="btn pri" data-act="advance">Weiter</button>';
+  else{
+    if(has(NEEDCHECK,s.type))b+='<button class="btn pri" data-act="check">Prüfen</button>';
+    if(!teacher&&s.type!=='mc'&&tk.wrong>=4)b+='<button class="btn" data-act="reveal">Lösung dieses Schritts ansehen</button>';
+  }
+  if(teacher)b+='<button class="btn tbtn" data-act="sol">'+(tk.sol?'Lösung ausblenden':'Lösung anzeigen')+'</button>';
+  return '<div class="actions">'+b+'</div>';
+}
+
+function renderTask(){
+  var el=document.getElementById('task');if(!el)return;
+  var mi=tk.mi,t=tk.t,n=MODS[mi].tasks.length;
+  var h='<article class="tcard"><div class="tnum">Aufgabe '+(tk.ti+1)+' von '+n+'</div>'+headHTML(mi,t);
+  if(tk.review){
+    h+=solBlock(mi,t)+finBox(t)+'<div class="actions"><button class="btn" data-act="redo">Noch einmal bearbeiten</button>'+nextBtn()+'</div>';
+  }else{
+    if(tk.log.length)h+=wsHTML(tk.log);
+    if(!tk.fin)h+=stepHTML(cur());
+    if(tk.fb)h+=fbHTML();
+    if(tk.fin)h+=finBox(t);
+    h+=actionsHTML();
+    if(teacher&&tk.sol)h+=solBlock(mi,t);
+  }
+  el.innerHTML=h+'</article>';
+  afterRender();
+}
+function updatePrev(){
+  var inp=document.getElementById('ans'),pv=document.getElementById('prev');
+  if(!inp||!pv)return;
+  var v=inp.value.trim();
+  pv.innerHTML=v?M(normPrev(v)):'<span class="ph">Deine Eingabe erscheint hier als Term.</span>';
+}
+function afterRender(){
+  var inp=document.getElementById('ans');
+  if(inp){
+    updatePrev();
+    inp.addEventListener('input',function(){tk.st.inp=inp.value;updatePrev();});
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();doCheck();}});
+  }
+  if(tk&&tk.scrollFb){
+    tk.scrollFb=false;
+    var f=document.querySelector('.fb');
+    if(f&&f.scrollIntoView){try{f.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){f.scrollIntoView();}}
+  }
+}
+
+/* ---------- Spiellogik ---------- */
+function finish(){
+  tk.fin=true;
+  if(tk.review)return;
+  var st=tk.used?'r':'c',prev=prog[tk.t.id];
+  if(!prev||(prev.s==='r'&&st==='c'))prog[tk.t.id]={s:st,w:tk.total};
+  save();
+}
+function solved(msg){
+  var s=cur();
+  tk.solvedStep=true;tk.fb={k:'ok',h:msg||'Richtig!'};tk.scrollFb=true;
+  if(tk.si===tk.steps.length-1){if(s.log)tk.log.push(s.log);finish();}
+  renderTask();
+  if(tk.fin)refreshNav();
+}
+function miss(fn){
+  tk.wrong++;tk.total++;
+  tk.fb={k:'hint',h:fn(tk.wrong)};tk.scrollFb=true;
+  renderTask();
+}
+function info(h,t){tk.fb={k:'info',h:h,t:t||'Hinweis'};tk.scrollFb=true;renderTask();}
+function advance(){
+  var s=cur();
+  if(s.log)tk.log.push(s.log);
+  tk.si++;tk.wrong=0;tk.st={};tk.solvedStep=false;tk.fb=null;
+  renderTask();
+}
+function refreshNav(){
+  var nav=document.querySelector('.tn');if(!nav)return;
+  var mod=MODS[tk.mi];
+  Array.prototype.forEach.call(nav.children,function(b,i){
+    var p=prog[mod.tasks[i].id];
+    b.className=((i===tk.ti?'cur ':'')+(p?(p.s==='c'?'c':'r'):'')).trim();
+  });
+}
+
+function onMC(v){
+  var s=cur();
+  if(!s||tk.solvedStep||tk.fin)return;
+  if(has(tk.st.bad||[],v))return;
+  if(v===s.ans){tk.st.ok=v;solved(s.ok);}
+  else{tk.st.bad=(tk.st.bad||[]).concat(v);miss(function(n){return s.hint(n,v);});}
+}
+
+function doCheck(){
+  if(!tk||tk.solvedStep||tk.fin||tk.review)return;
+  var s=cur();
+  if(s.type==='pick2'){
+    var a=tk.st.a,b=tk.st.b;
+    if(!a||!b)return info('Wähle sowohl für $a$ als auch für $b$ einen Teil aus.');
+    if(a===s.ans.a&&b===s.ans.b)return solved(s.ok);
+    return miss(function(n){return s.hint(n,{a:a,b:b});});
+  }
+  if(s.type==='multi'){
+    var sel=tk.st.sel||[];
+    if(!sel.length)return info('Wähle mindestens eine Fehlerart aus.');
+    var ok=sel.length===s.ans.length&&s.ans.every(function(x){return has(sel,x);});
+    if(ok){return solved(s.ok);}
+    return miss(function(n){return s.hint(n,sel);});
+  }
+  if(s.type==='input'){
+    var inp=document.getElementById('ans'),raw=inp?inp.value:(tk.st.inp||'');
+    tk.st.inp=raw;
+    var p=parsePoly(raw);
+    if(!p.ok)return info(FMT[p.err],'Eingabe');
+    if(p.c2===s.ans.c2&&p.c1===s.ans.c1&&p.c0===s.ans.c0)return solved('Richtig!');
+    return miss(function(n){return s.hint(n,p);});
+  }
+  if(s.type==='match'){
+    var slots=tk.st.slots||[null,null,null,null];
+    if(slots.some(function(x){return x==null;}))return info('Lege zuerst alle vier Terme ab.');
+    var cats=['1','2','3','0'],wrong=[];
+    slots.forEach(function(ii,si){if(s.items[ii].ans!==cats[si])wrong.push(ii);});
+    if(!wrong.length)return solved('Alle Zuordnungen stimmen.');
+    var nxt=tk.wrong+1;
+    tk.st.flag=nxt>=2?wrong.slice():[];
+    return miss(function(n){return s.hint(n,wrong.map(function(i){return s.items[i];}));});
+  }
+}
+
+function revealStep(){
+  if(!tk||tk.solvedStep||tk.fin)return;
+  var s=cur();
+  tk.used=true;tk.solvedStep=true;
+  if(s.type==='pick2'){tk.st.a=s.ans.a;tk.st.b=s.ans.b;}
+  else if(s.type==='multi'){tk.st.sel=s.ans.slice();}
+  else if(s.type==='input'){tk.st.inp=s.revealInput;}
+  else if(s.type==='match'){
+    var cats=['1','2','3','0'];
+    tk.st.slots=cats.map(function(c){
+      for(var i=0;i<s.items.length;i++){if(s.items[i].ans===c)return i;}
+      return null;
+    });
+  }
+  tk.fb={k:'info',t:'Lösung',h:s.reveal?s.reveal():'Hier siehst du die Lösung dieses Schritts.'};
+  tk.scrollFb=true;
+  if(tk.si===tk.steps.length-1){if(s.log)tk.log.push(s.log);finish();}
+  renderTask();
+  if(tk.fin)refreshNav();
+}
+
+function keyPress(k){
+  var inp=document.getElementById('ans');
+  if(!inp||inp.disabled)return;
+  var v=inp.value,s=inp.selectionStart==null?v.length:inp.selectionStart,e=inp.selectionEnd==null?s:inp.selectionEnd;
+  if(k==='C'){v='';s=0;}
+  else if(k==='BS'){
+    if(s!==e){v=v.slice(0,s)+v.slice(e);}
+    else if(s>0){v=v.slice(0,s-1)+v.slice(s);s=s-1;}
+  }else{v=v.slice(0,s)+k+v.slice(e);s=s+k.length;}
+  inp.value=v;
+  try{inp.setSelectionRange(s,s);}catch(err){}
+  tk.st.inp=v;
+  updatePrev();
+}
+
+/* ---------- Matching ---------- */
+function onMitem(i){
+  if(tk.solvedStep)return;
+  tk.st.msel=(tk.st.msel===i)?null:i;
+  renderTask();
+}
+function onMslot(si){
+  if(tk.solvedStep)return;
+  var slots=tk.st.slots||(tk.st.slots=[null,null,null,null]),sel=tk.st.msel,occ=slots[si];
+  if(sel!=null&&sel!==undefined){
+    slots[si]=sel;tk.st.msel=null;
+    if(tk.st.flag)tk.st.flag=tk.st.flag.filter(function(x){return x!==sel&&x!==occ;});
+  }else if(occ!=null){
+    slots[si]=null;
+    if(tk.st.flag)tk.st.flag=tk.st.flag.filter(function(x){return x!==occ;});
+  }
+  renderTask();
+}
+
+/* ---------- Dialog ---------- */
+function showModal(){
+  modal.innerHTML='<div class="modal" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="dlg"><h2 id="dt">Fortschritt zurücksetzen?</h2>'+
+    '<p class="muted">Alle bearbeiteten Aufgaben werden gelöscht. Das lässt sich nicht rückgängig machen.</p>'+
+    '<div class="dlgbtn"><button class="btn" data-act="resetNo">Abbrechen</button><button class="btn danger" data-act="resetYes">Ja, zurücksetzen</button></div></div></div>';
+}
+function hideModal(){modal.innerHTML='';}
+
+/* ---------- Ereignisse ---------- */
+function render(){
+  if(view.n==='home')renderHome();
+  else if(view.n==='sum')renderSummary();
+  else renderModule();
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest?e.target.closest('[data-act]'):null;
+  if(!b||b.disabled)return;
+  var d=b.dataset;
+  switch(d.act){
+    case 'home':view={n:'home'};tk=null;render();window.scrollTo(0,0);break;
+    case 'sum':view={n:'sum'};tk=null;render();window.scrollTo(0,0);break;
+    case 'openmod':openMod(+d.i);break;
+    case 'task':startTask(view.mi,+d.i);break;
+    case 'nexttask':startTask(tk.mi,tk.ti+1);break;
+    case 'redo':tk.review=false;tk.steps=buildSteps(tk.mi,tk.t);tk.si=0;tk.wrong=0;tk.total=0;tk.used=false;tk.solvedStep=false;tk.fb=null;tk.st={};tk.log=[];tk.fin=false;renderTask();break;
+    case 'mc':onMC(d.v);break;
+    case 'pick':if(!tk.solvedStep){tk.st[d.k]=d.v;renderTask();}break;
+    case 'multi':
+      if(!tk.solvedStep){
+        var sel=(tk.st.sel||[]).slice(),ix=sel.indexOf(d.v);
+        if(ix>=0)sel.splice(ix,1);else sel.push(d.v);
+        tk.st.sel=sel;renderTask();
+      }
+      break;
+    case 'key':keyPress(d.k);break;
+    case 'mitem':onMitem(+d.i);break;
+    case 'mslot':onMslot(+d.s);break;
+    case 'check':doCheck();break;
+    case 'advance':advance();break;
+    case 'reveal':revealStep();break;
+    case 'sol':tk.sol=!tk.sol;renderTask();break;
+    case 'reset':showModal();break;
+    case 'resetNo':hideModal();break;
+    case 'resetYes':prog={};save();hideModal();render();break;
+  }
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.innerHTML)hideModal();});
+
+load();
+render();
+})();
+</script>
+</body>
+</html>
