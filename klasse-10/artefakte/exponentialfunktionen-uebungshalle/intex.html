@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12233f">
+<title>I.2 Exponentialfunktionen – Übungshalle</title>
+<style>
+/* =========================================================
+   Übungshalle zu I.2 Exponentialfunktionen
+   Eine Datei, offline lauffähig, ohne externe Ressourcen.
+   Schrift: Systemschriften (auf dem iPad: SF Pro und New York).
+   ========================================================= */
+:root{
+  --ink:#12233f;          /* Tinte */
+  --ink-2:#2a4066;
+  --ink-soft:#4b5b73;
+  --paper:#f2f5fa;
+  --card:#ffffff;
+  --grid:#e3eaf4;
+  --line:#d5deea;
+  --blue:#1f6fb2;         /* Graph, wie im Lernpfad */
+  --blue-deep:#17508a;
+  --blue-soft:#e3eefa;
+  --amber:#c9770f;        /* zweiter Graph, wie im Lernpfad */
+  --amber-soft:#fdf0dc;
+  --coral:#d1432d;        /* markierte Punkte */
+  --ok:#1e7a4d;
+  --ok-soft:#e3f4ea;
+  --warn:#8a5a00;
+  --warn-soft:#fdf3e0;
+  --g1:#1f6fb2; --g2:#d9730d; --g3:#8e4ec6; --g4:#12907a;
+  --serif:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:18px;
+  --barH:60px;
+  --dockH:0px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  margin:0;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(rgba(31,111,178,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.045) 1px,transparent 1px);
+  background-size:140px 140px,140px 140px,28px 28px,28px 28px;
+  min-height:100vh;
+  padding-bottom:calc(var(--dockH) + env(safe-area-inset-bottom));
+}
+button{font-family:inherit;font-size:1rem;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+p{margin:.5em 0}
+sub,sup{font-size:.7em}
+
+/* ---------- Mathematik-Satz ---------- */
+.m,.mf,.mblock{font-family:var(--serif);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal;white-space:nowrap}
+.mf i,.m i{font-style:italic;padding-right:.04em}
+.mf sup{padding-left:.02em}
+.nb{white-space:nowrap}
+
+/* ---------- Obere Leiste ---------- */
+.bar{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;padding-top:env(safe-area-inset-top)}
+.bar-in{
+  max-width:1180px;margin:0 auto;min-height:var(--barH);
+  padding:8px clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:10px;
+}
+.bar h1{
+  font:600 1.12rem/1.2 var(--serif);margin:0;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em;
+}
+.bar h1 small{font:500 .78rem var(--sans);color:#9fb3d1;margin-left:8px}
+.chipbtn{
+  min-height:44px;padding:0 15px;border-radius:22px;border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.chipbtn:hover{background:rgba(255,255,255,.16)}
+.chipbtn svg{width:18px;height:18px;flex:0 0 auto}
+.tmode{
+  display:none;font-size:.7rem;font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:2px 10px;white-space:nowrap;
+}
+.tmode.on{display:inline-block}
+#back{display:none}
+@media(max-width:560px){.chipbtn .lbl{display:none}.chipbtn{padding:0 12px}.bar h1 small{display:none}}
+body.intr #back{display:inline-flex}
+
+/* ---------- Halle: Kopfbereich ---------- */
+.hero{background:var(--ink);color:#fff;border-radius:0 0 30px 30px;overflow:hidden}
+.hero-in{
+  max-width:1180px;margin:0 auto;position:relative;
+  padding:clamp(20px,4vw,44px) clamp(16px,3vw,32px) clamp(24px,4vw,46px);
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(14px,3vw,36px);align-items:center;
+}
+.hero h2{font:700 clamp(2.1rem,5.6vw,3.5rem)/1.04 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
+.hero p{margin:0;color:#c3d1e8;max-width:36ch;font-size:clamp(.98rem,1.7vw,1.1rem)}
+.hero .art{min-width:0}
+.hero .art svg{width:100%;height:auto;display:block}
+@media(max-width:640px){.hero-in{grid-template-columns:1fr}.hero .art{order:-1;max-width:420px}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.7s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ---------- Halle: Kacheln ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(12px,2.4vw,24px)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:clamp(12px,2vw,20px);margin:clamp(18px,3vw,30px) 0 14px}
+.tile{
+  display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:0;cursor:pointer;overflow:hidden;color:inherit;min-height:262px;position:relative;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -24px rgba(18,35,63,.45);
+}
+.tile:active{transform:translateY(1px)}
+@media(hover:hover){.tile:hover{border-color:#9fb8cd}}
+.tile .art{background:#fbfdff;border-bottom:1px solid var(--line);aspect-ratio:300/132;display:block}
+.tile .art svg{width:100%;height:100%;display:block}
+.tile .tb{padding:13px 17px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.tile h3{font:700 1.32rem/1.15 var(--serif);margin:0;letter-spacing:-.005em}
+.tile p{margin:0;color:var(--ink-soft);font-size:.96rem;line-height:1.4}
+.pips{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+.pip{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.pip.open{background:#9fc3de}
+.pip.full{background:var(--blue)}
+.pipnote{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+.resetrow{margin:-14px 0 30px}
+.linkbtn{background:none;border:0;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;font-size:.88rem;min-height:44px;padding:0 4px;cursor:pointer}
+.confirm{background:#fff;border:1px solid var(--line);border-left:5px solid var(--coral);border-radius:14px;padding:12px 16px 8px;max-width:620px;font-size:.96rem}
+.btn.danger{background:var(--coral);border-color:var(--coral)}
+.daygoal{
+  display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap;
+  margin:clamp(18px,3vw,28px) 0 0;padding:10px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.daygoal+.tiles{margin-top:clamp(12px,2vw,18px)}
+.daygoal .tx{font-size:.96rem;color:var(--ink-soft)}
+.daygoal .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.daygoal .segs{display:flex;gap:6px;flex:1 1 150px;max-width:300px;min-width:130px}
+.seg{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.seg.on{background:var(--ok)}
+.daygoal.done{background:var(--ok-soft);border-color:#bcdfcb}
+.daygoal.done .tx{color:#14603c;font-weight:600}
+.today{
+  position:absolute;top:10px;right:10px;display:inline-flex;gap:5px;align-items:center;background:var(--ok-soft);
+  border:1px solid #bcdfcb;color:#14603c;border-radius:20px;padding:2px 11px 3px;font-size:.8rem;font-weight:700;
+}
+.rule{font-size:.9rem;color:var(--ink-soft);max-width:78ch;margin:2px 0 26px}
+
+/* ---------- Trainer-Ansicht ---------- */
+.lvlbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}
+.lvl{
+  flex:1 1 170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 14px 10px;min-height:62px;cursor:pointer;color:var(--ink);
+}
+.lvl b{font:700 1rem var(--serif)}
+.lvl small{color:var(--ink-soft);font-size:.82rem;line-height:1.3}
+.lvl .dots{display:flex;gap:7px;margin-top:5px;align-items:center}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid #9fb0c6;background:#fff}
+.dot.on{background:var(--ok);border-color:var(--ok)}
+.lvl.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,111,178,.16)}
+.lvl.lock{opacity:.5;cursor:not-allowed}
+.lvl .lk{font-size:.78rem;color:var(--ink-soft)}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(14px,2vw,22px);margin:12px 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.04),0 16px 30px -24px rgba(18,35,63,.4);
+}
+.banner{
+  background:#eaf6f0;border:1px solid #bfe0cf;border-left:5px solid var(--ok);color:#14603c;
+  border-radius:12px;padding:9px 14px;margin:12px 0 0;font-size:.95rem;
+}
+.prompt{font:600 1.2rem/1.42 var(--serif);margin:0 0 10px}
+.prompt .m,.prompt .mf{font-size:1.02em}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.work{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);align-items:start}
+.work>*{min-width:0}
+.work.one{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){.work{grid-template-columns:1fr;gap:10px}}
+@media(min-width:701px) and (max-width:1000px){.work:not(.one){grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}}
+@media(min-width:701px) and (min-height:620px){.work.stick>.viz{position:sticky;top:calc(var(--barH) + env(safe-area-inset-top) + 10px)}}
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+.boardwrap{border:1px solid var(--line);border-radius:14px;background:#fff;padding:6px 6px 2px;overflow:hidden}
+.viz>svg{border:1px solid var(--line);border-radius:14px;background:#fff}
+
+/* ---------- Rückmeldungen und Hilfen ---------- */
+.fb{border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.97rem;display:none;line-height:1.5}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.hint{background:var(--warn-soft);border-left:5px solid #d69220}
+.fb.sol{background:var(--blue-soft);border-left:5px solid var(--blue)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 2px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;
+  padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:650;min-height:48px;min-width:48px;
+}
+.btn:active{background:#0b1830}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.ghost:active{background:var(--blue-soft)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.helpbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.hbtn{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:22px;cursor:pointer;
+  border:1.5px solid #d69220;background:var(--warn-soft);color:var(--warn);font-weight:650;
+}
+.hbtn svg{width:18px;height:18px}
+.hbtn.sol{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-deep)}
+.hbtn.altbtn{border-color:var(--ink-2);background:#fff;color:var(--ink)}
+.hbtn.altbtn[aria-expanded="true"]{background:#eef2f8}
+.alt{background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--ink-2);border-radius:14px;padding:12px 14px 14px;margin-top:12px}
+.alt .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.alt h4{font:700 1.06rem/1.3 var(--serif);margin:0}
+.alt .sm{min-height:40px;padding:6px 14px;font-size:.92rem}
+.altstep{border-top:1px dashed var(--line);padding-top:9px;margin-top:10px}
+.altstep p{margin:.35em 0;font-size:.97rem}
+.altstep .sn{display:flex;gap:9px;align-items:center;font:700 1rem var(--serif);color:var(--blue-deep)}
+.altstep .sn i{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 .85rem var(--sans);font-style:normal;flex:0 0 auto}
+.eq{text-align:center;margin:7px 0;font:500 1.1rem/1.9 var(--serif)}
+.eq .mf{margin:0 .15em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;font-size:.95em;line-height:1.3}
+.frac>span:first-child{padding:0 .3em .05em;border-bottom:1.5px solid currentColor}
+.frac>span:last-child{padding:.05em .3em 0}
+.hbtn .tier{display:inline-flex;gap:3px}
+.hbtn .tier i{width:7px;height:7px;border-radius:50%;background:#e2c58f;display:block}
+.hbtn .tier i.on{background:var(--warn)}
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hintcard{background:var(--warn-soft);border:1px solid #ecd2a2;border-left:5px solid #d69220;border-radius:12px;padding:9px 14px;font-size:.96rem}
+.hintcard b{color:var(--warn)}
+.result{margin-top:14px}
+.result .fb{display:block}
+
+/* ---------- Eingabefelder und Tastenfeld ---------- */
+.term{font:500 1.4rem/1.2 var(--serif);display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0}
+.term .dotop{color:var(--ink-soft)}
+.term .ex{align-self:flex-start;margin-top:3px;margin-left:-3px;font-size:1.1rem}
+.fld{
+  display:inline-flex;align-items:center;justify-content:center;min-width:92px;height:56px;padding:0 14px;
+  border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;
+  font:600 1.35rem var(--serif);position:relative;
+}
+.fld.sm{min-width:70px;height:48px;font-size:1.15rem;padding:0 10px;border-radius:11px}
+.fld .v{white-space:pre}
+.fld .v:empty::before{content:"?";color:#a9b6c9;font-weight:500}
+.fld.act{border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,111,178,.18)}
+.fld.act .v::after{content:"";display:inline-block;width:2px;height:1.15em;background:var(--blue);margin-left:2px;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.fld.act .v:empty::before{content:""}
+@keyframes blink{50%{opacity:0}}
+.fld.ok{border-color:var(--ok);background:var(--ok-soft)}
+.fld.no{border-color:var(--coral);background:#fdecea}
+.fld:disabled{cursor:default}
+.lab{font:italic 600 1.35rem var(--serif);color:var(--ink)}
+
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--ink);display:none;
+  padding:10px clamp(8px,2vw,18px) calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px 20px 0 0;box-shadow:0 -12px 32px -14px rgba(18,35,63,.55);
+}
+body.hasdock .dock{display:block}
+.dock-in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px}
+.key{
+  flex:1 1 42px;min-width:42px;height:50px;border:0;border-radius:11px;background:#f2f5fa;color:var(--ink);
+  font:600 1.3rem var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none;
+}
+.key:active{background:#c9dbf0}
+.key.fn{background:var(--ink-2);color:#fff}
+.key.fn:active{background:#3a5584}
+.key.go{flex:2 1 112px;background:#5aa9ee;color:#0b1b33;font:700 1.05rem var(--sans)}
+.key.go:active{background:#8cc3f5}
+
+/* ---------- Kurven-Tuner ---------- */
+.stepper{display:flex;align-items:center;gap:10px;margin:8px 0}
+.stepper .lab{min-width:1.6ch}
+.sb{
+  width:58px;height:58px;border-radius:16px;border:2px solid var(--blue);background:#fff;color:var(--blue);
+  font:600 2rem/1 var(--sans);cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.sb:active{background:var(--blue-soft)}
+.sb:disabled{opacity:.35;cursor:not-allowed}
+.stepper .val{min-width:96px;text-align:center;font:600 1.7rem var(--serif);font-variant-numeric:tabular-nums}
+.livefn{font:500 1.5rem var(--serif);margin:6px 0 2px;padding:10px 14px;background:var(--blue-soft);border-radius:12px;display:inline-block}
+.goal{display:inline-block;font-size:.84rem;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:20px;padding:2px 11px;margin-bottom:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.86rem;color:var(--ink-soft);margin-top:6px;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:26px;height:0;border-top:3.5px solid var(--blue);display:inline-block}
+.sw.dash{border-top-color:var(--amber);border-top-style:dashed}
+.sw.ghost{border-top-color:var(--ok);border-top-style:dotted}
+
+/* ---------- Zuordnen ---------- */
+.slots{display:grid;gap:9px;margin:8px 0}
+.slot{
+  display:flex;align-items:center;gap:12px;border:2px dashed #b9c7da;border-radius:14px;padding:7px 12px;min-height:60px;
+  background:#fff;cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit;
+}
+.badge{width:34px;height:34px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto;font-family:var(--sans)}
+.slot .ph{color:#8a9ab1;font-size:.93rem}
+.slot .tx{font:600 1.2rem var(--serif)}
+.slot.hl{border-color:var(--blue);background:var(--blue-soft)}
+.slot.pick{border-color:var(--blue);border-style:solid}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.slot.no{animation:shake .42s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.chip{
+  min-height:54px;padding:8px 18px;border-radius:28px;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  font:600 1.22rem var(--serif);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+}
+.chip.sel{background:var(--ink);color:#fff}
+.chip.used{opacity:.3;pointer-events:none}
+.chip.lifted{opacity:.35}
+.chip.drag{position:fixed;z-index:80;pointer-events:none;transform:translate(-50%,-60%);box-shadow:0 14px 28px -10px rgba(18,35,63,.55);background:#fff;color:var(--ink);opacity:1}
+
+/* ---------- Steckbrief ---------- */
+.clues{display:grid;gap:10px;margin:10px 0}
+.clue{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-left:6px solid var(--blue);border-radius:14px;padding:11px 14px}
+.clue .t{flex:1;font:500 1.08rem/1.45 var(--serif)}
+.clue .why{display:block;font:400 .9rem var(--sans);color:#8a2b1c;margin-top:4px}
+.clue .mk{font:700 1.2rem var(--sans);width:26px;text-align:center;flex:0 0 auto}
+.clue.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.clue.ok .mk{color:var(--ok)}
+.clue.no{border-left-color:var(--coral);background:#fdf1ef}
+.clue.no .mk{color:var(--coral)}
+
+/* ---------- Tabelle ---------- */
+.tblwrap{overflow-x:auto;margin:8px 0;-webkit-overflow-scrolling:touch}
+table.tb{border-collapse:separate;border-spacing:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;min-width:100%}
+table.tb th,table.tb td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font:600 1.2rem var(--serif);min-width:78px}
+table.tb tr:last-child td,table.tb tr:last-child th{border-bottom:0}
+table.tb td:last-child,table.tb th:last-child{border-right:0}
+table.tb th.rh{background:var(--ink);color:#fff;font-style:italic;text-align:center;min-width:64px}
+table.tb tr.xr td{background:var(--blue-soft)}
+table.tb tr.arr td{border-bottom:0;padding:0 4px;background:#fff;font:600 .86rem var(--sans);color:var(--amber);height:26px}
+table.tb tr.arr th{background:var(--ink);border-bottom:0}
+
+/* ---------- Fehlerdetektiv ---------- */
+.stud{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.stud .who{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stud .av{width:36px;height:36px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-weight:800}
+.stud .ln{font:500 1.12rem/1.55 var(--serif)}
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;
+  min-height:50px;color:var(--ink);line-height:1.4;font-size:.98rem;
+}
+.opt .mk{font-weight:700;margin-right:.55em;color:var(--blue-deep)}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.chosen-no{border-color:var(--coral);background:#fdecea}
+.opt:disabled{cursor:default}
+.probe{width:100%;border-collapse:collapse;font:500 1rem var(--serif);margin:6px 0 2px}
+.probe td,.probe th{border-bottom:1px solid #ecd2a2;padding:3px 8px;text-align:center}
+.probe .bad{color:var(--coral);font-weight:700}
+
+/* ---------- Merkhilfe ---------- */
+.veil{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:70;display:none}
+.veil.on{display:block}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:71;background:#fff;border-radius:24px 24px 0 0;max-height:86vh;overflow:auto;
+  padding:18px clamp(16px,3vw,32px) calc(26px + env(safe-area-inset-bottom));display:none;
+  box-shadow:0 -16px 40px -14px rgba(10,20,40,.6);
+}
+.sheet.on{display:block}
+.sheet-in{max-width:860px;margin:0 auto}
+.sheet h2{font:700 1.5rem var(--serif);margin:0 0 4px}
+.sheet h3{font:700 1.08rem var(--serif);margin:16px 0 4px;color:var(--blue-deep)}
+.sheet .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet .box{background:var(--blue-soft);border-left:5px solid var(--blue);border-radius:12px;padding:9px 14px;margin:6px 0}
+.sheet .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+@media(max-width:620px){.sheet .duo{grid-template-columns:1fr}}
+.sheet .duo div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.sheet .duo .up{border-left:5px solid var(--blue)}
+.sheet .duo .down{border-left:5px solid var(--amber)}
+.sheet ul{margin:.3em 0;padding-left:1.2em}
+.sheet li{margin:.25em 0}
+
+.hidden{display:none !important}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .draw{animation:none;stroke-dashoffset:0}
+  .fld.act .v::after{animation:none}
+  .slot.no{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="chipbtn" id="back" type="button" aria-label="Zurück zur Übungshalle">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg>
+      <span class="lbl">Halle</span>
+    </button>
+    <h1 id="bartitle">Übungshalle<small>I.2 Exponentialfunktionen</small></h1>
+    <span class="tmode" id="tmode">Lehrermodus</span>
+    <button class="chipbtn" id="merk" type="button">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H16v12H5.5A1.5 1.5 0 0 0 4 16.5v-12Z"/><path d="M4 16.5A1.5 1.5 0 0 0 5.5 18H16v-3"/></svg>
+      <span class="lbl">Merkhilfe</span>
+    </button>
+  </div>
+</header>
+
+<main id="stage"></main>
+
+<div class="dock" id="dock" role="group" aria-label="Zahlen eingeben"><div class="dock-in" id="dockin"></div></div>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Merkhilfe">
+  <div class="sheet-in">
+    <div class="row"><h2>Merkhilfe</h2><button class="btn ghost" id="sheetclose" type="button">Schließen</button></div>
+    <div class="box"><span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> mit <span class="mf"><i>a</i> &gt; 0</span>, <span class="mf"><i>a</i> ≠ 1</span>, <span class="mf"><i>b</i> ≠ 0</span></div>
+
+    <h3>Was bedeuten b und a?</h3>
+    <ul>
+      <li><span class="m">b</span> ist der Funktionswert bei <span class="mf"><i>x</i> = 0</span>: <span class="mf"><i>b</i> = <i>f</i>(0)</span>. Der Graph schneidet die <span class="m">y</span>-Achse im Punkt <span class="mf">(0 | <i>b</i>)</span>.</li>
+      <li><span class="m">a</span> ist der Faktor, mit dem der Funktionswert bei jedem Schritt um 1 nach rechts multipliziert wird.</li>
+    </ul>
+
+    <h3>Steigend oder fallend?</h3>
+    <div class="duo">
+      <div class="up"><b>b &gt; 0</b>, Graph oberhalb der <span class="m">x</span>-Achse<br><span class="mf"><i>a</i> &gt; 1</span> steigt · <span class="mf">0 &lt; <i>a</i> &lt; 1</span> fällt</div>
+      <div class="down"><b>b &lt; 0</b>, Graph unterhalb der <span class="m">x</span>-Achse<br><span class="mf"><i>a</i> &gt; 1</span> fällt · <span class="mf">0 &lt; <i>a</i> &lt; 1</span> steigt</div>
+    </div>
+
+    <h3>Term aus zwei Punkten</h3>
+    <ul>
+      <li>Zwischen <span class="mf"><i>x</i><sub>1</sub></span> und <span class="mf"><i>x</i><sub>2</sub></span> liegen <span class="mf"><i>d</i> = <i>x</i><sub>2</sub> − <i>x</i><sub>1</sub></span> Schritte. Also gilt <span class="mf"><i>a</i><sup><i>d</i></sup> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub></span>.</li>
+      <li>Dann <span class="m">b</span> aus einem Punkt: <span class="mf"><i>b</i> = <i>y</i><sub>1</sub> : <i>a</i><sup><i>x</i><sub>1</sub></sup></span>. Bei negativem <span class="mf"><i>x</i><sub>1</sub></span> gilt <span class="mf"><i>a</i><sup>−1</sup> = 1/<i>a</i></span>.</li>
+      <li>Bei <span class="mf"><i>d</i> = 1</span> ist <span class="mf"><i>a</i> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub></span> direkt der gesuchte Faktor.</li>
+    </ul>
+
+    <h3>Tabelle</h3>
+    <ul><li>Bei gleichen <span class="m">x</span>-Abständen ist der <b>Quotient</b> benachbarter Werte immer gleich. Wäre die <b>Differenz</b> gleich, wäre die Funktion linear.</li></ul>
+
+    <h3>Spiegeln</h3>
+    <div class="duo">
+      <div><b>an der <span class="m">x</span>-Achse</b><br><span class="m">b</span> wechselt das Vorzeichen: <span class="mf"><i>b</i> → −<i>b</i></span></div>
+      <div><b>an der <span class="m">y</span>-Achse</b><br><span class="m">a</span> wird zum Kehrwert: <span class="mf"><i>a</i> → 1/<i>a</i></span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+const $=(id)=>document.getElementById(id);
+const TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+
+function div(cls,html){const d=document.createElement("div");if(cls)d.className=cls;if(html!==undefined)d.innerHTML=html;return d;}
+function mkbtn(cls,html,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.innerHTML=html;if(fn)b.addEventListener("click",fn);return b;}
+
+/* deutsche Zahlschreibweise */
+function num(v,dec){
+  if(dec===undefined)dec=4;
+  if(!isFinite(v))return "—";
+  if(Math.abs(v)<5e-10)v=0;
+  let s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){s=s.replace(/0+$/,"").replace(/\.$/,"");}
+  if(s==="-0")s="0";
+  return s.replace(".",",");
+}
+function mnum(v,dec){return num(v,dec).replace("-","−");}
+/* Eingabe: Komma oder Punkt, Minus als - oder −, Brüche wie 1/3 */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-");
+  if(s==="")return NaN;
+  const m=s.match(/^([-+]?)(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)$/);
+  if(m){
+    const n=parseFloat(m[2].replace(",",".")),d=parseFloat(m[3].replace(",","."));
+    return d===0?NaN:(m[1]==="-"?-1:1)*n/d;
+  }
+  s=s.replace(",",".");
+  if(!/^[-+]?\d*\.?\d+$/.test(s))return NaN;
+  return Number(s);
+}
+const close=(x,y,t)=>Math.abs(x-y)<=(t||1e-6)*Math.max(1,Math.abs(y));
+const pw=(a,x)=>Math.pow(a,x);
+const r6=(v)=>Math.round(v*1e6)/1e6;
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+const LAST={};
+function pick(pool,key){
+  let i=Math.floor(Math.random()*pool.length);
+  if(pool.length>1){let g=0;while(i===LAST[key]&&g++<30)i=Math.floor(Math.random()*pool.length);}
+  LAST[key]=i;return pool[i];
+}
+/* Wird eine Stützaufgabe gebraucht, kommt sie aus der Stufe darunter bzw. aus den leichten Aufgaben der Stufe 1. */
+function poolFor(P,lvl,stuetz){
+  if(!stuetz)return {eff:lvl,pool:P[lvl]};
+  if(lvl>1)return {eff:lvl-1,pool:P[lvl-1]};
+  const e=P[1].filter(x=>x.e);
+  return {eff:1,pool:e.length?e:P[1]};
+}
+
+/* Basis als Text: Brüche wie 1/3 werden als Bruch gezeigt */
+function baseHTML(a){
+  if(close(a,1/3))return "(1/3)";
+  if(close(a,2/3))return "(2/3)";
+  return mnum(a,4);
+}
+/* Term b · a^x als HTML. */
+function termHTML(b,a){
+  let bs;
+  if(b===1)bs="";else if(b===-1)bs="−";else bs=mnum(b,4)+" · ";
+  return '<span class="mf">'+bs+baseHTML(a)+"<sup><i>x</i></sup></span>";
+}
+function fnHTML(b,a,name){
+  return '<span class="mf"><i>'+(name||"f")+'</i>(<i>x</i>) = '+termHTML(b,a).replace('<span class="mf">',"").replace(/<\/span>$/,"")+"</span>";
+}
+const isUp=(a,b)=>(b>0&&a>1)||(b<0&&a<1);
+const ICON_BULB='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14.5h6M8 17h4M10 2.5a5 5 0 0 0-3 9c.7.6 1 1.2 1 2h4c0-.8.3-1.4 1-2a5 5 0 0 0-3-9Z"/></svg>';
+
+/* =========================================================
+   SVG-Koordinatensystem (Board-Technik aus dem Lernpfad)
+   ========================================================= */
+const NS="http://www.w3.org/2000/svg";
+let BOARDN=0;
+function el(name,attrs){const e=document.createElementNS(NS,name);for(const k in attrs){if(Object.prototype.hasOwnProperty.call(attrs,k))e.setAttribute(k,attrs[k]);}return e;}
+function clearNode(g){while(g&&g.firstChild)g.removeChild(g.firstChild);}
+const FF="ui-serif,'New York',Georgia,serif";
+
+function Board(host,o){
+  const W=o.w||560,H=o.h||380,fs=o.fs||14;
+  const pad={l:o.padL!==undefined?o.padL:46,r:o.padR!==undefined?o.padR:24,t:o.padT!==undefined?o.padT:16,b:o.padB!==undefined?o.padB:34};
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",o.label||"Koordinatensystem");
+  const X=(x)=>pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r);
+  const Y=(y)=>H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b);
+  const cid="clip"+(++BOARDN);
+  const defs=el("defs",{});const cp=el("clipPath",{id:cid});
+  cp.appendChild(el("rect",{x:X(xmin),y:Y(ymax),width:X(xmax)-X(xmin),height:Y(ymin)-Y(ymax)}));
+  defs.appendChild(cp);svg.appendChild(defs);
+  const grid=el("g",{});let i;
+  const gx=o.gridx,gy=o.gridy;
+  if(gx)for(i=Math.ceil(xmin/gx-1e-9)*gx;i<=xmax+1e-9;i+=gx)grid.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#e6edf6","stroke-width":1}));
+  if(gy)for(i=Math.ceil(ymin/gy-1e-9)*gy;i<=ymax+1e-9;i+=gy)grid.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#e6edf6","stroke-width":1}));
+  svg.appendChild(grid);
+  const curves=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(curves);
+  const axg=el("g",{});svg.appendChild(axg);
+  const dots=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(dots);
+  const lbls=el("g",{});svg.appendChild(lbls);
+  (function(){
+    const AX="#243b5e";
+    axg.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-9)+","+(Y(0)-4.5)+" "+(X(xmax)-9)+","+(Y(0)+4.5),fill:AX}));
+    axg.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-4.5)+","+(Y(ymax)+9)+" "+(X(0)+4.5)+","+(Y(ymax)+9),fill:AX}));
+    let t;
+    const tx=o.tickx,ty=o.ticky;
+    if(tx)for(i=Math.ceil(xmin/tx-1e-9)*tx;i<=xmax-0.15*(xmax-xmin)/6;i+=tx){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(i),y:Y(0)+fs+4,"text-anchor":"middle","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    if(ty)for(i=Math.ceil(ymin/ty-1e-9)*ty;i<=ymax-0.12*(ymax-ymin);i+=ty){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(0)-8,y:Y(i)+fs*0.34,"text-anchor":"end","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    const lx=el("text",{x:X(xmax)-2,y:Y(0)+2*fs+4,"text-anchor":"end","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    lx.textContent="x";axg.appendChild(lx);
+    const ly=el("text",{x:X(0)+8,y:Y(ymax)+fs*0.9,"text-anchor":"start","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    ly.textContent="y";axg.appendChild(ly);
+  })();
+  const YLO=ymin-3*(ymax-ymin),YHI=ymax+3*(ymax-ymin);
+  const api={svg,X,Y,xmin,xmax,ymin,ymax,curves,dots,lbls};
+  api.reset=()=>{clearNode(curves);clearNode(dots);clearNode(lbls);};
+  api.curve=(fn,x0,x1,op)=>{
+    op=op||{};const N=op.n||420;let d="",pen=false,x,y;
+    for(let k=0;k<=N;k++){
+      x=x0+(x1-x0)*k/N;y=fn(x);
+      if(typeof y!=="number"||!isFinite(y)){pen=false;continue;}
+      if(y<YLO)y=YLO;else if(y>YHI)y=YHI;
+      d+=(pen?"L":"M")+X(x).toFixed(2)+" "+Y(y).toFixed(2)+" ";pen=true;
+    }
+    if(d==="")return null;
+    const at={d,fill:"none",stroke:op.color||"#1f6fb2","stroke-width":op.w||3,"stroke-linejoin":"round","stroke-linecap":"round"};
+    if(op.dash)at["stroke-dasharray"]=op.dash;
+    if(op.opacity!==undefined)at.opacity=op.opacity;
+    const p=el("path",at);(op.layer||curves).appendChild(p);return p;
+  };
+  api.dot=(x,y,op)=>{
+    op=op||{};if(!isFinite(y))return null;
+    const c=el("circle",{cx:X(x),cy:Y(Math.max(YLO,Math.min(YHI,y))),r:op.r||6,fill:op.color||"#d1432d",stroke:op.ring||"#fff","stroke-width":op.rw||2});
+    (op.layer||dots).appendChild(c);return c;
+  };
+  api.seg=(x0,y0,x1,y1,op)=>{
+    op=op||{};
+    const l=el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1),stroke:op.color||"#94a3b8","stroke-width":op.w||1.5});
+    if(op.dash)l.setAttribute("stroke-dasharray",op.dash);
+    (op.layer||dots).appendChild(l);return l;
+  };
+  api.text=(x,y,s,op)=>{
+    op=op||{};
+    const t=el("text",{x:X(x)+(op.dx||0),y:Y(y)+(op.dy||0),"font-size":op.size||fs,fill:op.fill||"#243b5e","text-anchor":op.anchor||"middle","font-family":op.family||FF,"font-weight":op.weight||"600",stroke:"#fff","stroke-width":op.halo===false?0:3.6,"paint-order":"stroke","stroke-linejoin":"round"});
+    t.textContent=s;(op.layer||lbls).appendChild(t);return t;
+  };
+  host.innerHTML="";host.appendChild(svg);
+  return api;
+}
+/* Ein sinnvolles Fenster für Punkte (x|y) wählen */
+function niceStep(range,maxTicks){
+  const c=[1,2,5,10,20,50,100,200];
+  for(let i=0;i<c.length;i++){if(range/c[i]<=maxTicks)return c[i];}
+  return 500;
+}
+function viewFor(pts){
+  let xlo=0,xhi=0,ylo=0,yhi=0;
+  pts.forEach(p=>{xlo=Math.min(xlo,p[0]);xhi=Math.max(xhi,p[0]);ylo=Math.min(ylo,p[1]);yhi=Math.max(yhi,p[1]);});
+  const xmin=Math.floor(xlo-1.8),xmax=Math.ceil(xhi+1.8);
+  let yp=(yhi-ylo)||1;
+  const sy=niceStep(yp*1.5,8);
+  let ymax=yhi>0?Math.ceil((yhi+yp*0.22)/sy)*sy:Math.ceil(0.6*sy);
+  let ymin=ylo<0?Math.floor((ylo-yp*0.22)/sy)*sy:-Math.ceil(0.6*sy);
+  if(ymax<=0)ymax=sy;if(ymin>=0)ymin=-sy;
+  return {xmin,xmax,ymin,ymax,gridx:1,gridy:sy,tickx:1,ticky:sy};
+}
+
+/* =========================================================
+   Eingabefelder und Tastenfeld
+   ========================================================= */
+const Dock=(function(){
+  let fields=[],act=null,onCheck=null,visible=false;
+  const host=$("dockin");
+  const KEYS=["1","2","3","4","5","6","7","8","9","0",",","−","/","⌫"];
+  const NAMES={",":"Komma","−":"Minus","/":"Bruchstrich","⌫":"Löschen"};
+  KEYS.forEach(k=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="key"+(NAMES[k]?" fn":"");b.textContent=k;
+    b.setAttribute("aria-label",NAMES[k]||k);
+    b.addEventListener("pointerdown",(e)=>e.preventDefault());
+    b.addEventListener("click",()=>press(k));
+    host.appendChild(b);
+  });
+  const go=document.createElement("button");go.type="button";go.className="key go";go.textContent="Prüfen";
+  go.addEventListener("pointerdown",(e)=>e.preventDefault());
+  go.addEventListener("click",()=>{if(onCheck)onCheck();});
+  host.appendChild(go);
+
+  function measure(){
+    document.documentElement.style.setProperty("--dockH",visible?($("dock").offsetHeight+"px"):"0px");
+  }
+  function press(k){
+    const f=act;if(!f||f.locked)return;
+    let v=f.val;
+    const tail=v.split("/").pop();
+    if(k==="⌫")v=v.slice(0,-1);
+    else if(k==="−"){v=(v[0]==="-")?v.slice(1):"-"+v;}
+    else if(k===","){if(tail.indexOf(",")<0)v+=(tail===""||tail==="-")?"0,":",";}
+    else if(k==="/"){if(v!==""&&v!=="-"&&v.indexOf("/")<0&&!/,$/.test(v))v+="/";}
+    else if(v.length<10)v+=k;
+    f.set(v);f.state("");
+  }
+  function activate(f){
+    if(act)act.el.classList.remove("act");
+    act=f;if(f&&!f.locked)f.el.classList.add("act");
+  }
+  return {
+    use(list,check){
+      fields=list;onCheck=check;visible=true;
+      document.body.classList.add("hasdock");
+      list.forEach(f=>{f.el.addEventListener("click",()=>activate(f));});
+      const first=list.find(f=>!f.locked);activate(first||null);
+      measure();
+    },
+    off(){visible=false;onCheck=null;fields=[];if(act)act.el.classList.remove("act");act=null;document.body.classList.remove("hasdock");measure();},
+    focus:activate,
+    next(){const i=fields.indexOf(act);for(let k=1;k<=fields.length;k++){const f=fields[(i+k)%fields.length];if(!f.locked){activate(f);return;}}},
+    press,measure,
+    get visible(){return visible;},
+    check(){if(onCheck)onCheck();}
+  };
+})();
+window.addEventListener("resize",()=>Dock.measure());
+document.addEventListener("keydown",(e)=>{
+  if(!Dock.visible||e.metaKey||e.ctrlKey||e.altKey)return;
+  if($("sheet").classList.contains("on"))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){Dock.press(k);e.preventDefault();}
+  else if(k===","||k==="."){Dock.press(",");e.preventDefault();}
+  else if(k==="-"){Dock.press("−");e.preventDefault();}
+  else if(k==="/"){Dock.press("/");e.preventDefault();}
+  else if(k==="Backspace"){Dock.press("⌫");e.preventDefault();}
+  else if(k==="Tab"){Dock.next();e.preventDefault();}
+  else if(k==="Enter"&&document.activeElement&&document.activeElement.classList.contains("fld")){Dock.check();e.preventDefault();}
+});
+
+function Field(opt){
+  opt=opt||{};
+  const b=document.createElement("button");b.type="button";b.className="fld"+(opt.sm?" sm":"");
+  b.setAttribute("aria-label",opt.aria||"Eingabefeld");
+  const v=document.createElement("span");v.className="v";b.appendChild(v);
+  const f={el:b,val:"",locked:false,
+    set(s){f.val=s;v.textContent=s.replace(/-/g,"−");},
+    num(){return parseNum(f.val);},
+    state(s){b.classList.remove("ok","no");if(s)b.classList.add(s);},
+    lock(s){f.locked=true;b.classList.remove("act");if(s)f.state(s);}
+  };
+  return f;
+}
+/* f(x) = [b] · [a]^x  – zwei Felder in einer Zeile */
+function TermRow(host,opt){
+  opt=opt||{};
+  const fb=Field({aria:"Wert für b"}),fa=Field({aria:"Wert für a"});
+  const row=div("term");
+  const l=document.createElement("span");l.className="mf";l.innerHTML="<i>"+(opt.name||"f")+"</i>(<i>x</i>) =";
+  row.appendChild(l);row.appendChild(fb.el);
+  const d=document.createElement("span");d.className="dotop";d.textContent="·";row.appendChild(d);
+  row.appendChild(fa.el);
+  const s=document.createElement("span");s.className="mf ex";s.innerHTML="<i>x</i>";row.appendChild(s);
+  host.appendChild(row);
+  return {fb,fa,row};
+}
+
+/* =========================================================
+   Fortschritt (nur im Arbeitsspeicher – nichts wird gespeichert)
+   ========================================================= */
+/* Tagesziel: nur im Arbeitsspeicher, unabhängig von Stufen und Mastery */
+const DAY={done:{}};
+/* Eine sicher gelöste Aufgabe schaltet die nächste Stufe frei */
+const NEED=1;
+const PROG={};
+const Prog={
+  get(id){return PROG[id]||(PROG[id]={unlocked:TEACHER?3:1,clean:[0,0,0],fails:0});},
+  record(id,lvl,clean,stuetz){
+    const p=this.get(id);let up=false;
+    if(clean){p.fails=0;if(!stuetz)p.clean[lvl-1]=Math.min(NEED,p.clean[lvl-1]+1);}
+    else p.fails++;
+    if(!stuetz&&p.clean[lvl-1]>=NEED&&p.unlocked===lvl&&lvl<3){p.unlocked=lvl+1;up=true;}
+    saveProgress();
+    return {up,mastered:p.clean[lvl-1]>=NEED,p};
+  }
+};
+
+/* Dauerhafte Speicherung (localStorage): nur unlocked und clean je Trainer.
+   Nicht gespeichert: Tagesziel (DAY), fails, laufende Aufgabe, Eingaben, Hinweise.
+   Im Lehrermodus wird weder gelesen noch geschrieben. */
+const STORE_KEY="expTrainingProgressV1";
+function saveProgress(){
+  if(TEACHER)return;
+  try{
+    const o={v:1,p:{}};
+    TR.forEach(t=>{const p=PROG[t.id];if(p)o.p[t.id]={unlocked:p.unlocked,clean:p.clean.slice()};});
+    localStorage.setItem(STORE_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function validEntry(e){
+  if(!e||typeof e!=="object"||!Number.isInteger(e.unlocked)||e.unlocked<1||e.unlocked>3)return false;
+  if(!Array.isArray(e.clean)||e.clean.length!==3)return false;
+  for(let i=0;i<3;i++){
+    const c=e.clean[i];
+    if(!Number.isInteger(c)||c<0||c>NEED)return false;
+    if(c>=NEED&&e.unlocked<Math.min(3,i+2))return false;
+    if(c>0&&e.unlocked<i+1)return false;
+  }
+  return true;
+}
+function loadProgress(){
+  if(TEACHER)return;
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw)return;
+    const o=JSON.parse(raw);
+    if(!o||typeof o!=="object"||o.v!==1||!o.p||typeof o.p!=="object")return;
+    TR.forEach(t=>{
+      const e=o.p[t.id];
+      if(validEntry(e))PROG[t.id]={unlocked:e.unlocked,clean:e.clean.slice(),fails:0};
+    });
+  }catch(e){}
+}
+function resetProgress(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  Object.keys(PROG).forEach(k=>{delete PROG[k];});
+  DAY.done={};
+}
+
+/* =========================================================
+   Aufgaben-Rahmen: Hilfen, Rückmeldung, Ergebnis
+   ========================================================= */
+let CUR=null;
+function Task(tr,lvl,stuetz){
+  const T=this;
+  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
+  const host=$("taskhost");host.innerHTML="";Dock.off();
+  if(stuetz)host.appendChild(div("banner","<b>Stützaufgabe.</b> Diese Aufgabe ist etwas leichter, damit du wieder in Schwung kommst. Sie zählt nicht für die Stufe."));
+  const card=div("card");host.appendChild(card);
+  T.work=div("work stick"+(tr.noViz?" one":""));card.appendChild(T.work);
+  T.viz=div("viz");T.side=div("side");
+  if(!tr.noViz)T.work.appendChild(T.viz);
+  T.work.appendChild(T.side);
+  T.body=div("");T.side.appendChild(T.body);
+  T.fb=div("fb");T.side.appendChild(T.fb);
+  T.helpHost=div("");T.side.appendChild(T.helpHost);
+  T.res=div("result");T.side.appendChild(T.res);
+}
+Task.prototype.say=function(kind,html){this.fb.className="fb "+kind+" show";this.fb.innerHTML=html;};
+Task.prototype.clearSay=function(){this.fb.className="fb";this.fb.innerHTML="";};
+Task.prototype.miss=function(){
+  this.wrong++;
+  if(this.wrong>=3&&this.solBtn)this.solBtn.style.display="";
+};
+Task.prototype.setHints=function(hints,solFn){
+  const T=this;T.hints=hints;T.solFn=solFn;
+  T.helpHost.innerHTML="";
+  const bar=div("helpbar"),list=div("hints");
+  T.helpHost.appendChild(bar);T.helpHost.appendChild(list);
+  const hb=document.createElement("button");hb.type="button";hb.className="hbtn";
+  const sb=document.createElement("button");sb.type="button";sb.className="hbtn sol";sb.textContent="Lösung zeigen";
+  function lab(){hb.innerHTML=ICON_BULB+"<span>Hilfe</span><span class='tier'>"+hints.map((h,i)=>"<i class='"+(i<T.helpN?"on":"")+"'></i>").join("")+"</span>";}
+  lab();
+  hb.addEventListener("click",()=>{
+    if(T.over||T.helpN>=hints.length)return;
+    let h=hints[T.helpN];T.helpN++;
+    if(typeof h==="function")h=h();
+    const txt=(h&&h.t!==undefined)?h.t:h;
+    list.appendChild(div("hintcard","<b>Hinweis "+T.helpN+".</b> "+txt));
+    if(h&&h.fn)h.fn();
+    lab();
+    if(T.helpN>=hints.length){hb.style.display="none";sb.style.display="";}
+    Dock.measure();
+  });
+  sb.addEventListener("click",()=>{
+    if(T.over)return;
+    T.solShown=true;
+    if(solFn)solFn();
+  });
+  sb.style.display=TEACHER?"":"none";
+  bar.appendChild(hb);bar.appendChild(sb);
+  T.solBtn=sb;T.hideHelp=()=>{bar.style.display="none";};
+};
+/* Aufgabe beendet (richtig gelöst oder Lösung gezeigt) */
+Task.prototype.complete=function(extraHtml){
+  const T=this;if(T.over)return;T.over=true;
+  if(T.hideHelp)T.hideHelp();
+  Dock.off();
+  DAY.done[T.tr.id]=true;
+  const clean=!T.solShown&&T.helpN<=1&&T.wrong<=2;
+  const r=Prog.record(T.tr.id,T.lvl,clean,T.stuetz);
+  T.res.innerHTML="";
+  let msg;
+  if(T.solShown)msg="<b>Lösung angezeigt.</b> Diese Aufgabe zählt nicht mit. Die nächste probierst du selbst.";
+  else if(!clean)msg="<b>Gelöst, aber mit Hilfe oder mehreren Anläufen.</b> Diese Aufgabe zählt noch nicht. Die nächste schaffst du selbst.";
+  else if(T.stuetz)msg="<b>Gut gelöst.</b> Du bist wieder im Fluss. Weiter geht es mit der normalen Aufgabe.";
+  else if(r.up)msg="<b>Sicher gelöst. Stufe "+(T.lvl+1)+" ist freigeschaltet.</b>";
+  else if(r.mastered&&T.lvl===3)msg="<b>Sicher gelöst. Dieser Trainer ist gemeistert.</b> Du kannst weiterüben oder einen anderen Trainer wählen.";
+  else if(r.mastered)msg="<b>Sicher gelöst.</b> Diese Stufe ist geschafft. Du kannst weiterüben oder zur nächsten Stufe wechseln.";
+  else msg="<b>Sicher gelöst.</b>";
+  const box=div("fb "+(clean?"ok":"hint")+" show",(extraHtml?extraHtml+"<br>":"")+msg);
+  T.res.appendChild(box);
+  const row=div("btnrow");
+  row.appendChild(mkbtn("btn","Nächste Aufgabe",()=>nextTask()));
+  if(r.up)row.appendChild(mkbtn("btn blue","Zu Stufe "+(T.lvl+1),()=>{CUR.lvl=T.lvl+1;renderLevelBar();nextTask();}));
+  row.appendChild(mkbtn("btn ghost","Zur Halle",()=>showHalle()));
+  T.res.appendChild(row);
+  renderLevelBar();
+  setTimeout(()=>{try{T.res.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+};
+
+/* =========================================================
+   Illustrationen (Kopfbereich und Kacheln)
+   ========================================================= */
+function cd(fn,x0,x1,map,n){
+  n=n||90;let d="";
+  for(let i=0;i<=n;i++){
+    const x=x0+(x1-x0)*i/n;let y=fn(x);
+    if(!isFinite(y))continue;
+    y=Math.max(-40,Math.min(60,y));
+    const p=map(x,y);d+=(d?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  }
+  return d;
+}
+function heroArt(){
+  const W=520,H=300,ox=232,oy=172,sx=60,sy=25;
+  const m=(x,y)=>[ox+sx*x,oy-sy*y];
+  let g="";
+  for(let i=-4;i<=4;i++)g+='<line x1="'+(ox+sx*i)+'" y1="14" x2="'+(ox+sx*i)+'" y2="'+(H-14)+'" stroke="#fff" stroke-opacity=".08"/>';
+  for(let j=-5;j<=6;j++)g+='<line x1="16" y1="'+(oy-sy*j)+'" x2="'+(W-16)+'" y2="'+(oy-sy*j)+'" stroke="#fff" stroke-opacity=".08"/>';
+  const ax='<line x1="16" y1="'+oy+'" x2="'+(W-16)+'" y2="'+oy+'" stroke="#9fb3d1" stroke-width="1.6"/><line x1="'+ox+'" y1="14" x2="'+ox+'" y2="'+(H-14)+'" stroke="#9fb3d1" stroke-width="1.6"/>';
+  const defs='<defs><clipPath id="hc"><rect x="16" y="14" width="'+(W-32)+'" height="'+(H-28)+'" rx="10"/></clipPath></defs>';
+  const C=[
+    {fn:x=>pw(2,x),c:"#6fb3ee",d:.15},
+    {fn:x=>1.6*pw(.5,x),c:"#f0a64a",d:.45},
+    {fn:x=>-pw(1.7,x),c:"#ff8f7a",d:.75},
+    {fn:x=>.5*pw(3,x),c:"#5fd0b3",d:1.05}
+  ];
+  let paths="";
+  C.forEach(o=>{paths+='<path class="draw" pathLength="1" style="animation-delay:'+o.d+'s" d="'+cd(o.fn,-3.9,3.8,m,160)+'" fill="none" stroke="'+o.c+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';});
+  const dots='<circle cx="'+ox+'" cy="'+(oy-sy)+'" r="6" fill="#fff" stroke="#6fb3ee" stroke-width="3"/><circle cx="'+m(1,2)[0]+'" cy="'+m(1,2)[1]+'" r="6" fill="#fff" stroke="#6fb3ee" stroke-width="3"/>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" aria-hidden="true">'+defs+'<g clip-path="url(#hc)">'+g+ax+paths+dots+'</g></svg>';
+}
+function artWrap(inner){
+  let g="";
+  for(let i=0;i<=15;i++)g+='<line x1="'+(i*20)+'" y1="0" x2="'+(i*20)+'" y2="132" stroke="#e8eef6"/>';
+  for(let j=0;j<=7;j++)g+='<line x1="0" y1="'+(j*20)+'" x2="300" y2="'+(j*20)+'" stroke="#e8eef6"/>';
+  return '<svg viewBox="0 0 300 132" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+g+inner+'</svg>';
+}
+function axes(ox,oy){
+  return '<path d="M8 '+oy+'H292M'+ox+' 128V6" stroke="#243b5e" stroke-width="1.6" fill="none"/>';
+}
+const ART={
+  tuner(){
+    const m=(x,y)=>[112+34*x,104-11*y];
+    return artWrap(axes(112,104)+
+      '<path d="'+cd(x=>pw(2,x),-3.5,3.4,m)+'" stroke="#c9770f" stroke-width="3" stroke-dasharray="7 6" fill="none"/>'+
+      '<path d="'+cd(x=>1.25*pw(1.6,x),-3.5,3.4,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      '<g transform="translate(212,76)"><rect width="34" height="34" rx="10" fill="#fff" stroke="#1f6fb2" stroke-width="2.2"/><path d="M10 17h14" stroke="#1f6fb2" stroke-width="2.6" stroke-linecap="round"/>'+
+      '<g transform="translate(42,0)"><rect width="34" height="34" rx="10" fill="#fff" stroke="#1f6fb2" stroke-width="2.2"/><path d="M10 17h14M17 10v14" stroke="#1f6fb2" stroke-width="2.6" stroke-linecap="round"/></g></g>');
+  },
+  detektiv(){
+    const m=(x,y)=>[84+34*x,104-12*y];
+    const p=m(0,2),q=m(2,6);
+    return artWrap(axes(84,104)+
+      '<path d="'+cd(x=>2*pw(1.732,x),-2.4,4.4,m)+'" stroke="#1f6fb2" stroke-opacity=".28" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round" fill="none"/>'+
+      '<path d="M'+q[0]+' '+q[1]+'V104M'+q[0]+' '+q[1]+'H84" stroke="#94a3b8" stroke-dasharray="3 4" fill="none"/>'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="7" fill="#d1432d" stroke="#fff" stroke-width="2.4"/><circle cx="'+q[0]+'" cy="'+q[1]+'" r="7" fill="#d1432d" stroke="#fff" stroke-width="2.4"/>'+
+      '<text x="'+(p[0]+12)+'" y="'+(p[1]-8)+'" font-family="'+FF+'" font-weight="700" font-size="15" fill="#9b2c1f">P</text>'+
+      '<text x="'+(q[0]+12)+'" y="'+(q[1]-6)+'" font-family="'+FF+'" font-weight="700" font-size="15" fill="#9b2c1f">Q</text>'+
+      '<text x="196" y="40" font-family="'+FF+'" font-style="italic" font-size="22" fill="#12233f">f(x) = ?</text>');
+  },
+  zuordnen(){
+    const m=(x,y)=>[150+32*x,70-9*y];
+    const cs=[["#1f6fb2",x=>pw(2,x)],["#d9730d",x=>2*pw(.5,x)],["#8e4ec6",x=>-pw(1.6,x)],["#12907a",x=>.4*pw(3,x)]];
+    let s=axes(150,70);
+    cs.forEach(c=>{s+='<path d="'+cd(c[1],-4.6,4.5,m)+'" stroke="'+c[0]+'" stroke-width="3.2" fill="none" stroke-linecap="round"/>';});
+    [["#1f6fb2",34],["#d9730d",64],["#8e4ec6",94],["#12907a",124]].forEach((b,i)=>{s+='<g transform="translate('+(250)+','+(b[1]-14)+')"><circle r="10" fill="'+b[0]+'"/><text y="5" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="13" fill="#fff">'+(i+1)+'</text></g>';});
+    return artWrap(s);
+  },
+  steckbrief(){
+    let s='<rect x="26" y="14" width="170" height="104" rx="14" fill="#fff" stroke="#b9c7da" stroke-width="2"/>';
+    [0,1,2].forEach(i=>{const y=38+i*30;s+='<circle cx="48" cy="'+y+'" r="9" fill="#e3f4ea" stroke="#1e7a4d" stroke-width="2"/><path d="M43.5 '+y+'l3.2 3.2 6-6.6" stroke="#1e7a4d" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="66" y="'+(y-5)+'" width="'+(96-i*14)+'" height="10" rx="5" fill="#d5deea"/>';});
+    const m=(x,y)=>[232+22*x,100-9*y];
+    s+='<path d="M206 100H294M232 118V8" stroke="#243b5e" stroke-width="1.5" fill="none"/><path d="'+cd(x=>1.5*pw(.6,x)*2,-1.6,3.4,m)+'" stroke="#1f6fb2" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="232" cy="'+m(0,3)[1]+'" r="5.5" fill="#d1432d" stroke="#fff" stroke-width="2"/>';
+    return artWrap(s);
+  },
+  tabelle(){
+    const xs=["−1","0","1","2"],ys=["1,5","3","?","12"];
+    let s='<rect x="38" y="34" width="224" height="64" rx="10" fill="#fff" stroke="#12233f" stroke-width="2"/><path d="M38 66H262" stroke="#b9c7da" stroke-width="1.5"/>';
+    xs.forEach((x,i)=>{
+      const cx=38+56*i+28;
+      if(i>0)s+='<path d="M'+(38+56*i)+' 34V98" stroke="#d5deea" stroke-width="1.5"/>';
+      s+='<text x="'+cx+'" y="56" text-anchor="middle" font-family="'+FF+'" font-style="italic" font-weight="600" font-size="17" fill="#4b5b73">'+x+'</text>';
+      const q=ys[i]==="?";
+      if(q)s+='<rect x="'+(cx-20)+'" y="71" width="40" height="22" rx="7" fill="#e3eefa" stroke="#1f6fb2" stroke-width="2"/>';
+      s+='<text x="'+cx+'" y="88" text-anchor="middle" font-family="'+FF+'" font-weight="700" font-size="18" fill="'+(q?"#1f6fb2":"#12233f")+'">'+ys[i]+'</text>';
+    });
+    [0,1,2].forEach(i=>{const x0=38+56*i+28,x1=x0+56;s+='<path d="M'+(x0+8)+' 30Q'+((x0+x1)/2)+' 6 '+(x1-8)+' 30" stroke="#c9770f" stroke-width="2" fill="none" stroke-linecap="round"/><text x="'+((x0+x1)/2)+'" y="18" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="12" fill="#c9770f">· a</text>';});
+    return artWrap(s);
+  },
+  fehler(){
+    const m=(x,y)=>[100+34*x,106-12*y];
+    return artWrap(axes(100,106)+
+      '<path d="'+cd(x=>1.5*pw(2,x),-3,3.4,m)+'" stroke="#1f6fb2" stroke-width="3.4" fill="none" stroke-linecap="round"/>'+
+      '<path d="'+cd(x=>2*pw(1.4,x),-3,3.4,m)+'" stroke="#d1432d" stroke-width="3" stroke-dasharray="7 6" fill="none"/>'+
+      '<g transform="translate(206,40)"><circle r="26" fill="#fff" fill-opacity=".85" stroke="#12233f" stroke-width="3.2"/><path d="M19 19l17 17" stroke="#12233f" stroke-width="5" stroke-linecap="round"/><path d="M-9 -9l18 18M9 -9l-18 18" stroke="#d1432d" stroke-width="4" stroke-linecap="round"/></g>');
+  }
+};
+
+/* =========================================================
+   Router: Halle und Trainer
+   ========================================================= */
+const TR=[];
+const trOf=(id)=>TR.find(t=>t.id===id);
+function setBar(title,small){$("bartitle").innerHTML=title+(small?"<small>"+small+"</small>":"");}
+
+function showHalle(){
+  CUR=null;Dock.off();document.body.classList.remove("intr");
+  setBar("I.2 Exponentialfunktionen","");
+  const st=$("stage");st.innerHTML="";
+  const hero=div("hero");
+  hero.innerHTML='<div class="hero-in"><div><h2>Übungshalle</h2><p>Sechs Trainer rund um <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Such dir einen aus. Eine Stufe öffnet sich, sobald dir eine Aufgabe sicher gelingt.</p></div><div class="art">'+heroArt()+'</div></div>';
+  st.appendChild(hero);
+  const wrap=div("wrap"),tiles=div("tiles");
+  const nDone=TR.filter(t=>DAY.done[t.id]).length,all=nDone===TR.length;
+  const dg=div("daygoal"+(all?" done":""));
+  dg.innerHTML='<span class="tx" aria-live="polite">'+(all?'✓ Tagesziel erreicht – alle sechs Trainer bearbeitet.':'Heute: <b>'+nDone+' von 6</b> Trainern bearbeitet')+'</span><span class="segs" role="img" aria-label="'+nDone+' von 6 Trainern bearbeitet">'+TR.map(t=>'<span class="seg'+(DAY.done[t.id]?' on':'')+'"></span>').join("")+'</span>';
+  wrap.appendChild(dg);
+  TR.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="tile";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    const note=done?"gemeistert":"Stufe "+p.unlocked+" offen";
+    b.innerHTML=(DAY.done[tr.id]?'<span class="today"><span aria-hidden="true">✓</span> heute bearbeitet</span>':'')+'<span class="art">'+ART[tr.art]()+'</span><span class="tb"><h3>'+tr.name+'</h3><p>'+tr.blurb+'</p><span class="pips">'+pips+'</span><span class="pipnote">'+note+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    tiles.appendChild(b);
+  });
+  wrap.appendChild(tiles);
+  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einem Hinweis, ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe schaltet die nächste Stufe frei. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Deine freigeschalteten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
+  const rr=div("resetrow");
+  const lk=mkbtn("linkbtn","Fortschritt zurücksetzen",()=>{
+    rr.innerHTML="";
+    const cf=div("confirm");
+    cf.setAttribute("role","alertdialog");cf.setAttribute("aria-label","Fortschritt zurücksetzen");
+    cf.appendChild(div("","Möchtest du wirklich deinen gesamten gespeicherten Fortschritt zurücksetzen? Alle freigeschalteten Stufen werden gelöscht."));
+    const row=div("btnrow");
+    row.appendChild(mkbtn("btn ghost","Abbrechen",()=>{rr.innerHTML="";rr.appendChild(lk);}));
+    row.appendChild(mkbtn("btn danger","Ja, zurücksetzen",()=>{resetProgress();showHalle();}));
+    cf.appendChild(row);rr.appendChild(cf);
+  });
+  rr.appendChild(lk);wrap.appendChild(rr);
+  st.appendChild(wrap);
+  window.scrollTo(0,0);
+}
+
+function openTrainer(id){
+  const tr=trOf(id),p=Prog.get(id);
+  CUR={id:id,lvl:TEACHER?1:p.unlocked};
+  document.body.classList.add("intr");
+  setBar(tr.name,"Übungshalle");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap");wrap.innerHTML='<div class="lvlbar" id="lvlbar"></div><div id="taskhost"></div>';
+  st.appendChild(wrap);
+  renderLevelBar();nextTask();
+}
+function renderLevelBar(){
+  const bar=$("lvlbar");if(!bar||!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);bar.innerHTML="";
+  tr.levels.forEach((L,i)=>{
+    const n=i+1,locked=n>p.unlocked;
+    const b=document.createElement("button");b.type="button";
+    b.className="lvl"+(n===CUR.lvl?" sel":"")+(locked?" lock":"");
+    b.innerHTML="<b>Stufe "+n+"</b><small>"+L.n+"</small>"+(locked?'<span class="lk">noch gesperrt</span>':'<span class="dots"><i class="dot'+(p.clean[i]>=NEED?" on":"")+'"></i><span class="lk">'+(p.clean[i]>=NEED?(n===3?"gemeistert":"geschafft"):"noch offen")+"</span></span>");
+    b.setAttribute("aria-label","Stufe "+n+", "+L.n+(locked?", noch gesperrt":(p.clean[i]>=NEED?(n===3?", gemeistert":", geschafft"):", noch offen")));
+    b.addEventListener("click",()=>{if(locked||n===CUR.lvl)return;CUR.lvl=n;renderLevelBar();nextTask();});
+    bar.appendChild(b);
+  });
+}
+function nextTask(){
+  if(!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);
+  let stuetz=false;
+  if(p.fails>=2&&!TEACHER){stuetz=true;p.fails=0;}
+  const T=new Task(tr,CUR.lvl,stuetz);
+  tr.start(T,CUR.lvl,stuetz);
+  Dock.measure();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Merkhilfe ---------- */
+function openSheet(){$("veil").classList.add("on");$("sheet").classList.add("on");$("sheetclose").focus();}
+function closeSheet(){$("veil").classList.remove("on");$("sheet").classList.remove("on");}
+$("merk").addEventListener("click",openSheet);
+$("sheetclose").addEventListener("click",closeSheet);
+$("veil").addEventListener("click",closeSheet);
+document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeSheet();});
+$("back").addEventListener("click",showHalle);
+$("tmode").classList.toggle("on",TEACHER);
+
+/* =========================================================
+   TRAINER 1 – Kurven-Tuner
+   ========================================================= */
+const A_STEPS=[0.25,0.5,0.75,1.25,1.5,2,2.5,3,4];
+const B_STEPS=[-4,-3,-2,-1,-0.5,0.5,1,2,3,4];
+const TUNER={
+  1:[{a:2,e:1},{a:0.5,e:1},{a:3},{a:1.5},{a:4},{a:0.25},{a:2.5}],
+  2:[{a:2,b:3},{a:0.5,b:2},{a:3,b:-1},{a:1.5,b:4},{a:2,b:-2},{a:0.5,b:-3},{a:3,b:2},{a:0.25,b:4}],
+  3:[{a:2,b:3,ax:"y"},{a:3,b:2,ax:"x"},{a:0.5,b:-2,ax:"y"},{a:4,b:1,ax:"y"},{a:0.25,b:2,ax:"xy"},{a:2.5,b:-1,ax:"x"},{a:0.5,b:3,ax:"xy"},{a:2,b:-2,ax:"x"}]
+};
+function mirrorOf(t,ax){
+  if(ax==="y")return {a:1/t.a,b:t.b};
+  if(ax==="x")return {a:t.a,b:-t.b};
+  return {a:1/t.a,b:-t.b};
+}
+function Stepper(label,steps,idx,onChange){
+  const row=div("stepper");
+  const l=document.createElement("span");l.className="lab";l.textContent=label;
+  const minus=mkbtn("sb","−"),plus=mkbtn("sb","+"),val=div("val");
+  minus.setAttribute("aria-label",label+" verkleinern");plus.setAttribute("aria-label",label+" vergrößern");
+  row.appendChild(l);row.appendChild(minus);row.appendChild(val);row.appendChild(plus);
+  const s={row,idx,locked:false,
+    get(){return steps[s.idx];},
+    set(i){s.idx=Math.max(0,Math.min(steps.length-1,i));render();},
+    lock(){s.locked=true;render();}
+  };
+  function render(){
+    val.textContent=mnum(steps[s.idx]);
+    minus.disabled=s.locked||s.idx===0;plus.disabled=s.locked||s.idx===steps.length-1;
+  }
+  minus.addEventListener("click",()=>{s.set(s.idx-1);onChange();});
+  plus.addEventListener("click",()=>{s.set(s.idx+1);onChange();});
+  render();
+  return s;
+}
+TR.push({
+  id:"tuner",name:"Kurven-Tuner",art:"tuner",
+  blurb:"Stelle a und b ein, bis deine Kurve die gestrichelte Zielkurve genau trifft.",
+  levels:[{n:"Basis a einstellen"},{n:"a und b einstellen"},{n:"Spiegeln"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(TUNER,lvl,stuetz),eff=PF.eff;
+    const base=pick(PF.pool,"tuner"+eff+(stuetz?"s":""));
+    let t,orig=null;
+    if(eff===1)t={a:base.a,b:1};
+    else if(eff===2)t={a:base.a,b:base.b};
+    else{orig={a:base.a,b:base.b};t=mirrorOf(orig,base.ax);}
+    const view=eff===1?{xmin:-3,xmax:3.4,ymin:-1.5,ymax:9.5}:{xmin:-3.2,xmax:3.4,ymin:-9,ymax:9};
+    const B=Board(T.viz,Object.assign({w:560,h:380,gridx:1,gridy:1,tickx:1,ticky:eff===1?1:3,label:"Koordinatensystem mit der gestrichelten Zielkurve und deiner Kurve"},view));
+    const wrap=T.viz;
+    wrap.appendChild(div("legend",'<span><i class="sw"></i>deine Kurve</span><span><i class="sw dash"></i>'+(eff===3?"gegebene Kurve":"Zielkurve")+"</span>"+(eff===3?'<span class="hidden" id="lgGhost"><i class="sw ghost"></i>Spiegelbild</span>':"")));
+    let reveal=0,ghost=false;
+    /* Bedienelemente */
+    const body=T.body;
+    let prompt;
+    if(eff===1)prompt='Stelle die Basis <i class="m">a</i> so ein, dass deine blaue Kurve die gestrichelte Zielkurve trifft. Der Faktor ist fest: <span class="mf"><i>b</i> = 1</span>.';
+    else if(eff===2)prompt='Stelle <i class="m">b</i> und <i class="m">a</i> so ein, dass deine blaue Kurve die gestrichelte Zielkurve trifft.';
+    else{
+      const axTxt=base.ax==="y"?"an der <b><i>y</i>-Achse</b>":base.ax==="x"?"an der <b><i>x</i>-Achse</b>":"erst an der <b><i>x</i>-Achse</b> und dann an der <b><i>y</i>-Achse</b>";
+      prompt="Die gestrichelte Kurve gehört zu einer Funktion <i class=\"m\">f</i>. Stelle den Term der Kurve ein, die man erhält, wenn man die gestrichelte Kurve "+axTxt+" spiegelt.";
+    }
+    body.appendChild(div("prompt",prompt));
+    if(eff===3)body.appendChild(div("goal","Spiegelbild einstellen"));
+    const live=div("livefn");
+    const sa=Stepper("a",A_STEPS,A_STEPS.indexOf(0.75),draw);
+    const sb=eff===1?null:Stepper("b",B_STEPS,B_STEPS.indexOf(1),draw);
+    if(sb)body.appendChild(sb.row);
+    body.appendChild(sa.row);
+    body.appendChild(live);
+    const row=div("btnrow");
+    const go=mkbtn("btn","Prüfen",check);row.appendChild(go);body.appendChild(row);
+    function cur(){return {a:sa.get(),b:sb?sb.get():1};}
+    function draw(){
+      const p=cur();
+      B.reset();
+      B.curve(x=>t.b*pw(t.a,x),B.xmin,B.xmax,{color:"#c9770f",w:3.4,dash:"10 8"});
+      if(ghost){B.curve(x=>t.b*pw(t.a,x),B.xmin,B.xmax,{color:"#1e7a4d",w:3.6,dash:"2 7"});}
+      B.curve(x=>p.b*pw(p.a,x),B.xmin,B.xmax,{color:"#1f6fb2",w:3.9});
+      const top=B.ymax-0.6;
+      if(eff===1){
+        B.dot(1,p.a*p.b,{r:6.5});
+        B.text(1,Math.min(p.a*p.b,top),"(1 | "+mnum(p.a*p.b,2)+")",{dx:11,dy:-11,anchor:"start",fill:"#9b2c1f",size:14});
+      }else{
+        B.dot(0,p.b,{r:6.5});
+        B.text(0,p.b,"(0 | "+mnum(p.b,2)+")",{dx:11,dy:p.b>=0?-11:22,anchor:"start",fill:"#9b2c1f",size:14});
+      }
+      if(reveal>=1){
+        const tp=eff===1?[[1,t.a*t.b]]:[[0,t.b],[1,t.a*t.b]];
+        tp.forEach(q=>{B.dot(q[0],q[1],{color:"#c9770f",r:7});B.text(q[0],Math.min(q[1],top),"("+q[0]+" | "+mnum(q[1],2)+")",{dx:-11,dy:q[1]>=0?-12:24,anchor:"end",fill:"#8a5a00",size:14});});
+      }
+      live.innerHTML=fnHTML(p.b,p.a);
+    }
+    function lockAll(){sa.lock();if(sb)sb.lock();go.disabled=true;}
+    function finish(msg){
+      lockAll();
+      const p=cur();
+      T.complete(msg);
+    }
+    function check(){
+      if(T.over)return;
+      const p=cur();
+      if(close(p.a,t.a)&&close(p.b,t.b)){
+        draw();
+        let msg;
+        if(eff===1)msg="<span class='mf'>f(x) = "+termHTML(1,t.a).replace('<span class="mf">',"").replace(/<\/span>$/,"")+"</span>. Bei <i class='m'>b</i> = 1 ist <span class='mf'><i>f</i>(1) = <i>a</i></span>.";
+        else if(eff===2)msg=fnHTML(t.b,t.a)+". Es gilt <span class='mf'><i>b</i> = <i>f</i>(0)</span> und <span class='mf'><i>a</i> = <i>f</i>(1) : <i>f</i>(0)</span>.";
+        else msg=fnHTML(t.b,t.a)+". Spiegelung an der <i class='m'>y</i>-Achse: <span class='mf'><i>a</i> → 1/<i>a</i></span>. Spiegelung an der <i class='m'>x</i>-Achse: <span class='mf'><i>b</i> → −<i>b</i></span>.";
+        T.say("ok","<b>Richtig.</b> "+msg);
+        finish("");
+        return;
+      }
+      T.miss();
+      T.say("hint","<b>Noch nicht.</b> "+tunerFeedback(p,t,eff,orig,base.ax));
+    }
+    function tunerFeedback(p,t,eff,orig,ax){
+      if(eff===3&&orig){
+        if(close(p.a,orig.a)&&close(p.b,orig.b))return "Das ist die gegebene Kurve selbst. Sie soll noch gespiegelt werden.";
+        const alts={y:mirrorOf(orig,"y"),x:mirrorOf(orig,"x"),xy:mirrorOf(orig,"xy")};
+        for(const k in alts){
+          if(k!==ax&&close(p.a,alts[k].a)&&close(p.b,alts[k].b)){
+            return "Das wäre die Spiegelung an "+(k==="y"?"der <i>y</i>-Achse":k==="x"?"der <i>x</i>-Achse":"beiden Achsen")+". Lies die Aufgabe noch einmal.";
+          }
+        }
+      }
+      if(eff>1&&!close(p.b,t.b)){
+        if(Math.sign(p.b)!==Math.sign(t.b))return "Deine Kurve liegt auf der anderen Seite der <i>x</i>-Achse als die Zielkurve. Prüfe das Vorzeichen von <i>b</i>.";
+        return "Deine Kurve schneidet die <i>y</i>-Achse "+(p.b>t.b?"höher":"tiefer")+" als die Zielkurve. Das ist der Wert von <i>b</i>.";
+      }
+      const f1=p.a*p.b,g1=t.a*t.b;
+      return (eff>1?"Der <i>y</i>-Achsenabschnitt passt. ":"")+"Bei <i>x</i> = 1 liegt deine Kurve zu "+(f1>g1?"hoch":"tief")+".";
+    }
+    const h=[];
+    if(eff===1){
+      h.push("Vergleiche, wie schnell die Kurven nach rechts ansteigen. Steigt deine Kurve zu langsam, brauchst du ein größeres <i>a</i>.");
+      h.push("Weil <i>b</i> = 1 ist, gilt <i>f</i>(1) = <i>a</i>. Lies an der gestrichelten Kurve ab, wie hoch sie bei <i>x</i> = 1 liegt.");
+      h.push(()=>({t:"Der Punkt der Zielkurve bei <i>x</i> = 1 ist jetzt markiert.",fn:()=>{reveal=1;draw();}}));
+    }else if(eff===2){
+      h.push("Stelle zuerst <i>b</i> ein: Wo schneidet die gestrichelte Kurve die <i>y</i>-Achse? Das Vorzeichen zählt.");
+      h.push("Dann <i>a</i>: Gehe von (0 | <i>b</i>) einen Schritt nach rechts. Womit wird multipliziert? Bei <i>b</i> &gt; 0 steigt der Graph für <i>a</i> &gt; 1 und fällt für <i>a</i> &lt; 1. Bei <i>b</i> &lt; 0 ist es umgekehrt.");
+      h.push(()=>({t:"Die Punkte der Zielkurve bei <i>x</i> = 0 und <i>x</i> = 1 sind jetzt markiert.",fn:()=>{reveal=1;draw();}}));
+    }else{
+      h.push("Bestimme zuerst den Term der gestrichelten Kurve: Lies <i>b</i> am <i>y</i>-Achsenabschnitt ab und überlege, ob <i>a</i> größer oder kleiner als 1 ist.");
+      h.push("Spiegeln an der <i>y</i>-Achse: <i>b</i> bleibt, <i>a</i> wird zum Kehrwert. Spiegeln an der <i>x</i>-Achse: <i>a</i> bleibt, <i>b</i> wechselt das Vorzeichen.");
+      h.push(()=>({t:"Das grün gepunktete Spiegelbild ist jetzt eingezeichnet. Stelle deine Kurve darauf ein.",fn:()=>{ghost=true;const g=$("lgGhost");if(g)g.classList.remove("hidden");draw();}}));
+    }
+    T.setHints(h,()=>{
+      const ia=A_STEPS.findIndex(v=>close(v,t.a)),ib=B_STEPS.findIndex(v=>close(v,t.b));
+      sa.set(ia);if(sb)sb.set(ib);
+      draw();
+      T.say("sol","<b>Lösung:</b> "+fnHTML(t.b,t.a));
+      finish("");
+    });
+    draw();
+  }
+});
+
+/* =========================================================
+   TRAINER 2 – Punkte-Detektiv
+   ========================================================= */
+const DET={
+  1:[{a:2,b:1,x:[0,2],e:1},{a:2,b:3,x:[0,2],e:1},{a:0.5,b:8,x:[0,2],e:1},{a:0.5,b:4,x:[0,2],e:1},{a:3,b:2,x:[0,2]},{a:1.5,b:4,x:[0,2]},{a:3,b:-1,x:[0,2]},{a:2,b:-2,x:[0,2]},{a:4,b:1,x:[0,2]},{a:1.5,b:8,x:[0,2]},{a:0.5,b:-12,x:[0,2]},{a:2,b:5,x:[0,2]}],
+  2:[{a:2,b:3,x:[1,3]},{a:3,b:2,x:[1,3]},{a:0.5,b:8,x:[1,3]},{a:0.5,b:-6,x:[-1,1]},{a:2,b:-1.5,x:[-1,1]},{a:1.5,b:4,x:[2,4]},{a:3,b:2,x:[2,3]},{a:2,b:5,x:[2,3]},{a:0.5,b:12,x:[2,4]},{a:4,b:0.5,x:[1,3]}],
+  3:[{a:2,b:4,x:[-2,1]},{a:0.5,b:2,x:[-2,1]},{a:3,b:9,x:[-2,1]},{a:2,b:-2,x:[-1,2]},{a:0.5,b:-4,x:[-2,1]},{a:2,b:3,x:[-2,2]},{a:0.5,b:5,x:[-2,2]}]
+};
+function ptLabel(n,x,y){return n+"("+mnum(x,4)+" | "+mnum(y,4)+")";}
+
+/* Alternativer Weg: Gleichungssystem (Punkte-Detektiv ab Stufe 2) */
+function frac(n,d){return '<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';}
+function eqLine(){return '<div class="eq">'+Array.prototype.slice.call(arguments).map(p=>'<span class="mf">'+p+'</span>').join(" ")+'</div>';}
+function altSteps(t,x1,y1,x2,y2){
+  const d=x2-x1,r=r6(y2/y1),A=mnum(t.a),B=mnum(t.b);
+  const X=mnum;
+  const Xp=(x)=>x<0?"("+X(x)+")":X(x);
+  const ba=baseHTML(t.a);
+  const pa=r6(pw(t.a,x1));
+  const S=[];
+  /* 1 */
+  S.push({t:"Beide Punkte einsetzen",h:
+    '<p>Beide Punkte liegen auf dem Graphen von <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Ihre Koordinaten erfüllen also die Funktionsgleichung:</p>'+
+    eqLine('<i>y</i><sub>1</sub> = <i>b</i> · <i>a</i><sup><i>x</i><sub>1</sub></sup>')+
+    eqLine('<i>y</i><sub>2</sub> = <i>b</i> · <i>a</i><sup><i>x</i><sub>2</sub></sup>')+
+    '<p>Mit den Zahlen der Aufgabe, <span class="mf nb">P('+X(x1)+' | '+X(y1)+')</span> und <span class="mf nb">Q('+X(x2)+' | '+X(y2)+')</span>, entstehen zwei Gleichungen mit den Unbekannten <i>b</i> und <i>a</i>:</p>'+
+    eqLine('(I)','<span class="nb">'+X(y1)+' = <i>b</i> · <i>a</i><sup>'+X(x1)+'</sup></span>')+
+    eqLine('(II)','<span class="nb">'+X(y2)+' = <i>b</i> · <i>a</i><sup>'+X(x2)+'</sup></span>')+
+    '<p>Das ist ein Gleichungssystem.</p>'});
+  /* 2 */
+  let s2='<p>Wenn wir die zweite Gleichung durch die erste teilen, fällt <i>b</i> weg:</p>'+
+    eqLine(frac('<i>y</i><sub>2</sub>','<i>y</i><sub>1</sub>')+' = '+frac('<i>b</i> · <i>a</i><sup><i>x</i><sub>2</sub></sup>','<i>b</i> · <i>a</i><sup><i>x</i><sub>1</sub></sup>')+' = <i>a</i><sup><i>x</i><sub>2</sub> − <i>x</i><sub>1</sub></sup>')+
+    '<p>Mit den Zahlen der Aufgabe:</p>'+
+    eqLine(frac(X(y2),X(y1))+' = '+frac('<i>b</i> · <i>a</i><sup>'+X(x2)+'</sup>','<i>b</i> · <i>a</i><sup>'+X(x1)+'</sup>')+' = <i>a</i><sup>'+X(x2)+' − '+Xp(x1)+'</sup>'+(d===1?' = <i>a</i>':' = <i>a</i><sup>'+d+'</sup>'));
+  if(d===1){
+    s2+=eqLine('<i>a</i> = '+X(r))+'<p>Weil zwischen den Punkten genau ein Schritt liegt, ist dieser Quotient direkt der Faktor <i>a</i> = '+A+'.</p>';
+  }else{
+    s2+=eqLine(X(r)+' = <i>a</i><sup>'+d+'</sup>')+
+      eqLine('<i>a</i> = '+(d===2?'√':'<sup>'+d+'</sup>√')+X(r)+' = '+A);
+    if(d%2===0)s2+='<p>Die Gleichung <span class="mf"><i>a</i><sup>'+d+'</sup> = '+X(r)+'</span> hat die Lösungen '+A+' und −'+A+'. Da für Exponentialfunktionen <span class="mf"><i>a</i> &gt; 0</span> gilt, wird nur <span class="mf"><i>a</i> = '+A+'</span> verwendet.</p>';
+    else s2+='<p>Die Gleichung <span class="mf"><i>a</i><sup>'+d+'</sup> = '+X(r)+'</span> hat die Lösung <span class="mf"><i>a</i> = '+A+'</span>. Sie erfüllt <span class="mf"><i>a</i> &gt; 0</span>.</p>';
+  }
+  S.push({t:"Gleichungen dividieren und a bestimmen",h:s2});
+  /* 3 */
+  S.push({t:"a einsetzen und b bestimmen",h:
+    '<p>Jetzt setzen wir <span class="mf"><i>a</i> = '+A+'</span> in eine der beiden Gleichungen ein, zum Beispiel in (I):</p>'+
+    eqLine('<span class="nb">'+X(y1)+' = <i>b</i> · '+ba+'<sup>'+X(x1)+'</sup></span>')+
+    eqLine('<span class="nb">'+X(y1)+' = <i>b</i> · '+X(pa)+'</span>')+
+    eqLine('<i>b</i> = '+frac(X(y1),X(pa))+' = '+B)});
+  /* 4 */
+  S.push({t:"Funktionsterm angeben",h:
+    '<p>Mit <span class="mf"><i>b</i> = '+B+'</span> und <span class="mf"><i>a</i> = '+A+'</span> lautet der Funktionsterm:</p>'+
+    '<div class="eq">'+fnHTML(t.b,t.a)+'</div>'+
+    '<p class="small">Probe mit Q: <span class="mf nb"><i>f</i>('+X(x2)+') = '+B+' · '+ba+'<sup>'+X(x2)+'</sup> = '+X(y2)+'</span></p>'});
+  return S;
+}
+function addAltWay(T,t,x1,y1,x2,y2){
+  const steps=altSteps(t,x1,y1,x2,y2);
+  const box=div("alt");box.style.display="none";
+  T.side.insertBefore(box,T.res);
+  let open=false,shown=1;
+  const btn=document.createElement("button");btn.type="button";btn.className="hbtn altbtn";
+  btn.setAttribute("aria-expanded","false");btn.textContent="Alternativer Weg: Gleichungssystem";
+  function render(scrollNew){
+    box.innerHTML="";
+    const head=div("head");head.appendChild(div("",'<h4>Alternativer Weg: Gleichungssystem</h4>'));
+    head.appendChild(mkbtn("btn ghost sm","Schließen",()=>toggle()));
+    box.appendChild(head);
+    let last=null;
+    for(let i=0;i<shown;i++){
+      const st=div("altstep",'<div class="sn"><i>'+(i+1)+'</i>'+steps[i].t+'</div>'+steps[i].h);
+      box.appendChild(st);last=st;
+    }
+    if(shown<steps.length){
+      const row=div("btnrow");row.appendChild(mkbtn("btn sm","Weiter",()=>{shown++;render(true);}));
+      box.appendChild(row);
+    }else{
+      box.appendChild(div("fb sol show","<b>Merke:</b> Zwei Punkte → zwei Gleichungen. Durch Division fällt <i>b</i> weg. Danach bestimmst du <i>a</i> und setzt es in eine Gleichung ein, um <i>b</i> zu erhalten."));
+    }
+    if(scrollNew&&last){setTimeout(()=>{try{last.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},40);}
+    Dock.measure();
+  }
+  function toggle(){
+    open=!open;box.style.display=open?"":"none";btn.setAttribute("aria-expanded",open?"true":"false");
+    if(open)render(false);
+    Dock.measure();
+  }
+  btn.addEventListener("click",toggle);
+  const bar=T.helpHost.querySelector(".helpbar");
+  if(bar)bar.appendChild(btn);
+}
+TR.push({
+  id:"detektiv",name:"Punkte-Detektiv",art:"detektiv",
+  blurb:"Zwei Punkte sind bekannt. Finde den Funktionsterm, der durch beide geht.",
+  levels:[{n:"Ein Punkt auf der y-Achse"},{n:"Zwei Punkte irgendwo"},{n:"Große Abstände, negative x"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(DET,lvl,stuetz),eff=PF.eff;
+    const t=pick(PF.pool,"det"+eff+(stuetz?"s":""));
+    const x1=t.x[0],x2=t.x[1],d=x2-x1;
+    const y1=r6(t.b*pw(t.a,x1)),y2=r6(t.b*pw(t.a,x2));
+    const vw=viewFor([[x1,y1],[x2,y2]]);vw.xmax+=1;
+    const B=Board(T.viz,Object.assign({w:560,h:380,label:"Koordinatensystem mit den Punkten P und Q"},vw));
+    function drawPts(){
+      const top=B.ymax-0.6;
+      [[x1,y1,"P"],[x2,y2,"Q"]].forEach(q=>{
+        B.dot(q[0],q[1],{r:7});
+        B.text(q[0],Math.min(q[1],top),ptLabel(q[2],q[0],q[1]),{dx:11,dy:q[1]>=0?-12:24,anchor:"start",fill:"#9b2c1f",size:14.5});
+      });
+    }
+    drawPts();
+    T.viz.appendChild(div("figcap","Der Graph ist nicht gezeichnet. Nur die beiden Punkte sind bekannt."));
+    T.body.appendChild(div("prompt","Die Punkte <span class='mf nb'>"+ptLabel("P",x1,y1)+"</span> und <span class='mf nb'>"+ptLabel("Q",x2,y2)+"</span> liegen auf dem Graphen einer Funktion <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Bestimme <i class='m'>b</i> und <i class='m'>a</i>."));
+    const tr=TermRow(T.body);
+    const row=div("btnrow");row.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(row);
+    Dock.use([tr.fb,tr.fa],check);
+    function lock(s){tr.fb.lock(s);tr.fa.lock(s);}
+    function showCurve(){
+      B.reset();
+      B.curve(x=>t.b*pw(t.a,x),B.xmin,B.xmax,{color:"#1f6fb2",w:3.6});
+      drawPts();
+    }
+    function check(){
+      if(T.over)return;
+      const ub=tr.fb.num(),ua=tr.fa.num();
+      if(isNaN(ub)||isNaN(ua)){T.say("hint","Trage in beide Felder eine Zahl ein. Brüche kannst du mit dem Bruchstrich <b>/</b> schreiben.");return;}
+      const okA=close(ua,t.a,1e-4),okB=close(ub,t.b,1e-4);
+      tr.fa.state(okA?"ok":"no");tr.fb.state(okB?"ok":"no");
+      if(okA&&okB){
+        lock("ok");showCurve();
+        T.say("ok","<b>Richtig.</b> Probe: <span class='mf'><i>f</i>("+mnum(x1)+") = "+mnum(t.b)+" · "+baseHTML(t.a)+"<sup>"+mnum(x1)+"</sup> = "+mnum(y1)+"</span> und <span class='mf'><i>f</i>("+mnum(x2)+") = "+mnum(y2)+"</span>.");
+        T.complete("");return;
+      }
+      T.miss();
+      const r=y2/y1;let msg;
+      if(!okA){
+        if(d>1&&close(ua,r,1e-4))msg="Du hast <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> als <i>a</i> genommen. Zwischen den Punkten liegen aber "+d+" Schritte. Es gilt <i>a</i><sup>"+d+"</sup> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub>.";
+        else if(close(ua,1/t.a,1e-4))msg="Das ist der Kehrwert des gesuchten <i>a</i>. Prüfe, ob der Quotient <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> in die richtige Richtung gebildet ist, und wie viele Schritte zwischen den Punkten liegen.";
+        else msg="Bei <i>a</i> stimmt noch etwas nicht. Zähle die Schritte von <i>x</i><sub>1</sub> bis <i>x</i><sub>2</sub> und denke an <i>a</i><sup>Schritte</sup> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub>.";
+      }else{
+        if(x1!==0&&close(ub,y1,1e-4))msg="<i>a</i> stimmt. Aber <i>b</i> ist der Funktionswert bei <i>x</i> = 0, nicht bei <i>x</i> = "+mnum(x1)+". Es gilt <i>b</i> · <i>a</i><sup>"+mnum(x1)+"</sup> = "+mnum(y1)+".";
+        else msg="<i>a</i> stimmt. Für <i>b</i> setzt du den Punkt P ein: <i>b</i> · <i>a</i><sup>"+mnum(x1)+"</sup> = "+mnum(y1)+". Löse nach <i>b</i> auf.";
+      }
+      T.say("hint","<b>Noch nicht.</b> "+msg);
+    }
+    const h=[];
+    h.push("Zähle die Schritte von <i>x</i><sub>1</sub> = "+mnum(x1)+" bis <i>x</i><sub>2</sub> = "+mnum(x2)+": Es sind "+d+(d===1?" Schritt":" Schritte")+". Jeder Schritt multipliziert den Funktionswert mit <i>a</i>."+(x1===0?" Der Punkt P liegt auf der <i>y</i>-Achse, also ist <i>b</i> = "+mnum(y1)+".":""));
+    h.push(d===1?"Es gilt <i>a</i> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> = "+mnum(y2)+" : "+mnum(y1)+".":"Es gilt <i>a</i><sup>"+d+"</sup> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> = "+mnum(y2)+" : "+mnum(y1)+" = "+mnum(r6(y2/y1))+". Welche positive Zahl ergibt hoch "+d+" genau diesen Wert? Probiere 2, 3 oder 0,5.");
+    h.push("Es ist <i>a</i> = "+mnum(t.a)+". Für <i>b</i> setzt du P ein: <i>b</i> · "+baseHTML(t.a)+"<sup>"+mnum(x1)+"</sup> = "+mnum(y1)+"."+(x1<0?" Bei negativem Exponenten gilt <i>a</i><sup>−1</sup> = 1/<i>a</i>.":""));
+    T.setHints(h,()=>{
+      tr.fb.set(num(t.b,4));tr.fa.set(num(t.a,4));lock("ok");showCurve();
+      T.say("sol","<b>Lösung:</b> "+fnHTML(t.b,t.a));
+      T.complete("");
+    });
+    if(lvl>=2)addAltWay(T,t,x1,y1,x2,y2);
+  }
+});
+
+/* =========================================================
+   TRAINER 3 – Wer gehört zu wem?
+   ========================================================= */
+const COLS=["#1f6fb2","#d9730d","#8e4ec6","#12907a"];
+const ZU={
+  1:[
+    [{b:1,a:2},{b:1,a:0.5},{b:-1,a:2}],
+    [{b:2,a:3},{b:2,a:0.5},{b:-2,a:3}],
+    [{b:1,a:3},{b:3,a:0.5},{b:-2,a:2}],
+    [{b:2,a:1.5},{b:1,a:0.5},{b:-3,a:2}]
+  ].map((s,i)=>({g:s,e:i<2?1:0})),
+  2:[
+    [{b:1,a:2},{b:1,a:3},{b:2,a:2},{b:-2,a:2}],
+    [{b:2,a:2},{b:2,a:0.5},{b:1,a:0.5},{b:-1,a:2}],
+    [{b:3,a:1.5},{b:3,a:3},{b:-3,a:1.5},{b:1,a:3}],
+    [{b:1,a:2},{b:1,a:0.5},{b:-1,a:2},{b:-1,a:0.5}]
+  ].map(s=>({g:s})),
+  3:[
+    [{b:2,a:0.5},{b:2,a:2},{b:-2,a:0.5},{b:0.5,a:3}],
+    [{b:4,a:1/3},{b:4,a:0.5},{b:-1,a:4},{b:1,a:4}],
+    [{b:2,a:1.5},{b:2,a:3},{b:-2,a:1.5},{b:-0.5,a:3}],
+    [{b:-3,a:0.5},{b:-3,a:2},{b:3,a:0.5},{b:1,a:2}]
+  ].map(s=>({g:s}))
+};
+TR.push({
+  id:"zuordnen",name:"Wer gehört zu wem?",art:"zuordnen",
+  blurb:"Mehrere Graphen in einem Koordinatensystem. Ordne jedem Graphen seinen Term zu.",
+  levels:[{n:"Drei verschiedene Graphen"},{n:"Ähnliche Graphen"},{n:"Knifflige Paare"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(ZU,lvl,stuetz),eff=PF.eff;
+    const set=shuffle(pick(PF.pool,"zu"+eff+(stuetz?"s":"")).g);
+    const n=set.length;
+    const B=Board(T.viz,{w:560,h:380,xmin:-3.2,xmax:3.2,ymin:-8,ymax:8,gridx:1,gridy:1,tickx:1,ticky:2,label:"Koordinatensystem mit "+n+" nummerierten Graphen"});
+    const tick=[];
+    set.forEach((g,i)=>{B.curve(x=>g.b*pw(g.a,x),B.xmin,B.xmax,{color:COLS[i],w:3.8});});
+    /* nummerierte Marken an den Graphen */
+    const placed=[];
+    set.forEach((g,i)=>{
+      let x=B.xmax-0.35,ok=false,y=0,tries=0;
+      while(tries++<60){
+        y=g.b*pw(g.a,x);
+        if(Math.abs(y)<B.ymax-1.2){
+          const px=B.X(x),py=B.Y(y);
+          if(placed.every(p=>Math.hypot(p[0]-px,p[1]-py)>30)){ok=true;break;}
+        }
+        x-=0.12;
+        if(x<B.xmin+0.3)break;
+      }
+      if(!ok){x=B.xmin+0.5;y=g.b*pw(g.a,x);y=Math.max(-B.ymax+1.2,Math.min(B.ymax-1.2,y));}
+      const px=B.X(x),py=B.Y(y);placed.push([px,py]);
+      const gg=el("g",{});
+      gg.appendChild(el("circle",{cx:px,cy:py,r:12,fill:COLS[i],stroke:"#fff","stroke-width":2.4}));
+      const tx=el("text",{x:px,y:py+5,"text-anchor":"middle","font-size":14,"font-weight":800,fill:"#fff","font-family":"-apple-system,Segoe UI,sans-serif"});
+      tx.textContent=String(i+1);gg.appendChild(tx);B.lbls.appendChild(gg);
+    });
+    const marks=el("g",{});B.svg.appendChild(marks);
+    T.body.appendChild(div("prompt","Ordne jedem nummerierten Graphen seinen Term zu."));
+    T.body.appendChild(div("small","Term antippen, dann den Graphen antippen. Oder den Term auf den Graphen ziehen."));
+    const slotsEl=div("slots"),chipsEl=div("chips");
+    T.body.appendChild(slotsEl);T.body.appendChild(chipsEl);
+    const filled=new Array(n).fill(false),slotWrong=new Array(n).fill(0);
+    const slotEls=[],chipEls=[];
+    let sel=null,selSlot=null;
+    set.forEach((g,i)=>{
+      const s=document.createElement("button");s.type="button";s.className="slot";
+      s.innerHTML='<span class="badge" style="background:'+COLS[i]+'">'+(i+1)+'</span><span class="ph">Term hierher</span>';
+      s.setAttribute("aria-label","Graph "+(i+1));
+      s.addEventListener("click",()=>{
+        if(T.over||filled[i])return;
+        if(sel!==null)place(sel,i);
+        else{selSlot=(selSlot===i)?null:i;refreshSel();}
+      });
+      slotsEl.appendChild(s);slotEls[i]=s;
+    });
+    const order=shuffle(set.map((g,i)=>i));
+    order.forEach(ci=>{
+      const g=set[ci];
+      const c=document.createElement("button");c.type="button";c.className="chip";
+      c.innerHTML=termHTML(g.b,g.a);c.dataset.i=String(ci);
+      c.setAttribute("aria-label","Term "+g.b+" mal "+g.a+" hoch x");
+      c.addEventListener("keydown",(e)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleSel(ci);}});
+      c.addEventListener("pointerdown",(e)=>{
+        if(T.over||c.classList.contains("used"))return;
+        e.preventDefault();
+        const sx=e.clientX,sy=e.clientY;let dragging=false,ghostEl=null;
+        try{c.setPointerCapture(e.pointerId);}catch(err){}
+        const move=(ev)=>{
+          if(!dragging&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>8){
+            dragging=true;ghostEl=c.cloneNode(true);ghostEl.classList.add("drag");document.body.appendChild(ghostEl);c.classList.add("lifted");
+          }
+          if(dragging){ghostEl.style.left=ev.clientX+"px";ghostEl.style.top=ev.clientY+"px";hl(slotAt(ev.clientX,ev.clientY));}
+        };
+        const up=(ev)=>{
+          c.removeEventListener("pointermove",move);c.removeEventListener("pointerup",up);c.removeEventListener("pointercancel",up);
+          if(dragging){
+            ghostEl.remove();c.classList.remove("lifted");hl(-1);
+            const s=ev.type==="pointercancel"?-1:slotAt(ev.clientX,ev.clientY);
+            if(s>=0&&!filled[s])place(ci,s);
+          }else toggleSel(ci);
+        };
+        c.addEventListener("pointermove",move);c.addEventListener("pointerup",up);c.addEventListener("pointercancel",up);
+      });
+      chipsEl.appendChild(c);chipEls[ci]=c;
+    });
+    function slotAt(x,y){
+      const e=document.elementFromPoint(x,y);if(!e)return -1;
+      const s=e.closest?e.closest(".slot"):null;
+      return s?slotEls.indexOf(s):-1;
+    }
+    function hl(si){slotEls.forEach((s,i)=>s.classList.toggle("hl",i===si&&!filled[i]));}
+    function refreshSel(){
+      chipEls.forEach((c,i)=>c.classList.toggle("sel",sel===i));
+      slotEls.forEach((s,i)=>s.classList.toggle("pick",selSlot===i&&!filled[i]));
+    }
+    function toggleSel(ci){
+      if(T.over)return;
+      if(selSlot!==null&&!filled[selSlot]){place(ci,selSlot);return;}
+      sel=(sel===ci)?null:ci;refreshSel();
+    }
+    function drawMarks(){
+      clearNode(marks);
+      const lv=T.zLevel||0;if(!lv)return;
+      set.forEach((g,i)=>{
+        if(filled[i])return;
+        const pts=lv>=2?[[0,g.b],[1,g.a*g.b]]:[[0,g.b]];
+        pts.forEach((q,k)=>{
+          if(Math.abs(q[1])>B.ymax-0.3)return;
+          marks.appendChild(el("circle",{cx:B.X(q[0]),cy:B.Y(q[1]),r:6.5,fill:COLS[i],stroke:"#fff","stroke-width":2.2}));
+          const t=el("text",{x:B.X(q[0])+10,y:B.Y(q[1])+(g.b>0?-10:20),"text-anchor":"start","font-size":12.5,"font-weight":700,fill:COLS[i],"font-family":FF,stroke:"#fff","stroke-width":3.2,"paint-order":"stroke","stroke-linejoin":"round"});
+          t.textContent="("+q[0]+" | "+mnum(q[1],2)+")";marks.appendChild(t);
+        });
+      });
+    }
+    function fillSlot(si){
+      filled[si]=true;
+      const g=set[si],s=slotEls[si];
+      s.className="slot ok";
+      s.innerHTML='<span class="badge" style="background:'+COLS[si]+'">'+(si+1)+'</span><span class="tx">'+termHTML(g.b,g.a)+'</span>';
+      chipEls[si].classList.add("used");chipEls[si].classList.remove("sel");
+    }
+    function place(ci,si){
+      if(T.over||filled[si])return;
+      sel=null;selSlot=null;refreshSel();hl(-1);
+      if(ci===si){
+        fillSlot(si);drawMarks();
+        T.clearSay();
+        if(filled.every(Boolean)){
+          T.say("ok","<b>Alle Graphen sind zugeordnet.</b> Beim Zuordnen helfen drei Fragen: Liegt der Graph oberhalb oder unterhalb der <i>x</i>-Achse (Vorzeichen von <i>b</i>)? Wo schneidet er die <i>y</i>-Achse (<i>b</i>)? Steigt oder fällt er, und wie steil (<i>a</i>)?");
+          T.complete("");
+        }
+        return;
+      }
+      T.miss();slotWrong[si]++;
+      const s=slotEls[si];s.classList.add("no");setTimeout(()=>s.classList.remove("no"),480);
+      T.say("hint","<b>Das passt nicht zu Graph "+(si+1)+".</b> "+zuHint(set[ci],set[si],slotWrong[si]));
+    }
+    function zuHint(c,g,k){
+      if(Math.sign(c.b)!==Math.sign(g.b))return "Graph "+(set.indexOf(g)+1)+" liegt "+(g.b>0?"oberhalb":"unterhalb")+" der <i>x</i>-Achse. Dein Term hat aber ein "+(c.b>0?"positives":"negatives")+" <i>b</i>.";
+      if(!close(c.b,g.b)){
+        return k>=2?"Der Graph schneidet die <i>y</i>-Achse bei (0 | "+mnum(g.b,2)+"). Das ist <i>b</i>.":"Vergleiche den <i>y</i>-Achsenabschnitt: Wo schneidet der Graph die <i>y</i>-Achse? Dort liest du <i>b</i> ab.";
+      }
+      const upG=isUp(g.a,g.b),upC=isUp(c.a,c.b);
+      if(upG!==upC)return "Der <i>y</i>-Achsenabschnitt passt, aber der Graph "+(upG?"steigt":"fällt")+", dein Term ergibt einen "+(upC?"steigenden":"fallenden")+" Graphen.";
+      return "Der <i>y</i>-Achsenabschnitt passt und beide haben dieselbe Richtung. Dein Term ändert sich "+(Math.abs(Math.log(c.a))>Math.abs(Math.log(g.a))?"schneller":"langsamer")+" als dieser Graph.";
+    }
+    T.zLevel=0;
+    const h=[];
+    h.push("Schau zuerst auf die Lage zur <i>x</i>-Achse: Welche Graphen liegen oberhalb, welche unterhalb? Das verrät das Vorzeichen von <i>b</i>.");
+    h.push(()=>({t:"Lies bei jedem Graphen den <i>y</i>-Achsenabschnitt ab: Das ist <i>b</i>. Die Schnittpunkte sind jetzt markiert.",fn:()=>{T.zLevel=1;drawMarks();}}));
+    h.push(()=>({t:"Gehe von der <i>y</i>-Achse einen Schritt nach rechts. Der Quotient <i>f</i>(1) : <i>f</i>(0) ist <i>a</i>. Auch diese Punkte sind jetzt markiert.",fn:()=>{T.zLevel=2;drawMarks();}}));
+    T.setHints(h,()=>{
+      set.forEach((g,i)=>{if(!filled[i])fillSlot(i);});
+      T.zLevel=0;drawMarks();
+      T.say("sol","<b>Lösung:</b> Jeder Term steht jetzt bei seinem Graphen.");
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 4 – Steckbrief
+   Jeder Hinweis wird einzeln gegen den eingegebenen Term geprüft.
+   ========================================================= */
+const fmt=(v)=>mnum(v,4);
+const inner=(h)=>h.replace(/^<span class="mf">/,"").replace(/<\/span>$/,"");
+function fieldStr(v){
+  if(close(v,1/3))return "1/3";
+  if(close(v,2/3))return "2/3";
+  return num(v,4);
+}
+const CL={
+  icpt:(v)=>({h:'Ich schneide die <i>y</i>-Achse im Punkt <span class="mf nb">(0 | '+fmt(v)+')</span>.',
+    t:(a,b)=>close(b,v,1e-6),w:(a,b)=>'Bei deinem Term ist <span class="mf"><i>f</i>(0) = '+fmt(b)+'</span>.'}),
+  pt:(x,y)=>({h:'Ich gehe durch den Punkt <span class="mf nb">('+fmt(x)+' | '+fmt(y)+')</span>.',
+    t:(a,b)=>close(b*pw(a,x),y,1e-6),w:(a,b)=>'Bei deinem Term ist <span class="mf"><i>f</i>('+fmt(x)+') = '+fmt(r6(b*pw(a,x)))+'</span>, nicht '+fmt(y)+'.'}),
+  mono:(up)=>({h:'Mein Graph ist streng monoton '+(up?'steigend':'fallend')+'.',
+    t:(a,b)=>isUp(a,b)===up,w:(a,b)=>'Dein Term ergibt einen '+(isUp(a,b)?'steigenden':'fallenden')+' Graphen.'}),
+  side:(pos)=>({h:'Mein Graph liegt vollständig '+(pos?'oberhalb':'unterhalb')+' der <i>x</i>-Achse.',
+    t:(a,b)=>(b>0)===pos,w:(a,b)=>'Dein Term ergibt einen Graphen '+(b>0?'oberhalb':'unterhalb')+' der <i>x</i>-Achse.'}),
+  fac:(k,txt)=>({h:txt,t:(a,b)=>close(a,k,2e-3),w:(a,b)=>'Bei deinem Term wird der Funktionswert pro Schritt mit '+fmt(a)+' multipliziert.'}),
+  ratioM1:(k)=>({h:'Mein Funktionswert bei <span class="mf"><i>x</i> = −1</span> ist '+(k===2?'doppelt':k+'-mal')+' so groß wie bei <span class="mf"><i>x</i> = 0</span>.',
+    t:(a,b)=>close((b/a),k*b,1e-6),w:(a,b)=>'Bei deinem Term ist <span class="mf"><i>f</i>(−1) = '+fmt(r6(b/a))+'</span> und <span class="mf"><i>f</i>(0) = '+fmt(b)+'</span>.'}),
+  same:(b0,txt)=>({h:txt,t:(a,b)=>close(b,b0,1e-6),w:(a,b)=>'Bei deinem Term ist <span class="mf"><i>f</i>(0) = '+fmt(b)+'</span>, bei <i>h</i> aber '+fmt(b0)+'.'}),
+  refl:(a0,b0,ax)=>{
+    const m=mirrorOf({a:a0,b:b0},ax);
+    const axT=ax==="y"?"an der <i>y</i>-Achse":ax==="x"?"an der <i>x</i>-Achse":"erst an der <i>x</i>-Achse und dann an der <i>y</i>-Achse";
+    const wT=ax==="y"?"Beim Spiegeln an der <i>y</i>-Achse wird <i>a</i> zum Kehrwert, <i>b</i> bleibt.":ax==="x"?"Beim Spiegeln an der <i>x</i>-Achse bleibt <i>a</i>, <i>b</i> wechselt das Vorzeichen.":"Beim Spiegeln an der <i>x</i>-Achse wechselt <i>b</i> das Vorzeichen, an der <i>y</i>-Achse wird <i>a</i> zum Kehrwert.";
+    return {h:'Mein Graph entsteht aus dem Graphen von <span class="mf nb"><i>g</i>(<i>x</i>) = '+inner(termHTML(b0,a0))+'</span> durch Spiegelung '+axT+'.',
+      t:(a,b)=>close(a,m.a,2e-3)&&close(b,m.b,1e-6),w:()=>wT};
+  }
+};
+const SB={
+  1:[
+    {a:0.5,b:4,c:[CL.icpt(4),CL.mono(false),CL.pt(1,2)],h:["Der <i>y</i>-Achsenabschnitt ist <i>b</i>.","Von (0 | 4) nach (1 | 2): Womit muss man 4 multiplizieren, um 2 zu erhalten?"],e:1},
+    {a:3,b:2,c:[CL.icpt(2),CL.mono(true),CL.pt(1,6)],h:["Der <i>y</i>-Achsenabschnitt ist <i>b</i>.","Von (0 | 2) nach (1 | 6): Womit muss man 2 multiplizieren?"],e:1},
+    {a:2,b:5,c:[CL.icpt(5),CL.fac(2,"Bei jedem Schritt nach rechts verdoppelt sich mein Funktionswert."),CL.side(true)],h:["Der Faktor pro Schritt nach rechts ist <i>a</i>.","Verdoppeln heißt: mit 2 multiplizieren."]},
+    {a:3,b:-2,c:[CL.side(false),CL.icpt(-2),CL.pt(1,-6)],h:["Der Punkt auf der <i>y</i>-Achse verrät <i>b</i>, auch mit Vorzeichen.","<i>a</i> = <i>f</i>(1) : <i>f</i>(0) = (−6) : (−2)."]},
+    {a:0.5,b:8,c:[CL.icpt(8),CL.fac(0.5,"Bei jedem Schritt nach rechts halbiert sich mein Funktionswert."),CL.mono(false)],h:["Der <i>y</i>-Achsenabschnitt ist <i>b</i>.","Halbieren heißt: mit 0,5 multiplizieren."]}
+  ],
+  2:[
+    {a:3,b:4,c:[CL.pt(0,4),CL.pt(2,36),CL.side(true)],h:["Der Punkt mit <i>x</i> = 0 verrät <i>b</i>.","Von <i>x</i> = 0 bis <i>x</i> = 2 sind es zwei Schritte: <i>a</i><sup>2</sup> = 36 : 4."]},
+    {a:2,b:-3,c:[CL.pt(0,-3),CL.pt(2,-12),CL.mono(false)],h:["Der Punkt mit <i>x</i> = 0 verrät <i>b</i>.","Zwei Schritte: <i>a</i><sup>2</sup> = (−12) : (−3) = 4."]},
+    {a:0.5,b:-8,c:[CL.mono(true),CL.side(false),CL.icpt(-8),CL.pt(1,-4)],h:["Steigend und unterhalb der <i>x</i>-Achse: Das passt nur zu einer Basis kleiner als 1.","<i>a</i> = <i>f</i>(1) : <i>f</i>(0) = (−4) : (−8)."]},
+    {a:1.5,b:4,c:[CL.fac(1.5,"Bei jedem Schritt nach rechts wird mein Funktionswert mit 1,5 multipliziert."),CL.pt(2,9)],h:["Der Faktor pro Schritt ist <i>a</i>.","Es gilt <i>b</i> · 1,5<sup>2</sup> = 9. Löse nach <i>b</i> auf."]},
+    {a:0.5,b:6,c:[CL.ratioM1(2),CL.pt(1,3)],h:["<i>f</i>(−1) ist <i>b</i> : <i>a</i>. Das soll doppelt so groß sein wie <i>b</i>. Was folgt für <i>a</i>?","Mit <i>a</i> = 0,5 gilt <i>b</i> · 0,5 = 3."]}
+  ],
+  3:[
+    {a:1/3,b:2,c:[CL.refl(3,2,"y"),CL.side(true)],h:["Spiegeln an der <i>y</i>-Achse: <i>b</i> bleibt, <i>a</i> wird zum Kehrwert.","Der Kehrwert von 3 ist 1/3. Brüche gibst du mit dem Bruchstrich ein."]},
+    {a:0.25,b:3,c:[CL.refl(4,3,"y"),CL.mono(false)],h:["Spiegeln an der <i>y</i>-Achse: <i>b</i> bleibt, <i>a</i> wird zum Kehrwert.","Der Kehrwert von 4 ist 0,25."]},
+    {a:0.5,b:-6,c:[CL.refl(0.5,6,"x"),CL.mono(true)],h:["Spiegeln an der <i>x</i>-Achse: <i>a</i> bleibt, <i>b</i> wechselt das Vorzeichen.","Die Basis bleibt 0,5. Aus <i>b</i> = 6 wird <i>b</i> = −6."]},
+    {a:0.5,b:-4,c:[CL.refl(2,4,"xy"),CL.side(false)],h:["Zwei Spiegelungen nacheinander: <i>x</i>-Achse ändert das Vorzeichen von <i>b</i>, <i>y</i>-Achse macht <i>a</i> zum Kehrwert.","Aus <i>b</i> = 4 wird −4 und aus <i>a</i> = 2 wird 0,5."]},
+    {a:3,b:2,c:[CL.same(2,'Ich schneide die <i>y</i>-Achse an derselben Stelle wie <span class="mf nb"><i>h</i>(<i>x</i>) = 2 · 4<sup><i>x</i></sup></span>.'),CL.pt(1,6)],h:["Der <i>y</i>-Achsenabschnitt von <i>h</i> ist <i>h</i>(0) = 2 · 4<sup>0</sup> = 2.","<i>a</i> = <i>f</i>(1) : <i>f</i>(0) = 6 : 2."]},
+    {a:2,b:3,c:[CL.pt(-2,0.75),CL.pt(2,12)],h:["Zwischen <i>x</i> = −2 und <i>x</i> = 2 liegen 4 Schritte: <i>a</i><sup>4</sup> = 12 : 0,75.","<i>a</i><sup>4</sup> = 16. Welche positive Zahl hoch 4 ergibt 16?"]},
+    {a:0.5,b:5,c:[CL.pt(-1,10),CL.pt(1,2.5)],h:["Zwischen <i>x</i> = −1 und <i>x</i> = 1 liegen zwei Schritte: <i>a</i><sup>2</sup> = 2,5 : 10.","<i>a</i><sup>2</sup> = 0,25. Für <i>b</i> setzt du (1 | 2,5) ein: <i>b</i> · <i>a</i> = 2,5."]},
+    {a:3,b:-1,c:[CL.refl(3,1,"x"),CL.mono(false)],h:["Spiegeln an der <i>x</i>-Achse: <i>a</i> bleibt, <i>b</i> wechselt das Vorzeichen.","Bei <i>g</i> ist <i>b</i> = 1. Wie lautet <i>b</i> nach der Spiegelung?"]}
+  ]
+};
+TR.push({
+  id:"steckbrief",name:"Steckbrief",art:"steckbrief",noViz:true,
+  blurb:"Aus mehreren Hinweisen den Term finden. Jeder Hinweis wird einzeln geprüft.",
+  levels:[{n:"Direkte Hinweise"},{n:"Versteckte Hinweise"},{n:"Spiegeln und Vergleichen"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(SB,lvl,stuetz),eff=PF.eff;
+    const E=pick(PF.pool,"sb"+eff+(stuetz?"s":""));
+    T.body.appendChild(div("prompt","Ich bin eine Funktion <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Das weißt du über mich:"));
+    const list=div("clues");T.body.appendChild(list);
+    const cEls=E.c.map(c=>{
+      const d=div("clue");d.innerHTML='<span class="mk"></span><span class="t">'+c.h+'<span class="why"></span></span>';
+      list.appendChild(d);return d;
+    });
+    T.body.appendChild(div("small","Trage <i>b</i> und <i>a</i> ein. Mit „Prüfen“ siehst du, welche Hinweise dein Term erfüllt."));
+    const tr=TermRow(T.body);
+    const row=div("btnrow");row.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(row);
+    Dock.use([tr.fb,tr.fa],check);
+    function mark(i,ok,why){
+      cEls[i].classList.remove("ok","no");cEls[i].classList.add(ok?"ok":"no");
+      cEls[i].querySelector(".mk").textContent=ok?"✓":"✗";
+      cEls[i].querySelector(".why").textContent="";
+      if(!ok&&why)cEls[i].querySelector(".why").innerHTML=why;
+    }
+    function check(){
+      if(T.over)return;
+      const b=tr.fb.num(),a=tr.fa.num();
+      if(isNaN(b)||isNaN(a)){T.say("hint","Trage in beide Felder eine Zahl ein. Brüche kannst du mit dem Bruchstrich <b>/</b> schreiben.");return;}
+      if(a<=0||close(a,1)){T.say("hint","Bei einer Exponentialfunktion gilt <i>a</i> &gt; 0 und <i>a</i> ≠ 1. Prüfe deine Basis.");T.miss();return;}
+      if(b===0){T.say("hint","Bei <i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup> ist <i>b</i> ≠ 0.");T.miss();return;}
+      let okN=0;
+      E.c.forEach((c,i)=>{const ok=c.t(a,b);if(ok)okN++;mark(i,ok,ok?"":c.w(a,b));});
+      if(okN===E.c.length){
+        tr.fb.lock("ok");tr.fa.lock("ok");
+        T.say("ok","<b>Alle Hinweise passen.</b> "+fnHTML(b,a)+" ist der gesuchte Term.");
+        T.complete("");return;
+      }
+      T.miss();
+      T.say("hint","<b>Dein Term erfüllt "+okN+" von "+E.c.length+" Hinweisen.</b> Bei den rot markierten Hinweisen siehst du, was nicht stimmt.");
+    }
+    const h=[
+      "Nimm dir einen Hinweis nach dem anderen vor. Welcher Hinweis verrät dir <i>b</i> oder <i>a</i> direkt? Du kannst auch einen Term ausprobieren: Die Prüfung zeigt dir, welche Hinweise er erfüllt.",
+      E.h[0],E.h[1]
+    ];
+    T.setHints(h,()=>{
+      tr.fb.set(fieldStr(E.b));tr.fa.set(fieldStr(E.a));
+      E.c.forEach((c,i)=>mark(i,true,""));
+      tr.fb.lock("ok");tr.fa.lock("ok");
+      T.say("sol","<b>Lösung:</b> "+fnHTML(E.b,E.a));
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 5 – Tabellen-Rätsel
+   ========================================================= */
+const TB={
+  1:[
+    {a:2,b:3,xs:[0,1,2,3,4],hide:[2,4],e:1},{a:0.5,b:16,xs:[0,1,2,3,4],hide:[2,3],e:1},
+    {a:3,b:2,xs:[0,1,2,3,4],hide:[1,4]},{a:1.5,b:8,xs:[0,1,2,3,4],hide:[3,4]},{a:4,b:1,xs:[0,1,2,3,4],hide:[2,4]}
+  ],
+  2:[
+    {a:2,b:5,xs:[-2,-1,0,1,2],hide:[0,2]},{a:3,b:9,xs:[-2,-1,0,1,2],hide:[2,3]},{a:0.5,b:4,xs:[-2,-1,0,1,2],hide:[1,2]},
+    {a:2,b:-3,xs:[-2,-1,0,1,2],hide:[0,3]},{a:4,b:2,xs:[-2,-1,0,1,2],hide:[0,2]}
+  ],
+  3:[
+    {a:0.5,b:6,xs:[-1,1,2,4],hide:[2,3]},{a:2,b:3,xs:[-2,1,3,4],hide:[0,3]},{a:3,b:2,xs:[0,2,3,5],hide:[1,3]},
+    {a:0.5,b:-8,xs:[-3,-1,1,2],hide:[1,3]},{a:1.5,b:4,xs:[0,2,3,4],hide:[0,3]}
+  ]
+};
+TR.push({
+  id:"tabelle",name:"Tabellen-Rätsel",art:"tabelle",noViz:true,
+  blurb:"Fülle die Lücken einer Wertetabelle und gib den passenden Term an.",
+  levels:[{n:"Gleiche Schritte"},{n:"Auch negative x"},{n:"Ungleiche Abstände"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(TB,lvl,stuetz),eff=PF.eff;
+    const E=pick(PF.pool,"tb"+eff+(stuetz?"s":""));
+    const n=E.xs.length;
+    const ys=E.xs.map(x=>r6(E.b*pw(E.a,x)));
+    T.body.appendChild(div("prompt","Die Tabelle gehört zu <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Fülle die Lücken und gib <i class='m'>b</i> und <i class='m'>a</i> an."));
+    const wrap=div("tblwrap"),tbl=document.createElement("table");tbl.className="tb";
+    const rx=document.createElement("tr"),ry=document.createElement("tr"),ra=document.createElement("tr");
+    ra.className="arr";ra.style.display="none";
+    rx.className="xr";
+    rx.innerHTML='<th class="rh"><i>x</i></th>';ry.innerHTML='<th class="rh"><i>f</i>(<i>x</i>)</th>';ra.innerHTML='<th></th>';
+    const cells=[];
+    E.xs.forEach((x,i)=>{
+      const tx=document.createElement("td");tx.textContent=mnum(x);rx.appendChild(tx);
+      const ty=document.createElement("td");
+      if(E.hide.indexOf(i)>=0){
+        const f=Field({sm:true,aria:"Wert bei x gleich "+mnum(x)});ty.appendChild(f.el);cells.push({f,y:ys[i],i});
+      }else ty.textContent=mnum(ys[i]);
+      ry.appendChild(ty);
+      const ta=document.createElement("td");
+      if(i<n-1){const d=E.xs[i+1]-x;ta.textContent="→ · "+(d===1?"a":"a"+(d===2?"²":d===3?"³":d===4?"⁴":"^"+d));}
+      ra.appendChild(ta);
+    });
+    tbl.appendChild(rx);tbl.appendChild(ry);tbl.appendChild(ra);wrap.appendChild(tbl);T.body.appendChild(wrap);
+    const tr=TermRow(T.body);
+    const row=div("btnrow");row.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(row);
+    const all=cells.map(c=>c.f).concat([tr.fb,tr.fa]);
+    Dock.use(all,check);
+    function check(){
+      if(T.over)return;
+      let bad=0,empty=false;
+      cells.forEach(c=>{const v=c.f.num();if(isNaN(v)){empty=true;}});
+      if(isNaN(tr.fb.num())||isNaN(tr.fa.num()))empty=true;
+      if(empty){T.say("hint","Fülle alle Felder mit Zahlen. Brüche gibst du mit dem Bruchstrich <b>/</b> ein.");return;}
+      let lin=false;
+      cells.forEach(c=>{
+        const v=c.f.num(),ok=close(v,c.y,1e-6);
+        c.f.state(ok?"ok":"no");if(!ok){bad++;
+          const i=c.i;
+          if(i>=2&&E.xs[i]-E.xs[i-1]===1&&E.xs[i-1]-E.xs[i-2]===1&&close(v,2*ys[i-1]-ys[i-2],1e-6))lin=true;
+        }
+      });
+      const okB=close(tr.fb.num(),E.b,1e-6),okA=close(tr.fa.num(),E.a,1e-6);
+      tr.fb.state(okB?"ok":"no");tr.fa.state(okA?"ok":"no");
+      if(!okB)bad++;if(!okA)bad++;
+      if(bad===0){
+        all.forEach(f=>f.lock("ok"));
+        T.say("ok","<b>Richtig.</b> "+fnHTML(E.b,E.a)+". In der Tabelle ist der Quotient benachbarter Werte immer gleich.");
+        T.complete("");return;
+      }
+      T.miss();
+      const tot=all.length;
+      let msg="<b>"+(tot-bad)+" von "+tot+" Feldern stimmen.</b> Die roten Felder prüfst du noch einmal.";
+      if(lin)msg+=" Achtung: Hier wird nicht jedes Mal dasselbe addiert, sondern mit demselben Faktor <b>multipliziert</b>.";
+      else if(okB&&!okA)msg+=" <i>b</i> stimmt. Bei <i>a</i> hilft der Quotient zweier Werte.";
+      T.say("hint",msg);
+    }
+    /* Hilfen */
+    const known=E.xs.map((x,i)=>i).filter(i=>E.hide.indexOf(i)<0);
+    let pi=known[0],pj=known[1],best=1e9;
+    for(let u=0;u<known.length;u++)for(let v=u+1;v<known.length;v++){const dd=E.xs[known[v]]-E.xs[known[u]];if(dd<best){best=dd;pi=known[u];pj=known[v];}}
+    const dd=E.xs[pj]-E.xs[pi],rr=r6(ys[pj]/ys[pi]);
+    const h=[];
+    h.push(()=>({t:eff<3?"Von einer Spalte zur nächsten wird immer mit demselben Faktor multipliziert. Das ist <i>a</i>. Die Pfeile unter der Tabelle zeigen es."
+      :"Wenn man um <i>d</i> Schritte nach rechts geht, wird mit <i>a</i><sup><i>d</i></sup> multipliziert. Die Pfeile unter der Tabelle zeigen es.",fn:()=>{ra.style.display="";}}));
+    h.push(dd===1?"Zwei benachbarte bekannte Werte: <i>f</i>("+mnum(E.xs[pj])+") : <i>f</i>("+mnum(E.xs[pi])+") = "+mnum(ys[pj])+" : "+mnum(ys[pi])+" = "+mnum(rr)+". Das ist <i>a</i>."
+      :"Zwei bekannte Werte liegen "+dd+" Schritte auseinander: <i>a</i><sup>"+dd+"</sup> = "+mnum(ys[pj])+" : "+mnum(ys[pi])+" = "+mnum(rr)+". Welche positive Zahl hoch "+dd+" ergibt diesen Wert?");
+    h.push("Es ist <i>a</i> = "+mnum(E.a)+". Der Wert <i>b</i> steht bei <i>x</i> = 0. Fehlt diese Spalte oder ist sie leer, rechne von einem bekannten Wert dorthin: Pro Schritt nach links wird durch <i>a</i> geteilt, pro Schritt nach rechts mit <i>a</i> multipliziert.");
+    T.setHints(h,()=>{
+      cells.forEach(c=>{c.f.set(num(c.y,4));});
+      tr.fb.set(num(E.b,4));tr.fa.set(num(E.a,4));
+      all.forEach(f=>f.lock("ok"));ra.style.display="";
+      T.say("sol","<b>Lösung:</b> "+fnHTML(E.b,E.a));
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 6 – Fehlerdetektiv
+   ========================================================= */
+const gen=(n)=>/[sßxz]$/i.test(n)?n+"’":n+"s";
+const SIT_G='Gegeben ist der Graph einer Funktion <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> mit zwei markierten Punkten.';
+const SIT_P='Die Punkte liegen auf dem Graphen einer Funktion <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Bestimmt werden sollen <i class="m">b</i> und <i class="m">a</i>.';
+const FD={
+  1:[
+    {n:"Lena",sit:SIT_G,bd:{type:"curve",a:2,b:3,pts:[[0,3],[1,6]]},
+     l:["<i>b</i> = <i>f</i>(0) = 3","<i>a</i> = <i>f</i>(1) = 6","Also gilt <i>f</i>(<i>x</i>) = 3 · 6<sup><i>x</i></sup>."],w:{a:6,b:3},c:{a:2,b:3},
+     o:[["Lena hat <i>a</i> und <i>b</i> im Term vertauscht.","Der Term enthält <i>b</i> = 3 vorne und <i>a</i> = 6 als Basis. Es sind also nicht <i>a</i> und <i>b</i> vertauscht."],["Lena hat für <i>a</i> den Funktionswert <i>f</i>(1) genommen, statt <i>f</i>(1) durch <i>f</i>(0) zu teilen."],["Lena hat <i>b</i> falsch abgelesen.","Der Graph schneidet die <i>y</i>-Achse tatsächlich bei 3. Das stimmt."],["Lena hat das Vorzeichen von <i>b</i> übersehen.","<i>b</i> ist hier positiv. Das Vorzeichen stimmt."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 1 in Lenas Term ein. Kommt der markierte Wert heraus?","<i>a</i> ist der Faktor von einem Schritt zum nächsten, also <i>f</i>(1) : <i>f</i>(0)."],
+     exp:"<i>a</i> ist nicht der Funktionswert bei <i>x</i> = 1, sondern der Faktor <i>f</i>(1) : <i>f</i>(0) = 6 : 3 = 2. Nur bei <i>b</i> = 1 stimmen beide Werte überein.",e:1},
+    {n:"Max",sit:SIT_G,bd:{type:"curve",a:3,b:2,pts:[[0,2],[1,6]]},
+     l:["<i>b</i> = <i>f</i>(0) = 2","<i>a</i> = <i>f</i>(1) : <i>f</i>(0) = 6 : 2 = 3","Also gilt <i>f</i>(<i>x</i>) = 3 · 2<sup><i>x</i></sup>."],w:{a:2,b:3},c:{a:3,b:2},
+     o:[["Max hat <i>a</i> und <i>b</i> im Term vertauscht."],["Max hat <i>a</i> falsch berechnet.","6 : 2 = 3 ist richtig. Der Fehler liegt woanders."],["Max hat <i>b</i> falsch abgelesen.","<i>f</i>(0) = 2 ist richtig abgelesen."],["Max hätte <i>f</i>(1) durch 6 teilen müssen.","Durch 6 zu teilen ergibt keinen sinnvollen Faktor."]],ok:0,
+     h:["Max hat <i>b</i> = 2 und <i>a</i> = 3 richtig bestimmt. Schau genau, wie er sie in den Term einsetzt.","Im Term <i>b</i> · <i>a</i><sup><i>x</i></sup> steht <i>b</i> vorne und <i>a</i> als Basis."],
+     exp:"In <i>b</i> · <i>a</i><sup><i>x</i></sup> steht <i>b</i> vorne und <i>a</i> als Basis der Potenz. Richtig ist <i>f</i>(<i>x</i>) = 2 · 3<sup><i>x</i></sup>.",e:1},
+    {n:"Tim",sit:SIT_G,bd:{type:"curve",a:2,b:-2,pts:[[0,-2],[1,-4]]},
+     l:["Der Graph fällt. Also ist <i>a</i> kleiner als 1.","<i>b</i> = <i>f</i>(0) = −2","Ich nehme <i>a</i> = 0,5: <i>f</i>(<i>x</i>) = −2 · 0,5<sup><i>x</i></sup>."],w:{a:0.5,b:-2},c:{a:2,b:-2},
+     o:[["Tim hat <i>b</i> falsch abgelesen.","<i>f</i>(0) = −2 ist richtig abgelesen."],["Tim hat nicht beachtet, dass der Graph bei negativem <i>b</i> auch für <i>a</i> &gt; 1 fällt."],["Tim hat die Punkte falsch eingezeichnet.","Die Punkte sind vorgegeben, sie sind nicht Tims Fehler."],["Tim hat das Vorzeichen von <i>b</i> vergessen.","Er hat das Minus bei <i>b</i> aufgeschrieben."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 1 in Tims Term ein. Passt der markierte Punkt?","Ist <i>b</i> negativ, liegt der Graph unterhalb der <i>x</i>-Achse. Dann fällt er schon für <i>a</i> &gt; 1."],
+     exp:"Bei <i>b</i> &lt; 0 dreht sich das Monotonieverhalten um: Für <i>a</i> &gt; 1 fällt der Graph, für <i>a</i> &lt; 1 steigt er. Richtig ist <i>a</i> = (−4) : (−2) = 2."},
+    {n:"Jana",sit:SIT_G,bd:{type:"curve",a:0.5,b:4,pts:[[0,4],[1,2]]},
+     l:["<i>b</i> = <i>f</i>(0) = 4","<i>a</i> = <i>f</i>(0) : <i>f</i>(1) = 4 : 2 = 2","Also gilt <i>f</i>(<i>x</i>) = 4 · 2<sup><i>x</i></sup>."],w:{a:2,b:4},c:{a:0.5,b:4},
+     o:[["Jana hat <i>b</i> falsch abgelesen.","<i>f</i>(0) = 4 ist richtig abgelesen."],["Jana hat den Quotienten falsch herum gebildet: Es muss <i>f</i>(1) : <i>f</i>(0) heißen."],["Jana hat <i>a</i> und <i>b</i> vertauscht.","Der Term hat <i>b</i> = 4 vorne und <i>a</i> = 2 als Basis. Sie sind nicht vertauscht."],["Jana hat das Vorzeichen übersehen.","Alle Werte sind positiv. Hier gibt es kein Vorzeichenproblem."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 1 in Janas Term ein. Kommt 2 heraus?","Der Graph fällt. Dann muss <i>a</i> kleiner als 1 sein."],
+     exp:"<i>a</i> ist der Faktor vom ersten zum zweiten Wert: <i>f</i>(1) : <i>f</i>(0) = 2 : 4 = 0,5. Der Graph fällt, also muss <i>a</i> &lt; 1 sein."}
+  ],
+  2:[
+    {n:"Mia",sit:SIT_P,bd:{type:"pts",pts:[[0,5],[2,45]]},
+     l:["<i>b</i> = <i>f</i>(0) = 5","<i>a</i> = 45 : 5 = 9","Also gilt <i>f</i>(<i>x</i>) = 5 · 9<sup><i>x</i></sup>."],w:{a:9,b:5},c:{a:3,b:5},
+     o:[["Mia hat <i>b</i> falsch bestimmt.","<i>P</i> liegt auf der <i>y</i>-Achse, also ist <i>b</i> = 5."],["Mia hat nicht beachtet, dass zwischen den Punkten zwei Schritte liegen: 9 ist <i>a</i><sup>2</sup>, nicht <i>a</i>."],["Mia hat den Quotienten falsch herum gebildet.","45 : 5 ist die richtige Richtung (Wert rechts durch Wert links)."],["Mia hätte 45 − 5 rechnen müssen.","Bei Exponentialfunktionen teilt man, man subtrahiert nicht."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 2 in Mias Term ein. Kommt 45 heraus?","Zähle die Schritte von <i>x</i> = 0 bis <i>x</i> = 2. Wie oft wird mit <i>a</i> multipliziert?"],
+     exp:"Zwischen <i>x</i> = 0 und <i>x</i> = 2 wird zweimal mit <i>a</i> multipliziert: <i>a</i><sup>2</sup> = 45 : 5 = 9, also <i>a</i> = 3.",e:1},
+    {n:"Ben",sit:SIT_P,bd:{type:"pts",pts:[[1,6],[3,54]]},
+     l:["<i>a</i><sup>2</sup> = 54 : 6 = 9, also <i>a</i> = 3","Weil <i>P</i>(1 | 6) auf dem Graphen liegt, ist <i>b</i> = 6.","Also gilt <i>f</i>(<i>x</i>) = 6 · 3<sup><i>x</i></sup>."],w:{a:3,b:6},c:{a:3,b:2},
+     o:[["Ben hat <i>a</i> falsch berechnet.","<i>a</i><sup>2</sup> = 9 und <i>a</i> = 3 sind richtig."],["Ben hat <i>b</i> = 6 gesetzt, obwohl 6 der Funktionswert bei <i>x</i> = 1 ist und nicht bei <i>x</i> = 0."],["Ben hat die Schritte falsch gezählt.","Von <i>x</i> = 1 bis <i>x</i> = 3 sind es tatsächlich zwei Schritte."],["Ben hat die Punkte vertauscht.","Die Reihenfolge der Punkte ist hier nicht das Problem."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 1 in Bens Term ein. Kommt 6 heraus?","<i>b</i> ist der Wert bei <i>x</i> = 0. Von <i>x</i> = 0 bis <i>x</i> = 1 wird einmal mit <i>a</i> multipliziert."],
+     exp:"Es gilt <i>f</i>(1) = <i>b</i> · <i>a</i> = 6, also <i>b</i> = 6 : 3 = 2. Der Wert 6 gehört zu <i>x</i> = 1, nicht zu <i>x</i> = 0."},
+    {n:"Paul",sit:'In der Tabelle stehen Werte einer Funktion <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>.',bd:{type:"table",xs:[0,1,2,3],ys:[80,40,20,10]},
+     l:["Die Werte werden jedes Mal halbiert.","Also ist <i>a</i> = 2 und <i>b</i> = 80.","Es gilt <i>f</i>(<i>x</i>) = 80 · 2<sup><i>x</i></sup>."],w:{a:2,b:80},c:{a:0.5,b:80},
+     o:[["Paul hat <i>b</i> falsch abgelesen.","<i>f</i>(0) = 80 ist richtig."],["Paul hat „halbieren“ mit „mal 2“ verwechselt: Halbieren bedeutet, mit 0,5 zu multiplizieren."],["Paul hat nicht den Quotienten gebildet.","Er hat zwar nicht gerechnet, aber der Fehler steckt in dem, was er aus „halbieren“ schließt."],["Paul hat <i>a</i> und <i>b</i> im Term vertauscht.","Er schreibt 80 als Faktor und 2 als Basis. Das ist die richtige Position."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 1 in Pauls Term ein. Kommt 40 heraus?","Halbieren heißt, mit welcher Zahl zu multiplizieren?"],
+     exp:"Vom Wert 80 zum Wert 40 gilt 40 : 80 = 0,5. Der Faktor pro Schritt ist 0,5, nicht 2.",e:1},
+    {n:"Sara",sit:SIT_G,bd:{type:"curve",a:2,b:-3,pts:[[0,-3],[1,-6]]},
+     l:["Der Graph schneidet die <i>y</i>-Achse 3 Einheiten von der <i>x</i>-Achse entfernt: <i>b</i> = 3.","<i>a</i> = 6 : 3 = 2","Also gilt <i>f</i>(<i>x</i>) = 3 · 2<sup><i>x</i></sup>."],w:{a:2,b:3},c:{a:2,b:-3},
+     o:[["Sara hat <i>a</i> falsch berechnet.","Mit den Beträgen ist 6 : 3 = 2 richtig. Es ist <i>a</i> = (−6) : (−3) = 2."],["Sara hat das Vorzeichen von <i>b</i> übersehen: Der Punkt liegt unterhalb der <i>x</i>-Achse, also ist <i>b</i> negativ."],["Sara hat die Punkte vertauscht.","Die Reihenfolge ist nicht das Problem."],["Sara hat <i>b</i> mit <i>a</i> vertauscht.","Der Term hat <i>b</i> = 3 vorne, <i>a</i> = 2 als Basis."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 0 in Saras Term ein. Kommt der markierte Punkt heraus?","Liegt der Punkt oberhalb oder unterhalb der <i>x</i>-Achse? Was sagt das über <i>b</i>?"],
+     exp:"<i>b</i> = <i>f</i>(0) = −3. Der Abstand zur <i>x</i>-Achse ist 3, aber der Punkt liegt darunter. Das Vorzeichen gehört zu <i>b</i>."},
+    {n:"Lukas",sit:'In der Tabelle stehen Werte einer Exponentialfunktion <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>.',bd:{type:"table",xs:[0,1,2,3],ys:[3,6,12,24]},
+     l:["Von 3 auf 6 sind es +3.","Also ist <i>f</i>(<i>x</i>) = 3<i>x</i> + 3."],wf:(x)=>3*x+3,c:{a:2,b:3},
+     o:[["Lukas hat einen falschen Wert abgelesen.","Er hat 3 und 6 richtig aus der Tabelle genommen."],["Lukas hat eine lineare Funktion angesetzt, weil er die Differenz gebildet hat statt den Quotienten 6 : 3."],["Lukas hat <i>a</i> und <i>b</i> vertauscht.","Er hat gar keine Exponentialfunktion angesetzt."],["Lukas hat das Vorzeichen vergessen.","Alle Werte sind positiv. Das Vorzeichen ist nicht das Problem."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = 2 in Lukas’ Term ein. Kommt 12 heraus?","Bei einer Exponentialfunktion ist nicht die Differenz, sondern der Quotient benachbarter Werte konstant."],
+     exp:"Die Differenzen 3, 6, 12 sind nicht konstant, die Quotienten 6 : 3 = 12 : 6 = 24 : 12 = 2 schon. Also ist <i>a</i> = 2 und <i>b</i> = 3."}
+  ],
+  3:[
+    {n:"Leo",sit:SIT_P,bd:{type:"pts",pts:[[-1,12],[1,3]]},
+     l:["<i>a</i><sup>2</sup> = 3 : 12 = 0,25, also <i>a</i> = 0,5","Weil <i>f</i>(−1) = 12 ist, gilt <i>b</i> = 12.","Also gilt <i>f</i>(<i>x</i>) = 12 · 0,5<sup><i>x</i></sup>."],w:{a:0.5,b:12},c:{a:0.5,b:6},
+     o:[["Leo hat <i>a</i> falsch bestimmt.","<i>a</i><sup>2</sup> = 0,25 und <i>a</i> = 0,5 sind richtig."],["Leo hat den Funktionswert bei <i>x</i> = −1 als <i>b</i> genommen. <i>b</i> ist aber der Wert bei <i>x</i> = 0."],["Leo hat die Schritte falsch gezählt.","Von <i>x</i> = −1 bis <i>x</i> = 1 sind es tatsächlich zwei Schritte."],["Leo hat den Quotienten falsch herum gebildet.","3 : 12 ist die richtige Richtung (rechter Wert durch linken Wert)."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = −1 in Leos Term ein. Kommt 12 heraus? Beachte <i>a</i><sup>−1</sup> = 1/<i>a</i>.","Es gilt <i>b</i> · <i>a</i><sup>−1</sup> = 12, also <i>b</i> : 0,5 = 12."],
+     exp:"<i>f</i>(−1) = <i>b</i> · <i>a</i><sup>−1</sup> = <i>b</i> : 0,5 = 12, also <i>b</i> = 12 · 0,5 = 6. Der Wert bei <i>x</i> = −1 ist nicht <i>b</i>."},
+    {n:"Nina",sit:SIT_P,bd:{type:"pts",pts:[[1,8],[3,2]]},
+     l:["<i>a</i> = 2 : 8 = 0,25","Dann ist <i>b</i> = 8 : 0,25 = 32.","Also gilt <i>f</i>(<i>x</i>) = 32 · 0,25<sup><i>x</i></sup>."],w:{a:0.25,b:32},c:{a:0.5,b:16},
+     o:[["Nina hat nicht beachtet, dass zwischen den Punkten zwei Schritte liegen: 0,25 ist <i>a</i><sup>2</sup>, nicht <i>a</i>."],["Nina hat den Quotienten falsch herum gebildet.","2 : 8 ist die richtige Richtung (rechter Wert durch linken Wert)."],["Nina hat <i>b</i> mit dem Wert bei <i>x</i> = 1 verwechselt.","Sie rechnet 8 : 0,25 und geht damit einen Schritt zurück. Das ist an sich richtig."],["Nina hat das Vorzeichen übersehen.","Alle Werte sind positiv."]],ok:0,
+     h:["Mach die Probe: Setze <i>x</i> = 3 in Ninas Term ein. Kommt 2 heraus?","Von <i>x</i> = 1 bis <i>x</i> = 3 wird zweimal mit <i>a</i> multipliziert: <i>a</i><sup>2</sup> = 2 : 8."],
+     exp:"<i>a</i><sup>2</sup> = 2 : 8 = 0,25, also <i>a</i> = 0,5. Dann ist <i>b</i> · 0,5 = 8 und damit <i>b</i> = 16."},
+    {n:"Jonas",sit:'Der Graph von <span class="mf"><i>f</i>(<i>x</i>) = 3 · 2<sup><i>x</i></sup></span> wird an der <b><i>y</i>-Achse</b> gespiegelt. Gesucht ist der Term der gespiegelten Funktion <i class="m">g</i>.',bd:{type:"curve",a:2,b:3},
+     l:["Beim Spiegeln dreht sich das Vorzeichen um.","Also gilt <i>g</i>(<i>x</i>) = −3 · 2<sup><i>x</i></sup>."],w:{a:2,b:-3},c:{a:0.5,b:3},
+     o:[["Jonas hat an der <i>x</i>-Achse statt an der <i>y</i>-Achse gespiegelt."],["Jonas hat die Basis falsch gekürzt.","Er hat die Basis 2 gar nicht verändert, das ist das Problem."],["Jonas hat den Faktor 3 falsch abgelesen.","Der Faktor 3 ist richtig übernommen."],["Jonas hat <i>a</i> und <i>b</i> vertauscht.","Die Positionen im Term stimmen."]],ok:0,
+     h:["Bei einer Spiegelung an der <i>y</i>-Achse werden links und rechts vertauscht. Der <i>y</i>-Achsenabschnitt bleibt am selben Punkt.","Bei <i>x</i> = 0 muss <i>g</i>(0) = <i>f</i>(0) = 3 gelten. Was ändert sich stattdessen?"],
+     exp:"Spiegelung an der <i>y</i>-Achse: <i>b</i> bleibt, <i>a</i> wird zum Kehrwert. Also <i>g</i>(<i>x</i>) = 3 · 0,5<sup><i>x</i></sup>. Ein Minus vor dem Term wäre die Spiegelung an der <i>x</i>-Achse."},
+    {n:"Tara",sit:'Der Graph von <span class="mf"><i>f</i>(<i>x</i>) = 4 · 0,5<sup><i>x</i></sup></span> wird an der <b><i>x</i>-Achse</b> gespiegelt. Gesucht ist der Term der gespiegelten Funktion <i class="m">g</i>.',bd:{type:"curve",a:0.5,b:4},
+     l:["Beim Spiegeln wird die Basis zum Kehrwert.","Also gilt <i>g</i>(<i>x</i>) = 4 · 2<sup><i>x</i></sup>."],w:{a:2,b:4},c:{a:0.5,b:-4},
+     o:[["Tara hat an der <i>y</i>-Achse statt an der <i>x</i>-Achse gespiegelt."],["Tara hat den Faktor 4 falsch übernommen.","Der Faktor 4 steht richtig im Term. Aber das Vorzeichen fehlt."],["Tara hat die Basis falsch berechnet.","Sie hat den Kehrwert richtig gebildet, nur zur falschen Spiegelung."],["Tara hat <i>a</i> und <i>b</i> vertauscht.","Die Positionen im Term stimmen."]],ok:0,
+     h:["Bei einer Spiegelung an der <i>x</i>-Achse werden oben und unten vertauscht. Wo liegt der Graph danach?","Liegt der gespiegelte Graph oberhalb oder unterhalb der <i>x</i>-Achse? Das entscheidet über das Vorzeichen von <i>b</i>."],
+     exp:"Spiegelung an der <i>x</i>-Achse: <i>a</i> bleibt, <i>b</i> wechselt das Vorzeichen. Also <i>g</i>(<i>x</i>) = −4 · 0,5<sup><i>x</i></sup>. Der Kehrwert der Basis gehört zur Spiegelung an der <i>y</i>-Achse."},
+    {n:"Omar",sit:SIT_P,bd:{type:"pts",pts:[[-2,1],[1,8]]},
+     l:["<i>a</i><sup>3</sup> = 8 : 1 = 8, also <i>a</i> = 2","<i>b</i> · 2<sup>−2</sup> = 1, also <i>b</i> = 1 · 2<sup>−2</sup> = 0,25","Also gilt <i>f</i>(<i>x</i>) = 0,25 · 2<sup><i>x</i></sup>."],w:{a:2,b:0.25},c:{a:2,b:4},
+     o:[["Omar hat <i>a</i> falsch bestimmt.","Drei Schritte, <i>a</i><sup>3</sup> = 8 und <i>a</i> = 2 sind richtig."],["Omar hat beim Auflösen nach <i>b</i> mit 2<sup>−2</sup> multipliziert, statt durch 2<sup>−2</sup> zu teilen."],["Omar hat die Schritte falsch gezählt.","Von <i>x</i> = −2 bis <i>x</i> = 1 sind es tatsächlich drei Schritte."],["Omar hat den Funktionswert bei <i>x</i> = −2 als <i>b</i> genommen.","Er hat 1 nicht als <i>b</i> übernommen, sondern weiter gerechnet."]],ok:1,
+     h:["Mach die Probe: Setze <i>x</i> = −2 in Omars Term ein. Kommt 1 heraus? Beachte 2<sup>−2</sup> = 1/4.","Aus <i>b</i> · (1/4) = 1 folgt <i>b</i> = 1 : (1/4)."],
+     exp:"Aus <i>b</i> · 2<sup>−2</sup> = 1 folgt <i>b</i> = 1 : 2<sup>−2</sup> = 1 · 4 = 4. Man teilt durch den Potenzwert."}
+  ]
+};
+TR.push({
+  id:"fehler",name:"Fehlerdetektiv",art:"fehler",
+  blurb:"Fremde Lösungen enthalten genau einen Fehler. Finde ihn und korrigiere den Term.",
+  levels:[{n:"Typische Verwechslungen"},{n:"Rechenwege prüfen"},{n:"Knifflige Fehler"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(FD,lvl,stuetz),eff=PF.eff;
+    const E=pick(PF.pool,"fd2"+eff+(stuetz?"s":""));
+    /* linke Seite: Graph, Punkte oder Tabelle */
+    const bd=E.bd;
+    if(bd.type==="table"){
+      const t=document.createElement("table");t.className="tb";
+      t.innerHTML='<tr class="xr"><th class="rh"><i>x</i></th>'+bd.xs.map(x=>"<td>"+mnum(x)+"</td>").join("")+'</tr><tr><th class="rh"><i>f</i>(<i>x</i>)</th>'+bd.ys.map(y=>"<td>"+mnum(y)+"</td>").join("")+"</tr>";
+      const w=div("tblwrap");w.appendChild(t);T.viz.appendChild(w);
+    }else{
+      let view;
+      if(bd.pts)view=viewFor(bd.pts);else view={xmin:-3,xmax:3.2,ymin:-10,ymax:10,gridx:1,gridy:2,tickx:1,ticky:2};
+      if(bd.pts)view.xmax+=1;
+      const B=Board(T.viz,Object.assign({w:560,h:380,label:"Koordinatensystem zur Aufgabe"},view));
+      if(bd.type==="curve")B.curve(x=>bd.b*pw(bd.a,x),B.xmin,B.xmax,{color:"#1f6fb2",w:3.6});
+      if(bd.pts){
+        const top=B.ymax-0.6;
+        bd.pts.forEach((q,i)=>{
+          B.dot(q[0],q[1],{r:7});
+          B.text(q[0],Math.min(q[1],top),"("+mnum(q[0])+" | "+mnum(q[1])+")",{dx:11,dy:q[1]>=0?-12:24,anchor:"start",fill:"#9b2c1f",size:14.5});
+        });
+      }
+      if(!bd.pts)T.viz.appendChild(div("figcap","Graph von <span class='mf'><i>f</i>(<i>x</i>) = "+inner(termHTML(bd.b,bd.a))+"</span>"));
+    }
+    T.body.appendChild(div("small",E.sit));
+    const sc=div("stud");
+    sc.innerHTML='<div class="who"><span class="av">'+E.n[0]+'</span><b>'+gen(E.n)+' Lösung</b></div>'+E.l.map(l=>'<div class="ln">'+l+'</div>').join("");
+    T.body.appendChild(sc);
+    T.body.appendChild(div("prompt","Was ist schiefgelaufen?"));
+    const opts=div("opts");T.body.appendChild(opts);
+    const order=shuffle(E.o.map((o,i)=>i));
+    let step2=null,found=false;
+    const optEls=[];
+    order.forEach((oi,k)=>{
+      const o=E.o[oi];
+      const b=document.createElement("button");b.type="button";b.className="opt";
+      b.innerHTML='<span class="mk">'+String.fromCharCode(65+k)+'</span>'+o[0];
+      b.addEventListener("click",()=>{
+        if(T.over||found||b.disabled)return;
+        if(oi===E.ok){
+          found=true;b.classList.add("chosen-ok");optEls.forEach(x=>x.disabled=true);
+          T.say("ok","<b>Genau.</b> Jetzt korrigiere den Term.");
+          openStep2();
+        }else{
+          b.classList.add("chosen-no");b.disabled=true;T.miss();
+          T.say("hint","<b>Das ist es nicht.</b> "+(o[1]||"Schau noch einmal genau auf die einzelnen Schritte."));
+        }
+        Dock.measure();
+      });
+      opts.appendChild(b);optEls.push(b);
+    });
+    function openStep2(){
+      if(step2)return step2;
+      const box=div("");
+      box.appendChild(div("prompt","Wie lautet der richtige Term?"));
+      const tr=TermRow(box);
+      const row=div("btnrow");row.appendChild(mkbtn("btn","Prüfen",check2));box.appendChild(row);
+      T.body.appendChild(box);
+      Dock.use([tr.fb,tr.fa],check2);
+      step2=tr;
+      setTimeout(()=>{try{box.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}},80);
+      return tr;
+    }
+    function check2(){
+      if(T.over||!step2)return;
+      const b=step2.fb.num(),a=step2.fa.num();
+      if(isNaN(b)||isNaN(a)){T.say("hint","Trage in beide Felder eine Zahl ein. Brüche kannst du mit dem Bruchstrich <b>/</b> schreiben.");return;}
+      const okA=close(a,E.c.a,2e-3),okB=close(b,E.c.b,1e-6);
+      step2.fa.state(okA?"ok":"no");step2.fb.state(okB?"ok":"no");
+      if(okA&&okB){
+        step2.fa.lock("ok");step2.fb.lock("ok");
+        T.say("ok","<b>Richtig.</b> "+fnHTML(E.c.b,E.c.a)+". "+E.exp);
+        T.complete("");return;
+      }
+      T.miss();
+      if(close(b,E.w.b,1e-6)&&close(a,E.w.a,2e-3)||(E.wf&&false))T.say("hint","<b>Das ist noch der fehlerhafte Term.</b> Korrigiere genau die Stelle, an der der Fehler passiert ist.");
+      else T.say("hint","<b>Noch nicht.</b> Rechne die Stelle des Fehlers noch einmal richtig durch und setze dann <i>b</i> und <i>a</i> ein.");
+    }
+    /* Hilfen */
+    const hs=[E.h[0],()=>probeHint(),E.h[1]];
+    function probeHint(){
+      const wfn=E.wf||((x)=>E.w.b*pw(E.w.a,x));
+      let xs,ys;
+      if(bd.type==="table"){xs=bd.xs;ys=bd.ys;}
+      else if(bd.pts){xs=bd.pts.map(p=>p[0]);ys=bd.pts.map(p=>p[1]);}
+      if(!xs)return "Prüfe, an welcher Stelle sich die Lösung verändert, wenn du Schritt für Schritt nachrechnest.";
+      let rows="";
+      xs.forEach((x,i)=>{
+        const v=r6(wfn(x)),bad=!close(v,ys[i],1e-6);
+        rows+="<tr><td>"+mnum(x)+"</td><td>"+mnum(ys[i])+"</td><td class='"+(bad?"bad":"")+"'>"+mnum(v)+"</td></tr>";
+      });
+      return {t:"Probe mit "+gen(E.n)+" Term:<table class='probe'><tr><th><i>x</i></th><th>gegeben</th><th>mit dem Term</th></tr>"+rows+"</table>Wo stimmt es nicht? Dort steckt der Fehler."};
+    }
+    T.setHints(hs,()=>{
+      if(!found){
+        found=true;optEls.forEach((x,k)=>{x.disabled=true;if(order[k]===E.ok)x.classList.add("chosen-ok");});
+      }
+      const tr=openStep2();
+      tr.fb.set(fieldStr(E.c.b));tr.fa.set(fieldStr(E.c.a));tr.fb.lock("ok");tr.fa.lock("ok");
+      T.say("sol","<b>Lösung:</b> "+fnHTML(E.c.b,E.c.a)+". "+E.exp);
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   Start
+   ========================================================= */
+loadProgress();
+showHalle();
+</script>
+</body>
+</html>
