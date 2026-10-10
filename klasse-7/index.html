@@ -1,235 +1,76 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mathematik – Jahrgangsstufe 7</title>
-
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mathematik – Jahrgangsstufe 7</title>
 <style>
-  body{
-    margin:0;
-    background:#f6f7f9;
-    color:#1b2430;
-    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  }
-
-  main{
-    max-width:900px;
-    margin:0 auto;
-    padding:40px 20px;
-  }
-
-  h1{
-    color:#1f4e79;
-    margin-bottom:8px;
-  }
-
-  .subtitle{
-    color:#4a5566;
-    margin-bottom:32px;
-  }
-
-  .card{
-    background:#fff;
-    border:1px solid #dde2e9;
-    border-radius:10px;
-    padding:22px;
-    margin-bottom:20px;
-  }
-
-  h2{
-    margin-top:0;
-    color:#1f4e79;
-  }
-
-  .chapter{
-    margin:8px 0 14px;
-  }
-
-  .chapter-link,
-  .chapter-title{
-    display:block;
-    padding:13px 15px;
-    border:1px solid #dde2e9;
-    border-radius:8px;
-    color:#1f4e79;
-    text-decoration:none;
-    font-weight:600;
-    background:#fff;
-    font-size:1rem;
-  }
-
-  .chapter-link:hover{
-    background:#eaf1f8;
-  }
-
-  .artifact-list{
-    margin:6px 0 0 28px;
-  }
-
-  .artifact-link{
-    position:relative;
-    display:block;
-    padding:9px 16px 9px 16px;
-    margin:5px 0;
-    border-left:3px solid #9fc3de;
-    border-right:3px solid #9fc3de;
-    border-radius:7px;
-    background:#f8fbfe;
-    color:#1f4e79;
-    text-decoration:none;
-    font-size:.92rem;
-    font-weight:500;
-    overflow:hidden;
-  }
-
-  .artifact-link:hover{
-    background:#eaf1f8;
-  }
-
-  .artifact-link::before,
-  .artifact-link::after{
-    content:"";
-    position:absolute;
-    top:0;
-    width:5px;
-    height:100%;
-  }
-
-  .artifact-link::before{
-    left:0;
-  }
-
-  .artifact-link::after{
-    right:0;
-  }
-
-  .artifact-presentation::before,
-  .artifact-presentation::after{
-    background:#3b82f6;
-  }
-
-  .artifact-student::before,
-  .artifact-student::after{
-    background:#22a06b;
-  }
-
-  .artifact-game::before,
-  .artifact-game::after{
-    background:#8b5cf6;
-  }
-
-  .artifact-experiment::before,
-  .artifact-experiment::after{
-    background:#f59e0b;
-  }
-
-  .artifact-type{
-    color:#4a5566;
-    font-size:.82rem;
-    font-weight:600;
-    margin-right:5px;
-  }
-
-  @media(max-width:600px){
-    main{
-      padding:24px 14px;
-    }
-
-    .card{
-      padding:16px;
-    }
-
-    .artifact-list{
-      margin-left:16px;
-    }
-  }
+body{margin:0;background:#f6f7f9;color:#1b2430;font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:40px 20px}
+h1{color:#1f4e79;margin-bottom:8px}.subtitle{color:#4a5566;margin-bottom:32px}
+.card{background:#fff;border:1px solid #dde2e9;border-radius:10px;padding:22px;margin-bottom:20px}
+h2{margin-top:0;color:#1f4e79}.chapter{margin:8px 0 14px}
+.chapter-link,.chapter-title{display:block;padding:13px 15px;border:1px solid #dde2e9;border-radius:8px;color:#1f4e79;text-decoration:none;font-weight:600;background:#fff;font-size:1rem}
+.chapter-link:hover{background:#eaf1f8}.artifact-list{margin:6px 0 0 28px}
+.artifact-link{position:relative;display:block;padding:9px 16px;margin:5px 0;border-left:3px solid #9fc3de;border-right:3px solid #9fc3de;border-radius:7px;background:#f8fbfe;color:#1f4e79;text-decoration:none;font-size:.92rem;font-weight:500;overflow:hidden}
+.artifact-link:hover{background:#eaf1f8}
+.artifact-link::before,.artifact-link::after{content:"";position:absolute;top:0;width:5px;height:100%}
+.artifact-link::before{left:0}.artifact-link::after{right:0}
+.artifact-presentation::before,.artifact-presentation::after{background:#3b82f6}
+.artifact-student::before,.artifact-student::after{background:#22a06b}
+.artifact-game::before,.artifact-game::after{background:#8b5cf6}
+.artifact-experiment::before,.artifact-experiment::after{background:#f59e0b}
+.artifact-type{color:#4a5566;font-size:.82rem;font-weight:600;margin-right:5px}
+@media(max-width:600px){main{padding:24px 14px}.card{padding:16px}.artifact-list{margin-left:16px}}
 </style>
-
-</head>
-
-<body>
-
+</head><body>
 <main>
+<h1>Mathematik – Jahrgangsstufe 7</h1>
+<p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
 
-  <h1>Mathematik – Jahrgangsstufe 7</h1>
-  <p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
+<div class="card">
+<h2>1. Terme mit Variablen</h2>
 
-  <div class="card">
+<div class="chapter">
+<a class="chapter-link" href="terme-mit-variablen/1-1a-terme-und-termwerte/">1.1a Terme und Termwerte</a>
+<div class="artifact-list">
+<a class="artifact-link artifact-game" href="artefakte/termwerte-spiel/"><span class="artifact-type">↳ Spiel</span>Termwerte-Spiel</a>
+</div>
+</div>
 
-    <h2>1. Terme mit Variablen</h2>
+<div class="chapter">
+<a class="chapter-link" href="terme-mit-variablen/1-2-aufstellen-und-interpretieren-von-termen/">1.2 Aufstellen und Interpretieren von Termen</a>
+</div>
+</div>
 
-    <div class="chapter">
-      <a class="chapter-link" href="terme-mit-variablen/1-1a-terme-und-termwerte/">
-        1.1a Terme und Termwerte
-      </a>
+<div class="card">
+<h2>2. Umformen von Termen</h2>
 
-      <div class="artifact-list">
-        <a class="artifact-link artifact-game" href="artefakte/termwerte-spiel/">
-          <span class="artifact-type">↳ Spiel</span>
-          Termwerte-Spiel
-        </a>
-      </div>
-    </div>
+<div class="chapter">
+<div class="chapter-title">2.1 Umformen von Produkten und Potenzen</div>
+<div class="artifact-list">
+<a class="artifact-link artifact-presentation" href="artefakte/produkte-potenzen-display/"><span class="artifact-type">↳ Präsentation</span>Produkte und Potenzen entdecken</a>
+<a class="artifact-link artifact-student" href="artefakte/produkte-potenzen-werkstatt/"><span class="artifact-type">↳ Werkstatt</span>Produkte und Potenzen üben</a>
+</div>
+</div>
 
-    <div class="chapter">
-      <a class="chapter-link" href="terme-mit-variablen/1-2-aufstellen-und-interpretieren-von-termen/">
-        1.2 Aufstellen und Interpretieren von Termen
-      </a>
-    </div>
+<div class="chapter">
+<div class="chapter-title">2.2 Umformen von Summen</div>
+<div class="artifact-list">
+<a class="artifact-link artifact-presentation" href="artefakte/summen-display/"><span class="artifact-type">↳ Präsentation</span>Summen umformen</a>
+</div>
+</div>
 
-  </div>
+<div class="chapter">
+<div class="chapter-title">2.3 Ausmultiplizieren und Ausklammern</div>
+<div class="artifact-list">
+<a class="artifact-link artifact-presentation" href="artefakte/inuit-party/"><span class="artifact-type">↳ Präsentation</span>Inuit-Party: Ausmultiplizieren und Ausklammern</a>
+</div>
+</div>
 
-  <div class="card">
+<div class="chapter">
+<div class="chapter-title">2.4 Binomische Formeln</div>
+<div class="artifact-list">
+<a class="artifact-link artifact-presentation" href="artefakte/binomische-formeln-display/"><span class="artifact-type">↳ Präsentation</span>Binomische Formeln entdecken</a>
+<a class="artifact-link artifact-student" href="artefakte/binomische-formeln-werkstatt/"><span class="artifact-type">↳ Werkstatt</span>Binomische Formeln üben</a>
+</div>
+</div>
 
-    <h2>2. Umformen von Termen</h2>
-
-    <div class="chapter">
-      <div class="chapter-title">
-        2.1 Umformen von Produkten und Potenzen
-      </div>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-presentation" href="artefakte/produkte-potenzen-display/">
-          <span class="artifact-type">↳ Präsentation</span>
-          Produkte und Potenzen entdecken
-        </a>
-
-        <a class="artifact-link artifact-student" href="artefakte/produkte-potenzen-werkstatt/">
-          <span class="artifact-type">↳ Werkstatt</span>
-          Produkte und Potenzen üben
-        </a>
-      </div>
-    </div>
-
-    <div class="chapter">
-      <div class="chapter-title">
-        2.2 Umformen von Summen
-      </div>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-presentation" href="artefakte/summen-display/">
-          <span class="artifact-type">↳ Präsentation</span>
-          Summen umformen
-        </a>
-      </div>
-    </div>
-
-    <div class="chapter">
-      <div class="chapter-title">
-        2.3 Ausmultiplizieren und Ausklammern
-      </div>
-    </div>
-
-    <div class="chapter">
-      <div class="chapter-title">
-        2.4 Binomische Formeln
-      </div>
-    </div>
-
-  </div>
-
+</div>
 </main>
-
-</body>
-</html>
+</body></html>
