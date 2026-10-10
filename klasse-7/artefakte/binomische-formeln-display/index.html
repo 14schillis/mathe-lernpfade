@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Binomische Formeln – Lehrer-Präsentation</title>
+<style>
+:root{
+  --sans:"Inter","Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;
+  --serif:"STIX Two Text","STIX Two Math","Latin Modern Roman","Cambria Math",Cambria,"Times New Roman",Georgia,serif;
+  --bg:#f3f5f7;--ink:#1c2733;--muted:#66727f;--line:#d5dce3;
+  --accent:#0e7490;--accent-d:#0b5d73;--accent-soft:#d6eef4;
+  --a:#1d4ed8;--b:#c2410c;--c:#15803d;--d:#7e22ce;
+  --good:#15803d;--good-soft:#dcf5e4;--bad:#b42318;--bad-soft:#fde4e1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#1b2430;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{user-select:none;-webkit-user-select:none;font-family:var(--sans);color:var(--ink)}
+button{font-family:inherit}
+button:focus-visible{outline:4px solid #f59e0b;outline-offset:2px}
+
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:50% 50%;background:var(--bg);overflow:hidden}
+
+/* ---------- Mathematik ---------- */
+.m{font-family:var(--serif);white-space:nowrap}
+.m i,.m .tk i{font-style:italic}
+.m sup,.tk sup{font-size:.62em;line-height:0;vertical-align:baseline;position:relative;top:-.55em;margin-left:.05em;font-style:normal}
+.op{margin:0 .26em}
+.dot{margin:0 .12em}
+.un{margin-right:.03em}
+.sp{display:inline-block;width:1.5em}
+.va{color:var(--a)}.vb{color:var(--b)}.vc{color:var(--c)}.vd{color:var(--d)}
+.txt{font-family:var(--sans);font-size:.62em;font-weight:650}
+
+.tk{display:inline-block;overflow:visible;line-height:1.2;padding:.05em .09em .05em .05em;margin:0;border-radius:.16em;
+  transition:background .35s,box-shadow .35s,opacity .45s,transform .45s,color .35s}
+.rv{opacity:0;transform:translateY(12px)}
+.rv.on{opacity:1;transform:none}
+.off{opacity:0!important;transform:translateY(-10px)!important;pointer-events:none}
+
+.pair{background:#cfe9f0}
+.hl,.t2{background:#fde68a}
+.hl-good{background:#bbf7d0}
+.hl-bad{background:#fecaca}
+.t1{background:#dbeafe}
+.t3{background:#ffedd5}
+.tk.cancel{opacity:.4!important;background:transparent;box-shadow:none;text-decoration:line-through;text-decoration-thickness:.07em;text-decoration-color:var(--bad)}
+
+/* ---------- Folien-Gerüst ---------- */
+.slide{position:absolute;inset:0;display:none}
+.slide.active{display:block}
+.hd{position:absolute;left:64px;top:26px}
+.badge{font-size:26px;font-weight:650;color:var(--accent);letter-spacing:.01em}
+.badge span{color:var(--muted);font-weight:500;margin-left:14px}
+.hd h1{margin:2px 0 0;font-size:48px;line-height:1.1;font-weight:680;letter-spacing:-.015em}
+.chip{position:absolute;top:30px;right:64px;display:flex;align-items:center;gap:20px;padding:10px 26px;border-radius:18px;background:#fff;border:1px solid var(--line)}
+.chip small{font-size:22px;color:var(--muted)}
+.chip .m{font-size:44px;color:var(--ink);line-height:1.2}
+.body{position:absolute;left:80px;right:80px;top:140px;bottom:136px}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px;height:100%;position:relative}
+.col.mid{justify-content:center;gap:40px}
+
+.bigtask{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px}
+.bigtask .lbl{font-size:34px;color:var(--muted)}
+.bigm{font-size:150px;line-height:1.2}
+.bigm.sm{font-size:84px;line-height:1.2}
+.prompt{font-size:46px;color:var(--ink);text-align:center}
+.qprompt{font-size:34px;color:var(--muted)}
+
+.derive{display:grid;grid-template-columns:max-content max-content max-content;justify-content:center;align-items:baseline;column-gap:.12em;line-height:1.5;white-space:nowrap;font-family:var(--serif)}
+.derive .lhs{justify-self:end}
+.line{font-size:108px;line-height:1.35;white-space:nowrap}
+
+.stack{display:grid;width:100%;justify-items:center;align-items:start}
+.stack>*{grid-area:1/1}
+.hint{font-size:40px;line-height:1.3;text-align:center;max-width:1600px}
+.hint .m{font-size:1.16em}
+.hint.dim{color:var(--muted);font-size:34px}
+.hint b.bad{color:var(--bad)}
+.qtext{font-size:50px;color:var(--muted)}
+.rem{font-size:46px;line-height:1.35;background:#fff;border-left:10px solid var(--accent);padding:22px 36px;border-radius:18px;max-width:1450px;text-align:left}
+
+/* Formelkasten */
+.fcard{background:#fff;border:3px solid var(--accent);border-radius:28px;padding:14px 44px 18px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ftitle{font-size:30px;font-weight:700;color:var(--accent-d)}
+.fm{font-size:80px;line-height:1.2}
+.merk{display:flex;align-items:center;gap:16px;font-size:34px;margin-top:4px}
+.mc{display:inline-block;padding:8px 22px;border-radius:14px;background:var(--accent-soft)}
+.mc .m{font-size:1.15em}
+.mc.good{background:var(--good-soft);color:#14532d}
+.mc.bad{background:var(--bad-soft);color:var(--bad)}
+.mp{color:var(--muted);font-size:1.1em}
+
+/* Abstimmung */
+.opts{display:grid;gap:22px;width:100%;max-width:1760px}
+.opts.c2{grid-template-columns:1fr 1fr;max-width:1200px}
+.opts.c4{grid-template-columns:repeat(4,1fr)}
+.opt{cursor:pointer;border:3px solid var(--line);background:#fff;color:var(--ink);border-radius:26px;min-height:92px;padding:10px 18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:32px;position:relative;
+  transition:background .25s,border-color .25s,opacity .25s,box-shadow .25s}
+.opts.c2 .opt{font-size:46px;font-weight:650;min-height:96px}
+.opts.c4 .opt{min-height:134px}
+.opt .n{font-size:54px;font-weight:700;line-height:1}
+.opt:active{transform:scale(.99)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 6px rgba(14,116,144,.2)}
+.opt.right{border-color:var(--good);background:var(--good-soft);color:#14532d}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:#7f1d1d}
+.opt.dim{opacity:.4}
+.opt.right::after,.opt.wrong::after{position:absolute;top:8px;right:18px;font-size:36px;font-weight:700;line-height:1}
+.opt.right::after{content:"✓";color:var(--good)}
+.opt.wrong::after{content:"✗";color:var(--bad)}
+
+/* Vergleichstabelle (Fehler) */
+.cmp{display:grid;gap:10px;width:100%;max-width:1760px;align-items:stretch}
+.cmp .ch{font-size:30px;color:var(--muted);text-align:center;align-self:end}
+.cmp .ch .m{font-size:1.5em;color:var(--ink)}
+.cmp .rl{font-size:30px;font-weight:650;color:var(--muted);align-self:center}
+.cc{border-radius:20px;padding:8px 10px;text-align:center;background:#fff;border:3px solid var(--line);min-height:96px;display:flex;flex-direction:column;justify-content:center;
+  transition:opacity .45s,transform .45s,border-color .35s,box-shadow .35s}
+.cc .cv{font-size:56px;line-height:1.15}
+.cc .cs{font-size:24px;color:var(--muted);margin-top:2px}
+.cc .cs .m{font-size:1.2em}
+.cc.neu{border-color:#9aa6b2}
+.cc.ok{background:var(--good-soft);border-color:#86d9a3}
+.cc.bad{background:var(--bad-soft);border-color:#f0a39b;color:var(--bad)}
+.cc.miss{background:#fff;border:3px dashed var(--bad);color:var(--bad)}
+.cc.flag{border-color:var(--bad);box-shadow:0 0 0 5px var(--bad-soft)}
+.final{font-size:42px;padding:12px 34px;border-radius:20px;background:var(--good-soft);border:3px solid #86d9a3;color:#14532d}
+.final .m{font-size:1.2em}
+
+/* Warum nicht? */
+.whyrow{display:flex;align-items:center;gap:40px}
+.wb{background:#fff;border:3px solid var(--line);border-radius:22px;padding:10px 36px;text-align:center}
+.wb small{display:block;font-size:26px;color:var(--muted)}
+.wb .m{font-size:52px;line-height:1.3}
+.neq{font-size:80px;font-family:var(--serif);color:var(--bad)}
+
+/* Anwenden (Szene 6) */
+.apply{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.arow{display:grid;grid-template-columns:440px 1fr auto;align-items:center;gap:30px;min-height:122px;border-bottom:2px solid var(--line);padding:6px 0}
+.albl{font-size:36px;font-weight:600;display:flex;align-items:center;gap:20px}
+.albl .m{font-size:1.15em}
+.num{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:50%;background:var(--accent);color:#fff;font-size:32px;font-weight:700;flex:none}
+.acont{font-size:62px;line-height:1.3;font-family:var(--serif);white-space:nowrap}
+.acont .m{font-size:1em}
+.ft{font-family:var(--sans);font-size:34px;font-weight:600;color:var(--accent-d);margin-right:30px}
+.acont .ft+.m{font-size:.9em}
+.aside{background:#fff;border:2px solid var(--line);border-radius:20px;padding:12px 28px;min-width:600px}
+.sh{font-size:24px;color:var(--muted);margin-bottom:2px}
+.sl{font-size:40px;line-height:1.35;border-radius:10px}
+
+/* Abschluss */
+.srow{display:grid;grid-template-columns:600px 1fr;align-items:center;width:100%;background:#fff;border:2px solid var(--line);border-radius:26px;padding:12px 34px;min-height:140px}
+.srow .sl{display:flex;align-items:center;gap:22px;font-size:inherit}
+.sn{font-size:36px;font-weight:680}
+.ss{font-size:28px;color:var(--muted)}
+.sf{font-size:76px;line-height:1.25}
+.strategy{display:flex;align-items:center;gap:18px;margin-top:10px}
+.st{background:var(--accent);color:#fff;font-size:36px;font-weight:600;padding:20px 30px;border-radius:20px;text-align:center}
+.ar{font-size:50px;color:var(--accent-d)}
+.smallnote{font-size:30px;color:var(--muted)}
+
+/* ---------- Navigation ---------- */
+#nav{position:absolute;left:0;right:0;bottom:0;height:124px;background:rgba(255,255,255,.96);border-top:2px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 40px;z-index:20}
+#bar{position:absolute;top:-6px;left:0;right:0;height:6px;background:#dde3e9}
+#barfill{height:100%;width:0;background:var(--accent);transition:width .3s}
+.btn{height:88px;min-width:88px;padding:0 28px;border-radius:22px;border:2px solid var(--line);background:#fff;color:var(--ink);font-size:30px;font-weight:600;
+  display:inline-flex;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:background .2s,transform .1s}
+.btn:active{transform:scale(.97);background:#eef2f5}
+.btn svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;min-width:250px;font-size:34px}
+.btn.pri:active{background:var(--accent-d)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.teach{display:none}
+body.teacher .teach{display:inline-flex;border-color:var(--accent);color:var(--accent-d)}
+#count{flex:1;text-align:center;font-size:26px;color:var(--muted);white-space:nowrap}
+
+/* ---------- Übersicht ---------- */
+#ov{position:absolute;inset:0;background:var(--bg);z-index:40;display:none;padding:36px 64px}
+#ov.open{display:block}
+#ovtop{display:flex;align-items:center;gap:20px;margin-bottom:26px}
+#ovtop h2{flex:1;margin:0;font-size:52px;font-weight:680}
+#ovgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.card{height:196px;text-align:left;padding:16px 20px;border-radius:22px;border:2px solid var(--line);background:#fff;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;color:var(--ink);overflow:hidden}
+.card.cur{border-color:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+.card .cs{font-size:24px;color:var(--muted)}
+.card .pv{font-size:34px;line-height:1.2;overflow:hidden}
+.card .pv .op{margin:0 .12em}
+.card .ct{font-size:26px;font-weight:600}
+
+@media (prefers-reduced-motion:reduce){.rv,.tk,.opt,.cc{transition:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="slides"></div>
+
+  <nav id="nav" aria-label="Navigation">
+    <div id="bar"><div id="barfill"></div></div>
+    <button class="btn" id="bPrev" type="button" aria-label="Zurück"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Zurück</span></button>
+    <button class="btn" id="bOv" type="button" aria-label="Übersicht"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="14" y="14" width="6" height="6" rx="1.2"/></svg><span>Übersicht</span></button>
+    <button class="btn" id="bReset" type="button" aria-label="Zurücksetzen"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg><span>Zurücksetzen</span></button>
+    <button class="btn" id="bFs" type="button" aria-label="Vollbild"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Vollbild</span></button>
+    <button class="btn teach" id="bSol" type="button" aria-label="Lösung anzeigen"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Lösung anzeigen</span></button>
+    <div id="count"></div>
+    <button class="btn pri" id="bNext" type="button" aria-label="Weiter"><span>Weiter</span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  </nav>
+
+  <div id="ov">
+    <div id="ovtop">
+      <h2>Übersicht</h2>
+      <button class="btn" id="bOvAll" type="button">Alles zurücksetzen</button>
+      <button class="btn pri" id="bOvClose" type="button" style="min-width:220px">Schließen</button>
+    </div>
+    <div id="ovgrid"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================================================
+   Bausteine für Mathematik-Markup (rein HTML/CSS, offline)
+   ===================================================== */
+var v=function(c,k){return '<i'+(k?' class="'+k+'"':'')+'>'+c+'</i>';};
+var A=v('a','va'),B=v('b','vb'),C=v('c','vc'),D=v('d','vd'),X=v('x');
+var P='<span class="op">+</span>',M='<span class="op">−</span>',EQ='<span class="op">=</span>',
+    DOT='<span class="dot">·</span>',N='<span class="un">−</span>',U='<span class="un">+</span>',
+    SP='<span class="sp"></span>';
+var sup=function(e){return '<sup>'+e+'</sup>';};
+var sq=function(s){return s+sup(2);};
+var mm=function(s){return '<span class="m">'+s+'</span>';};
+var ca=function(s){return '<span class="va">'+s+'</span>';};
+var cb=function(s){return '<span class="vb">'+s+'</span>';};
+var AB=A+B;
+
+function mk(tag){
+  return function(cls,html,o){
+    o=o||{};
+    var c=cls||'',at='';
+    if(o.s!=null){c+=' rv';at+=' data-s="'+o.s+'"';}
+    if(o.e!=null){at+=' data-e="'+o.e+'"';}
+    if(o.h){at+=' data-h="'+o.h+'"';}
+    return '<'+tag+' class="'+c.trim()+'"'+at+'>'+html+'</'+tag+'>';
+  };
+}
+var Sp=mk('span'),Dv=mk('div');
+var T=function(html,o){return Sp('tk',html,o);};
+
+var R=function(l,q,r){return '<div class="lhs">'+l+'</div><div class="eqc">'+q+'</div><div class="rhs">'+r+'</div>';};
+var derive=function(rows,size){return '<div class="derive" style="font-size:'+size+'px">'+rows.join('')+'</div>';};
+var stack=function(){return '<div class="stack">'+Array.prototype.join.call(arguments,'')+'</div>';};
+var hint=function(html,s,e){return Dv('hint',html,{s:s,e:e});};
+var bigTask=function(m,prompt){
+  return Dv('bigtask','<div class="lbl">Ausgangsaufgabe</div><div class="m bigm">'+m+'</div><div class="prompt">'+prompt+'</div>',{e:1});
+};
+var VOTE_HINT='Abstimmung: Antwort antippen, dann mit „Weiter“ auflösen.';
+
+/* Klammer-Zeile (a ± b)(a ± b) mit Paar-Markierung: Schritte 2–5 */
+var brk=function(s1,s2){
+  return '('+T(A,{h:'pair@2-3'})+T(s1+B,{h:'pair@4-5'})+')('+T(A,{h:'pair@2,4'})+T(s2+B,{h:'pair@3,5'})+')';
+};
+
+/* Formel-Strings */
+var F1='('+A+P+B+')'+sup(2)+EQ+sq(A)+P+'2'+AB+P+sq(B);
+var F2='('+A+M+B+')'+sup(2)+EQ+sq(A)+M+'2'+AB+P+sq(B);
+var F3='('+A+P+B+')('+A+M+B+')'+EQ+sq(A)+M+sq(B);
+
+/* Auswahl-Buttons */
+var OPT_RF=[{v:'r',html:'Richtig'},{v:'f',html:'Falsch'}];
+var OPT_5=[1,2,3].map(function(n){return {v:String(n),html:'<span class="n">'+n+'.</span><span>binomische Formel</span>'};})
+  .concat([{v:'0',html:'<span class="n">keine</span><span>binomische Formel</span>'}]);
+var opts=function(list,correct){
+  return '<div class="opts c'+list.length+'">'+list.map(function(o){
+    return '<button type="button" class="opt" data-v="'+o.v+'"'+(o.v===correct?' data-correct="1"':'')+'>'+o.html+'</button>';
+  }).join('')+'</div>';
+};
+
+/* Vergleichstabelle */
+function cmp(heads,rows,hs){
+  var h='<div class="cmp" style="grid-template-columns:230px repeat('+heads.length+',1fr)"><div></div>';
+  heads.forEach(function(x){h+=Dv('ch',x,{s:hs});});
+  rows.forEach(function(r){
+    h+=Dv('rl',r.label,{s:r.s});
+    r.cells.forEach(function(c){
+      h+=Dv('cc '+(c.st||''),'<div class="cv m">'+c.html+'</div>'+(c.sub?'<div class="cs">'+c.sub+'</div>':''),{s:r.s,h:c.h});
+    });
+  });
+  return h+'</div>';
+}
+var MISS={html:'<span class="txt">fehlt</span>',st:'miss'};
+var ck=function(h,st,sub){return {html:h,st:st,sub:sub};};
+
+/* =====================================================
+   Folien
+   ===================================================== */
+var slides=[];
+var add=function(s){slides.push(s);};
+
+/* ---------- Szene 1 ---------- */
+add({scene:'Szene 1',title:'Wiederanknüpfen: Jeder mit jedem',label:'Zwei Summen multiplizieren',
+ preview:'('+A+P+B+')('+C+P+D+')',steps:5,
+ html:'<div class="col mid">'+
+  Dv('line m','('+T(A,{h:'pair@1-2'})+T(P+B,{h:'pair@3-4'})+')('+T(C,{h:'pair@1,3'})+T(P+D,{h:'pair@2,4'})+')')+
+  Dv('line m',T(EQ,{s:1})+T(A+C,{s:1,h:'pair@1'})+T(P+A+D,{s:2,h:'pair@2'})+T(P+B+C,{s:3,h:'pair@3'})+T(P+B+D,{s:4,h:'pair@4'}))+
+  stack(
+    Dv('qtext','Was passiert beim Multiplizieren zweier Summen?',{e:5}),
+    Dv('rem','<b>Jeder Term</b> der ersten Klammer wird mit <b>jedem Term</b> der zweiten Klammer multipliziert.',{s:5})
+  )+'</div>'});
+
+/* ---------- Szene 2 ---------- */
+add({scene:'Szene 2',title:'Die 1. binomische Formel entdecken',label:'Quadrat einer Summe',
+ preview:'('+A+P+B+')'+sup(2),chip:'('+A+P+B+')'+sup(2),steps:10,
+ html:'<div class="col">'+
+  bigTask('('+A+P+B+')'+sup(2),'Können wir das mit „Jeder mit jedem“ lösen?')+
+  derive([
+    R(T('('+A+P+B+')'+sup(2),{s:1}),T(EQ,{s:1}),T(brk(P,P),{s:1})),
+    R('',T(EQ,{s:2}),
+      T(A+DOT+A,{s:2,h:'pair@2'})+
+      T(P+A+DOT+B,{s:3,h:'pair@3;hl@7-8'})+
+      T(P+B+DOT+A,{s:4,h:'pair@4;hl@7-8'})+
+      T(P+B+DOT+B,{s:5,h:'pair@5'})),
+    R('',T(EQ,{s:6}),T(sq(A)+T(P+AB,{h:'hl@7-8'})+T(P+AB,{h:'hl@7-8'})+P+sq(B),{s:6})),
+    R('',T(EQ,{s:8}),T(sq(A)+P+T('2'+AB,{h:'hl@8'})+P+sq(B),{s:8}))
+  ],72)+
+  stack(
+    hint('Quadrieren heißt: Die Klammer wird <b>mit sich selbst</b> multipliziert.',1,2),
+    hint('Jeder mit jedem: Jeder Term der 1. Klammer mal jeder Term der 2. Klammer.',2,6),
+    hint('Kürzer schreiben: '+mm(A+DOT+A+EQ+sq(A))+', '+mm(B+DOT+B+EQ+sq(B))+' und '+mm(B+DOT+A+EQ+AB),6,7),
+    hint('Die beiden mittleren Terme sind gleich: '+mm(AB+EQ+B+A),7,8),
+    hint('Gleiche Terme zusammenfassen: '+mm(AB+P+AB+EQ+'2'+AB),8,9),
+    Dv('fcard','<div class="ftitle">1. binomische Formel</div><div class="m fm">('+A+P+B+')'+sup(2)+EQ+
+      T(sq(A),{h:'t1@10'})+P+T('2'+AB,{h:'t2@10'})+P+T(sq(B),{h:'t3@10'})+'</div>'+
+      Dv('merk',Sp('mc t1','Erstes Quadrat')+'<span class="mp">+</span>'+Sp('mc t2','doppeltes Produkt')+'<span class="mp">+</span>'+Sp('mc t3','zweites Quadrat'),{s:10}),{s:9})
+  )+'</div>'});
+
+/* ---------- Szene 3 ---------- */
+add({scene:'Szene 3',title:'Die 2. binomische Formel',label:'Quadrat einer Differenz',
+ preview:'('+A+M+B+')'+sup(2),chip:'('+A+M+B+')'+sup(2),steps:10,
+ html:'<div class="col">'+
+  bigTask('('+A+M+B+')'+sup(2),'Was ändert sich, wenn in der Klammer ein Minus steht?')+
+  derive([
+    R(T('('+A+M+B+')'+sup(2),{s:1}),T(EQ,{s:1}),T(brk(M,M),{s:1})),
+    R('',T(EQ,{s:2}),
+      T(A+DOT+A,{s:2,h:'pair@2'})+
+      T(P+A+DOT+'('+N+B+')',{s:3,h:'pair@3;hl@7-8'})+
+      T(P+'('+N+B+')'+DOT+A,{s:4,h:'pair@4;hl@7-8'})+
+      T(P+'('+N+B+')'+DOT+'('+N+B+')',{s:5,h:'pair@5'})),
+    R('',T(EQ,{s:6}),T(sq(A)+T(M+AB,{h:'hl@7-8'})+T(M+AB,{h:'hl@7-8'})+P+sq(B),{s:6})),
+    R('',T(EQ,{s:8}),T(sq(A)+T(M+'2'+AB,{h:'hl@8'})+P+sq(B),{s:8}))
+  ],72)+
+  stack(
+    hint('Quadrieren heißt: Die Klammer wird <b>mit sich selbst</b> multipliziert.',1,2),
+    hint('Jeder mit jedem – das Minus gehört zum Term: '+mm(N+B)+'.',2,6),
+    hint('Kürzer schreiben: '+mm(A+DOT+'('+N+B+')'+EQ+N+AB)+', '+mm('('+N+B+')'+DOT+A+EQ+N+AB)+' und '+mm('('+N+B+')'+DOT+'('+N+B+')'+EQ+U+sq(B)),6,7),
+    hint('Die beiden mittleren Terme sind gleich: '+mm(N+AB+' und '+N+AB),7,8),
+    hint('Gleiche Terme zusammenfassen: '+mm(N+AB+M+AB+EQ+N+'2'+AB),8,9),
+    Dv('fcard','<div class="ftitle">2. binomische Formel</div><div class="m fm">('+A+M+B+')'+sup(2)+EQ+
+      sq(A)+T(M+'2'+AB,{h:'hl-bad@10'})+T(P+sq(B),{h:'hl-good@10'})+'</div>'+
+      Dv('merk',Sp('mc good','Das letzte Glied bleibt '+mm(U+sq(B)))+Sp('mc bad','Nur das doppelte Produkt ist negativ'),{s:10}),{s:9})
+  )+'</div>'});
+
+/* ---------- Szene 3: Abstimmung ---------- */
+add({scene:'Szene 3',sub:'Abstimmung',title:'Typischer Fehler',label:'Stimmt das?',
+ preview:'('+A+M+B+')'+sup(2)+EQ+sq(A)+M+sq(B),steps:3,resolve:1,
+ html:'<div class="col">'+
+  Dv('qprompt','Typischer Fehler: Stimmt das?')+
+  '<div class="m bigm sm">('+A+M+B+')'+sup(2)+EQ+sq(A)+M+sq(B)+'</div>'+
+  opts(OPT_RF,'f')+
+  stack(
+    Dv('hint dim',VOTE_HINT,{e:1}),
+    Dv('hint','<b class="bad">Falsch!</b> Jeder mit jedem ergibt vier Produkte:',{s:1,e:2}),
+    Dv('hint','Der Behauptung fehlen <b class="bad">die beiden mittleren Produkte</b>.',{s:2})
+  )+
+  cmp([mm(A+DOT+A),mm(A+DOT+'('+N+B+')'),mm('('+N+B+')'+DOT+A),mm('('+N+B+')'+DOT+'('+N+B+')')],[
+    {label:'Jeder mit jedem',s:1,cells:[ck(sq(A),'neu'),{html:N+AB,st:'neu',h:'flag@2-9'},{html:N+AB,st:'neu',h:'flag@2-9'},ck(U+sq(B),'neu')]},
+    {label:'Behauptung',s:2,cells:[ck(sq(A),'ok'),MISS,MISS,ck(N+sq(B),'bad')]}
+  ],1)+
+  Dv('final','Richtig ist: '+mm('('+A+M+B+')'+sup(2)+EQ+sq(A)+M+'2'+AB+P+sq(B)),{s:3})+
+  '</div>'});
+
+/* ---------- Szene 4 ---------- */
+add({scene:'Szene 4',title:'Die 3. binomische Formel',label:'Summe mal Differenz',
+ preview:'('+A+P+B+')('+A+M+B+')',chip:'('+A+P+B+')('+A+M+B+')',steps:10,
+ html:'<div class="col">'+
+  bigTask('('+A+P+B+')('+A+M+B+')','Eine Summe mal eine Differenz – was passiert hier?')+
+  derive([
+    R(T(brk(P,M),{s:1}),T(EQ,{s:2}),
+      T(A+DOT+A,{s:2,h:'pair@2'})+
+      T(P+A+DOT+'('+N+B+')',{s:3,h:'pair@3'})+
+      T(P+B+DOT+A,{s:4,h:'pair@4'})+
+      T(P+B+DOT+'('+N+B+')',{s:5,h:'pair@5'})),
+    R('',T(EQ,{s:6}),T(sq(A)+T(M+AB,{h:'hl@7;cancel@8'})+T(P+AB,{h:'hl@7;cancel@8'})+M+sq(B),{s:6})),
+    R('',T(EQ,{s:8}),T(sq(A)+M+sq(B),{s:8}))
+  ],72)+
+  stack(
+    hint('Wieder „Jeder mit jedem“ – diesmal mit einer Summe und einer Differenz.',1,2),
+    hint('Jeder Term der 1. Klammer mal jeder Term der 2. Klammer.',2,6),
+    hint('Kürzer schreiben: '+mm(A+DOT+'('+N+B+')'+EQ+N+AB)+', '+mm(B+DOT+A+EQ+AB)+' und '+mm(B+DOT+'('+N+B+')'+EQ+N+sq(B)),6,7),
+    hint('Gleich groß, aber mit entgegengesetztem Vorzeichen: '+mm(N+AB+P+AB+EQ+'0'),7,8),
+    hint('Die beiden gemischten Terme fallen weg. Übrig bleibt '+mm(sq(A)+M+sq(B))+'.',8,9),
+    Dv('fcard','<div class="ftitle">3. binomische Formel</div><div class="m fm">('+A+P+B+')('+A+M+B+')'+EQ+sq(A)+M+sq(B)+'</div>'+
+      Dv('merk',Sp('mc','Die gemischten Terme heben sich auf.'),{s:10}),{s:9})
+  )+'</div>'});
+
+/* ---------- Szene 5 ---------- */
+function q5(n,term,correct,explain,extra,steps){
+  return {scene:'Szene 5',sub:n+' von 4',title:'Welche Formel passt?',label:'Formel erkennen',preview:term,steps:steps||1,resolve:1,
+    html:'<div class="col">'+
+      Dv('qprompt','Welche binomische Formel passt zu diesem Term?')+
+      '<div class="m bigm">'+term+'</div>'+
+      opts(OPT_5,correct)+
+      stack(Dv('hint dim',VOTE_HINT,{e:1}),Dv('hint',explain,{s:1}))+
+      (extra||'')+'</div>'};
+}
+add(q5(1,'('+X+P+'3)'+sup(2),'1','<b>Summe im Quadrat</b> – passt zu '+mm('('+A+P+B+')'+sup(2))+' mit '+mm(A+EQ+X)+' und '+mm(B+EQ+'3')+'.'));
+add(q5(2,'('+X+M+'5)'+sup(2),'2','<b>Differenz im Quadrat</b> – passt zu '+mm('('+A+M+B+')'+sup(2))+' mit '+mm(A+EQ+X)+' und '+mm(B+EQ+'5')+'.'));
+add(q5(3,'('+X+P+'4)('+X+M+'4)','3','<b>Gleiche Terme, einmal Plus und einmal Minus</b> – passt zu '+mm('('+A+P+B+')('+A+M+B+')')+' mit '+mm(A+EQ+X)+' und '+mm(B+EQ+'4')+'.'));
+add(q5(4,'('+X+P+'2)('+X+P+'5)','0','<b>Keine binomische Formel.</b>',
+  Dv('whyrow',
+    '<div class="wb"><small>1. Klammer</small>'+mm(X+' und '+T('2',{h:'hl-bad@2-9'}))+'</div><div class="neq">≠</div>'+
+    '<div class="wb"><small>2. Klammer</small>'+mm(X+' und '+T('5',{h:'hl-bad@2-9'}))+'</div>',{s:2})+
+  Dv('hint','Die beiden Klammern besitzen <b>nicht dieselben beiden Terme</b>.',{s:2})+
+  Dv('hint','Dann ganz normal ausmultiplizieren: '+mm('('+X+P+'2)('+X+P+'5)'+EQ+sq(X)+P+'5'+X+P+'2'+X+P+'10'+EQ+sq(X)+P+'7'+X+P+'10'),{s:3}),3));
+
+/* ---------- Szene 6 ---------- */
+var arow=function(n,label,s,content,side){
+  return Dv('arow','<div class="albl"><span class="num">'+n+'</span><span>'+label+'</span></div><div class="acont">'+content+'</div>'+(side?'<div class="aside">'+side+'</div>':''),{s:s});
+};
+function apply6(o){
+  return {scene:'Szene 6',sub:o.n+' von 3',title:'Formel anwenden',label:'Formel anwenden',preview:o.prev,chip:o.chip,steps:4,
+    html:'<div class="apply">'+
+      bigTask(o.big,'Welche Formel passt – und was sind '+mm(A)+' und '+mm(B)+'?')+
+      arow(1,'Formel wählen',1,'<span class="ft">'+o.fname+'</span>'+mm(o.F))+
+      arow(2,mm(A)+' und '+mm(B)+' erkennen',2,mm(o.ab))+
+      arow(3,'Einsetzen',3,mm(o.plug))+
+      arow(4,'Ausrechnen',4,mm(o.res),o.side)+
+    '</div>'};
+}
+var sl=function(h){return Dv('sl m',h);};
+add(apply6({n:1,prev:'('+X+P+'4)'+sup(2),
+  big:'('+X+P+'4)'+sup(2),
+  chip:'('+T(X,{h:'va@2-99'})+P+T('4',{h:'vb@2-99'})+')'+sup(2),
+  fname:'1. binomische Formel',F:F1,
+  ab:A+EQ+ca(X)+SP+B+EQ+cb('4'),
+  plug:EQ+ca(sq(X))+P+'2'+DOT+ca(X)+DOT+cb('4')+P+cb('4'+sup(2)),
+  res:EQ+sq(X)+P+'8'+X+P+'16',
+  side:'<div class="sh">Nebenrechnung</div>'+sl('2'+DOT+X+DOT+'4'+EQ+'8'+X)+sl('4'+sup(2)+EQ+'16')}));
+add(apply6({n:2,prev:'(2'+X+M+'3)'+sup(2),
+  big:'(2'+X+M+'3)'+sup(2),
+  chip:'('+T('2'+X,{h:'va@2-99'})+M+T('3',{h:'vb@2-99'})+')'+sup(2),
+  fname:'2. binomische Formel',F:F2,
+  ab:A+EQ+ca('2'+X)+SP+B+EQ+cb('3'),
+  plug:EQ+T('('+ca('2'+X)+')'+sup(2),{h:'hl@4'})+M+'2'+DOT+'('+ca('2'+X)+')'+DOT+cb('3')+P+cb('3'+sup(2)),
+  res:EQ+T('4'+X+sup(2),{h:'hl@4'})+M+'12'+X+P+'9',
+  side:'<div class="sh">Nebenrechnung</div>'+
+    sl(T('(2'+X+')'+sup(2)+EQ+'2'+X+DOT+'2'+X+EQ+'4'+X+sup(2),{h:'hl@4'}))+
+    sl('2'+DOT+'(2'+X+')'+DOT+'3'+EQ+'12'+X)+sl('3'+sup(2)+EQ+'9')}));
+add(apply6({n:3,prev:'(3'+X+P+'2)(3'+X+M+'2)',
+  big:'(3'+X+P+'2)(3'+X+M+'2)',
+  chip:'('+T('3'+X,{h:'va@2-99'})+P+T('2',{h:'vb@2-99'})+')('+T('3'+X,{h:'va@2-99'})+M+T('2',{h:'vb@2-99'})+')',
+  fname:'3. binomische Formel',F:F3,
+  ab:A+EQ+ca('3'+X)+SP+B+EQ+cb('2'),
+  plug:EQ+T('('+ca('3'+X)+')'+sup(2),{h:'hl@4'})+M+cb('2'+sup(2)),
+  res:EQ+T('9'+X+sup(2),{h:'hl@4'})+M+'4',
+  side:'<div class="sh">Nebenrechnung</div>'+
+    sl(T('(3'+X+')'+sup(2)+EQ+'3'+X+DOT+'3'+X+EQ+'9'+X+sup(2),{h:'hl@4'}))+sl('2'+sup(2)+EQ+'4')}));
+
+/* ---------- Szene 7 ---------- */
+function errSlide(o){
+  return {scene:'Szene 7',sub:o.n+' von 4',title:'Fehlerdetektiv',label:'Fehler finden',preview:o.preview,steps:2,resolve:1,
+    html:'<div class="col">'+
+      Dv('qprompt','Fehlerdetektiv: Stimmt das?')+
+      '<div class="m bigm sm">'+o.stmt+'</div>'+
+      opts(OPT_RF,'f')+
+      stack(Dv('hint dim',VOTE_HINT,{e:1}),Dv('hint',o.verdict,{s:1}))+
+      cmp(o.heads,[
+        {label:'Behauptung',s:1,cells:o.claim},
+        {label:'Richtig wäre',s:2,cells:o.right}
+      ],1)+
+      Dv('final','Richtig: '+mm(o.fix),{s:2})+
+    '</div>'};
+}
+add(errSlide({n:1,preview:'('+X+P+'4)'+sup(2),
+  stmt:'('+X+P+'4)'+sup(2)+EQ+sq(X)+P+'16',
+  verdict:'<b class="bad">Falsch!</b> Es fehlt das doppelte Produkt: '+mm('2'+DOT+X+DOT+'4'+EQ+'8'+X)+'.',
+  heads:['1. Quadrat','doppeltes Produkt','2. Quadrat'],
+  claim:[ck(sq(X),'ok'),MISS,ck(U+'16','ok')],
+  right:[ck(sq(X),'ok'),ck(U+'8'+X,'ok',mm('2'+DOT+X+DOT+'4')),ck(U+'16','ok',mm('4'+sup(2)))],
+  fix:'('+X+P+'4)'+sup(2)+EQ+sq(X)+P+'8'+X+P+'16'}));
+add(errSlide({n:2,preview:'('+X+M+'3)'+sup(2),
+  stmt:'('+X+M+'3)'+sup(2)+EQ+sq(X)+M+'9',
+  verdict:'<b class="bad">Falsch!</b> Das doppelte Produkt '+mm(N+'6'+X)+' fehlt, und das letzte Glied ist '+mm(U+'9')+', nicht '+mm(N+'9')+'.',
+  heads:['1. Quadrat','doppeltes Produkt','2. Quadrat'],
+  claim:[ck(sq(X),'ok'),MISS,ck(N+'9','bad')],
+  right:[ck(sq(X),'ok'),ck(N+'6'+X,'ok',mm('2'+DOT+X+DOT+'3')),ck(U+'9','ok',mm('3'+sup(2)))],
+  fix:'('+X+M+'3)'+sup(2)+EQ+sq(X)+M+'6'+X+P+'9'}));
+add(errSlide({n:3,preview:'(2'+X+P+'5)'+sup(2),
+  stmt:'(2'+X+P+'5)'+sup(2)+EQ+'4'+X+sup(2)+P+'10'+X+P+'25',
+  verdict:'<b class="bad">Falsch!</b> Das doppelte Produkt ist falsch berechnet: '+mm('2'+DOT+'(2'+X+')'+DOT+'5'+EQ+'20'+X)+', nicht '+mm('10'+X)+'.',
+  heads:['1. Quadrat','doppeltes Produkt','2. Quadrat'],
+  claim:[ck('4'+X+sup(2),'ok'),ck(U+'10'+X,'bad'),ck(U+'25','ok')],
+  right:[ck('4'+X+sup(2),'ok',mm('(2'+X+')'+sup(2))),ck(U+'20'+X,'ok',mm('2'+DOT+'(2'+X+')'+DOT+'5')),ck(U+'25','ok',mm('5'+sup(2)))],
+  fix:'(2'+X+P+'5)'+sup(2)+EQ+'4'+X+sup(2)+P+'20'+X+P+'25'}));
+add(errSlide({n:4,preview:'('+X+P+'4)('+X+M+'4)',
+  stmt:'('+X+P+'4)('+X+M+'4)'+EQ+sq(X)+P+'16',
+  verdict:'<b class="bad">Falsch!</b> Das letzte Glied ist '+mm(N+'16')+', nicht '+mm(U+'16')+'.',
+  heads:['1. Quadrat','gemischte Terme','2. Quadrat'],
+  claim:[ck(sq(X),'ok'),ck('<span class="txt">entfallen</span>','ok'),ck(U+'16','bad')],
+  right:[ck(sq(X),'ok'),ck('0','ok',mm(N+'4'+X+P+'4'+X+EQ+'0')),ck(N+'16','ok',mm(N+'4'+sup(2)))],
+  fix:'('+X+P+'4)('+X+M+'4)'+EQ+sq(X)+M+'16'}));
+
+/* ---------- Szene 8 ---------- */
+var srow=function(n,sub,fm){
+  return '<div class="srow"><div class="sl"><span class="num">'+n+'</span><div><div class="sn">'+n+'. binomische Formel</div><div class="ss">'+sub+'</div></div></div><div class="m sf">'+fm+'</div></div>';
+};
+add({scene:'Szene 8',title:'Abschlussübersicht',label:'Die drei Formeln',preview:'<span class="txt">Alle drei Formeln</span>',steps:2,
+ html:'<div class="col">'+
+  srow(1,'Summe im Quadrat',F1)+srow(2,'Differenz im Quadrat',F2)+srow(3,'Summe mal Differenz',F3)+
+  Dv('strategy',['Struktur erkennen','passende Formel wählen','einsetzen','vereinfachen'].map(function(t){return '<div class="st">'+t+'</div>';}).join('<div class="ar">→</div>'),{s:1})+
+  Dv('smallnote','Wenn keine binomische Formel passt: normal ausmultiplizieren.',{s:2})+
+ '</div>'});
+
+/* =====================================================
+   Steuerung
+   ===================================================== */
+var stage=document.getElementById('stage'),host=document.getElementById('slides');
+var teacher=new URLSearchParams(location.search).get('teacher')==='1';
+if(teacher){document.body.classList.add('teacher');}
+
+var secs=slides.map(function(s){
+  var sec=document.createElement('section');
+  sec.className='slide';
+  sec.dataset.steps=s.steps||0;
+  sec.dataset.resolve=(s.resolve==null)?'':s.resolve;
+  sec.innerHTML='<div class="hd"><div class="badge">'+s.scene+(s.sub?'<span>'+s.sub+'</span>':'')+'</div><h1>'+s.title+'</h1></div>'+
+    (s.chip?Dv('chip','<small>Ausgangsaufgabe</small><span class="m">'+s.chip+'</span>',{s:1}):'')+
+    '<div class="body">'+s.html+'</div>';
+  host.appendChild(sec);
+  return sec;
+});
+
+var app={i:0,step:0,votes:{}};
+var h0=parseInt(location.hash.slice(1),10);
+if(h0>=1&&h0<=slides.length){app.i=h0-1;}
+
+function inSpec(sp,st){
+  return sp.split(',').some(function(p){
+    var r=p.split('-').map(Number);
+    return r.length===1?st===r[0]:(st>=r[0]&&st<=r[1]);
+  });
+}
+function stepsOf(i){return +secs[i].dataset.steps;}
+
+var bPrev=document.getElementById('bPrev'),bNext=document.getElementById('bNext'),
+    countEl=document.getElementById('count'),fill=document.getElementById('barfill');
+
+function render(){
+  var sec=secs[app.i],st=app.step;
+  secs.forEach(function(s,i){s.classList.toggle('active',i===app.i);});
+  sec.querySelectorAll('[data-s]').forEach(function(e){e.classList.toggle('on',st>=+e.dataset.s);});
+  sec.querySelectorAll('[data-e]').forEach(function(e){e.classList.toggle('off',st>=+e.dataset.e);});
+  sec.querySelectorAll('[data-h]').forEach(function(e){
+    e.dataset.h.split(';').forEach(function(p){var q=p.split('@');e.classList.toggle(q[0],inSpec(q[1],st));});
+  });
+  var res=sec.dataset.resolve;
+  if(res!==''){
+    var done=st>=+res,vote=app.votes[app.i];
+    sec.querySelectorAll('.opt').forEach(function(o){
+      var sel=vote===o.dataset.v,right=o.dataset.correct==='1';
+      o.classList.toggle('sel',sel&&!done);
+      o.classList.toggle('right',done&&right);
+      o.classList.toggle('wrong',done&&sel&&!right);
+      o.classList.toggle('dim',done&&!right&&!sel);
+    });
+  }
+  var total=slides.length,before=0;
+  for(var k=0;k<app.i;k++){before+=stepsOf(k)+1;}
+  var all=0;for(var j=0;j<total;j++){all+=stepsOf(j)+1;}
+  fill.style.width=(100*(before+st+1)/all)+'%';
+  countEl.textContent=(teacher?'Lehrermodus – ':'')+'Folie '+(app.i+1)+' von '+total;
+  var first=app.i===0&&st===0,last=app.i===total-1&&st===stepsOf(app.i);
+  bPrev.disabled=first;bNext.disabled=last;
+  try{history.replaceState(null,'',location.pathname+location.search+'#'+(app.i+1));}catch(e){}
+}
+function go(i,st){app.i=i;app.step=st;render();}
+function next(){
+  if(app.step<stepsOf(app.i)){app.step++;render();}
+  else if(app.i<slides.length-1){go(app.i+1,0);}
+}
+function prev(){
+  if(app.step>0){app.step--;render();}
+  else if(app.i>0){go(app.i-1,stepsOf(app.i-1));}
+}
+function resetSlide(){delete app.votes[app.i];app.step=0;render();}
+function showSolution(){app.step=stepsOf(app.i);render();}
+
+/* Abstimmung per Tippen */
+stage.addEventListener('click',function(e){
+  var o=e.target.closest&&e.target.closest('.opt');
+  if(!o)return;
+  var res=secs[app.i].dataset.resolve;
+  if(res===''||app.step>=+res)return;
+  app.votes[app.i]=(app.votes[app.i]===o.dataset.v)?null:o.dataset.v;
+  render();
+});
+
+/* Übersicht */
+var ov=document.getElementById('ov'),grid=document.getElementById('ovgrid');
+slides.forEach(function(s,i){
+  var c=document.createElement('button');
+  c.type='button';c.className='card';
+  c.innerHTML='<div class="cs">'+s.scene+(s.sub?' ('+s.sub+')':'')+'</div><div class="pv m">'+s.preview+'</div><div class="ct">'+s.label+'</div>';
+  c.addEventListener('click',function(){closeOv();go(i,0);});
+  grid.appendChild(c);
+});
+function openOv(){
+  Array.prototype.forEach.call(grid.children,function(c,i){c.classList.toggle('cur',i===app.i);});
+  ov.classList.add('open');
+}
+function closeOv(){ov.classList.remove('open');}
+function toggleOv(){ov.classList.contains('open')?closeOv():openOv();}
+
+/* Vollbild */
+var de=document.documentElement;
+var fsOK=!!(de.requestFullscreen||de.webkitRequestFullscreen);
+var bFs=document.getElementById('bFs');
+if(!fsOK){bFs.style.display='none';}
+function toggleFs(){
+  try{
+    if(document.fullscreenElement||document.webkitFullscreenElement){
+      (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    }else{
+      var p=(de.requestFullscreen||de.webkitRequestFullscreen).call(de);
+      if(p&&p.catch){p.catch(function(){});}
+    }
+  }catch(e){}
+}
+
+/* Skalierung auf 16:9 */
+function fit(){
+  var s=Math.min(window.innerWidth/1920,window.innerHeight/1080);
+  stage.style.transform='translate(-50%,-50%) scale('+s+')';
+}
+window.addEventListener('resize',fit);
+document.addEventListener('fullscreenchange',fit);
+document.addEventListener('webkitfullscreenchange',fit);
+
+/* Buttons */
+bNext.addEventListener('click',next);
+bPrev.addEventListener('click',prev);
+document.getElementById('bOv').addEventListener('click',toggleOv);
+document.getElementById('bReset').addEventListener('click',resetSlide);
+bFs.addEventListener('click',toggleFs);
+document.getElementById('bSol').addEventListener('click',showSolution);
+document.getElementById('bOvClose').addEventListener('click',closeOv);
+document.getElementById('bOvAll').addEventListener('click',function(){app.votes={};closeOv();go(0,0);});
+
+/* Tastatur */
+document.addEventListener('keydown',function(e){
+  var k=e.key;
+  if(ov.classList.contains('open')){if(k==='Escape'||k==='o'||k==='O'){closeOv();}return;}
+  if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){e.preventDefault();next();}
+  else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
+  else if(k==='o'||k==='O'||k==='Escape'){toggleOv();}
+  else if(k==='f'||k==='F'){toggleFs();}
+  else if(k==='r'||k==='R'){resetSlide();}
+  else if((k==='l'||k==='L')&&teacher){showSolution();}
+});
+
+fit();
+render();
+})();
+</script>
+</body>
+</html>
