@@ -68,8 +68,9 @@
   }
 
   .artifact-link{
+    position:relative;
     display:block;
-    padding:9px 12px;
+    padding:9px 16px 9px 12px;
     margin:5px 0;
     border-left:3px solid #9fc3de;
     border-radius:0 7px 7px 0;
@@ -78,10 +79,36 @@
     text-decoration:none;
     font-size:.92rem;
     font-weight:500;
+    overflow:hidden;
   }
 
   .artifact-link:hover{
     background:#eaf1f8;
+  }
+
+  .artifact-link::after{
+    content:"";
+    position:absolute;
+    top:0;
+    right:0;
+    width:5px;
+    height:100%;
+  }
+
+  .artifact-presentation::after{
+    background:#3b82f6;
+  }
+
+  .artifact-student::after{
+    background:#22a06b;
+  }
+
+  .artifact-game::after{
+    background:#8b5cf6;
+  }
+
+  .artifact-experiment::after{
+    background:#f59e0b;
   }
 
   .artifact-type{
@@ -105,6 +132,7 @@
     }
   }
 </style>
+
 </head>
 
 <body>
@@ -124,7 +152,7 @@
       </a>
 
       <div class="artifact-list">
-        <a class="artifact-link" href="artefakte/termwerte-spiel/">
+        <a class="artifact-link artifact-game" href="artefakte/termwerte-spiel/">
           <span class="artifact-type">↳ Spiel</span>
           Termwerte-Spiel
         </a>
@@ -149,12 +177,12 @@
       </div>
 
       <div class="artifact-list">
-        <a class="artifact-link" href="artefakte/produkte-potenzen-display/">
+        <a class="artifact-link artifact-presentation" href="artefakte/produkte-potenzen-display/">
           <span class="artifact-type">↳ Präsentation</span>
           Produkte und Potenzen entdecken
         </a>
 
-        <a class="artifact-link" href="artefakte/produkte-potenzen-werkstatt/">
+        <a class="artifact-link artifact-student" href="artefakte/produkte-potenzen-werkstatt/">
           <span class="artifact-type">↳ Werkstatt</span>
           Produkte und Potenzen üben
         </a>
@@ -167,7 +195,7 @@
       </div>
 
       <div class="artifact-list">
-        <a class="artifact-link" href="artefakte/summen-display/">
+        <a class="artifact-link artifact-presentation" href="artefakte/summen-display/">
           <span class="artifact-type">↳ Präsentation</span>
           Summen umformen
         </a>
