@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Würfel-Zerfall</title>
+<style>
+:root{--mf:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+html,body{height:100%;overflow:hidden}
+body{font:2.2vh/1.3 system-ui,"Segoe UI",Roboto,sans-serif;background:#f1f5f9;color:#0f172a;display:flex;flex-direction:column}
+header{display:flex;align-items:baseline;gap:2vw;padding:2.2vh 3vw 0;height:8.5vh}
+h1{font-size:3.6vh;font-weight:700}
+header small{flex:1;color:#64748b;font-size:2vh}
+#badge{display:none;background:#fef3c7;color:#92400e;padding:.4vh 1.4vh;border-radius:9vh;font-size:1.9vh;font-weight:600}
+#bar{height:.7vh;background:#e2e8f0;margin:1.2vh 3vw 0;border-radius:9px;overflow:hidden}
+#bar i{display:block;height:100%;background:#2563eb;transition:width .4s}
+#stage{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vh;padding:0 4vw}
+footer{display:flex;gap:1.5vw;padding:1.5vh 3vw 2.5vh;justify-content:center}
+button{font:inherit;font-size:2.6vh;font-weight:600;border:0;border-radius:2vh;padding:0 2.2vw;height:9vh;background:#fff;color:#1e293b;box-shadow:0 .2vh .7vh #0003;cursor:pointer}
+button:active{transform:scale(.96)}
+#nx,#pv{min-width:15vw}#nx{background:#2563eb;color:#fff}
+button:disabled{opacity:.35}
+#sb{display:none;background:#fef3c7}
+.m,.eq,.tbl,.ob,.fr,.nw{font-family:var(--mf)}
+sup{font-size:.58em;vertical-align:.6em;line-height:0}
+sub{font-size:.58em;vertical-align:-.28em;line-height:0}
+.tk{display:inline-block;padding:0 .12em;border-radius:.2em}
+.ca{background:#bfdbfe;color:#1e3a8a}.cb{background:#fed7aa;color:#9a3412}.cc{background:#bbf7d0;color:#166534}.hl{background:#fde68a}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.62em;line-height:1.08;margin:0 .08em}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .18em}
+.fr>span:last-child{padding:0 .18em}
+.t{font-size:3.4vh;color:#334155;text-align:center;max-width:80vw}.t b{color:#0f172a}
+.cnt{font-size:2.4vh;color:#94a3b8}
+.rule{background:#fff;border-left:1vh solid #2563eb;padding:1.6vh 3vw;border-radius:2vh;font-size:3.6vh;box-shadow:0 .3vh 1vh #0002}
+.rule b{color:#1e3a8a}
+.eq{font-size:min(6vw,11vh);line-height:1.3;display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:.18em;animation:in .5s}
+.eq.sm{font-size:min(4.2vw,7.4vh)}
+.eq.xs{font-size:min(3.2vw,5.6vh)}
+.note{font:2.8vh/1.3 system-ui,"Segoe UI",Roboto,sans-serif;color:#64748b;margin-left:1.6vw}
+.eq.dim{opacity:.35;animation:none}
+.row{display:flex;align-items:baseline;justify-content:center;gap:1.2vw;flex-wrap:wrap}
+.try{display:flex;gap:3vw;align-items:center;font-family:var(--mf);font-size:min(3.6vw,6.4vh);animation:in .5s}
+.try span.v{font-family:system-ui,"Segoe UI",Roboto,sans-serif;font-size:3vh;padding:.5vh 1.4vh;border-radius:9vh}
+.try .hi{background:#fee2e2;color:#991b1b}.try .lo{background:#e0f2fe;color:#075985}
+.grid{display:grid;grid-template-columns:repeat(40,1fr);gap:.4vh;width:min(80vw,128vh)}
+.grid i{display:block;aspect-ratio:1;border-radius:22%;background:#3b82f6;transition:background .5s,opacity .7s,transform .5s}
+.grid i.out{background:#dc2626;transform:scale(1.4);z-index:1}
+.grid i.gone{background:#cbd5e1;opacity:.35}
+.stat{display:flex;gap:3vw;font-size:3.6vh;color:#334155}.stat b{font-family:var(--mf);font-size:1.15em;color:#0f172a}.stat .o b{color:#b91c1c}
+.opts{display:flex;gap:2vw;justify-content:center;flex-wrap:wrap}
+.ob{min-width:16vw;height:auto;padding:1.4vh 1.8vw;font-size:3.8vh;border-radius:2.4vh;border:.5vh solid transparent;background:#fff;transition:all .3s}
+.ob.sel{border-color:#2563eb;background:#dbeafe}.ob.good{background:#16a34a;color:#fff;transform:scale(1.06)}.ob.dim{opacity:.3}
+.tbl{border-collapse:separate;border-spacing:0;background:#fff;border-radius:1.6vh;box-shadow:0 .3vh 1vh #0002;overflow:hidden;font-size:min(2.6vw,4.6vh);animation:in .5s}
+.tbl th,.tbl td{padding:1vh 1.1vw;text-align:center;border-bottom:.2vh solid #e2e8f0;border-right:.2vh solid #e2e8f0;font-weight:500}
+.tbl th{background:#1e293b;color:#fff;font-style:italic}
+.tbl tr:last-child td{border-bottom:0}.tbl td:last-child{border-right:0}
+.tbl td.ar{padding:0;border-bottom:0;background:#fff;color:#c2410c;font:600 2vh system-ui,sans-serif;height:3.4vh}
+.tbl td.lb{background:#f1f5f9;font:600 2.4vh system-ui,sans-serif;text-align:left;white-space:nowrap}
+.cht{width:min(70vw,104vh);background:#fff;border-radius:2vh;box-shadow:0 .3vh 1vh #0002;padding:1vh;animation:in .5s}
+.cht svg{width:100%;height:auto;display:block}
+.lg{display:flex;gap:3vw;font-size:2.4vh;color:#475569;justify-content:center}.lg span::before{content:"";display:inline-block;width:2.4vh;height:2.4vh;border-radius:.5vh;margin-right:.8vh;vertical-align:-.4vh;background:#93c5fd}.lg .v::before{background:#dc2626;border-radius:50%}
+.card{display:flex;align-items:center;gap:2vw;background:#fff;border-radius:2vh;padding:1.5vh 2vw;width:86vw;box-shadow:0 .3vh 1vh #0002;animation:in .5s}
+.card b{flex:none;background:#2563eb;color:#fff;border-radius:50%;width:5.5vh;height:5.5vh;display:grid;place-items:center;font-size:3vh}
+.card span{flex:1;font-size:3.3vh;font-weight:600}.card em{font-style:normal;font-family:var(--mf);font-size:3.8vh;color:#1e40af}
+.ans .fr{font-size:.78em}.ans .nw{white-space:nowrap}.ans{background:#ecfdf5;border:.4vh solid #16a34a;color:#14532d;border-radius:2vh;padding:1.6vh 2.4vw;font-size:3.6vh;text-align:center;max-width:84vw;animation:in .5s}
+@keyframes in{from{opacity:0;transform:translateY(2vh)}}
+#sol{display:none;position:fixed;left:3vw;right:3vw;bottom:14vh;background:#fffbeb;border:.3vh solid #f59e0b;border-radius:2vh;padding:2vh 2vw;font-size:3vh;z-index:6;line-height:1.6}
+#ov{display:none;position:fixed;inset:0;background:#f1f5f9f5;padding:6vh 6vw;grid-template-columns:repeat(4,1fr);gap:2vh;z-index:9;align-content:center}
+#ov.on{display:grid}
+#ov div{background:#fff;border-radius:2vh;padding:2vh;font-size:2.8vh;font-weight:600;box-shadow:0 .3vh 1vh #0002;cursor:pointer;min-height:18vh}
+#ov b{display:block;font-size:5vh;color:#2563eb}
+@media(prefers-reduced-motion:reduce){.eq,.try,.tbl,.cht,.card,.ans{animation:none}.grid i{transition:none}}
+</style>
+</head>
+<body>
+<header><h1 id="ti"></h1><small>Würfel-Zerfall · 1.4 Einfache Exponentialgleichungen</small><span id="badge">Lehrermodus</span></header>
+<div id="bar"><i></i></div>
+<div id="stage"></div>
+<div id="sol"></div>
+<div id="ov"></div>
+<footer>
+<button id="pv">◀ Zurück</button>
+<button id="ovb">☰ Übersicht</button>
+<button id="rs">↺ Zurücksetzen</button>
+<button id="sb">Lösung anzeigen</button>
+<button id="fs">⛶</button>
+<button id="nx">Weiter ▶</button>
+</footer>
+<script>
+const $=q=>document.querySelector(q),st=$('#stage'),TM=new URLSearchParams(location.search).get('teacher')==='1';
+let si=0,ki=0,votes={},R;
+const de=(v,d)=>v.toFixed(d).replace('.',',');
+const fr=(a,b)=>'<span class="fr"><span>'+a+'</span><span>'+b+'</span></span>';
+const I=s=>'<i>'+s+'</i>';
+const tk=(c,s)=>'<span class="tk '+c+'">'+s+'</span>';
+const A56='('+fr(5,6)+')';                 /* Basis 5/6 */
+const E=n=>600*Math.pow(5/6,n);            /* erwartete Anzahl nach n Würfen */
+const lg=(a,y)=>Math.log(y)/Math.log(a);
+
+/* ---------- Simulation: 600 Würfel, jeder Wurf scheiden die Sechser aus ---------- */
+function roll(){
+  const at=[],cnt=[600];
+  for(let i=0;i<600;i++){let t=1;while(t<=40&&Math.random()>=1/6)t++;at.push(t<=40?t:999);}
+  for(let t=1;t<=40;t++)cnt.push(at.filter(a=>a>t).length);
+  R={at,cnt};
+}
+roll();
+
+/* ---------- Auswahlfragen ---------- */
+function ob(key,opts,ok,rev){
+  const vt=votes[key];
+  return '<div class="opts">'+opts.map((o,i)=>'<button class="ob'+(rev?(i==ok?' good':' dim'):(vt===i?' sel':''))+'" data-k="'+key+'" data-i="'+i+'">'+o+'</button>').join('')+'</div>';
+}
+/* ---------- Rechenzeilen ---------- */
+const eq=(h,c)=>'<div class="eq '+(c||'')+'"><span>'+h+'</span></div>';
+const row=(h,c,n)=>'<div class="eq '+(c||'')+'"><span>'+h+'</span>'+(n?'<span class="note">'+n+'</span>':'')+'</div>';
+const nn=I('n');
+
+/* ---------- Diagramm ---------- */
+function chart(sim){
+  const W=1000,H=400,x0=70,y0=330,bw=50,gap=14,mx=600,sy=(y0-30)/mx;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Balkendiagramm der erwarteten Anzahl nach n Würfen">';
+  for(let v=0;v<=600;v+=100){const y=y0-v*sy;s+='<line x1="'+x0+'" y1="'+y+'" x2="'+(W-10)+'" y2="'+y+'" stroke="#e2e8f0"/><text x="'+(x0-10)+'" y="'+(y+6)+'" text-anchor="end" font-size="20" fill="#64748b" font-family="system-ui">'+v+'</text>';}
+  for(let n=0;n<=12;n++){
+    const x=x0+14+n*(bw+gap),h=E(n)*sy;
+    s+='<rect x="'+x+'" y="'+(y0-h)+'" width="'+bw+'" height="'+h+'" rx="4" fill="#93c5fd"/>';
+    s+='<text x="'+(x+bw/2)+'" y="'+(y0+28)+'" text-anchor="middle" font-size="22" fill="#334155" font-family="system-ui,serif" font-style="italic">'+n+'</text>';
+    if(!sim)s+='<text x="'+(x+bw/2)+'" y="'+(y0-h-8)+'" text-anchor="middle" font-size="17" fill="#1e3a8a" font-family="system-ui">'+Math.round(E(n))+'</text>';
+    if(sim)s+='<circle cx="'+(x+bw/2)+'" cy="'+(y0-R.cnt[n]*sy)+'" r="9" fill="#dc2626" stroke="#fff" stroke-width="2.5"/>';
+  }
+  s+='<text x="'+(W-12)+'" y="'+(y0+60)+'" text-anchor="end" font-size="21" fill="#475569" font-family="system-ui">Anzahl der Würfe n</text>';
+  return s+'</svg>';
+}
+
+/* ---------- Szenen ---------- */
+const CD=[['1','Faktor pro Wurf bestimmen',fr(5,6)+', '+fr(2,3)+', '+fr(1,2)+' …'],['2','Ansatz aufstellen','N(n) = N<sub>0</sub> · a<sup>n</sup>'],['3','Potenz allein: durch N<sub>0</sub> teilen','a<sup>n</sup> = y'],['4','Exponent gesucht: Logarithmus','n = log<sub>a</sub>(y)'],['5','Antwort sinnvoll runden','ganze Würfe, „erstmals“']];
+const scenes=[
+{t:'Das Experiment',n:5,sol:'Jeder Würfel scheidet pro Wurf mit der Wahrscheinlichkeit 1/6 aus. Die Zahlen sind zufällig: „Zurücksetzen“ würfelt neu. Im Mittel bleiben 500, 417, 347, 289 Würfel übrig.',
+ r:k=>{
+  if(!$('#grid'))st.innerHTML='<div class="rule">Alle Würfel mit einer <b>6</b> scheiden aus. Der Rest wird noch einmal geworfen.</div><div id="grid" class="grid">'+'<i></i>'.repeat(600)+'</div><div class="stat" id="stat"></div>';
+  const c=$('#grid').children;
+  for(let i=0;i<600;i++){const a=R.at[i];c[i].className=(a==k&&k>0)?'out':(a<k?'gone':'')}
+  const a=R.cnt[k];
+  $('#stat').innerHTML=k==0?'<span>Start: <b>600</b> Würfel</span>':'<span>Wurf <b>'+k+'</b></span><span class="o">ausgeschieden: <b>'+(R.cnt[k-1]-a)+'</b></span><span>übrig: <b>'+a+'</b></span>';
+ }},
+{t:'Was erwartet man?',n:5,sol:'Anteil der übrigen Seiten: 5 von 6. 600 · 5/6 = 500, danach 500 · 5/6 ≈ 416,7, danach ≈ 347,2. Allgemein N(n) = 600 · (5/6)^n.',
+ r:k=>{
+  const L=[];
+  if(k>=1)L.push(['600 · '+A56+' = 500','Es bleiben 5 von 6 Würfeln.']);
+  if(k>=2)L.push(['500 · '+A56+' ≈ 416,7','Wieder wird mit '+fr(5,6)+' multipliziert.']);
+  if(k>=4)L.push(['N('+nn+') = 600 · '+A56+'<sup>'+nn+'</sup>','Faktor '+fr(5,6)+' &lt; 1: Abnahme']);
+  let h='<div class="t">Nur Sechser scheiden aus. Wie viele von <b>600</b> Würfeln sind im Mittel nach dem <b>1. Wurf</b> noch dabei?</div>'+ob('s2',['100','500','596'],1,k>0);
+  h+=L.map((e,i)=>row(e[0],i==L.length-1?'sm':'xs',e[1])).join('');
+  if(k==3)h+='<table class="tbl" style="font-size:min(2.2vw,4vh)"><tr><td class="lb">Erwartung</td><td>600</td><td>500</td><td>416,7</td><td>347,2</td></tr><tr><td class="lb">Unser Versuch</td><td>600</td><td>'+R.cnt[1]+'</td><td>'+R.cnt[2]+'</td><td>'+R.cnt[3]+'</td></tr></table>';
+  st.innerHTML=h}},
+{t:'Tabelle und Graph',n:4,sol:'Erwartungswerte N(n) = 600 · (5/6)^n für n = 0, …, 12. Der Versuch weicht zufällig leicht ab, folgt aber derselben exponentiellen Abnahme.',
+ r:k=>{
+  if(k==0){let a='<tr><th>'+nn+'</th>',b='<tr><th>N('+nn+')</th>',c='<tr><td class="ar"></td>';
+   for(let i=0;i<=8;i++){a+='<td>'+i+'</td>';b+='<td>'+de(E(i),1)+'</td>';c+='<td class="ar">'+(i<8?'· '+fr(5,6).replace('class="fr"','class="fr" style="font-size:.9em"'):'')+'</td>'}
+   st.innerHTML='<div class="t">Erwartete Anzahl der Würfel nach <b>n</b> Würfen</div><table class="tbl">'+a+'</tr>'+c+'</tr>'+b+'</tr></table>'}
+  else{
+   let h='<div class="cht">'+chart(k>=2)+'</div>';
+   if(k>=2)h+='<div class="lg"><span>Erwartung</span><span class="v">Unser Versuch</span></div>';
+   if(k>=3)h+='<div class="rule"><b>Exponentielle Abnahme:</b> Pro Wurf bleiben '+fr(5,6)+' ≈ 83,3 % übrig, also nimmt die Anzahl um 16,7 % ab.</div>';
+   st.innerHTML=h}}},
+{t:'Wann sind nur noch 300 übrig?',n:6,sol:'600 · (5/6)^n = 300 → (5/6)^n = 0,5 → n = log_{5/6}(0,5) ≈ 3,80. Nach dem 4. Wurf sind erstmals weniger als 300 Würfel übrig (Probe: 600 · (5/6)^4 ≈ 289,3).',
+ r:k=>{
+  const L=[['600 · '+A56+'<sup>'+tk('cb',nn)+'</sup> = 300','']];
+  if(k>=2)L.push([tk('ca',A56)+'<sup>'+tk('cb',nn)+'</sup> = '+tk('cc','0,5'),'beide Seiten : 600']);
+  if(k>=3)L.push([tk('cb',nn)+' = log<sub>'+tk('ca',A56)+'</sub>('+tk('cc','0,5')+')','Exponent gesucht: Logarithmus']);
+  if(k>=4)L.push([nn+' ≈ 3,80','Taschenrechner']);
+  let h='<div class="t">Nach wie vielen Würfen sind im Mittel nur noch <b>300</b> Würfel übrig?</div>';
+  h+=L.slice(0,1).map(e=>row(e[0],k==0?'':'xs',e[1])).join('');
+  if(k==1)h+='<div class="try"><span>'+nn+' = 3: ≈ 347,2</span><span class="v hi">zu viel</span></div><div class="try"><span>'+nn+' = 4: ≈ 289,3</span><span class="v lo">zu wenig</span></div><div class="t">Die Lösung liegt zwischen 3 und 4. Gesucht ist der <b>Exponent</b>.</div>';
+  h+=L.slice(1).map((e,i,a)=>row(e[0],i==a.length-1?'sm':'xs',e[1])).join('');
+  if(k>=5)h+='<div class="ans">Nach dem <b>4. Wurf</b> sind erstmals weniger als 300 Würfel übrig. Probe: <span class="nw m">600 · '+A56+'<sup>4</sup> ≈ 289,3</span></div>';
+  st.innerHTML=h}},
+{t:'Und bis nur noch 10 übrig sind?',n:5,sol:'600 · (5/6)^n = 10 → (5/6)^n = 1/60 → n = log_{5/6}(1/60) ≈ 22,46. Erst nach dem 23. Wurf sind höchstens 10 Würfel übrig. Probieren würde sehr lange dauern.',
+ r:k=>{
+  const L=[];
+  if(k>=1)L.push(['600 · '+A56+'<sup>'+nn+'</sup> = 10','']);
+  if(k>=2)L.push([tk('ca',A56)+'<sup>'+tk('cb',nn)+'</sup> = '+tk('cc',fr(1,60)),'beide Seiten : 600']);
+  if(k>=3)L.push([nn+' = log<sub>'+A56+'</sub>('+fr(1,60)+') ≈ 22,46','Taschenrechner']);
+  let h='<div class="t">Nach wie vielen Würfen sind im Mittel nur noch <b>10</b> von 600 Würfeln übrig?</div>'+ob('s5',['etwa 10 Würfe','etwa 23 Würfe','etwa 60 Würfe'],1,k>0);
+  h+=L.map((e,i)=>row(e[0],i==L.length-1?'sm':'xs',e[1])).join('');
+  if(k>=4)h+='<div class="ans">Erst nach dem <b>23. Wurf</b> sind höchstens 10 Würfel übrig. Es wird <b>aufgerundet</b>.</div>';
+  st.innerHTML=h}},
+{t:'Andere Regel, anderer Faktor',n:6,sol:'Faktor = Anteil der Seiten, bei denen der Würfel bleibt: 5 und 6 scheiden aus → 4/6 = 2/3. Nur Sechser bleiben → 1/6. 4, 5, 6 scheiden aus → 3/6 = 1/2.',
+ r:k=>{
+  const IT=[['Alle Würfel mit einer <b>5</b> oder <b>6</b> scheiden aus.',[fr(1,3),fr(2,3),fr(5,6)],1,'4 von 6 Seiten bleiben: '+fr(4,6)+' = '+fr(2,3)],
+            ['Nur Würfel mit einer <b>6</b> bleiben im Spiel.',[fr(1,6),fr(5,6),fr(1,2)],0,'1 von 6 Seiten bleibt: '+fr(1,6)],
+            ['Würfel mit einer <b>4</b>, <b>5</b> oder <b>6</b> scheiden aus.',[fr(1,2),fr(1,3),fr(2,3)],0,'3 von 6 Seiten bleiben: '+fr(3,6)+' = '+fr(1,2)]];
+  const j=Math.floor(k/2),rev=k%2==1,it=IT[j];
+  st.innerHTML='<div class="cnt">'+(j+1)+' / 3</div><div class="t">'+it[0]+'<br>Welcher Anteil der Würfel bleibt pro Wurf <b>im Mittel</b> im Spiel?</div>'+ob('s6.'+j,it[1],it[2],rev)+(rev?'<div class="t">'+it[3]+'</div>':'')}},
+{t:'Der Rechenweg',n:5,sol:'Fünf Merkpunkte nacheinander aufdecken: Faktor, Ansatz, Potenz allein, Logarithmus, Antwort sinnvoll runden.',
+ r:k=>{let h='';CD.forEach((c,i)=>{if(i<=k)h+='<div class="card"><b>'+c[0]+'</b><span>'+c[1]+'</span><em>'+c[2]+'</em></div>'});st.innerHTML=h}}
+];
+
+/* ---------- Steuerung ---------- */
+function render(){
+ const S=scenes[si];S.r(ki);
+ $('#ti').textContent=(si+1)+' · '+S.t;
+ $('#bar i').style.width=((si+(ki+1)/S.n)/scenes.length*100)+'%';
+ $('#pv').disabled=!si&&!ki;$('#nx').disabled=si==scenes.length-1&&ki==S.n-1}
+function clear(){st.textContent='';$('#sol').style.display='none'}
+function go(d){const S=scenes[si];
+ if(d>0){if(ki<S.n-1)ki++;else if(si<scenes.length-1){si++;ki=0;clear()}else return}
+ else{if(ki>0)ki--;else if(si>0){si--;ki=scenes[si].n-1;clear()}else return}
+ render()}
+function jump(i){si=i;ki=0;clear();render()}
+function reset(){Object.keys(votes).forEach(k=>{if(k.indexOf('s'+(si+1))==0)delete votes[k]});if(si==0)roll();jump(si)}
+st.onclick=e=>{const b=e.target.closest('.ob');if(!b)return;
+ const key=b.dataset.k,k0=si==5?ki-ki%2:ki;
+ /* nur vor der Auflösung wählbar */
+ if(si==1&&ki>0||si==4&&ki>0||si==5&&ki%2==1)return;
+ votes[key]=+b.dataset.i;render()};
+$('#nx').onclick=()=>go(1);$('#pv').onclick=()=>go(-1);$('#rs').onclick=reset;
+$('#ovb').onclick=()=>$('#ov').classList.toggle('on');
+$('#fs').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$('#sb').onclick=()=>{const s=$('#sol');s.innerHTML=scenes[si].sol;s.style.display=s.style.display=='block'?'none':'block'};
+if(TM){$('#badge').style.display='inline-block';$('#sb').style.display='inline-block'}
+scenes.forEach((s,i)=>{const d=document.createElement('div');d.innerHTML='<b>'+(i+1)+'</b>'+s.t;d.onclick=()=>{$('#ov').classList.remove('on');jump(i)};$('#ov').appendChild(d)});
+document.onkeydown=e=>{if(e.key=='ArrowRight'||e.key==' ')go(1);else if(e.key=='ArrowLeft')go(-1);else if(e.key=='Escape')$('#ov').classList.remove('on')};
+render();
+</script>
+</body>
+</html>
