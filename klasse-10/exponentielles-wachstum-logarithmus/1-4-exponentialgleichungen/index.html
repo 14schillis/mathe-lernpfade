@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12233f">
+<title>I.4 Einfache Exponentialgleichungen – Übungshalle</title>
+<style>
+/* =========================================================
+   Übungshalle zu I.4 Einfache Exponentialgleichungen
+   Eine Datei, offline lauffähig, ohne externe Ressourcen.
+   Schrift: Systemschriften (auf dem iPad: SF Pro und New York).
+   ========================================================= */
+:root{
+  --ink:#12233f;          /* Tinte */
+  --ink-2:#2a4066;
+  --ink-soft:#4b5b73;
+  --paper:#f2f5fa;
+  --card:#ffffff;
+  --grid:#e3eaf4;
+  --line:#d5deea;
+  --blue:#1f6fb2;         /* Graph, wie im Lernpfad */
+  --blue-deep:#17508a;
+  --blue-soft:#e3eefa;
+  --amber:#c9770f;        /* zweiter Graph, wie im Lernpfad */
+  --amber-soft:#fdf0dc;
+  --coral:#d1432d;        /* markierte Punkte */
+  --ok:#1e7a4d;
+  --ok-soft:#e3f4ea;
+  --warn:#8a5a00;
+  --warn-soft:#fdf3e0;
+  --g1:#1f6fb2; --g2:#d9730d; --g3:#8e4ec6; --g4:#12907a;
+  --serif:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:18px;
+  --barH:60px;
+  --dockH:0px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  margin:0;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(rgba(31,111,178,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.045) 1px,transparent 1px);
+  background-size:140px 140px,140px 140px,28px 28px,28px 28px;
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+body.hasdock{padding-bottom:var(--dockH)}
+button{font-family:inherit;font-size:1rem;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+p{margin:.5em 0}
+sub,sup{font-size:.7em}
+
+/* ---------- Mathematik-Satz ---------- */
+.m,.mf,.mblock{font-family:var(--serif);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal;white-space:nowrap}
+.mf i,.m i{font-style:italic;padding-right:.04em}
+.mf sup{padding-left:.02em}
+.nb{white-space:nowrap}
+
+/* ---------- Obere Leiste ---------- */
+.bar{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;padding-top:env(safe-area-inset-top)}
+.bar-in{
+  max-width:1180px;margin:0 auto;min-height:var(--barH);
+  padding:8px clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:10px;
+}
+.bar h1{
+  font:600 1.12rem/1.2 var(--serif);margin:0;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em;
+}
+.bar h1 small{font:500 .78rem var(--sans);color:#9fb3d1;margin-left:8px}
+.chipbtn{
+  min-height:44px;padding:0 15px;border-radius:22px;border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.chipbtn:hover{background:rgba(255,255,255,.16)}
+.chipbtn svg{width:18px;height:18px;flex:0 0 auto}
+.tmode{
+  display:none;font-size:.7rem;font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:2px 10px;white-space:nowrap;
+}
+.tmode.on{display:inline-block}
+#back{display:none}
+@media(max-width:560px){.chipbtn .lbl{display:none}.chipbtn{padding:0 12px}.bar h1 small{display:none}}
+body.intr #back{display:inline-flex}
+
+/* ---------- Halle: Kopfbereich ---------- */
+.hero{background:var(--ink);color:#fff;border-radius:0 0 30px 30px;overflow:hidden}
+.hero-in{
+  max-width:1180px;margin:0 auto;position:relative;
+  padding:clamp(20px,4vw,44px) clamp(16px,3vw,32px) clamp(24px,4vw,46px);
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(14px,3vw,36px);align-items:center;
+}
+.hero h2{font:700 clamp(2.1rem,5.6vw,3.5rem)/1.04 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
+.hero p{margin:0;color:#c3d1e8;max-width:36ch;font-size:clamp(.98rem,1.7vw,1.1rem)}
+.hero .art{min-width:0}
+.hero .art svg{width:100%;height:auto;display:block}
+@media(max-width:640px){.hero-in{grid-template-columns:1fr}.hero .art{order:-1;max-width:420px}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.7s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ---------- Halle: Kacheln ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(12px,2.4vw,24px)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:clamp(12px,2vw,20px);margin:clamp(18px,3vw,30px) 0 14px}
+.tile{
+  display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:0;cursor:pointer;overflow:hidden;color:inherit;min-height:262px;position:relative;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -24px rgba(18,35,63,.45);
+}
+.tile:active{transform:translateY(1px)}
+@media(hover:hover){.tile:hover{border-color:#9fb8cd}}
+.tile .art{background:#fbfdff;border-bottom:1px solid var(--line);aspect-ratio:300/132;display:block}
+.tile .art svg{width:100%;height:100%;display:block}
+.tile .tb{padding:13px 17px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.tile h3{font:700 1.32rem/1.15 var(--serif);margin:0;letter-spacing:-.005em}
+.tile p{margin:0;color:var(--ink-soft);font-size:.96rem;line-height:1.4}
+.pips{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+.pip{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.pip.open{background:#9fc3de}
+.pip.full{background:var(--blue)}
+.pipnote{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+.resetrow{margin:-14px 0 30px}
+.linkbtn{background:none;border:0;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;font-size:.88rem;min-height:44px;padding:0 4px;cursor:pointer}
+.confirm{background:#fff;border:1px solid var(--line);border-left:5px solid var(--coral);border-radius:14px;padding:12px 16px 8px;max-width:620px;font-size:.96rem}
+.btn.danger{background:var(--coral);border-color:var(--coral)}
+.daygoal{
+  display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap;
+  margin:clamp(18px,3vw,28px) 0 0;padding:10px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.daygoal+.tiles{margin-top:clamp(12px,2vw,18px)}
+.daygoal .tx{font-size:.96rem;color:var(--ink-soft)}
+.daygoal .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.daygoal .segs{display:flex;gap:6px;flex:1 1 150px;max-width:300px;min-width:130px}
+.seg{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.seg.on{background:var(--ok)}
+.daygoal.done{background:var(--ok-soft);border-color:#bcdfcb}
+.daygoal.done .tx{color:#14603c;font-weight:600}
+.today{
+  position:absolute;top:10px;right:10px;display:inline-flex;gap:5px;align-items:center;background:var(--ok-soft);
+  border:1px solid #bcdfcb;color:#14603c;border-radius:20px;padding:2px 11px 3px;font-size:.8rem;font-weight:700;
+}
+.rule{font-size:.9rem;color:var(--ink-soft);max-width:78ch;margin:2px 0 26px}
+
+/* ---------- Trainer-Ansicht ---------- */
+.lvlbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}
+.lvl{
+  flex:1 1 170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 14px 10px;min-height:62px;cursor:pointer;color:var(--ink);
+}
+.lvl b{font:700 1rem var(--serif)}
+.lvl small{color:var(--ink-soft);font-size:.82rem;line-height:1.3}
+.lvl .dots{display:flex;gap:7px;margin-top:5px;align-items:center}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid #9fb0c6;background:#fff}
+.dot.on{background:var(--ok);border-color:var(--ok)}
+.lvl.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,111,178,.16)}
+.lvl.lock{opacity:.5;cursor:not-allowed}
+.lvl .lk{font-size:.78rem;color:var(--ink-soft)}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(14px,2vw,22px);margin:12px 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.04),0 16px 30px -24px rgba(18,35,63,.4);
+}
+.banner{
+  background:#eaf6f0;border:1px solid #bfe0cf;border-left:5px solid var(--ok);color:#14603c;
+  border-radius:12px;padding:9px 14px;margin:12px 0 0;font-size:.95rem;
+}
+.prompt{font:600 1.2rem/1.42 var(--serif);margin:0 0 10px}
+.prompt .m,.prompt .mf{font-size:1.02em}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.work{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);align-items:start}
+.work>*{min-width:0}
+.work.one{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){.work{grid-template-columns:1fr;gap:10px}}
+@media(min-width:701px) and (max-width:1000px){.work:not(.one){grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}}
+@media(min-width:701px) and (min-height:620px){.work.stick>.viz{position:sticky;top:calc(var(--barH) + env(safe-area-inset-top) + 10px)}}
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+.boardwrap{border:1px solid var(--line);border-radius:14px;background:#fff;padding:6px 6px 2px;overflow:hidden}
+.viz>svg{border:1px solid var(--line);border-radius:14px;background:#fff}
+
+/* ---------- Rückmeldungen und Hilfen ---------- */
+.fb{border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.97rem;display:none;line-height:1.5}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.hint{background:var(--warn-soft);border-left:5px solid #d69220}
+.fb.sol{background:var(--blue-soft);border-left:5px solid var(--blue)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 2px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;
+  padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:650;min-height:48px;min-width:48px;
+}
+.btn:active{background:#0b1830}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.ghost:active{background:var(--blue-soft)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.helpbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.hbtn{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:22px;cursor:pointer;
+  border:1.5px solid #d69220;background:var(--warn-soft);color:var(--warn);font-weight:650;
+}
+.hbtn svg{width:18px;height:18px}
+.hbtn.sol{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-deep)}
+.hbtn.altbtn{border-color:var(--ink-2);background:#fff;color:var(--ink)}
+.hbtn.altbtn[aria-expanded="true"]{background:#eef2f8}
+.alt{background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--ink-2);border-radius:14px;padding:12px 14px 14px;margin-top:12px}
+.alt .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.alt h4{font:700 1.06rem/1.3 var(--serif);margin:0}
+.alt .sm{min-height:40px;padding:6px 14px;font-size:.92rem}
+.altstep{border-top:1px dashed var(--line);padding-top:9px;margin-top:10px}
+.altstep p{margin:.35em 0;font-size:.97rem}
+.altstep .sn{display:flex;gap:9px;align-items:center;font:700 1rem var(--serif);color:var(--blue-deep)}
+.altstep .sn i{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 .85rem var(--sans);font-style:normal;flex:0 0 auto}
+.eq{text-align:center;margin:7px 0;font:500 1.1rem/1.9 var(--serif)}
+.eq .mf{margin:0 .15em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;font-size:.95em;line-height:1.3}
+.frac>span:first-child{padding:0 .3em .05em;border-bottom:1.5px solid currentColor}
+.frac>span:last-child{padding:.05em .3em 0}
+.hbtn .tier{display:inline-flex;gap:3px}
+.hbtn .tier i{width:7px;height:7px;border-radius:50%;background:#e2c58f;display:block}
+.hbtn .tier i.on{background:var(--warn)}
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hintcard{background:var(--warn-soft);border:1px solid #ecd2a2;border-left:5px solid #d69220;border-radius:12px;padding:9px 14px;font-size:.96rem}
+.hintcard b{color:var(--warn)}
+.result{margin-top:14px}
+.result .fb{display:block}
+
+/* ---------- Eingabefelder und Tastenfeld ---------- */
+.term{font:500 1.4rem/1.2 var(--serif);display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0}
+.term .dotop{color:var(--ink-soft)}
+.term .ex{align-self:flex-start;margin-top:3px;margin-left:-3px;font-size:1.1rem}
+.fld{
+  display:inline-flex;align-items:center;justify-content:center;min-width:92px;height:56px;padding:0 14px;
+  border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;
+  font:600 1.35rem var(--serif);position:relative;
+}
+.fld.sm{min-width:70px;height:48px;font-size:1.15rem;padding:0 10px;border-radius:11px}
+.fld .v{white-space:pre}
+.fld .v:empty::before{content:"?";color:#a9b6c9;font-weight:500}
+.fld.act{border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,111,178,.18)}
+.fld.act .v::after{content:"";display:inline-block;width:2px;height:1.15em;background:var(--blue);margin-left:2px;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.fld.act .v:empty::before{content:""}
+@keyframes blink{50%{opacity:0}}
+.fld.ok{border-color:var(--ok);background:var(--ok-soft)}
+.fld.no{border-color:var(--coral);background:#fdecea}
+.fld:disabled{cursor:default}
+.lab{font:italic 600 1.35rem var(--serif);color:var(--ink)}
+
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--ink);display:none;
+  padding:10px clamp(8px,2vw,18px) calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px 20px 0 0;box-shadow:0 -12px 32px -14px rgba(18,35,63,.55);
+}
+body.hasdock .dock{display:block}
+.dock-in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px}
+.key{
+  flex:1 1 42px;min-width:42px;height:50px;border:0;border-radius:11px;background:#f2f5fa;color:var(--ink);
+  font:600 1.3rem var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none;
+}
+.key:active{background:#c9dbf0}
+.key.fn{background:var(--ink-2);color:#fff}
+.key.fn:active{background:#3a5584}
+.key.go{flex:2 1 112px;background:#5aa9ee;color:#0b1b33;font:700 1.05rem var(--sans)}
+.key.go:active{background:#8cc3f5}
+
+/* ---------- Kurven-Tuner ---------- */
+.stepper{display:flex;align-items:center;gap:10px;margin:8px 0}
+.stepper .lab{min-width:1.6ch}
+.sb{
+  width:58px;height:58px;border-radius:16px;border:2px solid var(--blue);background:#fff;color:var(--blue);
+  font:600 2rem/1 var(--sans);cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.sb:active{background:var(--blue-soft)}
+.sb:disabled{opacity:.35;cursor:not-allowed}
+.stepper .val{min-width:96px;text-align:center;font:600 1.7rem var(--serif);font-variant-numeric:tabular-nums}
+.livefn{font:500 1.5rem var(--serif);margin:6px 0 2px;padding:10px 14px;background:var(--blue-soft);border-radius:12px;display:inline-block}
+.goal{display:inline-block;font-size:.84rem;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:20px;padding:2px 11px;margin-bottom:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.86rem;color:var(--ink-soft);margin-top:6px;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:26px;height:0;border-top:3.5px solid var(--blue);display:inline-block}
+.sw.dash{border-top-color:var(--amber);border-top-style:dashed}
+.sw.ghost{border-top-color:var(--ok);border-top-style:dotted}
+
+/* ---------- Zuordnen ---------- */
+.slots{display:grid;gap:9px;margin:8px 0}
+.slot{
+  display:flex;align-items:center;gap:12px;border:2px dashed #b9c7da;border-radius:14px;padding:7px 12px;min-height:60px;
+  background:#fff;cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit;
+}
+.badge{width:34px;height:34px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto;font-family:var(--sans)}
+.slot .ph{color:#8a9ab1;font-size:.93rem}
+.slot .tx{font:600 1.2rem var(--serif)}
+.slot.hl{border-color:var(--blue);background:var(--blue-soft)}
+.slot.pick{border-color:var(--blue);border-style:solid}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.slot.no{animation:shake .42s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.chip{
+  min-height:54px;padding:8px 18px;border-radius:28px;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  font:600 1.22rem var(--serif);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+}
+.chip.sel{background:var(--ink);color:#fff}
+.chip.used{opacity:.3;pointer-events:none}
+.chip.lifted{opacity:.35}
+.chip.drag{position:fixed;z-index:80;pointer-events:none;transform:translate(-50%,-60%);box-shadow:0 14px 28px -10px rgba(18,35,63,.55);background:#fff;color:var(--ink);opacity:1}
+
+/* ---------- Steckbrief ---------- */
+.clues{display:grid;gap:10px;margin:10px 0}
+.clue{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-left:6px solid var(--blue);border-radius:14px;padding:11px 14px}
+.clue .t{flex:1;font:500 1.08rem/1.45 var(--serif)}
+.clue .why{display:block;font:400 .9rem var(--sans);color:#8a2b1c;margin-top:4px}
+.clue .mk{font:700 1.2rem var(--sans);width:26px;text-align:center;flex:0 0 auto}
+.clue.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.clue.ok .mk{color:var(--ok)}
+.clue.no{border-left-color:var(--coral);background:#fdf1ef}
+.clue.no .mk{color:var(--coral)}
+
+/* ---------- Tabelle ---------- */
+.tblwrap{overflow-x:auto;margin:8px 0;-webkit-overflow-scrolling:touch}
+table.tb{border-collapse:separate;border-spacing:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;min-width:100%}
+table.tb th,table.tb td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font:600 1.2rem var(--serif);min-width:78px}
+table.tb tr:last-child td,table.tb tr:last-child th{border-bottom:0}
+table.tb td:last-child,table.tb th:last-child{border-right:0}
+table.tb th.rh{background:var(--ink);color:#fff;font-style:italic;text-align:center;min-width:64px}
+table.tb tr.xr td{background:var(--blue-soft)}
+table.tb tr.arr td{border-bottom:0;padding:0 4px;background:#fff;font:600 .86rem var(--sans);color:var(--amber);height:26px}
+table.tb tr.arr th{background:var(--ink);border-bottom:0}
+
+/* ---------- Fehlerdetektiv ---------- */
+.stud{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.stud .who{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stud .av{width:36px;height:36px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-weight:800}
+.stud .ln{font:500 1.12rem/1.55 var(--serif)}
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;
+  min-height:50px;color:var(--ink);line-height:1.4;font-size:.98rem;
+}
+.opt .mk{font-weight:700;margin-right:.55em;color:var(--blue-deep)}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.chosen-no{border-color:var(--coral);background:#fdecea}
+.opt:disabled{cursor:default}
+.probe{width:100%;border-collapse:collapse;font:500 1rem var(--serif);margin:6px 0 2px}
+.probe td,.probe th{border-bottom:1px solid #ecd2a2;padding:3px 8px;text-align:center}
+.probe .bad{color:var(--coral);font-weight:700}
+
+/* ---------- Merkhilfe ---------- */
+.veil{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:70;display:none}
+.veil.on{display:block}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:71;background:#fff;border-radius:24px 24px 0 0;max-height:86vh;overflow:auto;
+  padding:18px clamp(16px,3vw,32px) calc(26px + env(safe-area-inset-bottom));display:none;
+  box-shadow:0 -16px 40px -14px rgba(10,20,40,.6);
+}
+.sheet.on{display:block}
+.sheet-in{max-width:860px;margin:0 auto}
+.sheet h2{font:700 1.5rem var(--serif);margin:0 0 4px}
+.sheet h3{font:700 1.08rem var(--serif);margin:16px 0 4px;color:var(--blue-deep)}
+.sheet .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet .box{background:var(--blue-soft);border-left:5px solid var(--blue);border-radius:12px;padding:9px 14px;margin:6px 0}
+.sheet .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+@media(max-width:620px){.sheet .duo{grid-template-columns:1fr}}
+.sheet .duo div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.sheet .duo .up{border-left:5px solid var(--blue)}
+.sheet .duo .down{border-left:5px solid var(--amber)}
+.sheet ul{margin:.3em 0;padding-left:1.2em}
+.sheet li{margin:.25em 0}
+
+.hidden{display:none !important}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .draw{animation:none;stroke-dashoffset:0}
+  .fld.act .v::after{animation:none}
+  .slot.no{animation:none}
+}
+
+/* ---------- I.4: kompakter Kopf und Kacheln ---------- */
+.hhead{
+  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px clamp(16px,3vw,32px);align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px clamp(14px,2vw,22px);margin:clamp(12px,2vw,18px) 0 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -26px rgba(18,35,63,.45);
+}
+.hhead .kap{font:600 .8rem var(--sans);color:var(--ink-soft)}
+.hhead h2{font:700 clamp(1.4rem,3.2vw,1.9rem)/1.15 var(--serif);margin:2px 0 4px;color:var(--ink);letter-spacing:-.01em}
+.hhead p{margin:0;color:var(--ink-soft);font-size:.95rem;max-width:64ch;line-height:1.45}
+.hhead .dg{display:flex;flex-direction:column;gap:8px;min-width:0}
+.hhead .dg .tx{font-size:.96rem;color:var(--ink-soft)}
+.hhead .dg .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.hhead .dg .segs{display:flex;gap:6px;max-width:300px}
+.hhead.done{background:var(--ok-soft);border-color:#bcdfcb}
+.hhead.done .dg .tx{color:#14603c;font-weight:600}
+@media(max-width:700px){.hhead{grid-template-columns:1fr}}
+.tiles{margin-top:clamp(10px,1.6vw,16px)}
+.tile{min-height:226px}
+.tile .art{aspect-ratio:300/104}
+.rule{margin-bottom:18px}
+.eq{font-size:1.7rem}
+.ln{font:500 1.12rem/1.55 var(--serif)}
+.stud .ln+.ln{border-top:1px dashed var(--line);margin-top:2px;padding-top:2px}
+.tiles{grid-template-columns:repeat(auto-fill,minmax(204px,1fr));gap:clamp(10px,1.4vw,16px)}
+.tile{min-height:0}
+.tile h3{font-size:1.14rem}
+.tile p{font-size:.9rem}
+.tile .tb{padding:11px 14px 13px}
+.tile .art{aspect-ratio:300/112}
+
+/* ---------- Zusatz (optional) ---------- */
+.zusatz{
+  display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr);width:100%;text-align:left;color:inherit;cursor:pointer;
+  background:#fbfdff;border:2px dashed #9fb8cd;border-radius:var(--r);padding:0;overflow:hidden;margin:clamp(10px,1.4vw,16px) 0 14px;
+}
+.zusatz .art{display:block;border-right:1px dashed #b9c7da;background:#fff}
+.zusatz .art svg{width:100%;height:100%;display:block}
+.zusatz .tb{display:flex;flex-direction:column;gap:3px;padding:10px 16px 12px;min-width:0}
+.zusatz h3{font:700 1.14rem/1.15 var(--serif);margin:0}
+.zusatz p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.4}
+.zusatz .pips{margin-top:4px;max-width:260px}
+@media(hover:hover){.zusatz:hover{border-color:var(--blue)}}
+.optbadge{align-self:flex-start;font-size:.78rem;font-weight:700;color:#7a4a00;background:var(--amber-soft);border:1px solid #e8c78f;border-radius:20px;padding:1px 11px 2px}
+.optnote{background:var(--amber-soft);border:1px solid #e8c78f;border-left:5px solid var(--amber);color:#7a4a00;border-radius:12px;padding:8px 14px;margin:0 0 10px;font-size:.95rem}
+@media(max-width:600px){.zusatz{grid-template-columns:1fr}.zusatz .art{border-right:0;border-bottom:1px dashed #b9c7da;aspect-ratio:300/90}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="chipbtn" id="back" type="button" aria-label="Zurück zur Übungshalle">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg>
+      <span class="lbl">Halle</span>
+    </button>
+    <h1 id="bartitle">Übungshalle<small>I.4 Einfache Exponentialgleichungen</small></h1>
+    <span class="tmode" id="tmode">Lehrermodus</span>
+    <button class="chipbtn" id="merk" type="button">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H16v12H5.5A1.5 1.5 0 0 0 4 16.5v-12Z"/><path d="M4 16.5A1.5 1.5 0 0 0 5.5 18H16v-3"/></svg>
+      <span class="lbl">Merkhilfe</span>
+    </button>
+  </div>
+</header>
+
+<main id="stage"></main>
+
+<div class="dock" id="dock" role="group" aria-label="Zahlen eingeben"><div class="dock-in" id="dockin"></div></div>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Merkhilfe">
+  <div class="sheet-in">
+    <div class="row"><h2>Merkhilfe</h2><button class="btn ghost" id="sheetclose" type="button">Schließen</button></div>
+    <div class="box"><span class="mf"><i>a</i><sup><i>x</i></sup> = <i>y</i></span> &nbsp;⇒&nbsp; <span class="mf"><i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)</span> &nbsp; mit <span class="mf"><i>a</i> &gt; 0</span>, <span class="mf"><i>a</i> ≠ 1</span> und <span class="mf"><i>y</i> &gt; 0</span></div>
+
+    <h3>Lösungsweg</h3>
+    <ul>
+      <li>Forme um, bis auf einer Seite nur <span class="mf"><i>a</i><sup><i>x</i></sup></span> steht und auf der anderen Seite eine Zahl <span class="m">y</span>.</li>
+      <li>Dann gilt <span class="mf"><i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)</span>. Mit dem Taschenrechner gibst du den Logarithmus zur Basis <span class="m">a</span> ein.</li>
+      <li>Probe: <span class="m">x</span> in beide Seiten der Ausgangsgleichung einsetzen.</li>
+    </ul>
+
+    <h3>Umformen</h3>
+    <div class="duo">
+      <div class="up"><b>Zahlen neben der Potenz</b><br>erst <b>+</b> oder <b>−</b> (Gegenoperation), dann durch den Faktor <b>teilen</b>. Ein Faktor wird nie in die Basis gezogen.</div>
+      <div class="down"><b>Zwei Basen</b><br><span class="mf"><i>c</i> · <i>a</i><sup><i>x</i></sup> = <i>d</i> · <i>b</i><sup><i>x</i></sup></span> ⇒ <span class="mf">(<i>a</i> : <i>b</i>)<sup><i>x</i></sup> = <i>d</i> : <i>c</i></span></div>
+    </div>
+
+    <h3>Exponent mit Term</h3>
+    <ul>
+      <li><span class="mf"><i>a</i><sup><i>x</i>+<i>q</i></sup> = <i>a</i><sup><i>q</i></sup> · <i>a</i><sup><i>x</i></sup></span> und <span class="mf"><i>a</i><sup>2<i>x</i></sup> = (<i>a</i><sup>2</sup>)<sup><i>x</i></sup></span>.</li>
+      <li>Regel: <span class="mf">log<sub><i>b</i></sub>(<i>u</i><sup><i>z</i></sup>) = <i>z</i> · log<sub><i>b</i></sub>(<i>u</i>)</span>. Beispiel: <span class="mf">2<sup>3<i>x</i></sup> = 5</span> ⇒ <span class="mf">3<i>x</i> = log<sub>2</sub>(5)</span> ⇒ <span class="mf"><i>x</i> = log<sub>2</sub>(5) : 3</span>.</li>
+    </ul>
+
+    <h3>Gleiche Basis</h3>
+    <ul>
+      <li>Sind beide Seiten Potenzen derselben Basis, sind die <b>Exponenten</b> gleich: <span class="mf">3<sup>2<i>x</i>−1</sup> = 3<sup><i>x</i>+5</sup></span> ⇒ <span class="mf">2<i>x</i> − 1 = <i>x</i> + 5</span>.</li>
+      <li>Schreibe dazu alle Zahlen als Potenzen derselben Basis, zum Beispiel <span class="mf">27 = 3<sup>3</sup></span>. Der ganze Exponent wird mit 3 multipliziert: <span class="mf">27<sup><i>x</i>+1</sup> = 3<sup>3<i>x</i>+3</sup></span>.</li>
+    </ul>
+
+    <h3>Lösbarkeit</h3>
+    <ul>
+      <li>Eine Potenz <span class="mf"><i>a</i><sup><i>x</i></sup></span> ist immer positiv. Ist <span class="m">y</span> nach dem Umformen null oder negativ, gibt es <b>keine</b> Lösung.</li>
+      <li>Sonderfall: Wird die Gleichung zu einer wahren Aussage für jedes <span class="m">x</span>, zum Beispiel <span class="mf">3<sup><i>x</i>+1</sup> = 3 · 3<sup><i>x</i></sup></span>, ist jede Zahl eine Lösung.</li>
+    </ul>
+
+    <h3>Zusatz: logarithmische Skala</h3>
+    <ul>
+      <li>Auf einer logarithmischen Skala liegen die Striche gleich weit auseinander, und von Strich zu Strich wird mit demselben Faktor multipliziert (zum Beispiel mit 10).</li>
+      <li>Zu Strich <span class="m">p</span> gehört der Wert <span class="mf">10<sup><i>p</i></sup></span>. Zu einem Wert <span class="m">v</span> gehört die Strichnummer <span class="mf"><i>p</i> = log<sub>10</sub>(<i>v</i>)</span>.</li>
+      <li>In der Mitte zwischen zwei Strichen liegt <b>nicht</b> der Mittelwert der beiden Zahlen. Zwischen 100 und 1000 liegt dort <span class="mf">10<sup>2,5</sup> ≈ 316</span>.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+const $=(id)=>document.getElementById(id);
+const TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+
+function div(cls,html){const d=document.createElement("div");if(cls)d.className=cls;if(html!==undefined)d.innerHTML=html;return d;}
+function mkbtn(cls,html,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.innerHTML=html;if(fn)b.addEventListener("click",fn);return b;}
+
+/* deutsche Zahlschreibweise */
+function num(v,dec){
+  if(dec===undefined)dec=4;
+  if(!isFinite(v))return "—";
+  if(Math.abs(v)<5e-10)v=0;
+  let s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){s=s.replace(/0+$/,"").replace(/\.$/,"");}
+  if(s==="-0")s="0";
+  return s.replace(".",",");
+}
+function mnum(v,dec){return num(v,dec).replace("-","−");}
+/* Eingabe: Komma oder Punkt, Minus als - oder −, Brüche wie 1/3 */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-");
+  if(s==="")return NaN;
+  const m=s.match(/^([-+]?)(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)$/);
+  if(m){
+    const n=parseFloat(m[2].replace(",",".")),d=parseFloat(m[3].replace(",","."));
+    return d===0?NaN:(m[1]==="-"?-1:1)*n/d;
+  }
+  s=s.replace(",",".");
+  if(!/^[-+]?\d*\.?\d+$/.test(s))return NaN;
+  return Number(s);
+}
+const close=(x,y,t)=>Math.abs(x-y)<=(t||1e-6)*Math.max(1,Math.abs(y));
+const pw=(a,x)=>Math.pow(a,x);
+const r6=(v)=>Math.round(v*1e6)/1e6;
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+const LAST={};
+function pick(pool,key){
+  let i=Math.floor(Math.random()*pool.length);
+  if(pool.length>1){let g=0;while(i===LAST[key]&&g++<30)i=Math.floor(Math.random()*pool.length);}
+  LAST[key]=i;return pool[i];
+}
+/* Wird eine Stützaufgabe gebraucht, kommt sie aus der Stufe darunter bzw. aus den leichten Aufgaben der Stufe 1. */
+function poolFor(P,lvl,stuetz){
+  if(!stuetz)return {eff:lvl,pool:P[lvl]};
+  if(lvl>1)return {eff:lvl-1,pool:P[lvl-1]};
+  const e=P[1].filter(x=>x.e);
+  return {eff:1,pool:e.length?e:P[1]};
+}
+
+/* Basis als Text: Brüche wie 1/3 werden als Bruch gezeigt */
+function baseHTML(a){
+  if(close(a,1/3))return "(1/3)";
+  if(close(a,2/3))return "(2/3)";
+  return mnum(a,4);
+}
+/* Term b · a^x als HTML. */
+function termHTML(b,a){
+  let bs;
+  if(b===1)bs="";else if(b===-1)bs="−";else bs=mnum(b,4)+" · ";
+  return '<span class="mf">'+bs+baseHTML(a)+"<sup><i>x</i></sup></span>";
+}
+function fnHTML(b,a,name){
+  return '<span class="mf"><i>'+(name||"f")+'</i>(<i>x</i>) = '+termHTML(b,a).replace('<span class="mf">',"").replace(/<\/span>$/,"")+"</span>";
+}
+const isUp=(a,b)=>(b>0&&a>1)||(b<0&&a<1);
+const ICON_BULB='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14.5h6M8 17h4M10 2.5a5 5 0 0 0-3 9c.7.6 1 1.2 1 2h4c0-.8.3-1.4 1-2a5 5 0 0 0-3-9Z"/></svg>';
+
+/* =========================================================
+   SVG-Koordinatensystem (Board-Technik aus dem Lernpfad)
+   ========================================================= */
+const NS="http://www.w3.org/2000/svg";
+let BOARDN=0;
+function el(name,attrs){const e=document.createElementNS(NS,name);for(const k in attrs){if(Object.prototype.hasOwnProperty.call(attrs,k))e.setAttribute(k,attrs[k]);}return e;}
+function clearNode(g){while(g&&g.firstChild)g.removeChild(g.firstChild);}
+const FF="ui-serif,'New York',Georgia,serif";
+
+function Board(host,o){
+  const W=o.w||560,H=o.h||380,fs=o.fs||14;
+  const pad={l:o.padL!==undefined?o.padL:46,r:o.padR!==undefined?o.padR:24,t:o.padT!==undefined?o.padT:16,b:o.padB!==undefined?o.padB:34};
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",o.label||"Koordinatensystem");
+  const X=(x)=>pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r);
+  const Y=(y)=>H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b);
+  const cid="clip"+(++BOARDN);
+  const defs=el("defs",{});const cp=el("clipPath",{id:cid});
+  cp.appendChild(el("rect",{x:X(xmin),y:Y(ymax),width:X(xmax)-X(xmin),height:Y(ymin)-Y(ymax)}));
+  defs.appendChild(cp);svg.appendChild(defs);
+  const grid=el("g",{});let i;
+  const gx=o.gridx,gy=o.gridy;
+  if(gx)for(i=Math.ceil(xmin/gx-1e-9)*gx;i<=xmax+1e-9;i+=gx)grid.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#e6edf6","stroke-width":1}));
+  if(gy)for(i=Math.ceil(ymin/gy-1e-9)*gy;i<=ymax+1e-9;i+=gy)grid.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#e6edf6","stroke-width":1}));
+  svg.appendChild(grid);
+  const curves=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(curves);
+  const axg=el("g",{});svg.appendChild(axg);
+  const dots=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(dots);
+  const lbls=el("g",{});svg.appendChild(lbls);
+  (function(){
+    const AX="#243b5e";
+    axg.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-9)+","+(Y(0)-4.5)+" "+(X(xmax)-9)+","+(Y(0)+4.5),fill:AX}));
+    axg.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-4.5)+","+(Y(ymax)+9)+" "+(X(0)+4.5)+","+(Y(ymax)+9),fill:AX}));
+    let t;
+    const tx=o.tickx,ty=o.ticky;
+    if(tx)for(i=Math.ceil(xmin/tx-1e-9)*tx;i<=xmax-0.15*(xmax-xmin)/6;i+=tx){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(i),y:Y(0)+fs+4,"text-anchor":"middle","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    if(ty)for(i=Math.ceil(ymin/ty-1e-9)*ty;i<=ymax-0.12*(ymax-ymin);i+=ty){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(0)-8,y:Y(i)+fs*0.34,"text-anchor":"end","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    const lx=el("text",{x:X(xmax)-2,y:Y(0)+2*fs+4,"text-anchor":"end","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    lx.textContent="x";axg.appendChild(lx);
+    const ly=el("text",{x:X(0)+8,y:Y(ymax)+fs*0.9,"text-anchor":"start","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    ly.textContent="y";axg.appendChild(ly);
+  })();
+  const YLO=ymin-3*(ymax-ymin),YHI=ymax+3*(ymax-ymin);
+  const api={svg,X,Y,xmin,xmax,ymin,ymax,curves,dots,lbls};
+  api.reset=()=>{clearNode(curves);clearNode(dots);clearNode(lbls);};
+  api.curve=(fn,x0,x1,op)=>{
+    op=op||{};const N=op.n||420;let d="",pen=false,x,y;
+    for(let k=0;k<=N;k++){
+      x=x0+(x1-x0)*k/N;y=fn(x);
+      if(typeof y!=="number"||!isFinite(y)){pen=false;continue;}
+      if(y<YLO)y=YLO;else if(y>YHI)y=YHI;
+      d+=(pen?"L":"M")+X(x).toFixed(2)+" "+Y(y).toFixed(2)+" ";pen=true;
+    }
+    if(d==="")return null;
+    const at={d,fill:"none",stroke:op.color||"#1f6fb2","stroke-width":op.w||3,"stroke-linejoin":"round","stroke-linecap":"round"};
+    if(op.dash)at["stroke-dasharray"]=op.dash;
+    if(op.opacity!==undefined)at.opacity=op.opacity;
+    const p=el("path",at);(op.layer||curves).appendChild(p);return p;
+  };
+  api.dot=(x,y,op)=>{
+    op=op||{};if(!isFinite(y))return null;
+    const c=el("circle",{cx:X(x),cy:Y(Math.max(YLO,Math.min(YHI,y))),r:op.r||6,fill:op.color||"#d1432d",stroke:op.ring||"#fff","stroke-width":op.rw||2});
+    (op.layer||dots).appendChild(c);return c;
+  };
+  api.seg=(x0,y0,x1,y1,op)=>{
+    op=op||{};
+    const l=el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1),stroke:op.color||"#94a3b8","stroke-width":op.w||1.5});
+    if(op.dash)l.setAttribute("stroke-dasharray",op.dash);
+    (op.layer||dots).appendChild(l);return l;
+  };
+  api.text=(x,y,s,op)=>{
+    op=op||{};
+    const t=el("text",{x:X(x)+(op.dx||0),y:Y(y)+(op.dy||0),"font-size":op.size||fs,fill:op.fill||"#243b5e","text-anchor":op.anchor||"middle","font-family":op.family||FF,"font-weight":op.weight||"600",stroke:"#fff","stroke-width":op.halo===false?0:3.6,"paint-order":"stroke","stroke-linejoin":"round"});
+    t.textContent=s;(op.layer||lbls).appendChild(t);return t;
+  };
+  host.innerHTML="";host.appendChild(svg);
+  return api;
+}
+/* Ein sinnvolles Fenster für Punkte (x|y) wählen */
+function niceStep(range,maxTicks){
+  const c=[1,2,5,10,20,50,100,200];
+  for(let i=0;i<c.length;i++){if(range/c[i]<=maxTicks)return c[i];}
+  return 500;
+}
+function viewFor(pts){
+  let xlo=0,xhi=0,ylo=0,yhi=0;
+  pts.forEach(p=>{xlo=Math.min(xlo,p[0]);xhi=Math.max(xhi,p[0]);ylo=Math.min(ylo,p[1]);yhi=Math.max(yhi,p[1]);});
+  const xmin=Math.floor(xlo-1.8),xmax=Math.ceil(xhi+1.8);
+  let yp=(yhi-ylo)||1;
+  const sy=niceStep(yp*1.5,8);
+  let ymax=yhi>0?Math.ceil((yhi+yp*0.22)/sy)*sy:Math.ceil(0.6*sy);
+  let ymin=ylo<0?Math.floor((ylo-yp*0.22)/sy)*sy:-Math.ceil(0.6*sy);
+  if(ymax<=0)ymax=sy;if(ymin>=0)ymin=-sy;
+  return {xmin,xmax,ymin,ymax,gridx:1,gridy:sy,tickx:1,ticky:sy};
+}
+
+/* =========================================================
+   Eingabefelder und Tastenfeld
+   ========================================================= */
+const Dock=(function(){
+  let fields=[],act=null,onCheck=null,visible=false;
+  const host=$("dockin");
+  const KEYS=["1","2","3","4","5","6","7","8","9","0",",","−","/","⌫"];
+  const NAMES={",":"Komma","−":"Minus","/":"Bruchstrich","⌫":"Löschen"};
+  KEYS.forEach(k=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="key"+(NAMES[k]?" fn":"");b.textContent=k;
+    b.setAttribute("aria-label",NAMES[k]||k);
+    b.addEventListener("pointerdown",(e)=>e.preventDefault());
+    b.addEventListener("click",()=>press(k));
+    host.appendChild(b);
+  });
+  const go=document.createElement("button");go.type="button";go.className="key go";go.textContent="Prüfen";
+  go.addEventListener("pointerdown",(e)=>e.preventDefault());
+  go.addEventListener("click",()=>{if(onCheck)onCheck();});
+  host.appendChild(go);
+
+  function measure(){
+    document.documentElement.style.setProperty("--dockH",visible?($("dock").offsetHeight+"px"):"0px");
+  }
+  function press(k){
+    const f=act;if(!f||f.locked)return;
+    let v=f.val;
+    const tail=v.split("/").pop();
+    if(k==="⌫")v=v.slice(0,-1);
+    else if(k==="−"){v=(v[0]==="-")?v.slice(1):"-"+v;}
+    else if(k===","){if(tail.indexOf(",")<0)v+=(tail===""||tail==="-")?"0,":",";}
+    else if(k==="/"){if(v!==""&&v!=="-"&&v.indexOf("/")<0&&!/,$/.test(v))v+="/";}
+    else if(v.length<10)v+=k;
+    f.set(v);f.state("");
+  }
+  function activate(f){
+    if(act)act.el.classList.remove("act");
+    act=f;if(f&&!f.locked)f.el.classList.add("act");
+  }
+  return {
+    use(list,check){
+      fields=list;onCheck=check;visible=true;
+      document.body.classList.add("hasdock");
+      list.forEach(f=>{f.el.addEventListener("click",()=>activate(f));});
+      const first=list.find(f=>!f.locked);activate(first||null);
+      measure();
+    },
+    off(){visible=false;onCheck=null;fields=[];if(act)act.el.classList.remove("act");act=null;document.body.classList.remove("hasdock");measure();},
+    focus:activate,
+    next(){const i=fields.indexOf(act);for(let k=1;k<=fields.length;k++){const f=fields[(i+k)%fields.length];if(!f.locked){activate(f);return;}}},
+    press,measure,
+    get visible(){return visible;},
+    check(){if(onCheck)onCheck();}
+  };
+})();
+window.addEventListener("resize",()=>Dock.measure());
+document.addEventListener("keydown",(e)=>{
+  if(!Dock.visible||e.metaKey||e.ctrlKey||e.altKey)return;
+  if($("sheet").classList.contains("on"))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){Dock.press(k);e.preventDefault();}
+  else if(k===","||k==="."){Dock.press(",");e.preventDefault();}
+  else if(k==="-"){Dock.press("−");e.preventDefault();}
+  else if(k==="/"){Dock.press("/");e.preventDefault();}
+  else if(k==="Backspace"){Dock.press("⌫");e.preventDefault();}
+  else if(k==="Tab"){Dock.next();e.preventDefault();}
+  else if(k==="Enter"&&document.activeElement&&document.activeElement.classList.contains("fld")){Dock.check();e.preventDefault();}
+});
+
+function Field(opt){
+  opt=opt||{};
+  const b=document.createElement("button");b.type="button";b.className="fld"+(opt.sm?" sm":"");
+  b.setAttribute("aria-label",opt.aria||"Eingabefeld");
+  const v=document.createElement("span");v.className="v";b.appendChild(v);
+  const f={el:b,val:"",locked:false,
+    set(s){f.val=s;v.textContent=s.replace(/-/g,"−");},
+    num(){return parseNum(f.val);},
+    state(s){b.classList.remove("ok","no");if(s)b.classList.add(s);},
+    lock(s){f.locked=true;b.classList.remove("act");if(s)f.state(s);}
+  };
+  return f;
+}
+/* f(x) = [b] · [a]^x  – zwei Felder in einer Zeile */
+function TermRow(host,opt){
+  opt=opt||{};
+  const fb=Field({aria:"Wert für b"}),fa=Field({aria:"Wert für a"});
+  const row=div("term");
+  const l=document.createElement("span");l.className="mf";l.innerHTML="<i>"+(opt.name||"f")+"</i>(<i>x</i>) =";
+  row.appendChild(l);row.appendChild(fb.el);
+  const d=document.createElement("span");d.className="dotop";d.textContent="·";row.appendChild(d);
+  row.appendChild(fa.el);
+  const s=document.createElement("span");s.className="mf ex";s.innerHTML="<i>x</i>";row.appendChild(s);
+  host.appendChild(row);
+  return {fb,fa,row};
+}
+
+/* =========================================================
+   Fortschritt
+   ========================================================= */
+/* Tagesziel: nur im Arbeitsspeicher, unabhängig von Stufen und Mastery */
+const DAY={done:{}};
+/* Eine erfolgreich gelöste Aufgabe schaltet die nächste Stufe frei */
+const NEED=1;
+const PROG={};
+const Prog={
+  get(id){return PROG[id]||(PROG[id]={unlocked:TEACHER?3:1,clean:[0,0,0],hard:0});},
+  /* Fortschritt (clean) und Stützlogik (hard) sind getrennt:
+     clean entscheidet nur über die Stufenfreischaltung,
+     hard zählt aufeinanderfolgende Durchgänge mit deutlichen Schwierigkeiten. */
+  record(id,lvl,clean,stuetz,hard){
+    const p=this.get(id);let up=false;
+    if(clean&&!stuetz)p.clean[lvl-1]=Math.min(NEED,p.clean[lvl-1]+1);
+    if(hard)p.hard++;else p.hard=0;
+    if(!stuetz&&p.clean[lvl-1]>=NEED&&p.unlocked===lvl&&lvl<3){p.unlocked=lvl+1;up=true;}
+    saveProgress();
+    return {up,mastered:p.clean[lvl-1]>=NEED,p};
+  }
+};
+
+/* Dauerhafte Speicherung (localStorage): nur unlocked und clean je Trainer.
+   Nicht gespeichert: Tagesziel (DAY), hard, laufende Aufgabe, Eingaben, Hinweise.
+   Im Lehrermodus wird weder gelesen noch geschrieben. */
+const STORE_KEY="expGleichTrainingProgressV1";
+function saveProgress(){
+  if(TEACHER)return;
+  try{
+    const o={v:1,p:{}};
+    TR.forEach(t=>{const p=PROG[t.id];if(p)o.p[t.id]={unlocked:p.unlocked,clean:p.clean.slice()};});
+    localStorage.setItem(STORE_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function validEntry(e){
+  if(!e||typeof e!=="object"||!Number.isInteger(e.unlocked)||e.unlocked<1||e.unlocked>3)return false;
+  if(!Array.isArray(e.clean)||e.clean.length!==3)return false;
+  for(let i=0;i<3;i++){
+    const c=e.clean[i];
+    if(!Number.isInteger(c)||c<0||c>NEED)return false;
+    if(c>=NEED&&e.unlocked<Math.min(3,i+2))return false;
+    if(c>0&&e.unlocked<i+1)return false;
+  }
+  return true;
+}
+function loadProgress(){
+  if(TEACHER)return;
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw)return;
+    const o=JSON.parse(raw);
+    if(!o||typeof o!=="object"||o.v!==1||!o.p||typeof o.p!=="object")return;
+    TR.forEach(t=>{
+      const e=o.p[t.id];
+      if(validEntry(e))PROG[t.id]={unlocked:e.unlocked,clean:e.clean.slice(),hard:0};
+    });
+  }catch(e){}
+}
+function resetProgress(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  Object.keys(PROG).forEach(k=>{delete PROG[k];});
+  DAY.done={};
+}
+
+/* =========================================================
+   Aufgaben-Rahmen: Hilfen, Rückmeldung, Ergebnis
+   ========================================================= */
+let CUR=null;
+function Task(tr,lvl,stuetz){
+  const T=this;
+  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
+  const host=$("taskhost");host.innerHTML="";Dock.off();
+  if(stuetz)host.appendChild(div("banner","<b>Stützaufgabe.</b> Diese Aufgabe ist etwas leichter, damit du wieder in Schwung kommst. Sie zählt nicht für die Stufe."));
+  const card=div("card");host.appendChild(card);
+  T.work=div("work stick"+(tr.noViz?" one":""));card.appendChild(T.work);
+  T.viz=div("viz");T.side=div("side");
+  if(!tr.noViz)T.work.appendChild(T.viz);
+  T.work.appendChild(T.side);
+  T.body=div("");T.side.appendChild(T.body);
+  T.fb=div("fb");T.side.appendChild(T.fb);
+  T.helpHost=div("");T.side.appendChild(T.helpHost);
+  T.res=div("result");T.side.appendChild(T.res);
+}
+Task.prototype.say=function(kind,html){this.fb.className="fb "+kind+" show";this.fb.innerHTML=html;};
+Task.prototype.clearSay=function(){this.fb.className="fb";this.fb.innerHTML="";};
+Task.prototype.miss=function(){
+  this.wrong++;
+  if(this.wrong>=3&&this.solBtn)this.solBtn.style.display="";
+};
+Task.prototype.setHints=function(hints,solFn){
+  const T=this;T.hints=hints;T.solFn=solFn;
+  T.helpHost.innerHTML="";
+  const bar=div("helpbar"),list=div("hints");
+  T.helpHost.appendChild(bar);T.helpHost.appendChild(list);
+  const hb=document.createElement("button");hb.type="button";hb.className="hbtn";
+  const sb=document.createElement("button");sb.type="button";sb.className="hbtn sol";sb.textContent="Lösung zeigen";
+  function lab(){hb.innerHTML=ICON_BULB+"<span>Hilfe</span><span class='tier'>"+hints.map((h,i)=>"<i class='"+(i<T.helpN?"on":"")+"'></i>").join("")+"</span>";}
+  lab();
+  hb.addEventListener("click",()=>{
+    if(T.over||T.helpN>=hints.length)return;
+    let h=hints[T.helpN];T.helpN++;
+    if(typeof h==="function")h=h();
+    const txt=(h&&h.t!==undefined)?h.t:h;
+    list.appendChild(div("hintcard","<b>Hinweis "+T.helpN+".</b> "+txt));
+    if(h&&h.fn)h.fn();
+    lab();
+    if(T.helpN>=hints.length){hb.style.display="none";sb.style.display="";}
+    Dock.measure();
+  });
+  sb.addEventListener("click",()=>{
+    if(T.over)return;
+    T.solShown=true;
+    if(solFn)solFn();
+  });
+  sb.style.display=TEACHER?"":"none";
+  bar.appendChild(hb);bar.appendChild(sb);
+  T.solBtn=sb;T.hideHelp=()=>{bar.style.display="none";};
+};
+/* Aufgabe beendet (richtig gelöst oder Lösung gezeigt) */
+Task.prototype.complete=function(extraHtml){
+  const T=this;if(T.over)return;T.over=true;
+  if(T.hideHelp)T.hideHelp();
+  Dock.off();
+  DAY.done[T.tr.id]=true;
+  const clean=!T.solShown&&T.helpN<=1&&T.wrong<=2;
+  /* deutliche Schwierigkeiten: Lösung gezeigt oder Hinweise plus Fehlversuche zusammen mindestens 2 */
+  const hard=T.solShown||(T.helpN+T.wrong)>=2;
+  const r=Prog.record(T.tr.id,T.lvl,clean,T.stuetz,hard);
+  T.res.innerHTML="";
+  let msg;
+  if(T.solShown)msg="<b>Lösung angezeigt.</b> Diese Aufgabe zählt nicht mit. Die nächste probierst du selbst.";
+  else if(!clean)msg="<b>Gelöst, aber mit Hilfe oder mehreren Anläufen.</b> Diese Aufgabe zählt noch nicht. Die nächste schaffst du selbst.";
+  else if(T.stuetz)msg="<b>Gut gelöst.</b> Du bist wieder im Fluss. Weiter geht es mit der normalen Aufgabe.";
+  else if(r.up)msg="<b>Erfolgreich gelöst. Stufe "+(T.lvl+1)+" ist freigeschaltet.</b>";
+  else if(r.mastered&&T.lvl===3)msg="<b>Erfolgreich gelöst. Alle Stufen dieses Trainers sind geschafft.</b> Du kannst weiterüben oder einen anderen Trainer wählen.";
+  else if(r.mastered)msg="<b>Erfolgreich gelöst.</b> Diese Stufe ist geschafft. Du kannst weiterüben oder zur nächsten Stufe wechseln.";
+  else msg="<b>Erfolgreich gelöst.</b>";
+  const box=div("fb "+(clean?"ok":"hint")+" show",(extraHtml?extraHtml+"<br>":"")+msg);
+  T.res.appendChild(box);
+  const row=div("btnrow");
+  row.appendChild(mkbtn("btn","Nächste Aufgabe",()=>nextTask()));
+  if(r.up)row.appendChild(mkbtn("btn blue","Zu Stufe "+(T.lvl+1),()=>{CUR.lvl=T.lvl+1;renderLevelBar();nextTask();}));
+  row.appendChild(mkbtn("btn ghost","Zur Halle",()=>showHalle()));
+  T.res.appendChild(row);
+  renderLevelBar();
+  setTimeout(()=>{try{T.res.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+};
+
+/* =========================================================
+   Illustrationen (Kopfbereich und Kacheln)
+   ========================================================= */
+function cd(fn,x0,x1,map,n){
+  n=n||90;let d="";
+  for(let i=0;i<=n;i++){
+    const x=x0+(x1-x0)*i/n;let y=fn(x);
+    if(!isFinite(y))continue;
+    y=Math.max(-40,Math.min(60,y));
+    const p=map(x,y);d+=(d?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  }
+  return d;
+}
+function artWrap(inner){
+  let g="";
+  for(let i=0;i<=15;i++)g+='<line x1="'+(i*20)+'" y1="0" x2="'+(i*20)+'" y2="132" stroke="#e8eef6"/>';
+  for(let j=0;j<=7;j++)g+='<line x1="0" y1="'+(j*20)+'" x2="300" y2="'+(j*20)+'" stroke="#e8eef6"/>';
+  return '<svg viewBox="0 0 300 132" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+g+inner+'</svg>';
+}
+function axes(ox,oy){
+  return '<path d="M8 '+oy+'H292M'+ox+' 128V6" stroke="#243b5e" stroke-width="1.6" fill="none"/>';
+}
+function artTxt(x,y,size,fill,inner,anchor){
+  return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||"middle")+'" font-family="'+FF+'" font-size="'+size+'" fill="'+fill+'">'+inner+'</text>';
+}
+const sp=(t,dy)=>'<tspan dy="-7" font-size="13" font-style="italic">'+t+'</tspan><tspan dy="7">';
+const ART={
+  form(){
+    return artWrap(
+      artTxt(150,48,22,"#12233f",'3 · 5<tspan dy="-8" font-size="14" font-style="italic">x</tspan><tspan dy="8"> = 2 · 3</tspan><tspan dy="-8" font-size="14" font-style="italic">x</tspan>')+
+      '<path d="M150 58V80" stroke="#c9770f" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M143 74l7 8 7-8" stroke="#c9770f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+      artTxt(150,110,22,"#1f6fb2",'(5/3)<tspan dy="-8" font-size="14" font-style="italic">x</tspan><tspan dy="8"> = 2/3</tspan>'));
+  },
+  expo(){
+    const m=(x,y)=>[96+34*x,112-11.5*y];
+    const xs=Math.log(5)/Math.log(2),p=m(xs,5),q=m(0,5);
+    return artWrap(axes(96,112)+
+      '<path d="'+cd(x=>pw(2,x),-2.6,3.6,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      '<path d="M'+q[0]+' '+q[1]+'H'+(p[0]+8)+'" stroke="#c9770f" stroke-width="3" stroke-dasharray="8 6" fill="none"/>'+
+      '<path d="M'+p[0]+' '+p[1]+'V112" stroke="#94a3b8" stroke-dasharray="3 4" fill="none"/>'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="7" fill="#d1432d" stroke="#fff" stroke-width="2.4"/>'+
+      artTxt(p[0],128,15,"#9b2c1f",'<tspan font-style="italic">x</tspan> ≈ 2,32')+
+      artTxt(228,40,20,"#12233f",'2<tspan dy="-7" font-size="13" font-style="italic">x</tspan><tspan dy="7"> = 5</tspan>'));
+  },
+  basis(){
+    return artWrap(
+      artTxt(150,40,19,"#12233f",'3<tspan dy="-7" font-size="12" font-style="italic">2x−1</tspan><tspan dy="7"> = 27</tspan><tspan dy="-7" font-size="12" font-style="italic">x+1</tspan>')+
+      '<path d="M150 52V72" stroke="#c9770f" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M143 66l7 8 7-8" stroke="#c9770f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+      artTxt(150,98,19,"#1f6fb2",'3<tspan dy="-7" font-size="12" font-style="italic">2x−1</tspan><tspan dy="7"> = 3</tspan><tspan dy="-7" font-size="12" font-style="italic">3x+3</tspan>'));
+  },
+  fehler(){
+    return artWrap(
+      '<rect x="40" y="30" width="190" height="62" rx="12" fill="#fff" stroke="#b9c7da" stroke-width="2"/>'+
+      artTxt(135,58,19,"#12233f",'<tspan font-style="italic">x</tspan> = log<tspan dy="5" font-size="12">3</tspan><tspan dy="-5">(7)</tspan>')+
+      artTxt(135,82,16,"#4b5b73",'<tspan font-style="italic">x</tspan> ≈ 1,77')+
+      '<g transform="translate(226,52)"><circle r="26" fill="#fff" fill-opacity=".85" stroke="#12233f" stroke-width="3.2"/><path d="M19 19l17 17" stroke="#12233f" stroke-width="5" stroke-linecap="round"/><path d="M-9 -9l18 18M9 -9l-18 18" stroke="#d1432d" stroke-width="4" stroke-linecap="round"/></g>');
+  },
+  skala(){
+    let s='<path d="M14 82H286" stroke="#243b5e" stroke-width="2.4"/><path d="M286 82l-10-5v10z" fill="#243b5e"/>';
+    const labs=["1","10","100","1000"];
+    for(let i=0;i<4;i++){const x=48+i*66;s+='<path d="M'+x+' 72V92" stroke="#243b5e" stroke-width="2.4"/>'+artTxt(x,112,15,"#12233f",labs[i]);}
+    const px=48+2.5*66;
+    s+='<path d="M'+px+' 30V68" stroke="#d1432d" stroke-width="3.4" stroke-linecap="round"/><path d="M'+px+' 74l-8-14h16z" fill="#d1432d"/>'+artTxt(px+10,30,15,"#9b2c1f","≈ 316","start");
+    return artWrap(s);
+  },
+  loes(){
+    const m=(x,y)=>[96+34*x,70-10*y];
+    return artWrap(axes(96,70)+
+      '<path d="'+cd(x=>pw(2,x),-2.7,3.6,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      '<path d="M12 '+m(0,-3)[1]+'H288" stroke="#c9770f" stroke-width="3" stroke-dasharray="8 6" fill="none"/>'+
+      artTxt(214,48,19,"#12233f",'2<tspan dy="-7" font-size="12" font-style="italic">x</tspan><tspan dy="7"> = −3</tspan>')+
+      artTxt(214,118,16,"#9b2c1f",'keine Lösung'));
+  }
+};
+
+/* =========================================================
+   Router: Halle und Trainer
+   ========================================================= */
+const TR=[];
+const trOf=(id)=>TR.find(t=>t.id===id);
+function setBar(title,small){$("bartitle").innerHTML=title+(small?"<small>"+small+"</small>":"");}
+
+function showHalle(){
+  CUR=null;Dock.off();document.body.classList.remove("intr");
+  setBar("Übungshalle","I.4 Einfache Exponentialgleichungen");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap"),tiles=div("tiles");
+  const MAIN=TR.filter(t=>!t.optional),OPT=TR.filter(t=>t.optional),N=MAIN.length,nDone=MAIN.filter(t=>DAY.done[t.id]).length,all=nDone===N;
+  const head=div("hhead"+(all?" done":""));
+  head.innerHTML='<div><div class="kap">Mathematik 10 · 1.4</div><h2>Übungshalle Exponentialgleichungen</h2><p>Fünf Trainer rund um <span class="mf"><i>a</i><sup><i>x</i></sup> = <i>y</i></span> und <span class="mf"><i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)</span>. Such dir einen aus. Eine Stufe öffnet sich, sobald dir eine Aufgabe sicher gelingt.</p></div>'+
+    '<div class="dg"><span class="tx" aria-live="polite">'+(all?'✓ Tagesziel erreicht – alle fünf Trainer bearbeitet.':'Heute: <b>'+nDone+' von '+N+'</b> Trainern bearbeitet')+'</span><span class="segs" role="img" aria-label="'+nDone+' von '+N+' Trainern bearbeitet">'+MAIN.map(t=>'<span class="seg'+(DAY.done[t.id]?' on':'')+'"></span>').join("")+'</span></div>';
+  wrap.appendChild(head);
+  MAIN.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="tile";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    const note=done?"Alle Stufen geschafft":"Stufe "+p.unlocked+" offen";
+    b.innerHTML=(DAY.done[tr.id]?'<span class="today"><span aria-hidden="true">✓</span> heute bearbeitet</span>':'')+'<span class="art">'+ART[tr.art]()+'</span><span class="tb"><h3>'+tr.name+'</h3><p>'+tr.blurb+'</p><span class="pips">'+pips+'</span><span class="pipnote">'+note+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    tiles.appendChild(b);
+  });
+  wrap.appendChild(tiles);
+  OPT.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="zusatz";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    b.innerHTML='<span class="art">'+ART[tr.art]()+'</span><span class="tb"><span class="optbadge">Optional · für Schnelle und Interessierte</span><h3>'+tr.name+'</h3><p>'+tr.blurb+' Zählt nicht zum Tagesziel.</p><span class="pips">'+pips+'</span><span class="pipnote">'+(done?"Alle Stufen geschafft":"Stufe "+p.unlocked+" offen")+(DAY.done[tr.id]?" · heute bearbeitet":"")+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    wrap.appendChild(b);
+  });
+  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einem Hinweis, ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe schaltet die nächste Stufe frei. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Deine freigeschalteten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
+  const rr=div("resetrow");
+  const lk=mkbtn("linkbtn","Fortschritt zurücksetzen",()=>{
+    rr.innerHTML="";
+    const cf=div("confirm");
+    cf.setAttribute("role","alertdialog");cf.setAttribute("aria-label","Fortschritt zurücksetzen");
+    cf.appendChild(div("","Möchtest du wirklich deinen gesamten gespeicherten Fortschritt zurücksetzen? Alle freigeschalteten Stufen werden gelöscht."));
+    const row=div("btnrow");
+    row.appendChild(mkbtn("btn ghost","Abbrechen",()=>{rr.innerHTML="";rr.appendChild(lk);}));
+    row.appendChild(mkbtn("btn danger","Ja, zurücksetzen",()=>{resetProgress();showHalle();}));
+    cf.appendChild(row);rr.appendChild(cf);
+  });
+  rr.appendChild(lk);wrap.appendChild(rr);
+  st.appendChild(wrap);
+  window.scrollTo(0,0);
+}
+
+function openTrainer(id){
+  const tr=trOf(id),p=Prog.get(id);
+  CUR={id:id,lvl:TEACHER?1:p.unlocked};
+  document.body.classList.add("intr");
+  setBar(tr.name,"Übungshalle");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap");wrap.innerHTML='<div class="lvlbar" id="lvlbar"></div><div id="taskhost"></div>';
+  st.appendChild(wrap);
+  renderLevelBar();nextTask();
+}
+function renderLevelBar(){
+  const bar=$("lvlbar");if(!bar||!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);bar.innerHTML="";
+  tr.levels.forEach((L,i)=>{
+    const n=i+1,locked=n>p.unlocked;
+    const b=document.createElement("button");b.type="button";
+    b.className="lvl"+(n===CUR.lvl?" sel":"")+(locked?" lock":"");
+    b.innerHTML="<b>Stufe "+n+"</b><small>"+L.n+"</small>"+(locked?'<span class="lk">noch gesperrt</span>':'<span class="dots"><i class="dot'+(p.clean[i]>=NEED?" on":"")+'"></i><span class="lk">'+(p.clean[i]>=NEED?"geschafft":"noch offen")+"</span></span>");
+    b.setAttribute("aria-label","Stufe "+n+", "+L.n+(locked?", noch gesperrt":(p.clean[i]>=NEED?", geschafft":", noch offen")));
+    b.addEventListener("click",()=>{if(locked||n===CUR.lvl)return;CUR.lvl=n;renderLevelBar();nextTask();});
+    bar.appendChild(b);
+  });
+}
+function nextTask(){
+  if(!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);
+  let stuetz=false;
+  if(p.hard>=2&&!TEACHER){stuetz=true;p.hard=0;}
+  const T=new Task(tr,CUR.lvl,stuetz);
+  tr.start(T,CUR.lvl,stuetz);
+  Dock.measure();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Merkhilfe ---------- */
+function openSheet(){$("veil").classList.add("on");$("sheet").classList.add("on");$("sheetclose").focus();}
+function closeSheet(){$("veil").classList.remove("on");$("sheet").classList.remove("on");}
+$("merk").addEventListener("click",openSheet);
+$("sheetclose").addEventListener("click",closeSheet);
+$("veil").addEventListener("click",closeSheet);
+document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeSheet();});
+$("back").addEventListener("click",showHalle);
+$("tmode").classList.toggle("on",TEACHER);
+
+/* =========================================================
+   Gemeinsame Bausteine für I.4 Einfache Exponentialgleichungen
+   Schreibweise: a^x = y  ⇒  x = log_a(y)
+   ========================================================= */
+const X='<i>x</i>';
+function frac(n,d){return '<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';}
+const M=(h)=>'<span class="mf">'+h+'</span>';
+const lg=(a,y)=>Math.log(y)/Math.log(a);
+function isDec(v){const d=Math.round(v*1000)/1000;return Math.abs(v-d)<1e-9*Math.max(1,Math.abs(v));}
+function ratP(v){
+  for(let q=1;q<=240;q++){const p=Math.round(v*q);if(p!==0&&Math.abs(v-p/q)<1e-9*Math.max(1,Math.abs(v)))return [p,q];}
+  return null;
+}
+function ratH(v){
+  if(isDec(v))return mnum(Math.round(v*1000)/1000,3);
+  const r=ratP(v);return r?frac(mnum(r[0],0),r[1]):mnum(v,4);
+}
+function ratS(v){
+  if(isDec(v))return num(Math.round(v*1000)/1000,3);
+  const r=ratP(v);return r?(r[0]+"/"+r[1]):num(v,4);
+}
+function baseB(v){return isDec(v)?mnum(Math.round(v*1000)/1000,3):"("+ratH(v)+")";}
+function relOK(v,y,tol){return isFinite(v)&&Math.abs(v-y)<=tol*Math.abs(y);}
+function niceS(range,maxTicks){
+  const raw=range/maxTicks,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;
+  return (f<=1?1:f<=2?2:f<=5?5:10)*p;
+}
+/* Exponent  p·x + q  als HTML */
+function xexp(p,q){
+  let s;
+  if(p===1)s=X;else if(p===-1)s="−"+X;
+  else if(Math.abs(p)<1)s=(p<0?"−":"")+X+"/"+Math.round(1/Math.abs(p));
+  else s=mnum(p,4)+X;
+  if(q>0)s+=" + "+mnum(q,4);else if(q<0)s+=" − "+mnum(-q,4);
+  return s;
+}
+/* lineare Form m·x + n als HTML */
+function linH(m,n){
+  let s="";
+  if(m!==0)s=(m===1?X:m===-1?"−"+X:mnum(m,4)+X);
+  if(s===""){return mnum(n,4);}
+  if(n>0)s+=" + "+mnum(n,4);else if(n<0)s+=" − "+mnum(-n,4);
+  return s;
+}
+const powH=(a,p,q)=>mnum(a,4)+"<sup>"+xexp(p,q)+"</sup>";
+const coefH=(c)=>c===1?"":(c===-1?"−":mnum(c,4)+" · ");
+function sideH(c,a,p,q,u){
+  let s=coefH(c)+powH(a,p,q);
+  if(u>0)s+=" + "+mnum(u,4);else if(u<0)s+=" − "+mnum(-u,4);
+  return s;
+}
+/* Gleichungstypen:
+   single: c · a^(p·x+q) + u = d
+   two:    c · a^(p·x+q) = d · b^(r·x+s)            */
+const S=(c,a,p,q,u,d,easy)=>({k:"single",c,a,p,q,u,d,e:easy?1:0});
+const W=(c,a,p,q,d,b,r,s,easy)=>({k:"two",c,a,p,q,d,b,r,s,e:easy?1:0});
+function eqH(it){
+  if(it.k==="single")return M(sideH(it.c,it.a,it.p,it.q,it.u)+" = "+mnum(it.d,4));
+  return M(coefH(it.c)+powH(it.a,it.p,it.q)+" = "+coefH(it.d)+powH(it.b,it.r,it.s));
+}
+function normal(it){
+  if(it.k==="single")return {A:Math.pow(it.a,it.p),Y:(it.d-it.u)/(it.c*Math.pow(it.a,it.q))};
+  return {A:Math.pow(it.a,it.p)/Math.pow(it.b,it.r),Y:it.d*Math.pow(it.b,it.s)/(it.c*Math.pow(it.a,it.q))};
+}
+function solveX(it){const n=normal(it);return Math.log(n.Y)/Math.log(n.A);}
+const normH=(n)=>M(baseB(n.A)+"<sup>"+X+"</sup> = "+ratH(n.Y));
+function sideL(it,x){return it.c*Math.pow(it.a,it.p*x+it.q)+(it.u||0);}
+function sideR(it,x){return it.k==="single"?it.d:it.d*Math.pow(it.b,it.r*x+it.s);}
+
+function frow(labelHtml,f){
+  const r=div("term");const l=document.createElement("span");l.className="mf";l.innerHTML=labelHtml;
+  r.appendChild(l);r.appendChild(f.el);return r;
+}
+function OptList(T,items,onPick){
+  const ord=shuffle(items.map((_,i)=>i)),box=div("opts"),els=[];
+  ord.forEach((ix,k)=>{
+    const it=items[ix],b=document.createElement("button");b.type="button";b.className="opt";
+    b.innerHTML='<span class="mk">'+"ABCD"[k]+'</span>'+it.h;
+    b.addEventListener("click",()=>{if(T.over||b.disabled)return;onPick(it,b);});
+    els.push({b,it});box.appendChild(b);
+  });
+  return {box,els,lock(){els.forEach(o=>{o.b.disabled=true;});}};
+}
+/* Graphen beider Seiten – erst nach der Lösung */
+function showGraph(host,it,xs){
+  const L=(x)=>sideL(it,x),R=(x)=>sideR(it,x),ys=R(xs);
+  const x0=Math.floor(Math.min(0,xs)-1.5),x1=Math.ceil(Math.max(0,xs)+1.5);
+  const sy=niceS(Math.max(ys,0.1)*2.2,5);
+  const ymax=Math.max(sy,Math.ceil(ys*2.1/sy)*sy),rg=x1-x0;
+  const wrap=div("boardwrap");host.appendChild(wrap);
+  const B=Board(wrap,{w:560,h:250,xmin:x0,xmax:x1,ymin:-sy,ymax:ymax,gridx:1,gridy:sy,tickx:rg>20?5:rg>10?2:1,ticky:sy,label:"Graphen der linken und der rechten Seite mit Schnittpunkt"});
+  B.curve(L,x0,x1,{color:"#1f6fb2",w:3.6});
+  B.curve(R,x0,x1,{color:"#c9770f",w:3.4,dash:"10 8"});
+  B.seg(xs,0,xs,ys,{color:"#94a3b8",dash:"4 4"});
+  B.dot(xs,ys,{r:6.5});
+  const right=xs>x0+0.7*rg;
+  B.text(xs,ys,"("+mnum(xs,2)+" | "+mnum(ys,2)+")",{dx:right?-10:10,dy:-12,anchor:right?"end":"start",fill:"#9b2c1f",size:14});
+  host.appendChild(div("legend",'<span><i class="sw"></i>linke Seite</span><span><i class="sw dash"></i>rechte Seite</span>'));
+  host.appendChild(div("figcap","Die Lösung ist die <i>x</i>-Koordinate des Schnittpunkts."));
+}
+
+/* =========================================================
+   TRAINER 1 – Auf die Form bringen
+   ========================================================= */
+const FORM={
+  1:[S(5,2,1,0,0,40,1),S(3,.5,1,0,0,6,1),S(4,3,1,0,0,36),S(2,10,1,0,0,200),S(.5,4,1,0,0,8),S(6,1.5,1,0,0,9),S(.2,5,1,0,0,25),S(10,.8,1,0,0,4)],
+  2:[S(2,7,1,0,-6,14),S(3,2,1,0,4,52),S(5,1.5,1,0,-10,20),S(4,.5,1,0,1,9),S(.5,3,1,0,2,5),
+     W(3,5,1,0,2,3,1,0),W(2.5,7,1,0,4,2.8,1,0),W(1,4,1,0,2,5,1,0),W(3,2,1,0,7,3,1,0),W(1.5,2,1,0,6,5,1,0)],
+  3:[W(2,3,1,1,7,5,1,0),W(3,2,3,0,9,5,1,0),W(5,3,1,3,11,2,2,1),W(4,2,1,-1,3,3,1,0),W(1,3,2,0,5,2,1,1),W(2,5,1,2,3,4,1,0),W(3,4,2,-1,2,5,1,2)]
+};
+TR.push({
+  id:"form",name:"Auf die Form bringen",art:"form",noViz:true,
+  blurb:"Forme um, bis links nur noch eine Potenz steht: aˣ = y.",
+  levels:[{n:"Faktor wegrechnen"},{n:"Zahl und zwei Basen"},{n:"Exponent mit Term"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(FORM,lvl,stuetz),eff=PF.eff;
+    const it=pick(PF.pool,"form"+eff+(stuetz?"s":""));
+    const N=normal(it),x=solveX(it);
+    const needBase=!(it.k==="single"&&it.p===1&&it.q===0);
+    const pr=it.k==="two"
+      ?"Die Gleichung hat auf beiden Seiten Potenzen mit verschiedenen Basen. Bringe sie auf die Form <span class='mf'>(Basis)<sup><i>x</i></sup> = Zahl</span>. Trage Basis und Zahl ein. Gelöst wird erst im Trainer „Exponent berechnen“."
+      :"Forme die Gleichung so um, dass links nur noch die Potenz <span class='mf'>"+powH(it.a,1,0)+"</span> steht. Welche Zahl steht dann rechts? Gelöst wird erst im Trainer „Exponent berechnen“.";
+    T.body.appendChild(div("prompt",pr));
+    T.body.appendChild(div("eq",eqH(it)));
+    let fb=null;const fy=Field({aria:"Zahl auf der rechten Seite"});
+    if(needBase){
+      fb=Field({aria:"Basis"});
+      const row=div("term");
+      row.appendChild(fb.el);
+      const s=document.createElement("span");s.className="mf ex";s.innerHTML=X;row.appendChild(s);
+      const eqs=document.createElement("span");eqs.className="mf";eqs.textContent="=";row.appendChild(eqs);
+      row.appendChild(fy.el);T.body.appendChild(row);
+    }else{
+      T.body.appendChild(frow(powH(it.a,1,0)+" =",fy));
+    }
+    T.body.appendChild(div("small","Brüche gibst du mit <b>/</b> ein, Dezimalzahlen mit mindestens drei Nachkommastellen."));
+    const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+    const all=fb?[fb,fy]:[fy];Dock.use(all,check);
+    function check(){
+      if(T.over)return;
+      const vy=fy.num(),vb=fb?fb.num():N.A;
+      if(isNaN(vy)||isNaN(vb)){T.say("hint","Trage in jedes Feld eine Zahl ein. Brüche gibst du mit <b>/</b> ein.");return;}
+      let mode=null;
+      if(relOK(vb,N.A,.01))mode="n";else if(relOK(vb,1/N.A,.01))mode="i";
+      const yOK=mode==="n"?relOK(vy,N.Y,.01):mode==="i"?relOK(vy,1/N.Y,.01):(relOK(vy,N.Y,.01)||relOK(vy,1/N.Y,.01));
+      if(fb)fb.state(mode?"ok":"no");fy.state(yOK?"ok":"no");
+      if(mode&&yOK){
+        all.forEach(f=>f.lock("ok"));
+        T.say("ok","<b>Richtig.</b> "+normH(N)+" Jetzt kann man den Exponenten berechnen: "+M("<i>x</i> = log<sub>"+ratH(N.A)+"</sub>("+ratH(N.Y)+") ≈ "+mnum(x,2))+"."+(mode==="i"?" Auch deine Form mit dem Kehrwert ist richtig.":""));
+        T.complete("");return;
+      }
+      T.miss();
+      let msg;
+      if(it.k==="single"){
+        if(relOK(vy,it.d,.01))msg="Das ist noch die rechte Seite der Gleichung. Rechne auf beiden Seiten weiter, bis links nur die Potenz steht.";
+        else if(it.u&&relOK(vy,it.d-it.u,.01))msg="Die Zahl neben der Potenz ist weg, aber du hast noch nicht durch den Faktor geteilt.";
+        else if(it.u&&relOK(vy,it.d/it.c,.01))msg="Zuerst muss die Zahl neben der Potenz auf die andere Seite (Gegenoperation), erst danach teilt man durch den Faktor.";
+        else msg="Noch nicht. Rechne auf beiden Seiten dieselbe Gegenoperation.";
+      }else{
+        if(!mode){
+          if(relOK(vb,it.a*it.b,.01))msg="Beim Teilen durch eine Potenz entsteht ein <b>Quotient</b> der Basen, kein Produkt.";
+          else msg="Die Basis entsteht, wenn man beide Potenzen auf eine Seite bringt: Basis links geteilt durch Basis rechts (beachte die Exponenten).";
+        }else if(!yOK){
+          const inv=mode==="n"?relOK(vy,1/N.Y,.01):relOK(vy,N.Y,.01);
+          if(inv)msg="Basis und rechte Seite passen nicht zusammen: Wird die Basis umgedreht, muss auch die Zahl rechts umgedreht werden.";
+          else if(it.q!==0||it.s!==0||it.p!==1||it.r!==1)msg="Die Basis stimmt. Bei der Zahl rechts musst du noch die Zahlen in den Exponenten beachten: <span class='mf'>a<sup><i>x</i>+<i>q</i></sup> = a<sup><i>q</i></sup> · a<sup><i>x</i></sup></span>.";
+          else msg="Die Basis stimmt. Die Zahl rechts ergibt sich aus den Faktoren vor den Potenzen: Zahl rechts geteilt durch Zahl links.";
+        }
+      }
+      T.say("hint","<b>Noch nicht.</b> "+msg);
+    }
+    const h=[];
+    if(it.k==="single"){
+      h.push("Links soll nur die Potenz stehen. Was steht noch daneben: eine Zahl, die addiert oder subtrahiert wird, und ein Faktor?");
+      h.push("Zuerst die addierte oder subtrahierte Zahl auf die andere Seite bringen (Gegenoperation), dann beide Seiten durch den Faktor teilen.");
+      h.push("Rechne: ("+mnum(it.d,4)+(it.u?(it.u>0?" − "+mnum(it.u,4):" + "+mnum(-it.u,4)):"")+") : "+mnum(it.c,4)+".");
+    }else{
+      h.push("Beide Seiten haben eine Potenz, aber mit verschiedenen Basen. Bringe die Potenzen auf eine Seite und die Zahlen auf die andere (durch eine Potenz und durch Faktoren teilen).");
+      h.push("Es gilt <span class='mf'>a<sup><i>x</i></sup> : b<sup><i>x</i></sup> = (a : b)<sup><i>x</i></sup></span>. Steht im Exponenten <span class='mf'><i>x</i> + <i>q</i></span> oder <span class='mf'>2<i>x</i></span>, helfen <span class='mf'>a<sup><i>x</i>+<i>q</i></sup> = a<sup><i>q</i></sup> · a<sup><i>x</i></sup></span> und <span class='mf'>a<sup>2<i>x</i></sup> = (a<sup>2</sup>)<sup><i>x</i></sup></span>.");
+      h.push("Basis: "+M(mnum(Math.pow(it.a,it.p),4)+" : "+mnum(Math.pow(it.b,it.r),4))+". Zahl rechts: "+M(mnum(it.d*Math.pow(it.b,it.s),4)+" : "+mnum(it.c*Math.pow(it.a,it.q),4))+".");
+    }
+    T.setHints(h,()=>{
+      if(fb){fb.set(ratS(N.A));}
+      fy.set(ratS(N.Y));all.forEach(f=>f.lock("ok"));
+      T.say("sol","<b>Lösung:</b> "+normH(N)+" Das ergibt "+M("<i>x</i> ≈ "+mnum(x,2))+".");
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 2 – Exponent berechnen
+   ========================================================= */
+const EXPO={
+  1:[S(1,2,1,0,0,32,1),S(1,10,1,0,0,.001,1),S(1,.5,1,0,0,8,1),S(1,5,1,0,0,125,1),
+     S(1,3,1,0,0,10),S(1,2,1,0,0,5),S(1,5,1,0,0,2),S(1,1.2,1,0,0,2),S(1,10,1,0,0,3),S(1,.8,1,0,0,.5),S(1,8,1,0,0,.25),S(1,7,1,0,0,3)],
+  2:[S(2,7,1,0,-6,14),S(4,1.5,1,0,3,30),S(5,3,1,0,-7,38),S(.5,1.2,1,0,1,4),S(10,.9,1,0,-5,25),
+     W(3,5,1,0,2,3,1,0),W(2.5,7,1,0,4,2.8,1,0),W(1,4,1,0,2,5,1,0),W(1.5,2,1,0,6,5,1,0)],
+  3:[S(1,2,3,0,0,5),S(1,5,2,-1,0,30),S(1,3,1,-2,0,10),S(1,2,1,1,0,7),S(1,4,.5,0,0,6),S(1,.5,2,0,0,3),S(3,2,2,1,-4,44),
+     W(2,3,1,1,7,5,1,0),W(3,2,3,0,9,5,1,0),W(5,3,1,3,11,2,2,1),W(1,3,2,0,5,2,1,1),W(1,2,1,0,1,3,1,2)]
+};
+TR.push({
+  id:"expo",name:"Exponent berechnen",art:"expo",noViz:true,
+  blurb:"Löse die Gleichung nach x mit dem Logarithmus und dem Taschenrechner.",
+  levels:[{n:"Potenz allein"},{n:"Erst umformen"},{n:"Exponent mit Term"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(EXPO,lvl,stuetz),eff=PF.eff;
+    const it=pick(PF.pool,"expo"+eff+(stuetz?"s":""));
+    const N=normal(it),x=solveX(it);
+    const pure=it.k==="single"&&it.c===1&&it.u===0&&it.p===1&&it.q===0;
+    T.body.appendChild(div("prompt","Löse die Gleichung nach <i class='m'>x</i>. Runde auf zwei Nachkommastellen."));
+    T.body.appendChild(div("eq",eqH(it)));
+    const fx=Field({aria:"Lösung x"});
+    T.body.appendChild(frow("<i>x</i> ≈",fx));
+    const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+    Dock.use([fx],check);
+    const gwrap=div("");T.side.appendChild(gwrap);
+    function done(){fx.lock("ok");showGraph(gwrap,it,x);}
+    function check(){
+      if(T.over)return;
+      const v=fx.num();
+      if(isNaN(v)){T.say("hint","Trage eine Zahl ein. Dezimalzahlen schreibst du mit Komma.");return;}
+      if(Math.abs(v-x)<=0.0051){
+        const exact=Math.abs(x-Math.round(x))<1e-9;
+        T.say("ok","<b>Richtig.</b> "+normH(N)+(exact?"":" ")+M(" ⇒ <i>x</i> = log<sub>"+ratH(N.A)+"</sub>("+ratH(N.Y)+") "+(exact?"= "+mnum(x,0):"≈ "+mnum(x,2))));
+        done();T.complete("");return;
+      }
+      fx.state("no");T.miss();
+      let msg;
+      if(Math.abs(v-x)<=0.02)msg="Fast. Prüfe die Rundung auf zwei Nachkommastellen.";
+      else if(Math.abs(v+x)<=0.0051)msg="Das Vorzeichen stimmt nicht. Bei einer Basis kleiner als 1 oder einem Ergebnis kleiner als 1 kann der Exponent negativ werden.";
+      else if(relOK(v,N.Y,.01)&&!relOK(x,N.Y,.01))msg="Das ist die Zahl rechts nach dem Umformen. Gesucht ist aber der Exponent: <span class='mf'>x = log<sub>a</sub>(y)</span>.";
+      else if(it.k==="single"&&!pure&&relOK(v,lg(it.a,it.d),.01)&&it.p===1&&it.q===0)msg="Du hast <span class='mf'>log<sub>a</sub></span> von der Zahl rechts gebildet, ohne vorher umzuformen. Erst muss die Potenz allein stehen.";
+      else msg="Probe mit <i>x</i> = "+mnum(v,2)+": links ergibt sich ≈ "+mnum(sideL(it,v),3)+", rechts ≈ "+mnum(sideR(it,v),3)+". Beide Seiten müssen gleich sein.";
+      T.say("hint","<b>Noch nicht.</b> "+msg);
+    }
+    const h=[];
+    if(pure)h.push("Gesucht ist der Exponent: Mit welcher Zahl muss man "+mnum(it.a,4)+" potenzieren, um "+mnum(it.d,4)+" zu erhalten?");
+    else if(it.k==="two")h.push("Verschiedene Basen auf beiden Seiten: Bringe die Potenzen auf eine Seite und forme auf die Form <span class='mf'>a<sup><i>x</i></sup> = y</span> um.");
+    else h.push("Forme zuerst um, bis die Potenz (mit dem Exponenten, in dem <i>x</i> steht) allein steht.");
+    h.push(pure?"Das ist der Logarithmus: <span class='mf'><i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)</span>. Dein Taschenrechner kann den Logarithmus zu einer beliebigen Basis berechnen."
+        :"Wenn die Form <span class='mf'>a<sup><i>x</i></sup> = y</span> dasteht, gilt <span class='mf'><i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)</span>. Bei einem Exponenten mit Term hilft <span class='mf'>a<sup>2<i>x</i></sup> = (a<sup>2</sup>)<sup><i>x</i></sup></span> und <span class='mf'>a<sup><i>x</i>+<i>q</i></sup> = a<sup><i>q</i></sup> · a<sup><i>x</i></sup></span>.");
+    h.push(pure?"Gib in den Taschenrechner ein: "+M("log<sub>"+mnum(it.a,4)+"</sub>("+mnum(it.d,4)+")")+".":"Zwischenschritt: "+normH(N)+" Also "+M("<i>x</i> = log<sub>"+ratH(N.A)+"</sub>("+ratH(N.Y)+")")+".");
+    T.setHints(h,()=>{
+      fx.set(num(x,2));
+      T.say("sol","<b>Lösung:</b> "+normH(N)+" "+M("<i>x</i> = log<sub>"+ratH(N.A)+"</sub>("+ratH(N.Y)+") ≈ "+mnum(x,2)));
+      done();T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 3 – Gleiche Basis
+   ========================================================= */
+const FA=(b,k,p,q)=>({b,k,p,q});
+const FK=(v,m)=>({v,m});
+const G1=(a,p1,q1,p2,q2,easy)=>({g:a,L:[FA(a,1,p1,q1)],R:[FA(a,1,p2,q2)],e:easy?1:0,stage:1});
+const G2=(A,k,B,m,p1,q1,p2,q2)=>({g:Math.round(Math.pow(A,1/k)),L:[FA(A,k,p1,q1)],R:[FA(B,m,p2,q2)],e:0,stage:2});
+const G3=(g,L,R)=>({g,L,R,e:0,stage:3});
+const BAS={
+  1:[G1(12,2,0,1,3,1),G1(7,-1,0,1,0,1),G1(5,3,1,1,7,1),G1(2,-1,4,7,0),G1(3,2,-1,1,5),G1(.5,2,1,-1,7),G1(10,4,-2,1,4),G1(6,5,0,2,9)],
+  2:[G2(3,1,27,3,2,-1,1,1),G2(4,2,8,3,1,0,1,-1),G2(9,2,27,3,1,0,1,-1),G2(2,1,8,3,1,1,1,-1),G2(25,2,125,3,1,0,1,-2),G2(16,4,8,3,1,0,1,1),G2(4,2,32,5,1,1,1,0)],
+  3:[G3(2,[FA(2,1,3,-3),FA(4,2,1,0)],[FK(.25,-2),FA(8,3,1,0)]),
+     G3(10,[FA(10,1,3,0),FA(10,1,-1,0)],[FA(.01,-2,2,0),FK(100,2)]),
+     G3(3,[FA(3,1,2,0),FA(9,2,1,-1)],[FA(27,3,1,0)]),
+     G3(7,[FA(7,1,2,-1),FA(49,2,1,0)],[FK(343,3)]),
+     G3(2,[FA(4,2,1,1),FA(2,1,1,0)],[FK(16,4)]),
+     G3(2,[FA(.5,-1,1,1),FA(4,2,1,0)],[FK(8,3)]),
+     G3(3,[FA(9,2,1,0),FA(3,1,1,-2)],[FK(81,4)]),
+     G3(5,[FA(25,2,1,-1),FA(5,1,2,0)],[FA(125,3,1,0)])]
+};
+function expSum(list){let m=0,n=0;list.forEach(f=>{if(f.b!==undefined){m+=f.k*f.p;n+=f.k*f.q;}else n+=f.m;});return [m,n];}
+function facH(f){return f.b!==undefined?powH(f.b,f.p,f.q):mnum(f.v,4);}
+function sideFH(list){return list.map(facH).join(" · ");}
+TR.push({
+  id:"basis",name:"Gleiche Basis",art:"basis",noViz:true,
+  blurb:"Schreibe alles als Potenz derselben Basis und vergleiche die Exponenten.",
+  levels:[{n:"Basis ist schon gleich"},{n:"Basen als Potenz"},{n:"Produkte von Potenzen"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(BAS,lvl,stuetz),eff=PF.eff;
+    const it=pick(PF.pool,"bas"+eff+(stuetz?"s":""));
+    const sL=expSum(it.L),sR=expSum(it.R);
+    const x=(sR[1]-sL[1])/(sL[0]-sR[0]);
+    const eqs=M(sideFH(it.L)+" = "+sideFH(it.R));
+    T.body.appendChild(div("prompt",it.stage===1
+      ?"Beide Seiten sind Potenzen mit <b>derselben Basis</b>. Dann müssen die Exponenten gleich sein. Bestimme <i class='m'>x</i>."
+      :"Schreibe alle Basen und Zahlen als Potenzen <b>einer</b> gemeinsamen Basis <i class='m'>g</i> (der kleinstmöglichen ganzen oder einfachen Zahl) und vergleiche die Exponenten. Gib <i class='m'>g</i> und <i class='m'>x</i> an."));
+    T.body.appendChild(div("eq",eqs));
+    const fg=it.stage===1?null:Field({aria:"gemeinsame Basis g"}),fx=Field({aria:"Lösung x"});
+    if(fg)T.body.appendChild(frow("gemeinsame Basis <i>g</i> =",fg));
+    T.body.appendChild(frow("<i>x</i> =",fx));
+    T.body.appendChild(div("small","Brüche gibst du mit <b>/</b> ein."));
+    const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+    const all=fg?[fg,fx]:[fx];Dock.use(all,check);
+    const chain=()=>M(powH(it.g,1,0).replace(/<sup>.*<\/sup>/,"")+"<sup>"+linH(sL[0],sL[1])+"</sup> = "+mnum(it.g,4)+"<sup>"+linH(sR[0],sR[1])+"</sup>")+" ⇒ "+M(linH(sL[0],sL[1])+" = "+linH(sR[0],sR[1]))+" ⇒ "+M("<i>x</i> = "+ratH(x));
+    function check(){
+      if(T.over)return;
+      const vx=fx.num(),vg=fg?fg.num():it.g;
+      if(isNaN(vx)||isNaN(vg)){T.say("hint","Trage in jedes Feld eine Zahl ein.");return;}
+      const gOK=Math.abs(vg-it.g)<1e-9,xOK=Math.abs(vx-x)<=1e-6*Math.max(1,Math.abs(x));
+      if(fg)fg.state(gOK?"ok":"no");fx.state(xOK?"ok":"no");
+      if(gOK&&xOK){
+        all.forEach(f=>f.lock("ok"));
+        T.say("ok","<b>Richtig.</b> Mit der Basis "+mnum(it.g,4)+": "+chain());
+        T.complete("");return;
+      }
+      T.miss();
+      let msg;
+      if(!gOK)msg="Welche Zahl, hoch einer ganzen Zahl, ergibt <b>alle</b> Basen und Zahlen der Gleichung?";
+      else if(Math.abs(vx-x)<0.01)msg="Das ist ein gerundeter Wert. Gib den Bruch mit <b>/</b> ein.";
+      else if(T.wrong>=2)msg="Die Exponenten links und rechts: "+M(linH(sL[0],sL[1])+" = "+linH(sR[0],sR[1]))+". Löse diese Gleichung.";
+      else msg="Die Basis stimmt. Prüfe die Exponenten: Bei <span class='mf'>(g<sup>k</sup>)<sup>p<i>x</i>+q</sup></span> werden <b>beide</b> Teile des Exponenten mit <i>k</i> multipliziert.";
+      T.say("hint","<b>Noch nicht.</b> "+msg);
+    }
+    const h=[];
+    if(it.stage===1){
+      h.push("Haben beide Seiten dieselbe Basis, sind sie genau dann gleich, wenn die Exponenten gleich sind.");
+      h.push("Setze die Exponenten gleich: "+M(linH(sL[0],sL[1])+" = "+linH(sR[0],sR[1]))+".");
+      h.push("Löse diese lineare Gleichung: Bringe alle "+X+" auf eine Seite und die Zahlen auf die andere.");
+    }else{
+      h.push("Finde die gemeinsame Basis: Welche Zahl, hoch einer ganzen Zahl, ergibt jede Basis und jede Zahl in der Gleichung?");
+      h.push("Potenzgesetze: <span class='mf'>(g<sup>k</sup>)<sup>n</sup> = g<sup>k·n</sup></span> und <span class='mf'>g<sup>u</sup> · g<sup>v</sup> = g<sup>u+v</sup></span>. Fasse jede Seite zu <b>einer</b> Potenz von <i>g</i> zusammen.");
+      h.push("Linker Exponent: "+M(linH(sL[0],sL[1]))+". Setze ihn mit dem rechten Exponenten gleich und löse nach "+X+".");
+    }
+    T.setHints(h,()=>{
+      if(fg)fg.set(String(it.g));fx.set(ratS(x));all.forEach(f=>f.lock("ok"));
+      T.say("sol","<b>Lösung:</b> "+chain());
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 4 – Fehlerdetektiv
+   ========================================================= */
+const NAMES=["Mia","Ben","Lena","Tom","Jule","Paul"];
+const P2=(b,e)=>b+"<sup>"+e+"</sup>";
+const FE={
+  1:[
+    {eq:M(P2("7",X)+" = 3"),lines:[M("<i>x</i> = log<sub>3</sub>(7)"),M("<i>x</i> ≈ "+mnum(lg(3,7),2))],xc:lg(3,7),L:x=>Math.pow(7,x),R:()=>3,c:lg(7,3),e:1,
+     ok:"Basis und Zahl sind vertauscht: Die Basis 7 gehört unten an das „log“, die Zahl 3 in die Klammer.",
+     wr:["Es hätte durch 7 geteilt werden müssen.","Das Ergebnis müsste negativ sein.","Der Logarithmus wurde zur Basis 10 gebildet."],
+     h3:"Richtig ist <span class='mf'>x = log<sub>7</sub>(3)</span>: Basis unten, die Zahl auf der rechten Seite in der Klammer."},
+    {eq:M(P2("3",X)+" = 125"),lines:[M("<i>x</i> = ∛125"),M("<i>x</i> = 5")],xc:5,L:x=>Math.pow(3,x),R:()=>125,c:lg(3,125),e:1,
+     ok:"Mit der Wurzel sucht man die Basis, nicht den Exponenten. Der Exponent ist ein Logarithmus.",
+     wr:["Man hätte 125 : 3 rechnen müssen.","125 ist keine Potenz von 3, also gibt es keine Lösung.","Die Wurzel hätte aus 3 gezogen werden müssen."],
+     h3:"Der Exponent ist gesucht: <span class='mf'>x = log<sub>3</sub>(125)</span>."},
+    {eq:M(P2("2",X)+" = 10"),lines:[M("<i>x</i> = 10 : 2"),M("<i>x</i> = 5")],xc:5,L:x=>Math.pow(2,x),R:()=>10,c:lg(2,10),e:1,
+     ok:"Es wurde geteilt. Die Umkehrung des Potenzierens im Exponenten ist aber der Logarithmus.",
+     wr:["Es hätte 10 − 2 gerechnet werden müssen.","Der Exponent muss eine ganze Zahl sein.","Es hätte durch 10 geteilt werden müssen."],
+     h3:"<span class='mf'>x = log<sub>2</sub>(10)</span>."},
+    {eq:M(P2("0,5",X)+" = 8"),lines:[M("<i>x</i> = log<sub>0,5</sub>(8)"),M("<i>x</i> = 3")],xc:3,L:x=>Math.pow(.5,x),R:()=>8,c:-3,
+     ok:"Das Vorzeichen fehlt: Die Basis 0,5 ist kleiner als 1, die Potenz wird mit wachsendem Exponenten kleiner. Für 8 braucht man x = −3.",
+     wr:["Der Logarithmus zur Basis 0,5 ist nicht definiert.","Die Basis müsste 2 statt 0,5 sein.","Das Ergebnis müsste 1/3 sein."],
+     h3:"Probe: <span class='mf'>0,5<sup>3</sup> = 0,125</span>, nicht 8. Welches Vorzeichen braucht der Exponent?"},
+    {eq:M(P2("10",X)+" = 0,001"),lines:[M("<i>x</i> = log<sub>10</sub>(0,001)"),M("<i>x</i> = 3")],xc:3,L:x=>Math.pow(10,x),R:()=>.001,c:-3,
+     ok:"Das Vorzeichen fehlt: 0,001 = 1/1000 = 10<sup>−3</sup>.",
+     wr:["0,001 hat drei Nachkommastellen, deshalb muss x = 0,3 sein.","Es hätte 0,001 · 10 gerechnet werden müssen.","Der Logarithmus zur Basis 10 darf nur für Zahlen größer als 1 berechnet werden."],
+     h3:"Probe: <span class='mf'>10<sup>3</sup> = 1000</span>, nicht 0,001."},
+    {eq:M(P2("4",X)+" = 2"),lines:[M("<i>x</i> = log<sub>2</sub>(4)"),M("<i>x</i> = 2")],xc:2,L:x=>Math.pow(4,x),R:()=>2,c:.5,
+     ok:"Basis und Zahl sind vertauscht: <span class='mf'>4<sup>2</sup> = 16</span>, nicht 2. Richtig ist <span class='mf'>x = log<sub>4</sub>(2) = 0,5</span>.",
+     wr:["Der Exponent wurde mit 4 multipliziert.","Da 2 kleiner als 4 ist, gibt es keine Lösung.","Es gilt 4<sup>2</sup> = 8."],
+     h3:"Probe: <span class='mf'>4<sup>2</sup> = 16</span>."}
+  ],
+  2:[
+    {eq:M("4 · "+P2("3",X)+" = 36"),lines:[M(P2("12",X)+" = 36"),M("<i>x</i> = log<sub>12</sub>(36) ≈ "+mnum(lg(12,36),2))],xc:lg(12,36),L:x=>4*Math.pow(3,x),R:()=>36,c:2,e:1,
+     ok:"Der Faktor 4 darf nicht in die Basis gezogen werden. Man teilt durch 4: <span class='mf'>3<sup>x</sup> = 9</span>.",
+     wr:["Es hätte 4 + 3 = 7 gerechnet werden müssen.","Der Faktor 4 hätte mit der 36 multipliziert werden müssen.","36 ist keine Potenz von 12, also gibt es keine Lösung."],
+     h3:"Nach dem Teilen durch 4 steht <span class='mf'>3<sup>x</sup> = 9</span> da."},
+    {eq:M("2 · "+P2("7",X)+" − 6 = 14"),lines:[M(P2("7",X)+" − 6 = 7"),M(P2("7",X)+" = 13"),M("<i>x</i> = log<sub>7</sub>(13) ≈ "+mnum(lg(7,13),2))],xc:lg(7,13),L:x=>2*Math.pow(7,x)-6,R:()=>14,c:lg(7,10),e:1,
+     ok:"Nur die 14 wurde durch 2 geteilt, die 6 nicht. Richtig: erst +6, dann : 2, also <span class='mf'>7<sup>x</sup> = 10</span>.",
+     wr:["Die 6 hätte subtrahiert statt addiert werden müssen.","Es hätte durch 14 geteilt werden müssen.","Der Logarithmus hätte zur Basis 2 gebildet werden müssen."],
+     h3:"Erst auf beiden Seiten +6, dann beide Seiten : 2."},
+    {eq:M("3 · "+P2("5",X)+" = 2 · "+P2("3",X)),lines:[M("("+frac(5,3)+")<sup><i>x</i></sup> = "+frac(3,2)),M("<i>x</i> = log<sub>5/3</sub>(3/2) ≈ "+mnum(lg(5/3,1.5),2))],xc:lg(5/3,1.5),L:x=>3*Math.pow(5,x),R:x=>2*Math.pow(3,x),c:lg(5/3,2/3),
+     ok:"Die Zahl rechts steht verkehrt herum. Man teilt durch 3 und durch 3<sup>x</sup>: <span class='mf'>(5/3)<sup>x</sup> = 2/3</span>.",
+     wr:["Die Basis hätte 5 + 3 = 8 sein müssen.","Es hätte 5 · 3 und 2 · 3 gerechnet werden müssen.","Man darf nicht durch 3<sup>x</sup> teilen."],
+     h3:"Teilt man durch den Faktor 3 links, steht die 3 im <b>Nenner</b> der rechten Seite."},
+    {eq:M("5 · "+P2("0,5",X)+" = 40"),lines:[M(P2("0,5",X)+" = 8"),M("<i>x</i> = 3")],xc:3,L:x=>5*Math.pow(.5,x),R:()=>40,c:-3,
+     ok:"Das Vorzeichen fehlt: Die Basis 0,5 ist kleiner als 1. Für 8 braucht man x = −3.",
+     wr:["Es hätte durch 40 geteilt werden müssen.","Der Faktor 5 hätte nicht weggerechnet werden dürfen.","0,5<sup>3</sup> = 8."],
+     h3:"Probe: <span class='mf'>5 · 0,5<sup>3</sup> = 0,625</span>, nicht 40."},
+    {eq:M("2 · "+P2("3",X)+" + 4 = 22"),lines:[M("2 · "+P2("3",X)+" = 26"),M(P2("3",X)+" = 13"),M("<i>x</i> = log<sub>3</sub>(13) ≈ "+mnum(lg(3,13),2))],xc:lg(3,13),L:x=>2*Math.pow(3,x)+4,R:()=>22,c:2,
+     ok:"Die 4 muss subtrahiert werden, nicht addiert: <span class='mf'>2 · 3<sup>x</sup> = 18</span>.",
+     wr:["Es hätte erst durch 2 geteilt werden müssen, sonst wäre die Rechnung falsch.","Der Logarithmus hätte zur Basis 2 gebildet werden müssen.","22 hätte durch 4 geteilt werden müssen."],
+     h3:"Was macht die Gegenoperation von „+ 4“ auf der anderen Seite?"}
+  ],
+  3:[
+    {eq:M(P2("3","2"+X+" − 1")+" = "+P2("27",X+" + 1")),lines:[M("2"+X+" − 1 = 3"+X+" + 1"),M("<i>x</i> = −2")],xc:-2,L:x=>Math.pow(3,2*x-1),R:x=>Math.pow(27,x+1),c:-4,
+     ok:"27<sup>x+1</sup> = (3<sup>3</sup>)<sup>x+1</sup> = 3<sup>3x+3</sup>: Der <b>ganze</b> Exponent x + 1 wird mit 3 multipliziert.",
+     wr:["Die Exponenten dürfen nur gleichgesetzt werden, wenn die Basen verschieden sind.","3 und 27 müssen beide quadriert werden.","27 = 3<sup>2</sup>."],
+     h3:"<span class='mf'>3(x + 1) = 3x + 3</span>."},
+    {eq:M(P2("2","3"+X)+" = 5"),lines:[M(P2("2","3"+X)+" = "+P2("8",X)+" = 5"),M("<i>x</i> · log<sub>2</sub>(8) = 5"),M("<i>x</i> = 5/3 ≈ "+mnum(5/3,2))],xc:5/3,L:x=>Math.pow(2,3*x),R:()=>5,c:lg(8,5),
+     ok:"Die 5 steht rechts nicht als Wert von log<sub>2</sub>(8), sondern es gilt <span class='mf'>8<sup>x</sup> = 5</span>, also <span class='mf'>x = log<sub>8</sub>(5)</span>.",
+     wr:["Aus 2<sup>3x</sup> folgt 3<sup>x</sup>.","log<sub>2</sub>(8) ist gleich 8.","2<sup>3x</sup> darf man nicht als Potenz mit der Basis 8 schreiben."],
+     h3:"Nach dem Umschreiben steht <span class='mf'>8<sup>x</sup> = 5</span> da. Daraus folgt <span class='mf'>x = log<sub>8</sub>(5)</span>."},
+    {eq:M(P2("2",X+" + 1")+" = 7"),lines:[M(X+" = log<sub>2</sub>(7) + 1"),M("<i>x</i> ≈ "+mnum(lg(2,7)+1,2))],xc:lg(2,7)+1,L:x=>Math.pow(2,x+1),R:()=>7,c:lg(2,7)-1,
+     ok:"Aus <span class='mf'>x + 1 = log<sub>2</sub>(7)</span> folgt <span class='mf'>x = log<sub>2</sub>(7) − 1</span>. Die 1 muss subtrahiert werden.",
+     wr:["Der Logarithmus hätte zur Basis 7 gebildet werden müssen.","Im Exponenten darf man nichts addieren.","Es hätte durch 2 geteilt werden müssen."],
+     h3:"Probe: <span class='mf'>2<sup>"+mnum(lg(2,7)+1,2)+" + 1</sup></span> ist viel größer als 7."},
+    {eq:M(P2("5","2"+X)+" = 30"),lines:[M("2"+X+" = log<sub>5</sub>(30)"),M("<i>x</i> = 2 · log<sub>5</sub>(30) ≈ "+mnum(2*lg(5,30),2))],xc:2*lg(5,30),L:x=>Math.pow(5,2*x),R:()=>30,c:lg(5,30)/2,
+     ok:"Aus <span class='mf'>2x = log<sub>5</sub>(30)</span> folgt x durch Teilen <b>durch</b> 2, nicht mal 2.",
+     wr:["Der Logarithmus hätte zur Basis 2 gebildet werden müssen.","Aus 5<sup>2x</sup> folgt 25<sup>x</sup> = 30, das ändert den Wert von x nicht.","Man darf bei 5<sup>2x</sup> nicht logarithmieren."],
+     h3:"Die Umkehrung von „mal 2“ ist „geteilt durch 2“."},
+    {eq:M(P2("3",X+" − 2")+" = 10"),lines:[M(X+" − 2 = log<sub>3</sub>(10)"),M("<i>x</i> = log<sub>3</sub>(10) − 2 ≈ "+mnum(lg(3,10)-2,2))],xc:lg(3,10)-2,L:x=>Math.pow(3,x-2),R:()=>10,c:lg(3,10)+2,
+     ok:"Aus <span class='mf'>x − 2 = log<sub>3</sub>(10)</span> folgt <span class='mf'>x = log<sub>3</sub>(10) + 2</span>. Die 2 muss addiert werden.",
+     wr:["Es hätte durch 3 geteilt werden müssen.","Der Logarithmus hätte zur Basis 10 gebildet werden müssen.","Im Exponenten darf man nichts subtrahieren."],
+     h3:"Die Umkehrung von „− 2“ ist „+ 2“."},
+    {eq:M("2 · "+P2("3",X+" + 1")+" = 7 · "+P2("5",X)),lines:[M(frac("3<sup><i>x</i>+1</sup>","5<sup><i>x</i></sup>")+" = "+frac(7,2)),M("("+frac(3,5)+")<sup><i>x</i>+1</sup> = 7/2"),M("<i>x</i> = log<sub>3/5</sub>(7/2) − 1 ≈ "+mnum(lg(.6,3.5)-1,2))],xc:lg(.6,3.5)-1,L:x=>2*Math.pow(3,x+1),R:x=>7*Math.pow(5,x),c:lg(.6,7/6),
+     ok:"3<sup>x+1</sup> : 5<sup>x</sup> ist nicht (3/5)<sup>x+1</sup>, denn die Exponenten sind verschieden. Zuerst 3<sup>x+1</sup> = 3 · 3<sup>x</sup> schreiben.",
+     wr:["Man darf nicht durch 5<sup>x</sup> teilen.","Der Faktor 2 hätte mit der 7 multipliziert werden müssen.","Der Logarithmus hätte zur Basis 5/3 gebildet werden müssen."],
+     h3:"Mit <span class='mf'>3<sup>x+1</sup> = 3 · 3<sup>x</sup></span> steht links 6 · 3<sup>x</sup>."}
+  ]
+};
+TR.push({
+  id:"fehler",name:"Fehlerdetektiv",art:"fehler",noViz:true,
+  blurb:"Finde den Fehler in der Rechnung und bestimme die richtige Lösung.",
+  levels:[{n:"Logarithmus"},{n:"Umformen"},{n:"Exponent mit Term"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(FE,lvl,stuetz),eff=PF.eff;
+    const E=pick(PF.pool,"fe"+eff+(stuetz?"s":"")),name=pick(NAMES,"nm");
+    T.body.appendChild(div("prompt","In dieser Rechnung steckt ein Fehler."));
+    T.body.appendChild(div("stud",'<div class="who"><span class="av">'+name[0]+'</span><b>'+name+' löst die Gleichung:</b></div><div class="ln">'+E.eq+'</div>'+E.lines.map(l=>'<div class="ln">'+l+'</div>').join("")));
+    T.body.appendChild(div("small","Wie ist der Fehler entstanden?"));
+    let found=false,fx=null,brow=null,st2=null;
+    const list=OptList(T,[{h:E.ok,ok:true}].concat(E.wr.map(h=>({h,ok:false}))),(it,b)=>{
+      if(it.ok){
+        found=true;list.lock();b.classList.add("chosen-ok");
+        T.say("ok","<b>Fehler erkannt.</b>");openStep2();
+      }else{
+        b.disabled=true;b.classList.add("chosen-no");T.miss();
+        T.say("hint","<b>Das erklärt den Fehler nicht.</b> Rechne die einzelnen Schritte nach.");
+      }
+    });
+    T.body.appendChild(list.box);
+    const x=E.c;
+    function openStep2(){
+      st2=div("");T.body.appendChild(st2);
+      st2.appendChild(div("prompt","Bestimme nun die richtige Lösung. Runde auf zwei Nachkommastellen."));
+      fx=Field({aria:"richtige Lösung x"});st2.appendChild(frow("<i>x</i> ≈",fx));
+      brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));st2.appendChild(brow);
+      Dock.use([fx],check);
+      setTimeout(()=>{try{st2.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+      Dock.measure();
+    }
+    function check(){
+      if(T.over||!fx)return;
+      const v=fx.num();
+      if(isNaN(v)){T.say("hint","Trage eine Zahl ein.");return;}
+      if(Math.abs(v-x)<=0.0051){fx.lock("ok");T.say("ok","<b>Richtig.</b> "+E.ok);T.complete("");return;}
+      fx.state("no");T.miss();
+      T.say("hint","<b>Noch nicht.</b> "+(Math.abs(v-x)<=0.02?"Fast. Prüfe die Rundung.":(Math.abs(v-E.xc)<=0.02?"Das ist das fehlerhafte Ergebnis aus der Rechnung.":"Rechne die Gleichung noch einmal sauber von vorn.")));
+    }
+    const h=[];
+    h.push("Rechne die Schritte nach: Stimmt jede Umformung? Wo ändert sich plötzlich der Wert?");
+    h.push("Mache die Probe mit dem angegebenen "+X+" = "+mnum(E.xc,2)+": links ergibt sich ≈ "+mnum(E.L(E.xc),3)+", rechts ≈ "+mnum(E.R(E.xc),3)+".");
+    h.push(E.h3);
+    T.setHints(h,()=>{
+      if(!found){found=true;list.lock();list.els.forEach(o=>{if(o.it.ok)o.b.classList.add("chosen-ok");});openStep2();}
+      fx.set(num(x,2));fx.lock("ok");
+      T.say("sol","<b>Lösung:</b> "+E.ok+" "+M("<i>x</i> ≈ "+mnum(x,2)));
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   TRAINER 5 – Hat die Gleichung eine Lösung?
+   ========================================================= */
+const LS=(eq,t,why,x,h3,e)=>({eq:M(eq),t,why,x,h3,e:e?1:0});
+const LOES={
+  1:[LS(P2("3",X)+" = −9","none","Eine Potenz mit positiver Basis ist immer positiv. 3<sup>x</sup> kann nie −9 sein.",null,"Kann 3<sup>x</sup> negativ sein?",1),
+     LS(P2("2",X)+" = 0","none","Eine Potenz ist nie 0, auch nicht für sehr negative Exponenten.",null,"Wie klein kann 2<sup>x</sup> werden? Kann es genau 0 sein?",1),
+     LS(P2("5",X)+" = 125","one","125 = 5<sup>3</sup>, also x = 3.",3,"Mit welchem Exponenten wird aus 5 die Zahl 125?",1),
+     LS(P2("10",X)+" = 0,01","one","0,01 = 10<sup>−2</sup>, also x = −2.",-2,"0,01 = 1/100."),
+     LS(P2("0,5",X)+" = −2","none","Auch mit der Basis 0,5 bleibt jede Potenz positiv.",null,"Ist 0,5<sup>x</sup> je negativ?"),
+     LS(P2("4",X)+" = 0,25","one","0,25 = 1/4 = 4<sup>−1</sup>, also x = −1.",-1,"0,25 = 1/4."),
+     LS(P2("7",X)+" = 1","one","7<sup>0</sup> = 1, also x = 0.",0,"Welche Potenz ergibt immer 1?"),
+     LS(P2("6",X)+" = −0,5","none","Die Potenz ist immer positiv, rechts steht eine negative Zahl.",null,"Vergleiche die Vorzeichen auf beiden Seiten.")],
+  2:[LS("2 · "+P2("3",X)+" + 7 = 1","none","Es folgt 3<sup>x</sup> = −3, und das ist unmöglich.",null,"Forme auf a<sup>x</sup> = y um. Welches Vorzeichen hat y?"),
+     LS("4 · "+P2("2",X)+" − 8 = 0","one","4 · 2<sup>x</sup> = 8, also 2<sup>x</sup> = 2 und x = 1.",1,"Forme um zu 2<sup>x</sup> = y.",1),
+     LS(P2("6",X)+" + 5 · "+P2("3",X)+" = 0","none","Beide Summanden sind positiv, die Summe kann nicht 0 sein.",null,"Können positive Zahlen zusammen 0 ergeben?"),
+     LS("5 · "+P2("2",X)+" = 3 · "+P2("2",X),"none","Es folgt 2 · 2<sup>x</sup> = 0, und das ist unmöglich.",null,"Bringe alle Potenzen auf eine Seite."),
+     LS("3 · "+P2("5",X)+" − 15 = 0","one","3 · 5<sup>x</sup> = 15, also 5<sup>x</sup> = 5 und x = 1.",1,"Forme um zu 5<sup>x</sup> = y.",1),
+     LS("2 · "+P2("4",X)+" = 0,5","one","4<sup>x</sup> = 0,25 = 4<sup>−1</sup>, also x = −1.",-1,"Teile durch 2."),
+     LS(P2("7",X)+" + 2 = 1","none","Es folgt 7<sup>x</sup> = −1, und das ist unmöglich.",null,"Forme um zu 7<sup>x</sup> = y."),
+     LS("3 · "+P2("2",X)+" + 1 = 25","one","3 · 2<sup>x</sup> = 24, also 2<sup>x</sup> = 8 und x = 3.",3,"Erst −1, dann : 3.")],
+  3:[LS(P2("2",X)+" − "+P2("2",X+" + 1")+" = 0","none","Es gilt 2<sup>x+1</sup> = 2 · 2<sup>x</sup>, also steht links −2<sup>x</sup>. Das ist nie 0.",null,"Schreibe 2<sup>x+1</sup> als 2 · 2<sup>x</sup>."),
+     LS(P2("3",X+" + 1")+" = 3 · "+P2("3",X),"all","Es gilt 3<sup>x+1</sup> = 3 · 3<sup>x</sup>. Beide Seiten sind immer gleich.",null,"Schreibe 3<sup>x+1</sup> als 3 · 3<sup>x</sup>."),
+     LS("−3 · "+P2("0,5",X)+" + "+P2("7",X)+" = 0","one","7<sup>x</sup> = 3 · 0,5<sup>x</sup>, also 14<sup>x</sup> = 3 und x = log<sub>14</sub>(3).",lg(14,3),"Bringe −3 · 0,5<sup>x</sup> auf die andere Seite und teile durch 0,5<sup>x</sup>."),
+     LS(P2("4",X)+" + 3 · "+P2("2","2"+X)+" = 0","none","Es gilt 2<sup>2x</sup> = 4<sup>x</sup>, also steht links 4 · 4<sup>x</sup>, und das ist positiv.",null,"Schreibe 2<sup>2x</sup> als 4<sup>x</sup>."),
+     LS(P2("5",X+" + 1")+" = 2 · "+P2("5",X)+" + 3 · "+P2("5",X),"all","Rechts: 2 · 5<sup>x</sup> + 3 · 5<sup>x</sup> = 5 · 5<sup>x</sup> = 5<sup>x+1</sup>. Beide Seiten sind immer gleich.",null,"Fasse die Summe rechts zusammen."),
+     LS("2 · "+P2("5",X)+" = "+P2("3",X),"one","Es folgt (5/3)<sup>x</sup> = 1/2 und x = log<sub>5/3</sub>(1/2).",lg(5/3,.5),"Teile durch 3<sup>x</sup> und durch 2."),
+     LS(P2("2","2"+X)+" = "+P2("4",X),"all","Es gilt 2<sup>2x</sup> = (2<sup>2</sup>)<sup>x</sup> = 4<sup>x</sup>. Beide Seiten sind immer gleich.",null,"Schreibe 2<sup>2x</sup> mit der Basis 4.")]
+};
+TR.push({
+  id:"loes",name:"Lösbarkeit",art:"loes",noViz:true,
+  blurb:"Hat die Gleichung keine, genau eine oder jede Zahl als Lösung?",
+  levels:[{n:"Einfache Fälle"},{n:"Nach dem Umformen"},{n:"Auch Sonderfälle"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(LOES,lvl,stuetz),eff=PF.eff;
+    const E=pick(PF.pool,"loes"+eff+(stuetz?"s":""));
+    T.body.appendChild(div("prompt","Hat die Gleichung eine Lösung?"));
+    T.body.appendChild(div("eq",E.eq));
+    const opts=[{h:"Keine Lösung",v:"none"},{h:"Genau eine Lösung",v:"one"}];
+    if(eff===3)opts.push({h:"Jede Zahl <i class='m'>x</i> ist eine Lösung",v:"all"});
+    let fx=null,st2=null,found=false;
+    const list=OptList(T,opts,(it,b)=>{
+      if(it.v===E.t){
+        found=true;list.lock();b.classList.add("chosen-ok");
+        if(E.t==="one"){T.say("ok","<b>Richtig.</b> Es gibt genau eine Lösung. Bestimme sie.");openStep2();}
+        else{T.say("ok","<b>Richtig.</b> "+E.why);T.complete("");}
+      }else{
+        b.disabled=true;b.classList.add("chosen-no");T.miss();
+        let m;
+        if(E.t==="none")m="Prüfe, ob die Gleichung wirklich aufgehen kann: Eine Potenz mit positiver Basis ist immer positiv.";
+        else if(E.t==="one")m="Doch, es gibt eine Lösung. Forme auf <span class='mf'>a<sup><i>x</i></sup> = y</span> um. Ist <i>y</i> positiv?";
+        else m="Vereinfache beide Seiten. Was fällt auf?";
+        T.say("hint","<b>Noch nicht.</b> "+m);
+      }
+    });
+    T.body.appendChild(list.box);
+    function openStep2(){
+      st2=div("");T.body.appendChild(st2);
+      st2.appendChild(div("prompt",E.x!==null&&Math.abs(E.x-Math.round(E.x))>1e-9?"Bestimme die Lösung. Runde auf zwei Nachkommastellen.":"Bestimme die Lösung."));
+      fx=Field({aria:"Lösung x"});st2.appendChild(frow("<i>x</i> ≈",fx));
+      const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));st2.appendChild(brow);
+      Dock.use([fx],check);
+      setTimeout(()=>{try{st2.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+      Dock.measure();
+    }
+    function check(){
+      if(T.over||!fx)return;
+      const v=fx.num();
+      if(isNaN(v)){T.say("hint","Trage eine Zahl ein.");return;}
+      if(Math.abs(v-E.x)<=0.0051){fx.lock("ok");T.say("ok","<b>Richtig.</b> "+E.why);T.complete("");return;}
+      fx.state("no");T.miss();
+      T.say("hint","<b>Noch nicht.</b> "+(Math.abs(v-E.x)<=0.02?"Fast. Prüfe die Rundung.":"Forme noch einmal auf <span class='mf'>a<sup><i>x</i></sup> = y</span> um und bilde dann den Logarithmus."));
+    }
+    const h=["Eine Potenz <span class='mf'>a<sup><i>x</i></sup></span> mit <span class='mf'>a &gt; 0</span> ist immer positiv. Kann die Gleichung dann aufgehen?",
+             "Forme so um, dass <span class='mf'>a<sup><i>x</i></sup> = y</span> dasteht. Hat diese Gleichung für <i>y</i> eine Lösung? Das gilt nur für <span class='mf'>y &gt; 0</span>.",
+             E.h3];
+    T.setHints(h,()=>{
+      if(!found){found=true;list.lock();list.els.forEach(o=>{if(o.it.v===E.t)o.b.classList.add("chosen-ok");});if(E.t==="one")openStep2();}
+      if(fx){fx.set(num(E.x,2));fx.lock("ok");}
+      T.say("sol","<b>Lösung:</b> "+E.why);
+      T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   ZUSATZ – Logarithmische Skala (optional, nicht im Tagesziel)
+   ========================================================= */
+function bigT(v){
+  v=r6(v);
+  if(v>=10000)return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,"\u202f");
+  return mnum(v,4);
+}
+function scaleSVG(o){
+  const W=720,H=o.numbered?142:122,padL=46,padR=46,y0=64,span=o.pmax-o.pmin;
+  const X=(p)=>padL+(p-o.pmin)/span*(W-padL-padR);
+  const val=(p)=>o.v0*Math.pow(o.base,p);
+  let longest=0;
+  for(let p=o.pmin;p<=o.pmax;p++){if(o.labeled(p))longest=Math.max(longest,bigT(val(p)).length);}
+  const fs=longest>6?15:longest>5?16:19;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Skala mit gleichmäßig verteilten Strichen">';
+  s+='<line x1="14" y1="'+y0+'" x2="'+(W-18)+'" y2="'+y0+'" stroke="#243b5e" stroke-width="2.4"/>';
+  s+='<polygon points="'+(W-8)+','+y0+' '+(W-20)+','+(y0-6)+' '+(W-20)+','+(y0+6)+'" fill="#243b5e"/>';
+  for(let p=o.pmin;p<=o.pmax;p++){
+    const x=X(p);
+    s+='<line x1="'+x+'" y1="'+(y0-12)+'" x2="'+x+'" y2="'+(y0+12)+'" stroke="#243b5e" stroke-width="2.4"/>';
+    if(o.labeled(p))s+='<text x="'+x+'" y="'+(y0+36)+'" text-anchor="middle" font-family="'+FF+'" font-size="'+fs+'" font-weight="600" fill="#12233f">'+bigT(val(p)).replace(/\u202f/g," ")+'</text>';
+    if(o.numbered)s+='<text x="'+x+'" y="'+(y0+58)+'" text-anchor="middle" font-family="'+FF+'" font-size="13" fill="#8a9ab1">Strich '+mnum(p,0)+'</text>';
+  }
+  if(o.pointer!==null&&o.pointer!==undefined){
+    const x=X(o.pointer);
+    s+='<line x1="'+x+'" y1="14" x2="'+x+'" y2="'+(y0-8)+'" stroke="#d1432d" stroke-width="3.4" stroke-linecap="round"/>';
+    s+='<polygon points="'+x+','+(y0-3)+' '+(x-8)+','+(y0-18)+' '+(x+8)+','+(y0-18)+'" fill="#d1432d"/>';
+    s+='<text x="'+(x+12)+'" y="26" font-family="'+FF+'" font-size="17" font-weight="700" fill="#9b2c1f">'+(o.pointerText||"?")+'</text>';
+  }
+  return s+'</svg>';
+}
+const SKA=(base,v0,lab,p,easy)=>({mode:"val",base,v0,lab,p,e:easy?1:0});
+const SKB=(base,v0,lab,p)=>({mode:"fac",base,v0,lab,p,e:0});
+const SKR=(p)=>({mode:"read",base:10,v0:1,p,e:0});
+const SKP=(v)=>({mode:"place",base:10,v0:1,v,e:0});
+const SKALA={
+  1:[SKA(10,1,[0,1,2],4,1),SKA(10,1,[0,1,2],3,1),SKA(10,1,[0,1,2],5),SKA(10,1,[0,1,2],6),SKA(10,1,[0,1,2],-2),SKA(10,1,[0,1,2],-3),SKA(10,1,[1,2,3],-1),SKA(10,.001,[0,1,2],5)],
+  2:[SKB(2,3,[0,1],5),SKB(3,2,[0,1],4),SKB(5,4,[0,1],3),SKB(4,1.5,[0,1],4),SKB(2,5,[1,2],6),SKB(10,5,[0,1],4),SKB(3,.5,[0,1],5),SKB(2,3,[3,4],0)],
+  3:[SKR(.5),SKR(1.5),SKR(2.5),SKR(3.5),SKP(500),SKP(20),SKP(8000),SKP(70),SKP(300),SKP(.5)]
+};
+TR.push({
+  id:"skala",name:"Logarithmische Skala",art:"skala",noViz:true,optional:true,
+  blurb:"Werte auf einer Skala ablesen, bei der jeder Strich das Vielfache des letzten ist.",
+  levels:[{n:"Striche zählen"},{n:"Andere Faktoren"},{n:"Zwischen den Strichen"}],
+  start(T,lvl,stuetz){
+    const PF=poolFor(SKALA,lvl,stuetz),eff=PF.eff;
+    const it=pick(PF.pool,"skala"+eff+(stuetz?"s":""));
+    const val=(p)=>r6(it.v0*Math.pow(it.base,p));
+    T.body.appendChild(div("optnote","<b>Optional.</b> Zusatzaufgaben für Schnelle und Interessierte. Sie zählen nicht zum Tagesziel."));
+    const host=div("boardwrap");T.body.appendChild(host);
+    let pmin,pmax,labeled,numbered=false,pointer=null,ptext="?";
+    if(it.mode==="val"||it.mode==="fac"){
+      const all=it.lab.concat([it.p]);pmin=Math.min.apply(null,all);pmax=Math.max.apply(null,all);
+      labeled=(p)=>it.lab.indexOf(p)>=0;
+      pointer=it.p;
+    }else if(it.mode==="read"){
+      pmin=Math.floor(it.p)-1;pmax=Math.ceil(it.p)+1;labeled=()=>true;numbered=true;pointer=it.p;
+    }else{
+      pmin=-1;pmax=4;labeled=()=>true;numbered=true;pointer=null;
+    }
+    let allLab=false;
+    function draw(){host.innerHTML=scaleSVG({base:it.base,v0:it.v0,pmin,pmax,labeled:(p)=>allLab||labeled(p),numbered,pointer,pointerText:ptext});}
+    const fld={};
+    let ans,prompt,cap;
+    if(it.mode==="val"){
+      ans=val(it.p);
+      prompt="Welcher Wert gehört zum roten Pfeil?";
+      cap="Die Striche liegen gleich weit auseinander. Von Strich zu Strich wird der Wert mit <b>10</b> multipliziert.";
+    }else if(it.mode==="fac"){
+      ans=val(it.p);
+      prompt="Bestimme den Faktor von Strich zu Strich und den Wert am roten Pfeil.";
+      cap="Die Striche liegen gleich weit auseinander. Von Strich zu Strich wird immer mit demselben Faktor multipliziert.";
+    }else if(it.mode==="read"){
+      ans=Math.pow(10,it.p);
+      prompt="Welcher Wert gehört zum roten Pfeil? Er steht genau in der Mitte zwischen zwei Strichen. Runde auf drei gültige Ziffern.";
+      cap="Von Strich zu Strich wird mit 10 multipliziert. Die Striche sind von 0 an nummeriert.";
+    }else{
+      ans=Math.log10(it.v);
+      prompt="Der Wert <b>"+bigT(it.v)+"</b> soll auf der Skala eingetragen werden. Bei welcher Strichnummer liegt er? Runde auf eine Nachkommastelle.";
+      cap="Von Strich zu Strich wird mit 10 multipliziert. Die Striche sind von 0 an nummeriert.";
+    }
+    T.body.insertBefore(div("prompt",prompt),host);
+    T.body.appendChild(div("figcap",cap));
+    draw();
+    if(it.mode==="fac"){fld.f=Field({aria:"Faktor pro Strich"});T.body.appendChild(frow("Faktor pro Strich =",fld.f));}
+    fld.v=Field({aria:it.mode==="place"?"Strichnummer":"Wert am Pfeil"});
+    T.body.appendChild(frow(it.mode==="place"?"Strichnummer <i>p</i> ≈":"Wert am Pfeil ≈",fld.v));
+    const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+    const all=fld.f?[fld.f,fld.v]:[fld.v];Dock.use(all,check);
+    function finish(){
+      allLab=true;
+      if(it.mode==="place"){pointer=ans;ptext=bigT(it.v);}
+      else ptext=bigT(ans);
+      draw();
+    }
+    function check(){
+      if(T.over)return;
+      const v=fld.v.num(),f=fld.f?fld.f.num():null;
+      if(isNaN(v)||(fld.f&&isNaN(f))){T.say("hint","Trage in jedes Feld eine Zahl ein.");return;}
+      let okV,okF=true;
+      if(it.mode==="place")okV=Math.abs(v-ans)<=0.0601;
+      else if(it.mode==="read")okV=relOK(v,ans,.03);
+      else okV=Math.abs(v-ans)<=1e-6*Math.max(1,Math.abs(ans));
+      if(fld.f){okF=Math.abs(f-it.base)<1e-9;fld.f.state(okF?"ok":"no");}
+      fld.v.state(okV?"ok":"no");
+      if(okV&&okF){
+        all.forEach(x=>x.lock("ok"));
+        let msg;
+        if(it.mode==="place")msg="<b>Richtig.</b> "+M("log<sub>10</sub>("+bigT(it.v)+") ≈ "+mnum(ans,2))+". Der Wert liegt bei Strich "+mnum(ans,1)+".";
+        else if(it.mode==="read")msg="<b>Richtig.</b> "+M("10<sup>"+mnum(it.p,1)+"</sup> ≈ "+mnum(ans,it.p>=2?0:1))+". In der Mitte zwischen den Strichen liegt nicht der Mittelwert der beiden Zahlen, sondern ihr geometrisches Mittel.";
+        else msg="<b>Richtig.</b> "+M(bigT(ans))+" "+(it.mode==="fac"?"(Faktor "+mnum(it.base,0)+" pro Strich).":"");
+        T.say("ok",msg);finish();T.complete("");return;
+      }
+      T.miss();
+      let msg;
+      if(it.mode==="place"){
+        if(Math.abs(v-ans)<=0.15)msg="Fast. Prüfe die Rundung auf eine Nachkommastelle.";
+        else if(Math.abs(v-it.v)<1e-9)msg="Das ist der Wert selbst. Gesucht ist die <b>Strichnummer</b> von 0 an.";
+        else msg="Probe mit Strich "+mnum(v,1)+": Dort liegt der Wert "+bigT(Math.pow(10,v))+", gesucht ist "+bigT(it.v)+".";
+      }else if(it.mode==="read"){
+        const lo=Math.pow(10,Math.floor(it.p)),hi=Math.pow(10,Math.ceil(it.p));
+        if(relOK(v,(lo+hi)/2,.03))msg="Das ist der Mittelwert von "+bigT(lo)+" und "+bigT(hi)+". Auf dieser Skala liegt in der Mitte der Striche aber der Wert <span class='mf'>10<sup>"+mnum(it.p,1)+"</sup></span>.";
+        else if(v<=lo||v>=hi)msg="Der Wert muss zwischen "+bigT(lo)+" und "+bigT(hi)+" liegen.";
+        else msg="Der Wert liegt zwischen "+bigT(lo)+" und "+bigT(hi)+". Zu Strich <i>p</i> gehört <span class='mf'>10<sup><i>p</i></sup></span>.";
+      }else{
+        if(it.mode==="fac"&&!okF){
+          const labs=it.lab.slice().sort((a,b)=>a-b),d=val(labs[1])-val(labs[0]);
+          msg=Math.abs(f-d)<1e-9?"Das ist die Differenz der beiden Beschriftungen. Von Strich zu Strich wird <b>multipliziert</b>, der Faktor ist der Quotient.":"Teile die größere Beschriftung durch die benachbarte kleinere.";
+        }else if(Math.abs(v-it.p)<1e-9||Math.abs(v-(it.p-it.lab[0]))<1e-9)msg="Das ist die Anzahl der Striche, nicht der Wert.";
+        else{
+          msg="Zähle die Striche von einer beschrifteten Zahl bis zum Pfeil. Pro Strich nach rechts wird mit dem Faktor multipliziert, nach links geteilt.";
+        }
+      }
+      T.say("hint","<b>Noch nicht.</b> "+msg);
+    }
+    const h=[];
+    if(it.mode==="val"){
+      h.push("Von Strich zu Strich wird mit 10 multipliziert. Zähle, wie viele Striche der Pfeil von einer beschrifteten Zahl entfernt ist.");
+      h.push("<i>k</i> Striche nach rechts bedeuten: <i>k</i>-mal mit 10 multiplizieren. Nach links wird <i>k</i>-mal durch 10 geteilt.");
+    }else if(it.mode==="fac"){
+      h.push("Der Faktor von Strich zu Strich ist der <b>Quotient</b> zweier benachbarter Beschriftungen.");
+      h.push("Zähle die Striche von einer Beschriftung bis zum Pfeil, das ist der Exponent: Wert = Beschriftung · Faktor<sup>Anzahl der Striche</sup>. Nach links wird geteilt.");
+    }else if(it.mode==="read"){
+      h.push("Der Pfeil steht bei Strich <b>"+mnum(it.p,1)+"</b>. Zu Strich <i>p</i> gehört der Wert <span class='mf'>10<sup><i>p</i></sup></span>.");
+      h.push("Berechne <span class='mf'>10<sup>"+mnum(it.p,1)+"</sup></span> mit dem Taschenrechner.");
+    }else{
+      h.push("Gesucht ist die Strichnummer <i>p</i> mit <span class='mf'>10<sup><i>p</i></sup> = "+bigT(it.v)+"</span>.");
+      h.push("Das ist der Logarithmus zur Basis 10: <span class='mf'><i>p</i> = log<sub>10</sub>("+bigT(it.v)+")</span>. Berechne ihn mit dem Taschenrechner.");
+    }
+    if(it.mode==="read")h.push("Probe: <span class='mf'>10<sup>"+mnum(Math.floor(it.p),0)+"</sup> = "+bigT(Math.pow(10,Math.floor(it.p)))+"</span> und <span class='mf'>10<sup>"+mnum(Math.ceil(it.p),0)+"</sup> = "+bigT(Math.pow(10,Math.ceil(it.p)))+"</span>. Der Wert liegt dazwischen, aber nicht beim Mittelwert "+bigT((Math.pow(10,Math.floor(it.p))+Math.pow(10,Math.ceil(it.p)))/2)+".");
+    else if(it.mode==="place"){const lo=Math.floor(Math.log10(it.v));h.push("Strich "+mnum(lo,0)+" gehört zu "+bigT(Math.pow(10,lo))+", Strich "+mnum(lo+1,0)+" zu "+bigT(Math.pow(10,lo+1))+". Der Wert liegt dazwischen. Die Mitte "+mnum(lo+.5,1)+" gehört zu ≈ "+bigT(Math.round(Math.pow(10,lo+.5)*100)/100)+".");}
+    else h.push({t:"Alle Striche sind jetzt beschriftet.",fn:()=>{allLab=true;draw();}});
+    T.setHints(h,()=>{
+      if(fld.f){fld.f.set(num(it.base,4));}
+      fld.v.set(it.mode==="place"?num(ans,1):it.mode==="read"?num(ans,it.p>=2?0:1):num(ans,4));
+      all.forEach(x=>x.lock("ok"));
+      T.say("sol","<b>Lösung:</b> "+(it.mode==="place"?M("<i>p</i> = log<sub>10</sub>("+bigT(it.v)+") ≈ "+mnum(ans,2)):M(bigT(ans))));
+      finish();T.complete("");
+    });
+  }
+});
+
+/* =========================================================
+   Start
+   ========================================================= */
+loadProgress();
+showHalle();
+</script>
+</body>
+</html>
