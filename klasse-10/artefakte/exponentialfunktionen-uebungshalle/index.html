@@ -1127,7 +1127,10 @@ TR.push({
     function draw(){
       const p=cur();
       B.reset();
-      B.curve(x=>t.b*pw(t.a,x),B.xmin,B.xmax,{color:"#c9770f",w:3.4,dash:"10 8"});
+      /* Gestrichelt: in Stufe 1 und 2 die Zielkurve (t), in Stufe 3 die GEGEBENE Kurve (orig).
+         Das Spiegelbild t ist dort die Lösung und wird nur als grüne Hilfe (ghost) gezeigt. */
+      const shown=(eff===3&&orig)?orig:t;
+      B.curve(x=>shown.b*pw(shown.a,x),B.xmin,B.xmax,{color:"#c9770f",w:3.4,dash:"10 8"});
       if(ghost){B.curve(x=>t.b*pw(t.a,x),B.xmin,B.xmax,{color:"#1e7a4d",w:3.6,dash:"2 7"});}
       B.curve(x=>p.b*pw(p.a,x),B.xmin,B.xmax,{color:"#1f6fb2",w:3.9});
       const top=B.ymax-0.6;
