@@ -333,6 +333,8 @@ table.tb th.rh{background:var(--ink);color:#fff;font-style:italic;text-align:cen
 table.tb tr.xr td{background:var(--blue-soft)}
 table.tb tr.arr td{border-bottom:0;padding:0 4px;background:#fff;font:600 .86rem var(--sans);color:var(--amber);height:26px}
 table.tb tr.arr th{background:var(--ink);border-bottom:0}
+table.tb td.gap{background:var(--blue-soft);color:var(--blue)}
+table.tb td.new{background:var(--ok-soft);color:var(--ok)}
 
 /* ---------- Fehlerdetektiv ---------- */
 .stud{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
@@ -786,7 +788,7 @@ function resetProgress(){
 let CUR=null;
 function Task(tr,lvl,stuetz){
   const T=this;
-  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
+  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.exUsed=false;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
   const host=$("taskhost");host.innerHTML="";Dock.off();
   if(stuetz)host.appendChild(div("banner","<b>Stützaufgabe.</b> Diese Aufgabe ist etwas leichter, damit du wieder in Schwung kommst. Sie zählt nicht für die Stufe."));
   const card=div("card");host.appendChild(card);
@@ -840,7 +842,9 @@ Task.prototype.complete=function(extraHtml){
   if(T.hideHelp)T.hideHelp();
   Dock.off();
   DAY.done[T.tr.id]=true;
-  const clean=!T.solShown&&T.helpN<=1&&T.wrong<=2;
+  /* Die Beispielaufgabe zählt wie ein Hinweis. */
+  const helps=T.helpN+(T.exUsed?1:0);
+  const clean=!T.solShown&&helps<=1&&T.wrong<=2;
   const r=Prog.record(T.tr.id,T.lvl,clean,T.stuetz);
   T.res.innerHTML="";
   let msg;
@@ -992,7 +996,7 @@ function showHalle(){
     tiles.appendChild(b);
   });
   wrap.appendChild(tiles);
-  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einem Hinweis, ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe schaltet die nächste Stufe frei. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Deine freigeschalteten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
+  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einer Hilfe (ein Hinweis oder die Beispielaufgabe), ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe schaltet die nächste Stufe frei. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Deine freigeschalteten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
   const rr=div("resetrow");
   const lk=mkbtn("linkbtn","Fortschritt zurücksetzen",()=>{
     rr.innerHTML="";
@@ -1221,64 +1225,159 @@ const DET={
 };
 function ptLabel(n,x,y){return n+"("+mnum(x,4)+" | "+mnum(y,4)+")";}
 
-/* Alternativer Weg: Gleichungssystem (Punkte-Detektiv ab Stufe 2) */
+/* =========================================================
+   Beispielaufgaben (Hilfe ab Stufe 2) für Punkte-Detektiv und Tabellen-Rätsel
+   Vorgehen: 1. Wachstumsfaktor a aus den y-Werten, 2. b durch Einsetzen eines Punktes
+   (entfällt, wenn f(0) schon gegeben ist). Es wird ein Beispiel mit anderen Zahlen gewählt,
+   das in Schrittzahl d, Lage von b und Vorzeichen zur Aufgabe passt.
+   ========================================================= */
 function frac(n,d){return '<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';}
 function eqLine(){return '<div class="eq">'+Array.prototype.slice.call(arguments).map(p=>'<span class="mf">'+p+'</span>').join(" ")+'</div>';}
-function altSteps(t,x1,y1,x2,y2){
-  const d=x2-x1,r=r6(y2/y1),A=mnum(t.a),B=mnum(t.b);
-  const X=mnum;
-  const Xp=(x)=>x<0?"("+X(x)+")":X(x);
-  const ba=baseHTML(t.a);
-  const pa=r6(pw(t.a,x1));
-  const S=[];
-  /* 1 */
-  S.push({t:"Beide Punkte einsetzen",h:
-    '<p>Beide Punkte liegen auf dem Graphen von <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Ihre Koordinaten erfüllen also die Funktionsgleichung:</p>'+
-    eqLine('<i>y</i><sub>1</sub> = <i>b</i> · <i>a</i><sup><i>x</i><sub>1</sub></sup>')+
-    eqLine('<i>y</i><sub>2</sub> = <i>b</i> · <i>a</i><sup><i>x</i><sub>2</sub></sup>')+
-    '<p>Mit den Zahlen der Aufgabe, <span class="mf nb">P('+X(x1)+' | '+X(y1)+')</span> und <span class="mf nb">Q('+X(x2)+' | '+X(y2)+')</span>, entstehen zwei Gleichungen mit den Unbekannten <i>b</i> und <i>a</i>:</p>'+
-    eqLine('(I)','<span class="nb">'+X(y1)+' = <i>b</i> · <i>a</i><sup>'+X(x1)+'</sup></span>')+
-    eqLine('(II)','<span class="nb">'+X(y2)+' = <i>b</i> · <i>a</i><sup>'+X(x2)+'</sup></span>')+
-    '<p>Das ist ein Gleichungssystem.</p>'});
-  /* 2 */
-  let s2='<p>Wenn wir die zweite Gleichung durch die erste teilen, fällt <i>b</i> weg:</p>'+
-    eqLine(frac('<i>y</i><sub>2</sub>','<i>y</i><sub>1</sub>')+' = '+frac('<i>b</i> · <i>a</i><sup><i>x</i><sub>2</sub></sup>','<i>b</i> · <i>a</i><sup><i>x</i><sub>1</sub></sup>')+' = <i>a</i><sup><i>x</i><sub>2</sub> − <i>x</i><sub>1</sub></sup>')+
-    '<p>Mit den Zahlen der Aufgabe:</p>'+
-    eqLine(frac(X(y2),X(y1))+' = '+frac('<i>b</i> · <i>a</i><sup>'+X(x2)+'</sup>','<i>b</i> · <i>a</i><sup>'+X(x1)+'</sup>')+' = <i>a</i><sup>'+X(x2)+' − '+Xp(x1)+'</sup>'+(d===1?' = <i>a</i>':' = <i>a</i><sup>'+d+'</sup>'));
-  if(d===1){
-    s2+=eqLine('<i>a</i> = '+X(r))+'<p>Weil zwischen den Punkten genau ein Schritt liegt, ist dieser Quotient direkt der Faktor <i>a</i> = '+A+'.</p>';
-  }else{
-    s2+=eqLine(X(r)+' = <i>a</i><sup>'+d+'</sup>')+
-      eqLine('<i>a</i> = '+(d===2?'√':'<sup>'+d+'</sup>√')+X(r)+' = '+A);
-    if(d%2===0)s2+='<p>Die Gleichung <span class="mf"><i>a</i><sup>'+d+'</sup> = '+X(r)+'</span> hat die Lösungen '+A+' und −'+A+'. Da für Exponentialfunktionen <span class="mf"><i>a</i> &gt; 0</span> gilt, wird nur <span class="mf"><i>a</i> = '+A+'</span> verwendet.</p>';
-    else s2+='<p>Die Gleichung <span class="mf"><i>a</i><sup>'+d+'</sup> = '+X(r)+'</span> hat die Lösung <span class="mf"><i>a</i> = '+A+'</span>. Sie erfüllt <span class="mf"><i>a</i> &gt; 0</span>.</p>';
+
+/* Beispiele für den Punkte-Detektiv: Punkte bei x[0] und x[1] */
+const EX_DET=[
+  {a:4,b:3,x:[0,1]},{a:5,b:2,x:[1,2]},{a:0.5,b:24,x:[2,3]},
+  {a:5,b:2,x:[0,2]},{a:0.5,b:20,x:[0,2]},{a:3,b:-4,x:[0,2]},
+  {a:3,b:4,x:[1,3]},{a:5,b:2,x:[1,3]},{a:0.5,b:16,x:[2,4]},{a:2,b:-5,x:[1,3]},
+  {a:3,b:6,x:[-1,1]},{a:0.5,b:8,x:[-1,1]},{a:0.5,b:-24,x:[-1,1]},
+  {a:2,b:3,x:[0,3]},{a:2,b:5,x:[1,4]},{a:2,b:12,x:[-2,1]},{a:0.5,b:16,x:[-1,2]},
+  {a:2,b:3,x:[0,4]},{a:2,b:3,x:[2,6]},{a:2,b:16,x:[-2,2]},{a:0.5,b:20,x:[-2,2]}
+];
+/* Beispiele für das Tabellen-Rätsel: Gesamttabelle xs, Lücken an den Positionen hide */
+const EX_TAB=[
+  {a:5,b:2,xs:[0,1,2,3,4],hide:[2,4]},
+  {a:3,b:4,xs:[0,1,2,3,4],hide:[1,3]},
+  {a:2,b:-3,xs:[0,1,2,3,4],hide:[1,3]},
+  {a:2,b:5,xs:[-2,-1,0,1,2],hide:[1,2]},
+  {a:4,b:2,xs:[1,3,4,5],hide:[2,3]},
+  {a:3,b:-2,xs:[1,3,4,5],hide:[2,3]},
+  {a:3,b:6,xs:[-1,1,2,3],hide:[2,3]},
+  {a:2,b:3,xs:[0,3,4,5],hide:[2,3]},
+  {a:2,b:5,xs:[1,4,5,6],hide:[2,3]},
+  {a:3,b:2,xs:[0,4,5,6],hide:[2,3]},
+  {a:0.5,b:20,xs:[-3,1,2,3],hide:[2,3]}
+];
+/* Aus einer Aufgabe oder einem Beispiel: das Punktepaar, mit dem gerechnet wird.
+   Tabelle: die beiden bekannten Werte mit dem kleinsten Abstand. */
+function exDerive(e){
+  let x1,x2,bg;
+  if(e.x){x1=e.x[0];x2=e.x[1];bg=(x1===0||x2===0);}
+  else{
+    const kn=[];
+    e.xs.forEach((x,i)=>{if(e.hide.indexOf(i)<0)kn.push(x);});
+    let best=1e9;x1=kn[0];x2=kn[1];
+    for(let u=0;u<kn.length;u++)for(let v=u+1;v<kn.length;v++){
+      const g=kn[v]-kn[u];if(g<best){best=g;x1=kn[u];x2=kn[v];}
+    }
+    bg=kn.indexOf(0)>=0;
   }
-  S.push({t:"Gleichungen dividieren und a bestimmen",h:s2});
-  /* 3 */
-  S.push({t:"a einsetzen und b bestimmen",h:
-    '<p>Jetzt setzen wir <span class="mf"><i>a</i> = '+A+'</span> in eine der beiden Gleichungen ein, zum Beispiel in (I):</p>'+
-    eqLine('<span class="nb">'+X(y1)+' = <i>b</i> · '+ba+'<sup>'+X(x1)+'</sup></span>')+
-    eqLine('<span class="nb">'+X(y1)+' = <i>b</i> · '+X(pa)+'</span>')+
-    eqLine('<i>b</i> = '+frac(X(y1),X(pa))+' = '+B)});
-  /* 4 */
-  S.push({t:"Funktionsterm angeben",h:
-    '<p>Mit <span class="mf"><i>b</i> = '+B+'</span> und <span class="mf"><i>a</i> = '+A+'</span> lautet der Funktionsterm:</p>'+
-    '<div class="eq">'+fnHTML(t.b,t.a)+'</div>'+
-    '<p class="small">Probe mit Q: <span class="mf nb"><i>f</i>('+X(x2)+') = '+B+' · '+ba+'<sup>'+X(x2)+'</sup> = '+X(y2)+'</span></p>'});
+  return {a:e.a,b:e.b,x1:x1,x2:x2,bg:bg,d:x2-x1};
+}
+function pickExample(pool,task){
+  const f=exDerive(task);
+  let best=-1,cands=[];
+  pool.forEach(e=>{
+    const k=exDerive(e);
+    if(k.a===f.a&&k.b===f.b&&k.x1===f.x1&&k.x2===f.x2)return;
+    const s=(k.d===f.d?16:0)+(k.bg===f.bg?8:0)+((k.x1<0)===(f.x1<0)?4:0)+((k.b<0)===(f.b<0)?2:0)+(k.a!==f.a?1:0);
+    if(s>best){best=s;cands=[e];}else if(s===best)cands.push(e);
+  });
+  return cands[Math.floor(Math.random()*cands.length)];
+}
+function exTableHTML(e,filled){
+  let xr='<tr class="xr"><th class="rh"><i>x</i></th>',yr='<tr><th class="rh"><i>f</i>(<i>x</i>)</th>';
+  e.xs.forEach((x,i)=>{
+    xr+='<td>'+mnum(x)+'</td>';
+    const y=r6(e.b*pw(e.a,x)),h=e.hide.indexOf(i)>=0;
+    yr+=h?(filled?'<td class="new">'+mnum(y)+'</td>':'<td class="gap">?</td>'):'<td>'+mnum(y)+'</td>';
+  });
+  return '<div class="tblwrap"><table class="tb">'+xr+'</tr>'+yr+'</tr></table></div>';
+}
+const powH=(base,n)=>n===1?base:base+'<sup>'+n+'</sup>';
+function exSteps(e){
+  const k=exDerive(e),tab=!!e.xs;
+  const a=e.a,b=e.b,x1=k.x1,x2=k.x2,d=k.d;
+  const y1=r6(b*pw(a,x1)),y2=r6(b*pw(a,x2)),r=r6(y2/y1);
+  const X=mnum,Xp=(x)=>x<0?"("+X(x)+")":X(x);
+  const A=X(a),B=X(b);
+  const S=[];
+  /* 0: Aufgabe */
+  if(tab)S.push({t:"Aufgabe",h:'<p>Die Tabelle gehört zu <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Gesucht sind <i>b</i> und <i>a</i>. Die Lücken füllen wir am Schluss.</p>'+exTableHTML(e,false)});
+  else S.push({t:"Aufgabe",h:'<p>Die Punkte <span class="mf nb">'+ptLabel("P",x1,y1)+'</span> und <span class="mf nb">'+ptLabel("Q",x2,y2)+'</span> liegen auf dem Graphen von <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>. Gesucht sind <i>b</i> und <i>a</i>.</p>'});
+  /* 1: Schritte zählen */
+  const pre=tab?'<p>Wir nehmen zwei bekannte Werte: <span class="mf nb"><i>f</i>('+X(x1)+') = '+X(y1)+'</span> und <span class="mf nb"><i>f</i>('+X(x2)+') = '+X(y2)+'</span>.</p>':'';
+  S.push({t:"Schritte zwischen den x-Werten zählen",h:pre+
+    '<p>Der Abstand der <i>x</i>-Werte ist die Zahl der Schritte nach rechts:</p>'+
+    eqLine('<i>d</i> = '+X(x2)+' − '+Xp(x1)+' = '+d)+
+    '<p>Bei jedem Schritt nach rechts wird der <i>y</i>-Wert mit <i>a</i> multipliziert. '+(d===1?'Hier ist es ein Schritt:':'Hier sind es '+d+' Schritte, also '+d+'-mal:')+'</p>'+
+    eqLine('<i>y</i><sub>2</sub> = <i>y</i><sub>1</sub> · <i>a</i>'+(d===1?'':'<sup>'+d+'</sup>'))+
+    eqLine(X(y2)+' = '+X(y1)+' · <i>a</i>'+(d===1?'':'<sup>'+d+'</sup>'))});
+  /* 2: Wachstumsfaktor a */
+  let s3='<p>Wir teilen beide Seiten durch '+X(y1)+':</p>';
+  if(d===1){
+    s3+=eqLine('<i>a</i> = '+X(y2)+' : '+Xp(y1)+' = '+A);
+  }else{
+    const rootName=d===2?"Quadratwurzel":d===3?"dritte Wurzel":"vierte Wurzel";
+    const rootSym=d===2?"√":"<sup>"+d+"</sup>√";
+    const rt=Number.isInteger(r)?X(r):"("+X(r)+")";
+    s3+=eqLine('<i>a</i><sup>'+d+'</sup> = '+X(y2)+' : '+Xp(y1)+' = '+X(r))+
+      '<p>Jetzt ziehen wir die '+rootName+':</p>'+
+      eqLine('<i>a</i> = '+rootSym+rt+' = '+A);
+    if(d%2===0)s3+='<p>Die Gleichung hat auch die Lösung −'+A+'. Weil bei Exponentialfunktionen <span class="mf"><i>a</i> &gt; 0</span> gilt, zählt nur '+A+'.</p>';
+    s3+='<p class="small">Probe: <span class="mf nb">'+A+'<sup>'+d+'</sup> = '+X(r)+'</span></p>';
+  }
+  if(y1<0)s3+='<p class="small">Beide <i>y</i>-Werte sind negativ. Der Quotient ist trotzdem positiv, denn Minus durch Minus ergibt Plus.</p>';
+  S.push({t:"Wachstumsfaktor a bestimmen",h:s3});
+  /* 3: b */
+  if(k.bg){
+    S.push({t:"b bestimmen",h:'<p>'+(tab?'Bei <span class="mf"><i>x</i> = 0</span> steht in der Tabelle der Wert '+B+'.':'Ein Punkt liegt auf der <i>y</i>-Achse, nämlich <span class="mf nb">(0 | '+B+')</span>.')+' Dieser Wert ist <span class="mf"><i>b</i> = <i>f</i>(0)</span>:</p>'+eqLine('<i>b</i> = '+B)+'<p>Das Einsetzen entfällt hier, weil <i>f</i>(0) schon gegeben ist.</p>'});
+  }else{
+    const pa=r6(pw(a,x1)),pd=X(r6(pw(a,Math.abs(x1))));
+    let h='<p>Jetzt setzen wir einen bekannten Punkt in <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> ein, zum Beispiel '+(tab?'<span class="mf nb"><i>f</i>('+X(x1)+') = '+X(y1)+'</span>':'<span class="mf nb">P('+X(x1)+' | '+X(y1)+')</span>')+', und lösen nach <i>b</i> auf. Für <i>a</i> nehmen wir '+A+':</p>';
+    h+=eqLine(X(y1)+' = <i>b</i> · '+powH(A,x1===1?1:X(x1)).replace('<sup>1</sup>',''));
+    if(x1<0){
+      const den=powH(A,-x1);
+      h+='<p>Ein negativer Exponent bedeutet den Kehrwert:</p>';
+      if(a>1){
+        h+=eqLine(A+'<sup>'+X(x1)+'</sup> = '+frac('1',den)+(den!==pd?' = '+frac('1',pd):''));
+        h+=eqLine(X(y1)+' = <i>b</i> · '+frac('1',pd));
+        h+='<p>Durch einen Bruch teilt man, indem man mit dem Kehrwert multipliziert:</p>';
+        h+=eqLine('<i>b</i> = '+X(y1)+' : '+frac('1',pd)+' = '+X(y1)+' · '+pd+' = '+B);
+      }else{
+        h+=eqLine(A+'<sup>'+X(x1)+'</sup> = '+frac('1',den)+' = '+X(pa));
+        h+=eqLine(X(y1)+' = <i>b</i> · '+X(pa));
+        h+=eqLine('<i>b</i> = '+X(y1)+' : '+X(pa)+' = '+B);
+      }
+    }else{
+      if(x1>1){
+        h+='<p>Zuerst rechnen wir die Potenz aus:</p>'+eqLine(A+'<sup>'+X(x1)+'</sup> = '+X(pa));
+        h+=eqLine(X(y1)+' = <i>b</i> · '+X(pa));
+      }
+      h+=eqLine('<i>b</i> = '+X(y1)+' : '+X(pa)+' = '+B);
+    }
+    S.push({t:"b durch Einsetzen bestimmen",h:h});
+  }
+  /* 4: Term und Probe */
+  const pq=(x2===0)?[x1,y1]:[x2,y2];
+  S.push({t:"Funktionsterm angeben",h:'<p>Mit <span class="mf"><i>b</i> = '+B+'</span> und <span class="mf"><i>a</i> = '+A+'</span> lautet der Funktionsterm:</p><div class="eq">'+fnHTML(b,a)+'</div><p class="small">Probe: <span class="mf nb"><i>f</i>('+X(pq[0])+') = '+B+' · '+A+'<sup>'+X(pq[0])+'</sup> = '+X(pq[1])+'</span></p>'});
+  /* 5: Lücken (nur Tabelle) */
+  if(tab)S.push({t:"Lücken füllen",h:'<p>Mit dem Term kann man jede Lücke berechnen. Pro Schritt nach rechts multipliziert man mit '+A+', pro Schritt nach links teilt man durch '+A+'.</p>'+exTableHTML(e,true)});
   return S;
 }
-function addAltWay(T,t,x1,y1,x2,y2){
-  const steps=altSteps(t,x1,y1,x2,y2);
+function addExample(T,pool,task){
+  const e=pickExample(pool,task);
+  const steps=exSteps(e);
   const box=div("alt");box.style.display="none";
   T.side.insertBefore(box,T.res);
   let open=false,shown=1;
   const btn=document.createElement("button");btn.type="button";btn.className="hbtn altbtn";
-  btn.setAttribute("aria-expanded","false");btn.textContent="Alternativer Weg: Gleichungssystem";
+  btn.setAttribute("aria-expanded","false");btn.textContent="Beispielaufgabe";
   function render(scrollNew){
     box.innerHTML="";
-    const head=div("head");head.appendChild(div("",'<h4>Alternativer Weg: Gleichungssystem</h4>'));
+    const head=div("head");head.appendChild(div("",'<h4>Beispielaufgabe</h4>'));
     head.appendChild(mkbtn("btn ghost sm","Schließen",()=>toggle()));
     box.appendChild(head);
+    box.appendChild(div("small","Dieselbe Art von Aufgabe mit anderen Zahlen. Danach rechnest du deine Aufgabe auf demselben Weg."));
     let last=null;
     for(let i=0;i<shown;i++){
       const st=div("altstep",'<div class="sn"><i>'+(i+1)+'</i>'+steps[i].t+'</div>'+steps[i].h);
@@ -1288,14 +1387,14 @@ function addAltWay(T,t,x1,y1,x2,y2){
       const row=div("btnrow");row.appendChild(mkbtn("btn sm","Weiter",()=>{shown++;render(true);}));
       box.appendChild(row);
     }else{
-      box.appendChild(div("fb sol show","<b>Merke:</b> Zwei Punkte → zwei Gleichungen. Durch Division fällt <i>b</i> weg. Danach bestimmst du <i>a</i> und setzt es in eine Gleichung ein, um <i>b</i> zu erhalten."));
+      box.appendChild(div("fb sol show","<b>Merke:</b> Erst bestimmst du <i>a</i> aus dem Quotienten der <i>y</i>-Werte. Liegen <i>d</i> Schritte dazwischen, ziehst du die <i>d</i>-te Wurzel. Dann bestimmst du <i>b</i>, indem du einen Punkt einsetzt. Ist <i>f</i>(0) schon gegeben, entfällt dieser Schritt."));
     }
-    if(scrollNew&&last){setTimeout(()=>{try{last.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},40);}
+    if(scrollNew&&last){setTimeout(()=>{try{last.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(err){}},40);}
     Dock.measure();
   }
   function toggle(){
     open=!open;box.style.display=open?"":"none";btn.setAttribute("aria-expanded",open?"true":"false");
-    if(open)render(false);
+    if(open){T.exUsed=true;render(false);}
     Dock.measure();
   }
   btn.addEventListener("click",toggle);
@@ -1357,14 +1456,14 @@ TR.push({
     }
     const h=[];
     h.push("Zähle die Schritte von <i>x</i><sub>1</sub> = "+mnum(x1)+" bis <i>x</i><sub>2</sub> = "+mnum(x2)+": Es sind "+d+(d===1?" Schritt":" Schritte")+". Jeder Schritt multipliziert den Funktionswert mit <i>a</i>."+(x1===0?" Der Punkt P liegt auf der <i>y</i>-Achse, also ist <i>b</i> = "+mnum(y1)+".":""));
-    h.push(d===1?"Es gilt <i>a</i> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> = "+mnum(y2)+" : "+mnum(y1)+".":"Es gilt <i>a</i><sup>"+d+"</sup> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> = "+mnum(y2)+" : "+mnum(y1)+" = "+mnum(r6(y2/y1))+". Welche positive Zahl ergibt hoch "+d+" genau diesen Wert? Probiere 2, 3 oder 0,5.");
+    h.push(d===1?"Es gilt <i>a</i> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> = "+mnum(y2)+" : "+mnum(y1)+".":"Es gilt <i>a</i><sup>"+d+"</sup> = <i>y</i><sub>2</sub> : <i>y</i><sub>1</sub> = "+mnum(y2)+" : "+mnum(y1)+" = "+mnum(r6(y2/y1))+". Welche positive Zahl hoch "+d+" ergibt genau diesen Wert? Probiere 2, 3 oder 0,5.");
     h.push("Es ist <i>a</i> = "+mnum(t.a)+". Für <i>b</i> setzt du P ein: <i>b</i> · "+baseHTML(t.a)+"<sup>"+mnum(x1)+"</sup> = "+mnum(y1)+"."+(x1<0?" Bei negativem Exponenten gilt <i>a</i><sup>−1</sup> = 1/<i>a</i>.":""));
     T.setHints(h,()=>{
       tr.fb.set(num(t.b,4));tr.fa.set(num(t.a,4));lock("ok");showCurve();
       T.say("sol","<b>Lösung:</b> "+fnHTML(t.b,t.a));
       T.complete("");
     });
-    if(lvl>=2)addAltWay(T,t,x1,y1,x2,y2);
+    if(lvl>=2)addExample(T,EX_DET,{a:t.a,b:t.b,x:[x1,x2]});
   }
 });
 
@@ -1754,6 +1853,7 @@ TR.push({
       T.say("sol","<b>Lösung:</b> "+fnHTML(E.b,E.a));
       T.complete("");
     });
+    if(lvl>=2)addExample(T,EX_TAB,{a:E.a,b:E.b,xs:E.xs,hide:E.hide});
   }
 });
 
