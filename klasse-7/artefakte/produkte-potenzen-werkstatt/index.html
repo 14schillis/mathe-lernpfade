@@ -26,7 +26,7 @@ button{font:inherit;cursor:pointer;color:var(--t)}
 .ghost{background:none;border:2px solid var(--l);border-radius:14px;padding:10px 18px;min-height:48px}
 .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.dots{display:flex;gap:8px}.dot{width:12px;height:12px;border-radius:50%;background:var(--l)}
+.dots{display:flex;gap:8px;align-items:center}.dot{width:12px;height:12px;border-radius:50%;background:var(--l)}
 .dot.dn{background:var(--ok)}.dot.cur{outline:2px solid var(--t);outline-offset:2px}
 .m{font-family:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif;font-size:1.2em;white-space:nowrap}
 .m i{font-style:italic}
@@ -67,6 +67,10 @@ sup{font-size:.62em;line-height:0;position:relative;top:-.8em;vertical-align:bas
 .orig .ob{font-size:1.7rem}
 .fb.sol{background:#f3f0ff;color:#3b2a78}
 .sm{padding-left:1.2em}.sm li{margin:.6em 0}
+.jr{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.jb{min-width:40px;min-height:40px;padding:0 8px;border:2px solid var(--l);background:#fff;border-radius:12px;font-weight:600}
+.jb.dn{border-color:var(--ok);background:#effaf2}
+.jb.cur{outline:2px solid var(--t);outline-offset:2px}
 @keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 @keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @keyframes bl{50%{opacity:0}}
@@ -152,8 +156,9 @@ function rowH(toks,act,ids,gr){return toks.map((t,p)=>{const k=kk(t),n=gr&&toks[
 const ordRow=()=>rowH(S.ord.map(i=>stp().tk[i]),1,S.ord,0);
 function pad(st){const L=st.n?[]:[...new Set((st.a||'').replace(/[^a-z]/g,''))];const K=[...L.map(x=>[x,F(x)]),...(st.n?[]:[['^','Exponent'],['·','·']]),...'1234567890'.split('').map(x=>[x,x]),['<','⌫']];return'<div class=pad>'+K.map(([v,l])=>`<button class="key${v=='^'?' wide':''}" data-act=k data-v="${v}">${l}</button>`).join('')+'</div>'}
 const inp=()=>S.val?F(S.val)+'<u class=cr></u>':'<span class=ph>Deine Antwort</span>';
-function home(){const tot=M.reduce((a,m)=>a+m.T.length,0),d=M.reduce((a,m,i)=>a+done(i),0);return`<header><div class=eyebrow>Mathematik · Klasse 7${TM?'<span class=tmb>Lehrermodus</span>':''}</div><h1>Umformen von Produkten und Potenzen</h1><p class=sub>Denke mit: Schreibe Faktoren aus, ordne, begründe. Du bekommst Hinweise, die Lösung findest du selbst.</p><div class=bar><b style="width:${d/tot*100}%"></b></div><div class=cap>${d} von ${tot} Aufgaben bearbeitet</div></header><div class=grid>`+M.map((m,i)=>{const n=m.T.length,x=done(i);return`<div class=card style="--ac:${m.c}"><div class=num>${i+1}</div><h3>${m.n}</h3><p>${m.d}</p><div class=bar><b style="width:${x/n*100}%"></b></div><div class=cap>${x} von ${n} Aufgaben</div><button class=pri data-act=go data-i=${i}>${x==0?'Starten':x<n?'Fortsetzen':'Erneut üben'}</button></div>`}).join('')+'</div><div class=btns>'+(d?'<button class=ghost data-act=fin>Abschlussübersicht</button>':'')+(TM?'':'<button class=lnk data-act=reset>Fortschritt zurücksetzen</button>')+'</div>'}
-function task(){const m=M[S.m],st=stp(),n=m.T.length,len=m.T[S.t].length;let h=`<div class=top><button class=ghost data-act=home>← Übersicht</button>${TM?'<span class=tmb>Lehrermodus</span>':''}<div class=dots>`+m.T.map((_,i)=>`<span class="dot${P0[S.m][i]?' dn':''}${i==S.t?' cur':''}"></span>`).join('')+`</div></div><div class=card id=card style="--ac:${m.c}"><div class=lab>${m.n} · Aufgabe ${S.t+1} von ${n}${len>1?' · Schritt '+(S.s+1)+' von '+len:''}</div>${S.s>0&&m.T[S.t][0].big&&!st.big?`<div class=orig><div class=lab>Ausgangsaufgabe</div><div class="ob m">${F(m.T[S.t][0].big)}</div></div>`:''}<h2>${T(st.q)}</h2>`;
+const jumpRow=i=>'<div class=jr>'+M[i].T.map((_,j)=>`<button class="jb${P0[i][j]?' dn':''}" data-act=jt data-i=${i} data-j=${j}>${j+1}</button>`).join('')+'</div>';
+function home(){const tot=M.reduce((a,m)=>a+m.T.length,0),d=M.reduce((a,m,i)=>a+done(i),0);return`<header><div class=eyebrow>Mathematik · Klasse 7${TM?'<span class=tmb>Lehrermodus</span>':''}</div><h1>Umformen von Produkten und Potenzen</h1><p class=sub>Denke mit: Schreibe Faktoren aus, ordne, begründe. Du bekommst Hinweise, die Lösung findest du selbst.</p><div class=bar><b style="width:${d/tot*100}%"></b></div><div class=cap>${d} von ${tot} Aufgaben bearbeitet</div></header><div class=grid>`+M.map((m,i)=>{const n=m.T.length,x=done(i);return`<div class=card style="--ac:${m.c}"><div class=num>${i+1}</div><h3>${m.n}</h3><p>${m.d}</p><div class=bar><b style="width:${x/n*100}%"></b></div><div class=cap>${x} von ${n} Aufgaben</div>${TM?jumpRow(i):''}<button class=pri data-act=go data-i=${i}>${x==0?'Starten':x<n?'Fortsetzen':'Erneut üben'}</button></div>`}).join('')+'</div><div class=btns>'+(d?'<button class=ghost data-act=fin>Abschlussübersicht</button>':'')+(TM?'':'<button class=lnk data-act=reset>Fortschritt zurücksetzen</button>')+'</div>'}
+function task(){const m=M[S.m],st=stp(),n=m.T.length,len=m.T[S.t].length;let h=`<div class=top><button class=ghost data-act=home>← Übersicht</button>${TM?'<span class=tmb>Lehrermodus</span>':''}<div class=dots>`+m.T.map((_,i)=>TM?`<button class="jb${P0[S.m][i]?' dn':''}${i==S.t?' cur':''}" data-act=jt data-i=${S.m} data-j=${i}>${i+1}</button>`:`<span class="dot${P0[S.m][i]?' dn':''}${i==S.t?' cur':''}"></span>`).join('')+`</div></div><div class=card id=card style="--ac:${m.c}"><div class=lab>${m.n} · Aufgabe ${S.t+1} von ${n}${len>1?' · Schritt '+(S.s+1)+' von '+len:''}</div>${S.s>0&&m.T[S.t][0].big&&!st.big?`<div class=orig><div class=lab>Ausgangsaufgabe</div><div class="ob m">${F(m.T[S.t][0].big)}</div></div>`:''}<h2>${T(st.q)}</h2>`;
 if(st.big)h+=`<div class="big m">${F(st.big)}</div>`;
 if(st.t=='c')h+='<div class=opts>'+st.o.map((o,i)=>`<button class=opt data-act=ch data-i=${i}>${T(o[0])}</button>`).join('')+'</div>';
 if(st.t=='o')h+=`<div class=row id=row>${ordRow()}</div><button class=pri data-act=chk>Prüfen</button>`;
@@ -181,7 +186,7 @@ else if(st.t=='o'){const ids=st.tk.map((_,i)=>i).sort((x,y)=>kk(st.tk[x])<kk(st.
 else if(st.t=='i')a=st.sol?T(st.sol):'<span class=m>'+F(st.a)+'</span>';
 else{S.pd=st.p.map((_,i)=>i);S.sel=null;draw();a='<ul class=sm>'+st.p.map(x=>`<li>${T(x[0])} = ${T(x[1])}</li>`).join('')+'</ul>'}
 fb('sol','<b>Lösung:</b> '+a+'<div class=tip><b>Erklärung:</b> '+T(st.ex||'')+'</div>');nxb()},
-fin:()=>{S.v='f';draw(1)},go:b=>go(+b.dataset.i),redo:()=>{P0[S.m]=[];go(S.m)},
+fin:()=>{S.v='f';draw(1)},jt:b=>{S.m=+b.dataset.i;S.t=+b.dataset.j;S.s=0;S.v='t';enter();draw(1)},go:b=>go(+b.dataset.i),redo:()=>{P0[S.m]=[];go(S.m)},
 nx:()=>{const t=M[S.m].T;if(S.s<t[S.t].length-1)S.s++;else if(S.t<t.length-1){S.t++;S.s=0}else{S.v='s';draw(1);return}enter();draw(1)},
 ch:b=>{if(S.lock)return;const o=stp().o[+b.dataset.i];if(o[1]){b.classList.add('yes');ok()}else{b.classList.add('no');b.disabled=true;bad(o[2]||'Das passt noch nicht. Prüfe noch einmal genau.')}},
 k:b=>{if(S.lock)return;const v=b.dataset.v;S.val=v=='<'?S.val.slice(0,-1):S.val+v;$('#inp').innerHTML=inp()},
