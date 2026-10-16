@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gesamtänderung entdecken</title>
+<style>
+:root{--ac:#4f46e5;--ac2:#eceaff;--ink:#14172b;--mut:#6a7090;--ok:#0f9d6b;--okb:#e1f7ee;--no:#d9363e;--nob:#fdeced;--pos:#4f46e5;--neg:#ea7a14;--fc:#3730a3;--gc:#0d9488;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9dcec;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center}
+#st{position:relative;width:100vw;height:100vh;container-type:size;background:linear-gradient(135deg,#f9faff,#eef0fb);display:grid;grid-template-rows:auto auto 1fr auto;gap:1.8cqh;padding:2.6cqh calc(var(--u)*3);overflow:hidden}
+header{display:flex;align-items:center;gap:calc(var(--u)*1.4)}
+.bd{width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:calc(var(--u)*1.2);background:var(--ac);color:#fff;display:grid;place-items:center;font-size:calc(var(--u)*2.2);font-weight:700}
+h1{font-size:calc(var(--u)*2.5);font-weight:700;letter-spacing:-.02em;flex:1}
+.rt{display:flex;align-items:center;gap:calc(var(--u)*1.2);color:var(--mut);font-size:calc(var(--u)*1.6);font-weight:600}
+#pb{height:.6cqh;background:#dcdff3;border-radius:9px;overflow:hidden}
+#pf{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .5s}
+main{min-height:0;display:flex;flex-direction:column}
+.sc{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqh;animation:in .45s ease both}
+footer{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*1.4)}
+.g{display:flex;gap:calc(var(--u)*1.2)}
+.btn{font:inherit;font-size:calc(var(--u)*1.7);font-weight:600;min-height:7cqh;padding:0 calc(var(--u)*2.4);border:0;border-radius:calc(var(--u)*1.4);background:#fff;color:var(--ink);box-shadow:0 calc(var(--u)*.2) calc(var(--u)*.9) rgba(30,35,80,.12);cursor:pointer;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--ac);color:#fff;min-width:calc(var(--u)*22)}
+.btn.d{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.ic{min-height:5cqh;padding:0 calc(var(--u)*1.2)}
+.g .btn.ic{min-height:7cqh}
+m,.tx{font-family:var(--math)}
+m{white-space:nowrap;font-style:normal}
+m i{font-style:italic}
+sup,sub{font-size:.62em;line-height:0;font-style:normal;margin-left:.08em}
+sup{vertical-align:.7em}sub{vertical-align:-.3em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;font-size:.88em;line-height:1.15}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .06em}
+.fr>span:last-child{padding:.06em .2em 0}
+.in{display:inline-flex;align-items:center;vertical-align:-.5em;margin-right:.12em}
+.in .sg{font-size:1.9em;line-height:1;font-weight:300}
+.in .lm{display:flex;flex-direction:column;justify-content:space-between;font-size:.55em;height:2.7em;margin-left:-.3em}
+.ab{display:inline-block;font-size:1.5em;line-height:.6;vertical-align:-.12em;font-weight:300;margin:0 .04em}
+.q{font-size:calc(var(--u)*2);color:var(--mut);font-weight:500}
+.q m{font-size:1.15em}
+.body{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:calc(var(--u)*1.8)}
+.gp{background:#fff;border-radius:calc(var(--u)*2);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.09);padding:1cqh calc(var(--u)*1);min-width:0;min-height:0;display:flex}
+.gp svg{width:100%;height:100%}
+.pn{display:flex;flex-direction:column;gap:1.3cqh;justify-content:center;min-width:0}
+.cd{display:flex;align-items:center;gap:calc(var(--u)*1.2);background:#fff;border-radius:calc(var(--u)*1.6);padding:1.5cqh calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);border-left:calc(var(--u)*.7) solid var(--ac)}
+.cd.pos{border-left-color:var(--pos)}.cd.neg{border-left-color:var(--neg)}
+.cd.fin{border-left-color:var(--ok);background:var(--okb)}.cd.bad{border-left-color:var(--no);background:var(--nob)}
+.nm{flex:none;width:calc(var(--u)*3.2);height:calc(var(--u)*3.2);border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:calc(var(--u)*1.7)}
+.cp{display:block;font-size:calc(var(--u)*1.35);font-weight:600;color:var(--mut);margin-bottom:.4cqh}
+.cm{font-size:calc(var(--u)*2.2);line-height:1.55}
+.ln{display:flex;align-items:center;gap:calc(var(--u)*.9)}
+.dt{flex:none;width:calc(var(--u)*1.1);height:calc(var(--u)*1.1);border-radius:50%}
+.ln.pos .dt{background:var(--pos)}.ln.neg .dt{background:var(--neg)}
+.rule{background:#fff;border-left:calc(var(--u)*.7) solid var(--ac);border-radius:calc(var(--u)*1.6);padding:1.3cqh calc(var(--u)*2);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.1);font-size:calc(var(--u)*2.6);text-align:center}
+.rv{transition:opacity .5s}
+.rv:not(.on){opacity:0;visibility:hidden;pointer-events:none}
+/* Diagramm */
+.gl{stroke:#e6e9f6;stroke-width:2}
+.ax{stroke:var(--ink);stroke-width:3}
+.axh{fill:var(--ink)}
+.tick{stroke:var(--ink);stroke-width:3}
+.tx{font-size:32px;fill:var(--ink);text-anchor:middle}
+.tx.nm2{font-size:28px;fill:var(--mut)}
+.tx.end{text-anchor:end}
+.tx.lg{font-size:42px;font-weight:600}
+.tx.pos{fill:var(--pos)}.tx.neg{fill:var(--neg)}.tx.cf{fill:var(--fc)}.tx.cg{fill:var(--gc)}.tx.cc{fill:var(--mut)}
+.cv{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cv.f{stroke:var(--fc)}.cv.g{stroke:var(--gc)}
+.cv.gh{stroke:#aab0cc;stroke-dasharray:14 12;stroke-width:4}
+.ar{stroke:none}
+.ar.pos{fill:rgba(79,70,229,.28)}.ar.neg{fill:rgba(234,122,20,.34)}.ar.fin{fill:rgba(15,157,107,.42)}
+.dl{stroke:var(--mut);stroke-width:3;stroke-dasharray:9 8}
+.dot{fill:var(--ac);stroke:#fff;stroke-width:3}
+.mini .cv{stroke-width:10}.mini .ax{stroke-width:5}
+.sh{transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
+.sh.mv{transform:translateY(var(--dy))}
+/* Quiz */
+.chips{display:flex;gap:calc(var(--u)*1.1);align-items:center}
+.chip{font:inherit;font-size:calc(var(--u)*1.6);font-weight:600;flex:1;padding:1.2cqh calc(var(--u)*1.2);border-radius:calc(var(--u)*1.2);background:#fff;border:calc(var(--u)*.22) solid #dfe2f3;text-align:center;cursor:pointer;transition:.3s;color:var(--ink);line-height:1.25}
+.chip m{font-size:calc(var(--u)*2.4)}
+.sel{border-color:var(--ac)!important;background:var(--ac2)!important}
+.ok{border-color:var(--ok)!important;background:var(--okb)!important}
+.no{border-color:#f0b4b8!important;background:var(--nob)!important}
+.qb{background:#fff;border-radius:calc(var(--u)*1.6);padding:1.8cqh calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh}
+.qt{font-size:calc(var(--u)*2.3)}
+.ex{font-size:calc(var(--u)*2);color:var(--ok);font-weight:600}
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center}
+.qr{display:grid;grid-template-columns:calc(var(--u)*17) 1fr;gap:calc(var(--u)*1.6);align-items:center;background:#fff;border-radius:calc(var(--u)*1.6);padding:1cqh calc(var(--u)*1.4);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09)}
+.qr svg{width:100%;height:auto;display:block}
+.qd{font-size:calc(var(--u)*1.9);font-weight:600;margin-bottom:1cqh}
+.qd m{font-size:1.15em}
+/* Abschluss */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*1.6);flex:1;min-height:0}
+.card{background:#fff;border-radius:calc(var(--u)*2);padding:2cqh calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh;align-items:center;text-align:center;justify-content:center}
+.card svg{width:100%;height:auto;display:block}
+.card .t1{font-size:calc(var(--u)*1.9);font-weight:700}
+.card .eq{font-size:calc(var(--u)*2.6);min-height:5cqh;display:flex;align-items:center}
+.card .t2{font-size:calc(var(--u)*1.5);color:var(--mut)}
+.strat{display:flex;align-items:center;gap:calc(var(--u)*1.2)}
+.st{flex:1;background:#fff;border-radius:calc(var(--u)*1.6);padding:1.6cqh calc(var(--u)*1.6);font-size:calc(var(--u)*1.8);font-weight:600;display:flex;align-items:center;gap:calc(var(--u)*1.2);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.08)}
+.st b{flex:none;width:calc(var(--u)*3.4);height:calc(var(--u)*3.4);border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ar2{color:var(--mut);font-size:calc(var(--u)*2.4)}
+@keyframes in{from{opacity:0;transform:translateX(calc(var(--u)*2.4))}}
+@keyframes pop{from{opacity:0;transform:translateY(1.4cqh)}}
+#ov{position:absolute;inset:0;background:rgba(236,239,251,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;flex-direction:column;gap:3cqh;padding:4cqh calc(var(--u)*3.4);z-index:5}
+#ov.on{display:flex;animation:pop .3s}
+.oh{display:flex;justify-content:space-between;align-items:center}
+.oh h2{font-size:calc(var(--u)*3)}
+.tiles{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:calc(var(--u)*1.4)}
+.tile{font:inherit;border:calc(var(--u)*.25) solid transparent;background:#fff;border-radius:calc(var(--u)*1.8);padding:2cqh calc(var(--u)*1.4);text-align:left;display:flex;flex-direction:column;gap:1cqh;cursor:pointer;box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);color:var(--ink)}
+.tile b{color:var(--ac);font-size:calc(var(--u)*2)}
+.tile span{font-size:calc(var(--u)*1.6);font-weight:700}
+.tile em{font-style:normal;font-size:calc(var(--u)*1.8);margin-top:auto;color:var(--mut)}
+.tile.cur{border-color:var(--ac)}
+
+.lm2{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin-right:.15em}
+.lm2 .lb{font-size:.62em}
+.up{font-style:normal}
+.two{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*1.8)}
+.gcard{background:#fff;border-radius:calc(var(--u)*2);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.09);padding:1.2cqh calc(var(--u)*1.2);min-width:0;min-height:0;display:flex;flex-direction:column;gap:.8cqh}
+.gt{font-size:calc(var(--u)*2.2);text-align:center}
+.gsvg{flex:1;min-height:0;display:flex}
+.gsvg svg{width:100%;height:100%}
+.gv{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*1)}
+.gf{font-size:calc(var(--u)*2)}
+.val{font-size:calc(var(--u)*2.4);font-family:var(--math);color:var(--ac);font-weight:600;white-space:nowrap}
+.lim{border-radius:calc(var(--u)*1.2);padding:.9cqh calc(var(--u)*1.2);font-size:calc(var(--u)*2.1);text-align:center}
+.lim.bad{background:var(--nob);border:calc(var(--u)*.2) solid #f0b4b8}
+.lim.fin{background:var(--okb);border:calc(var(--u)*.2) solid var(--ok)}
+.lc{font-size:calc(var(--u)*1.4);color:var(--mut);margin-top:.3cqh}
+.ctl{display:flex;align-items:center;gap:calc(var(--u)*1.6);background:#fff;border-radius:calc(var(--u)*1.6);padding:1.2cqh calc(var(--u)*1.8);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09)}
+.cb{font-size:calc(var(--u)*2.2);white-space:nowrap}
+.cb b{font-family:var(--math);display:inline-block;min-width:calc(var(--u)*9);color:var(--ac)}
+.chips2{display:flex;gap:calc(var(--u)*.9)}
+.ctl .chip{flex:none;padding:1cqh calc(var(--u)*1.1);font-size:calc(var(--u)*1.5)}
+.ctl .chip m{font-size:calc(var(--u)*1.9)}
+#sl{flex:1;min-width:0;-webkit-appearance:none;appearance:none;height:calc(var(--u)*1.1);border-radius:calc(var(--u)*1);background:#dcdff3;outline:none;touch-action:none}
+#sl::-webkit-slider-thumb{-webkit-appearance:none;width:calc(var(--u)*3);height:calc(var(--u)*3);border-radius:50%;background:var(--ac);border:calc(var(--u)*.4) solid #fff;box-shadow:0 calc(var(--u)*.2) calc(var(--u)*.8) rgba(30,35,80,.35);cursor:pointer}
+#sl::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*3);border-radius:50%;background:var(--ac);border:calc(var(--u)*.4) solid #fff;box-shadow:0 calc(var(--u)*.2) calc(var(--u)*.8) rgba(30,35,80,.35);cursor:pointer}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:calc(var(--u)*1.6);flex:1;min-height:0}
+.fc{background:#fff;border-radius:calc(var(--u)*1.8);padding:1.4cqh calc(var(--u)*1.2);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);border:calc(var(--u)*.25) solid transparent;display:flex;flex-direction:column;gap:.7cqh;align-items:center;text-align:center;cursor:pointer;transition:.3s;justify-content:center}
+.fc svg{width:100%;height:auto;display:block}
+.fl{font-size:calc(var(--u)*2.6)}
+.fd{font-size:calc(var(--u)*1.45);color:var(--mut)}
+.fv{font-size:calc(var(--u)*2.5);font-weight:600;min-height:3.4cqh}
+.fc.ok .fv{color:var(--ok)}.fc.no .fv{color:var(--no)}
+.rs{font-size:calc(var(--u)*1.8);color:var(--mut);margin-top:.6cqh}
+
+.ex{display:none;font-size:calc(var(--u)*1.9);color:var(--ok);font-weight:600;line-height:1.4}
+.ex.on{display:block}
+.chips.col{flex-direction:column;align-items:stretch}
+.chips.col .chip{flex:none;text-align:left;padding:1.1cqh calc(var(--u)*1.4);font-size:calc(var(--u)*1.8)}
+.chip.dim{opacity:.4}
+.chip.no{opacity:1}
+.qstack{display:grid}
+.qstack>.qb{grid-area:1/1;align-self:start}
+.qr3 .chip{font-size:calc(var(--u)*1.5)}
+.ro{font-size:calc(var(--u)*2.2);line-height:1.7}
+.ro b{font-family:var(--math);color:var(--ac)}
+.tx.ts{text-anchor:start}
+
+/* iPad-Optimierung: Vollbild statt 16:9-Kasten, scrollbar statt abgeschnitten */
+#st{--u:min(1vw,1.6vh)}
+@supports (height:100dvh){#st{height:100dvh;--u:min(1vw,1.6dvh)}}
+#st{padding-top:max(1.4cqh,env(safe-area-inset-top));padding-bottom:max(1.4cqh,env(safe-area-inset-bottom));padding-left:max(calc(var(--u)*2.2),env(safe-area-inset-left));padding-right:max(calc(var(--u)*2.2),env(safe-area-inset-right));gap:1.4cqh}
+.sc{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:4px}
+.sc>*{flex-shrink:0}
+.body{flex:1 0 auto;min-height:max(44cqh,300px);grid-template-columns:1.25fr 1fr}
+.gp{min-height:max(40cqh,260px)}
+.pn{justify-content:flex-start;overflow:visible}
+.stack{flex:1 0 auto;justify-content:flex-start}
+.g3{flex:1 0 auto}
+.ctl{position:sticky;bottom:0;z-index:3}
+.q{font-size:max(15px,calc(var(--u)*2))}
+.qt{font-size:max(17px,calc(var(--u)*2.1))}
+.chip{font-size:max(16px,calc(var(--u)*1.7));min-height:44px;display:flex;align-items:center}
+.chips.col .chip{font-size:max(16px,calc(var(--u)*1.8))}
+.qr3 .chip{font-size:max(15px,calc(var(--u)*1.5))}
+.chip m{font-size:1.15em}
+.ex{font-size:max(15px,calc(var(--u)*1.8))}
+.ro{font-size:max(16px,calc(var(--u)*2.1))}
+.cb{font-size:max(16px,calc(var(--u)*2.1))}
+.btn{min-height:max(44px,6.5cqh);font-size:max(15px,calc(var(--u)*1.6))}
+.btn.p{min-width:max(150px,calc(var(--u)*20))}
+.card .t1{font-size:max(17px,calc(var(--u)*1.9))}
+.card .eq{font-size:max(20px,calc(var(--u)*2.6))}
+.card .t2{font-size:max(15px,calc(var(--u)*1.6))}
+h1{font-size:max(18px,calc(var(--u)*2.5))}
+#sl{height:max(10px,calc(var(--u)*1.1))}
+#sl::-webkit-slider-thumb{width:max(30px,calc(var(--u)*3));height:max(30px,calc(var(--u)*3))}
+#sl::-moz-range-thumb{width:max(30px,calc(var(--u)*3));height:max(30px,calc(var(--u)*3))}
+.tx.nm2{font-size:30px}
+footer .btn{white-space:nowrap;padding:0 calc(var(--u)*1.5)}
+footer .btn.p{white-space:normal;line-height:1.15;padding:0 calc(var(--u)*1.2)}
+.gp{position:relative}
+.gp svg{position:absolute;left:calc(var(--u)*1);top:1cqh;width:calc(100% - var(--u)*2);height:calc(100% - 2cqh)}
+.stack{gap:1cqh}.stack .qb{padding:1.1cqh calc(var(--u)*1.4);gap:1cqh}
+.g3{align-items:start}
+@media (orientation:portrait){.body{display:contents}.gp{order:1;flex:0 0 auto;height:46cqh;min-height:0}.ctl{order:2;position:static}.pn{order:3}.g3{grid-template-columns:1fr}.chips2{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div id="st">
+<header><div class="bd" id="bd">1</div><h1 id="ti"></h1><div class="rt"><span id="pg"></span><button class="btn ic" onclick="fs()">⛶</button></div></header>
+<div id="pb"><i id="pf"></i></div>
+<main id="mn"></main>
+<footer>
+<div class="g"><button class="btn" id="bk" onclick="nav(-1)">‹ Zurück</button><button class="btn" onclick="ov(1)">▦ Übersicht</button></div>
+<div class="g"><button class="btn ic" onclick="bk1()" title="Schritt zurück">↶</button><button class="btn p" id="sb" onclick="nx()"></button><button class="btn" onclick="go(cur)">↺ Zurücksetzen</button></div>
+<div class="g"><button class="btn d" id="fw" onclick="nav(1)">Weiter ›</button></div>
+</footer>
+<div id="ov"></div>
+</div>
+<script>
+const g=id=>document.getElementById(id);
+/* ---------- Mini-Formelsatz ---------- */
+const mt=(s,i)=>{let d=0;for(let j=i;j<s.length;j++){if(s[j]=='{')d++;else if(s[j]=='}'&&--d==0)return j}return s.length};
+function M(s){let o='',i=0;
+while(i<s.length){const c=s[i];
+if(c=='^'||c=='_'){const tg=c=='^'?'sup':'sub';i++;let t;if(s[i]=='{'){const j=mt(s,i);t=s.slice(i+1,j);i=j+1}else{t=s[i];i++}o+=`<${tg}>${M(t)}</${tg}>`}
+else if(c=='{'){const j=mt(s,i),p=s.slice(i+1,j).split('|');i=j+1;o+=`<span class="fr"><span>${M(p[0])}</span><span>${M(p[1])}</span></span>`}
+else if(c=='@'){const j=s.indexOf('@',i+1),p=s.slice(i+1,j).split(',');i=j+1;o+=`<span class="in"><span class="sg">∫</span><span class="lm"><span>${M(p[1])}</span><span>${M(p[0])}</span></span></span>`}
+else if(c=='|'){o+='<span class="ab">|</span>';i++}
+else if(/[a-z]/i.test(c)){o+='<i>'+c+'</i>';i++}
+else{o+=c=='*'?'·':c=='-'?'−':c=='<'?'&lt;':c=='>'?'&gt;':c;i++}}
+return o}
+const T=s=>s.replace(/\$([^$]+)\$/g,(_,x)=>'<m>'+M(x)+'</m>');
+const nf=(n,mn,mx)=>n.toLocaleString('de-DE',{minimumFractionDigits:mn,maximumFractionDigits:mx});
+const rr=v=>Math.round(v*10)/10;
+/* ---------- Doppel-Diagramm: Rate (oben), Bestand (unten) ---------- */
+const DS={cfg:null,t:0,F0:0};
+const ST={
+ lift:{pts:[[0,0],[2,1],[4,1],[5,0],[8,0],[10,-2],[11,0]],tmax:11,fr:[-2.6,1.7],ft:[-2,-1,0,1],ftl:'v in m/s',Fl:'Höhe in m',unit:'m',
+  Fr:()=>[-.6,4.6],Ft:()=>[0,1,2,3,4],name:'Höhe'},
+ tank:{pts:[[0,2],[3,2],[5,0],[9,-2]],tmax:9,fr:[-2.6,3],ft:[-2,-1,0,1,2],ftl:'f in l pro min',Fl:'Wassermenge in l',unit:'l',
+  Fr:F0=>[F0-1,F0+9.5],Ft:F0=>[F0,F0+2,F0+4,F0+6,F0+8],name:'Tankinhalt'}
+};
+const Wd=1000,ml=100,mrr=40,t0=44;let Hd=800,hT=320,b0=440,hB=280;
+function geom(){const e=g('dwrap'),w=e.clientWidth||600,h=e.clientHeight||520;Hd=Math.round(Math.max(600,Math.min(1000,Wd*h/w)));hT=hB=Math.round((Hd-t0-100-70)/2);b0=t0+hT+100}
+const tX=t=>ml+t/DS.cfg.tmax*(Wd-ml-mrr);
+const yT=v=>t0+(DS.cfg.fr[1]-v)/(DS.cfg.fr[1]-DS.cfg.fr[0])*hT;
+const fAt=t=>{const p=DS.cfg.pts;for(let i=0;i<p.length-1;i++){const[a,fa]=p[i],[b,fb]=p[i+1];if(t<=b||i==p.length-2)return fa+(fb-fa)*(Math.min(t,b)-a)/(b-a)}};
+const Fint=t=>{let s=0;const p=DS.cfg.pts;for(let i=0;i<p.length-1;i++){const[a,fa]=p[i],[b,fb]=p[i+1];if(t<=a)break;const e=Math.min(t,b),fe=fa+(fb-fa)*(e-a)/(b-a);s+=(fa+fe)/2*(e-a)}return s};
+function topSvg(c){DS.cfg=c;let s='';
+for(let k=0;k<=c.tmax;k++)s+=`<line class="gl" x1="${rr(tX(k))}" y1="${t0}" x2="${rr(tX(k))}" y2="${t0+hT}"/><text class="tx nm2" x="${rr(tX(k))}" y="${t0+hT+28}">${k}</text>`;
+c.ft.forEach(v=>{s+=`<line class="gl" x1="${ml}" y1="${rr(yT(v))}" x2="${Wd-mrr}" y2="${rr(yT(v))}"/><text class="tx nm2 end" x="${ml-12}" y="${rr(yT(v)+10)}">${String(v).replace('-','−')}</text>`});
+s+=`<line class="ax" x1="${ml}" y1="${rr(yT(0))}" x2="${Wd-mrr}" y2="${rr(yT(0))}"/><line class="ax" x1="${ml}" y1="${t0-6}" x2="${ml}" y2="${t0+hT}"/>`;
+s+=`<text class="tx nm2 ts" x="${ml+8}" y="30">${c.ftl}</text><text class="tx nm2 end" x="${Wd-mrr}" y="${t0+hT+28}" style="visibility:hidden">t</text>`;
+s+=`<path id="apos" class="ar pos" d=""/><path id="aneg" class="ar neg" d=""/>`;
+s+=`<path class="cv f" d="${c.pts.map((p,i)=>(i?'L':'M')+rr(tX(p[0]))+' '+rr(yT(p[1]))).join('')}"/>`;
+s+=`<line id="cur" class="dl" x1="0" x2="0" y1="${t0}" y2="${t0+hT}"/><circle id="dtp" class="dot" cx="0" cy="0" r="11"/>`;
+s+=`<text class="tx nm2 ts" x="${ml+8}" y="${b0-14}">${c.Fl}</text><text class="tx nm2 end" x="${Wd-mrr}" y="${b0+hB+62}">t in ${c.unit=='m'?'s':'min'}</text>`;
+s+=`<g id="bot"></g>`;
+return `<svg viewBox="0 0 ${Wd} ${Hd}" preserveAspectRatio="xMidYMid meet">${s}</svg>`}
+function draw(t){const c=DS.cfg,F0=DS.F0;DS.t=t;
+const n=Math.max(2,Math.ceil(t*40));let pp=`M${rr(tX(0))} ${rr(yT(0))}`,np=pp;
+for(let k=0;k<=n;k++){const tt=t*k/n,v=fAt(tt);pp+=`L${rr(tX(tt))} ${rr(yT(Math.max(v,0)))}`;np+=`L${rr(tX(tt))} ${rr(yT(Math.min(v,0)))}`}
+pp+=`L${rr(tX(t))} ${rr(yT(0))}Z`;np+=`L${rr(tX(t))} ${rr(yT(0))}Z`;
+g('apos').setAttribute('d',pp);g('aneg').setAttribute('d',np);
+const x=rr(tX(t));g('cur').setAttribute('x1',x);g('cur').setAttribute('x2',x);g('dtp').setAttribute('cx',x);g('dtp').setAttribute('cy',rr(yT(fAt(t))));
+const[a,bb]=c.Fr(F0),yB=v=>b0+(bb-v)/(bb-a)*hB;let s='';
+for(let k=0;k<=c.tmax;k++)s+=`<line class="gl" x1="${rr(tX(k))}" y1="${b0}" x2="${rr(tX(k))}" y2="${b0+hB}"/><text class="tx nm2" x="${rr(tX(k))}" y="${b0+hB+28}">${k}</text>`;
+c.Ft(F0).forEach(v=>{s+=`<line class="gl" x1="${ml}" y1="${rr(yB(v))}" x2="${Wd-mrr}" y2="${rr(yB(v))}"/><text class="tx nm2 end" x="${ml-12}" y="${rr(yB(v)+10)}">${v}</text>`});
+s+=`<line class="ax" x1="${ml}" y1="${b0-6}" x2="${ml}" y2="${b0+hB}"/>`;
+let d='';for(let k=0;k<=n;k++){const tt=t*k/n;d+=(k?'L':'M')+rr(tX(tt))+' '+rr(yB(F0+Fint(tt)))}
+s+=`<path class="cv g" d="${d}"/><line class="dl" x1="${x}" y1="${b0}" x2="${x}" y2="${b0+hB}"/><circle class="dot" style="fill:var(--gc)" cx="${x}" cy="${rr(yB(F0+Fint(t)))}" r="11"/>`;
+g('bot').innerHTML=s;
+const I=Fint(t);
+g('r1').textContent='= '+nf(I,0,2)+' '+c.unit;
+g('r2').textContent=F0?nf(F0,0,0)+' + '+nf(I,0,2)+' = '+nf(F0+I,0,2)+' '+c.unit:nf(I,0,2)+' '+c.unit;
+g('bv').textContent=nf(t,1,1)+(c.unit=='m'?' s':' min')}
+function onSl(v){draw(+v/20)}
+function initDual(c){DS.F0=0;DS.cfg=c;geom();g('dwrap').innerHTML=topSvg(c);g('sl').max=c.tmax*20;g('sl').value=0;draw(0)}
+function relayout(){if(!DS.cfg||!g('dwrap')||!g('dwrap').firstChild)return;geom();g('dwrap').innerHTML=topSvg(DS.cfg);draw(DS.t)}
+window.addEventListener('resize',()=>{if(cur<2)relayout()});
+/* ---------- Bausteine ---------- */
+const QB=(s,q,opts,ex,cls)=>`<div class="qb ${s!=null?'rv':''} ${cls||''}" ${s!=null?`data-s="${s}" data-x="${s+1}"`:''}><div class="qt">${T(q)}</div><div class="chips ${cls?'':'col'}">${opts.map(([t,ok])=>`<span class="chip" data-ok="${ok}" onclick="ans(this)">${T(t)}</span>`).join('')}</div><div class="ex">${T(ex)}</div></div>`;
+function ans(e){const b=e.closest('.qb');if(b.dataset.done)return;
+if(e.dataset.ok=='1'){e.classList.add('ok');b.dataset.done=1;b.querySelectorAll('.chip').forEach(c=>{if(c!==e)c.classList.add('dim')});b.querySelector('.ex').classList.add('on')}else e.classList.add('no')}
+const DUAL=(qs,ro1,ro2)=>`<div class="body"><div class="gp" id="dwrap"></div><div class="pn"><div class="cd"><div class="ro"><div>${T(ro1)} <b id="r1"></b></div><div>${ro2} <b id="r2"></b></div></div></div><div class="qstack">${qs}</div></div></div><div class="ctl"><span class="cb"><m><i>t</i></m> = <b id="bv"></b></span><input type="range" id="sl" min="0" max="220" value="0" step="1" oninput="onSl(this.value)"></div>`;
+const CARD=(s,t,f,d)=>`<div class="card rv" data-s="${s}" style="justify-content:flex-start"><div class="t1">${T(t)}</div><div class="eq">${T(f)}</div><div class="t2">${T(d)}</div></div>`;
+/* ---------- Folien ---------- */
+const S=[
+{t:'Aufzug: Fläche = Höhenänderung',q:'Zieh den Regler. Oben siehst du die Geschwindigkeit, unten entsteht die Höhe des Aufzugs.',
+b:['Frage 1','Frage 2','Frage 3','Frage 4'],init:()=>initDual(ST.lift),
+h:DUAL(
+ QB(1,'Wie hoch ist der Aufzug nach 4 s über dem Start?',[['2 m',0],['3 m',1],['4 m',0]],'$@0,4@v(t)dt=1+2=3$')+
+ QB(2,'Wann ist der Aufzug am höchsten?',[['bei $t=4$ s',0],['zwischen 5 s und 8 s',1],['bei $t=11$ s',0]],'Bis $t=5$ steigt er, dann steht er ($v=0$), ab $t=8$ fährt er nach unten.')+
+ QB(3,'Wo befindet sich der Aufzug nach 11 s?',[['6,5 m über dem Start',0],['0,5 m über dem Start',1],['3,5 m über dem Start',0]],'$@0,11@v(t)dt=1+2+0,5-2-1=0,5$')+
+ QB(4,'Welche Strecke ist er insgesamt gefahren?',[['0,5 m',0],['6,5 m',1],['3,5 m',0]],'Beträge addieren: $1+2+0,5+|-2|+|-1|=6,5$'),
+ '$@0,t@v(x)dx$','Höhe:')},
+{t:'Wassertank: Zufluss und Abfluss',q:'Ein Tank wird durch eine Leitung befüllt und entleert. Oben: Durchflussrate, unten: Wassermenge.',
+b:['Frage 1','Frage 2','Frage 3','Frage 4'],init:()=>initDual(ST.tank),
+on:st=>{const F=st>=4?40:0;if(F!=DS.F0){DS.F0=F;draw(DS.t)}},
+h:DUAL(
+ QB(1,'Wann nimmt die Wassermenge im Tank zu?',[['von 0 bis 3 min',0],['von 0 bis 5 min',1],['von 5 bis 9 min',0]],'Solange $f>0$ ist, fließt Wasser zu. Ab $t=5$ fließt es ab.')+
+ QB(2,'Um wie viel hat sich die Wassermenge in 9 min geändert?',[['um 12 l',0],['um 4 l',1],['um 8 l',0]],'$@0,9@f(x)dx=6+2-4=4$')+
+ QB(3,'Wie viel Wasser ist in 9 min insgesamt durch die Leitung geflossen?',[['4 l',0],['8 l',0],['12 l',1]],'Beträge addieren: $6+2+|-4|=12$')+
+ QB(4,'Zu Beginn sind 40 l im Tank. Wie viel Wasser ist nach 9 min darin?',[['4 l',0],['36 l',0],['44 l',1]],'$B(9)=40+4=44$. Der Anfangswert verschiebt die Kurve nach oben.'),
+ '$@0,t@f(x)dx$','Tankinhalt:')},
+{t:'Das Integral deuten',q:'Es ist $@0,3@f(x)dx=1,6$. Was bedeutet das im Sachzusammenhang?',
+b:[],done:'Wähle jeweils die richtige Aussage',
+h:`<div class="stack">${
+ QB(null,'$f(x)$ ist die Wachstumsgeschwindigkeit einer Pflanze ($x$ in Tagen, $f(x)$ in mm pro Tag).',[['Die Pflanze ist nach 3 Tagen 1,6 mm hoch',0],['In den ersten 3 Tagen wächst sie um 1,6 mm',1],['Nach 3 Tagen wächst sie mit 1,6 mm pro Tag',0]],'Das Integral ist die Änderung der Größe.','qr3')+
+ QB(null,'$f(x)$ ist die momentane Produktionsrate von Benzin ($x$ in Stunden, $f(x)$ in Tonnen pro Stunde).',[['In den ersten 3 Stunden werden 1,6 t produziert',1],['Nach 3 Stunden werden 1,6 t pro Stunde produziert',0],['Nach 3 Stunden lagern 1,6 t im Tank',0]],'Ohne Anfangsbestand weiß man nichts über den Tankinhalt.','qr3')+
+ QB(null,'Der Querschnitt einer Profilschiene wird von den Achsen, dem Graphen von $f$ und der Geraden $x=3$ begrenzt ($x$ und $f(x)$ in cm).',[['Die Schiene ist 1,6 cm lang',0],['Die Schiene ist 1,6 cm hoch',0],['Der Querschnitt hat den Flächeninhalt 1,6 cm²',1]],'Hier ist das Integral einfach der Flächeninhalt (cm · cm).','qr3')}</div>`},
+{t:'Das Wichtigste',q:'Gesamtänderung einer Größe – drei Gedanken.',
+b:['Netto','Insgesamt','Anfangsbestand'],done:'Jetzt folgt der Hefteintrag',
+h:`<div class="g3">${CARD(1,'Gesamtänderung (netto)','$@a,b@f(x)dx$','Oberhalb der $x$-Achse: Zunahme, unterhalb: Abnahme. Beides gleicht sich aus.')}${CARD(2,'Insgesamt (Strecke, Menge)','$|I_1|+|I_2|+…$','Beträge der Teilintegrale zwischen den Nullstellen addieren.')}${CARD(3,'Bestand zum Zeitpunkt $t$','$B(t)=B_0+@0,t@f(x)dx$','Anfangswert plus Gesamtänderung.')}</div>`}
+];
+/* ---------- Steuerung ---------- */
+let cur=0,step=0;
+function go(i){cur=i;step=0;const s=S[i];
+g('bd').textContent=i+1;g('ti').textContent=s.t;g('pg').textContent=(i+1)+' / '+S.length;g('pf').style.width=(i+1)/S.length*100+'%';
+g('mn').innerHTML='<div class="sc"><div class="q">'+T(s.q)+'</div>'+s.h+'</div>';
+g('bk').disabled=!i;g('fw').disabled=i==S.length-1;if(s.init)s.init();upd()}
+function upd(){const s=S[cur],m=g('mn');
+m.querySelectorAll('[data-s]').forEach(e=>{const a=+e.dataset.s,x=e.dataset.x!=null?+e.dataset.x:99;e.classList.toggle('on',step>=a&&step<x)});
+if(s.on)s.on(step);
+const d=step>=s.b.length;g('sb').textContent=d?(s.done||'✓ Alles gezeigt'):s.b[step];g('sb').disabled=d}
+function nx(){if(step<S[cur].b.length){step++;upd()}}
+function bk1(){if(step>0){step--;upd()}}
+function nav(d){const n=cur+d;if(n>=0&&n<S.length)go(n)}
+function ov(o){const e=g('ov');if(o){e.innerHTML='<div class="oh"><h2>Übersicht</h2><button class="btn" onclick="ov(0)">✕ Schließen</button></div><div class="tiles">'+S.map((s,i)=>`<button class="tile${i==cur?' cur':''}" onclick="ov(0);go(${i})"><b>${i+1}</b><span>${s.t}</span></button>`).join('')+'</div>'}e.classList.toggle('on',!!o)}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('keydown',e=>{if(e.target.tagName=='INPUT')return;if(e.key=='ArrowRight')nav(1);else if(e.key=='ArrowLeft')nav(-1);else if(e.key==' '||e.key=='Enter'){e.preventDefault();nx()}else if(e.key=='Backspace'){e.preventDefault();bk1()}else if(e.key=='Escape')ov(0)});
+go(0);
+</script>
+</body>
+</html>
