@@ -148,6 +148,18 @@ tr.q td.pl{box-shadow:inset 4px 0 0 var(--gc)}
 .ovr .s{grid-column:2;font-size:.9rem;color:var(--muted)}
 .ovr .g{color:var(--gc);font-weight:600;font-size:.9rem;margin-left:6px}
 .ov .tbl td{font-size:1.08rem}
+.ftag{font-weight:700;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:0 7px}
+.ovc{display:flex;flex-direction:column;gap:4px}
+.ovg .s{display:block}
+.ovr .ftg{color:var(--muted)}
+.ov-multi{border-left-color:var(--ink)}
+.ov-multi .ov-k{color:var(--ink)}
+.ov-g{border-left:6px solid var(--gc);padding-left:14px;margin-top:14px}
+.ov-gk{margin:0 0 2px;font-weight:700;color:var(--gc)}
+.ov-multi .ov-match{font-size:clamp(1.8rem,5.5vw,3rem)}
+.startnote{font-size:.9rem;color:var(--muted)}
+.startnote .help{margin:0}
+.startnote .btn{padding:7px 12px;font-size:.9rem}
 
 /* Einrichten */
 .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px}
@@ -259,6 +271,8 @@ function load(){
     const o=JSON.parse(raw);
     if(!o||!o.settings||!Array.isArray(o.games)) return null;
     o.results=o.results||{};
+    o.settings.fields=fieldsOf(o.settings);
+    o.games.forEach((g,i)=>{if(g.slot===undefined){g.slot=i; g.f=0;}});
     if(!Array.isArray(o.lots)||o.lots.length!==o.settings.teamCount) o.lots=makeLots(o.settings.teamCount);
     return o;
   }catch(e){return null;}
@@ -271,10 +285,12 @@ const name=i=>tname(S.settings,i);
 function defaultGroups(n,g){return Array.from({length:n},(_,i)=>g===1?0:Math.floor(i*g/n));}
 function toMin(t){const m=/^(\d{1,2}):(\d{2})/.exec(t||''); return m?(+m[1])*60+(+m[2]):null;}
 function fmt(m){m=((Math.round(m)%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
-function nowRounded(){const d=new Date(); return fmt(Math.ceil((d.getHours()*60+d.getMinutes())/5)*5);}
+function nowExact(){const d=new Date(); return fmt(d.getHours()*60+d.getMinutes());}
+const fieldsOf=st=>Math.max(1,Math.min(4,Math.floor((+st.teamCount||2)/2),Math.round(+st.fields)||1));
+function finalize(d){const o=clone(d); if(o.startAuto) o.start=nowExact(); o.startAuto=false; return o;}
 function defaultsDraft(){
   const n=6;
-  return {name:'',teamCount:n,teams:Array(n).fill(''),mode:'g2_ko',groupOf:defaultGroups(n,2),hinRueck:false,winPts:3,start:nowRounded(),dur:'7',change:'1',pause:'0',end:'',refs:true};
+  return {name:'',teamCount:n,teams:Array(n).fill(''),mode:'g2_ko',groupOf:defaultGroups(n,2),hinRueck:false,winPts:3,fields:1,startAuto:true,start:nowExact(),dur:'7',change:'1',pause:'0',end:'',refs:true};
 }
 const gcol=g=>g.phase==='ko'?'var(--ko)':'var(--g'+g.g+')';
 
@@ -291,34 +307,49 @@ function circlePairs(list){
   }
   return out;
 }
-// Reihenfolge für ein Feld: möglichst keine zwei Spiele direkt hintereinander, Spiele gleichmäßig verteilen
-function orderGreedy(list,out,last,cnt){
+// Zeitfenster füllen: pro Fenster bis zu F Spiele auf verschiedenen Feldern, kein Team doppelt,
+// möglichst wenige direkt aufeinanderfolgende Spiele eines Teams, Spiele gleichmäßig verteilen.
+// Mit F=1 entspricht das exakt der bisherigen Reihenfolge.
+function scheduleSlots(list,F,slots,last,cnt){
   const rem=list.map((x,i)=>Object.assign({},x,{i}));
   while(rem.length){
-    const pos=out.length; let bi=0, bk=null;
-    const left={}; rem.forEach(x=>{left[x.g]=(left[x.g]||0)+1;});
-    rem.forEach((x,k)=>{
-      const rh=last[x.h]===undefined?99:pos-last[x.h];
-      const ra=last[x.a]===undefined?99:pos-last[x.a];
-      const minR=Math.min(rh,ra);
-      const key=[Math.min(minR,2), left[x.g], -((cnt[x.h]||0)+(cnt[x.a]||0)), minR, -x.i];
-      if(!bk||cmp(key,bk)>0){bk=key;bi=k;}
-    });
-    const x=rem.splice(bi,1)[0];
-    last[x.h]=pos; last[x.a]=pos;
-    cnt[x.h]=(cnt[x.h]||0)+1; cnt[x.a]=(cnt[x.a]||0)+1;
-    out.push(x);
+    const pos=slots.length, pick=[], used=new Set();
+    for(let n=0;n<F&&rem.length;n++){
+      let bi=-1, bk=null;
+      const left={}; rem.forEach(x=>{left[x.g]=(left[x.g]||0)+1;});
+      rem.forEach((x,k)=>{
+        if(used.has(x.h)||used.has(x.a)) return;
+        const rh=last[x.h]===undefined?99:pos-last[x.h];
+        const ra=last[x.a]===undefined?99:pos-last[x.a];
+        const minR=Math.min(rh,ra);
+        const key=[Math.min(minR,2), left[x.g], -((cnt[x.h]||0)+(cnt[x.a]||0)), minR, -x.i];
+        if(!bk||cmp(key,bk)>0){bk=key;bi=k;}
+      });
+      if(bi<0) break;
+      const x=rem.splice(bi,1)[0];
+      used.add(x.h); used.add(x.a); pick.push(x);
+      cnt[x.h]=(cnt[x.h]||0)+1; cnt[x.a]=(cnt[x.a]||0)+1;
+    }
+    pick.forEach(x=>{last[x.h]=pos; last[x.a]=pos;});
+    slots.push(pick);
   }
 }
 function buildGames(st){
-  const m=modeOf(st.mode), groups=[...Array(m.groups)].map(()=>[]);
+  const m=modeOf(st.mode), F=fieldsOf(st), groups=[...Array(m.groups)].map(()=>[]);
   for(let i=0;i<st.teamCount;i++) groups[m.groups===1?0:st.groupOf[i]].push(i);
   const hin=[];
   groups.forEach((list,g)=>circlePairs(list).forEach(p=>hin.push({g,h:p[0],a:p[1]})));
-  const ordered=[], last={}, cnt={};
-  orderGreedy(hin,ordered,last,cnt);
-  if(st.hinRueck) orderGreedy(hin.map(x=>({g:x.g,h:x.a,a:x.h})),ordered,last,cnt);
-  const games=ordered.map((x,i)=>({id:'G'+(i+1),phase:'group',g:x.g,h:x.h,a:x.a}));
+  const slots=[], last={}, cnt={};
+  scheduleSlots(hin,F,slots,last,cnt);
+  if(st.hinRueck) scheduleSlots(hin.map(x=>({g:x.g,h:x.a,a:x.h})),F,slots,last,cnt);
+  const games=[];
+  slots.forEach((pick,sl)=>{
+    // Feld: Gruppe bleibt nach Möglichkeit auf "ihrem" Feld
+    const taken=new Set(), asg=pick.map(x=>{const w=x.g%F; if(!taken.has(w)){taken.add(w); return [x,w];} return [x,null];});
+    asg.forEach(a=>{if(a[1]===null){let f=0; while(taken.has(f)) f++; taken.add(f); a[1]=f;}});
+    asg.sort((p,q)=>p[1]-q[1]);
+    asg.forEach(([x,f])=>games.push({id:'G'+(games.length+1),phase:'group',g:x.g,h:x.h,a:x.a,slot:sl,f}));
+  });
   const R=(g,r)=>({t:'rank',g,r}), W=id=>({t:'w',id}), L=id=>({t:'l',id}), Q=s=>({t:'q',slot:s});
   let ko=[];
   if(m.id==='rr_final'){
@@ -335,7 +366,15 @@ function buildGames(st){
       {id:'F',label:'Finale',hs:W('HF1'),as:W('HF2')}
     ];
   }
-  ko.forEach(k=>games.push(Object.assign({phase:'ko'},k)));
+  // Endrunde: mit mehreren Feldern laufen Halbfinale 1 und 2 sowie Spiel um Platz 3 und Finale gleichzeitig
+  const rounds=m.id==='rr_final'?[ko.map(k=>k.id)]:(ko.length?[['HF1','HF2'],['P3','F']]:[]);
+  const fpos={HF1:0,HF2:1,F:0,P3:1}, slotOf={}, fOf={};
+  let sn=slots.length;
+  rounds.forEach(r=>{
+    if(F>=2){r.forEach(id=>{slotOf[id]=sn; fOf[id]=fpos[id];}); sn++;}
+    else r.forEach(id=>{slotOf[id]=sn++; fOf[id]=0;});
+  });
+  ko.forEach(k=>games.push(Object.assign({phase:'ko',slot:slotOf[k.id],f:fOf[k.id]},k)));
   return games;
 }
 function srcLabel(src,st){
@@ -350,14 +389,16 @@ function times(st,games){
   const s=toMin(st.start); const start=s===null?480:s;
   const step=(durOf(st,games).dur||0)+(+st.change||0);
   const firstKO=games.findIndex(g=>g.phase==='ko');
-  return games.map((g,i)=>start+i*step+(firstKO>0&&i>=firstKO?(+st.pause||0):0));
+  const koSlot=firstKO>0?games[firstKO].slot:null;
+  return games.map(g=>start+g.slot*step+(koSlot!==null&&g.slot>=koSlot?(+st.pause||0):0));
 }
+const slotCount=games=>games.length?Math.max(...games.map(g=>g.slot))+1:0;
 function endTime(st,games){if(!games.length) return null; const t=times(st,games); return t[t.length-1]+(durOf(st,games).dur||0);}
 // Spieldauer: eingegeben, sonst aus Beginn und Stundenende berechnet (ganze Minuten, abgerundet)
 function durOf(st,games){
   const raw=st.dur===undefined||st.dur===null?'':String(st.dur).trim();
   if(raw!==''&&+raw>0) return {dur:+raw,auto:false};
-  const s=toMin(st.start), e=toMin(st.end), n=games.length;
+  const s=toMin(st.start), e=toMin(st.end), n=slotCount(games);
   if(s===null||e===null||!n) return {dur:null,auto:true};
   const firstKO=games.findIndex(g=>g.phase==='ko');
   const avail=e-s-(firstKO>0?(+st.pause||0):0)-(n-1)*(+st.change||0);
@@ -451,24 +492,27 @@ function compute(){
     ko[g.id]={winner,loser,draw:known&&x!==null&&y!==null&&x===y};
   });
   const done=S.games.map(g=>g.phase==='group'?doneG(g):ko[g.id].winner!==null);
-  return {m,rank,groupGames,groupDone,allGroupsDone,q,ko,teamsOf,hint,done,next:done.indexOf(false),refs:computeRefs(teamsOf)};
+  const next=done.indexOf(false);
+  const nextSet=new Set(next<0?[]:S.games.map((g,i)=>i).filter(i=>S.games[i].slot===S.games[next].slot&&!done[i]));
+  return {m,rank,groupGames,groupDone,allGroupsDone,q,ko,teamsOf,hint,done,next,nextSet,refs:computeRefs(teamsOf)};
 }
 function computeRefs(teamsOf){
-  const st=S.settings, n=st.teamCount;
+  const st=S.settings, n=st.teamCount, G=S.games;
   if(!st.refs||n<3) return teamsOf.map(()=>null);
-  const cnt=Array(n).fill(0), out=[];
-  const inG=(i,t)=>i>=0&&i<teamsOf.length&&teamsOf[i].includes(t);
-  const laterKO=(i,t)=>{for(let k=i+1;k<teamsOf.length;k++) if(S.games[k].phase==='ko'&&teamsOf[k].includes(t)) return true; return false;};
-  teamsOf.forEach((tt,i)=>{
-    if(tt[0]===null||tt[1]===null){out.push(null);return;}
+  const cnt=Array(n).fill(0), out=G.map(()=>null), inSlot={}, taken={};
+  G.forEach((g,i)=>{const set=inSlot[g.slot]||(inSlot[g.slot]=new Set()); teamsOf[i].forEach(t=>{if(t!==null) set.add(t);});});
+  const plays=(sl,t)=>!!inSlot[sl]&&inSlot[sl].has(t);
+  const laterKO=(sl,t)=>G.some((g,k)=>g.phase==='ko'&&g.slot>sl&&teamsOf[k].includes(t));
+  G.forEach((g,i)=>{
+    const tt=teamsOf[i]; if(tt[0]===null||tt[1]===null) return;
+    const sl=g.slot, tk=taken[sl]||(taken[sl]=new Set());
     let best=null, bs=Infinity;
     for(let t=0;t<n;t++){
-      if(tt.includes(t)) continue;
-      const s=cnt[t]*10+(inG(i+1,t)?5:0)+(inG(i-1,t)?2:0)+(S.games[i].phase==='ko'&&laterKO(i,t)?4:0);
-      if(s<bs){bs=s;best=t;}
+      if(plays(sl,t)||tk.has(t)) continue;
+      const sc=cnt[t]*10+(plays(sl+1,t)?5:0)+(plays(sl-1,t)?2:0)+(g.phase==='ko'&&laterKO(sl,t)?4:0);
+      if(sc<bs){bs=sc;best=t;}
     }
-    if(best!==null) cnt[best]++;
-    out.push(best);
+    if(best!==null){cnt[best]++; tk.add(best); out[i]=best;}
   });
   return out;
 }
@@ -516,13 +560,13 @@ function stepper(id,k){
 function renderPlan(){
   const st=S.settings, m=modeOf(st.mode), T=times(st,S.games), end=endTime(st,S.games);
   const firstKO=S.games.findIndex(g=>g.phase==='ko');
-  let h=`<div class="bar"><p class="info">${S.games.length} Spiele je ${durOf(st,S.games).dur} min${durOf(st,S.games).auto?' (automatisch berechnet)':''}, Ende ca. ${fmt(end)} Uhr</p><button type="button" class="btn ghost" id="jump">Zum aktuellen Spiel</button></div>`;
+  let h=`<div class="bar"><p class="info">${S.games.length} Spiele${fieldsOf(st)>1?` auf ${fieldsOf(st)} Feldern`:''} je ${durOf(st,S.games).dur} min${durOf(st,S.games).auto?' (automatisch berechnet)':''}, Ende ca. ${fmt(end)} Uhr</p><button type="button" class="btn ghost" id="jump">Zum aktuellen Spiel</button></div>`;
   S.games.forEach((g,i)=>{
     if(i===0&&firstKO>0) h+=`<h2 class="phase">Vorrunde</h2>`;
     if(i===firstKO&&firstKO>0) h+=`<h2 class="phase">Endrunde${+st.pause?`<span>nach ${+st.pause} min Pause</span>`:''}</h2>`;
     const tag=g.phase==='ko'?g.label:(m.groups>1?'Gruppe '+LETTERS[g.g]:'');
     h+=`<article class="game" data-i="${i}" style="--gc:${gcol(g)}">
-      <div class="meta"><span class="time">${fmt(T[i])}</span><span>Spiel ${i+1}</span>${tag?`<span class="tag">${esc(tag)}</span>`:''}<span class="flag"></span></div>
+      <div class="meta"><span class="time">${fmt(T[i])}</span><span>Spiel ${i+1}</span>${fieldsOf(st)>1?`<span class="ftag">Feld ${g.f+1}</span>`:''}${tag?`<span class="tag">${esc(tag)}</span>`:''}<span class="flag"></span></div>
       <div class="match">
         <div class="team home"><span class="nm"></span><span class="hint"></span></div>
         <div class="score">${stepper(g.id,'h')}<span class="colon">:</span>${stepper(g.id,'a')}</div>
@@ -559,8 +603,8 @@ function refreshPlan(){
       nm[k].classList.toggle('lose',w!==null&&w!==tt[k]);
     });
     el.classList.toggle('done',c.done[i]);
-    el.classList.toggle('next',c.next===i);
-    el.querySelector('.flag').textContent=c.next===i?'Jetzt dran':'';
+    el.classList.toggle('next',c.nextSet.has(i));
+    el.querySelector('.flag').textContent=c.nextSet.has(i)?'Jetzt dran':'';
     const d=el.querySelector('.deci'); if(d) d.hidden=!c.ko[g.id].draw;
     const ref=el.querySelector('.ref');
     if(!st.refs||st.teamCount<3) ref.textContent='';
@@ -616,14 +660,24 @@ function renderOverview(){
   if(c.next===-1){
     h+=podiumHTML(c,true)||'';
   }else{
-    const i=c.next, g=S.games[i], tag=tagOf(g);
-    h+=`<section class="ov-now" style="--gc:${gcol(g)}"><p class="ov-k">Jetzt dran<span>${fmt(T[i])} Uhr, Spiel ${i+1}${tag?', '+esc(tag):''}</span></p><div class="ov-match"><span>${label(i,0)}</span><span class="vs">gegen</span><span>${label(i,1)}</span></div>${c.refs[i]!==null?`<p class="ov-ref">Schiri: ${esc(name(c.refs[i]))}</p>`:''}</section>`;
-    const nx=[]; for(let k=i+1;k<S.games.length&&nx.length<4;k++) nx.push(k);
-    if(nx.length){
-      h+='<section class="ov-list"><h2>Danach</h2>'+nx.map(k=>{
-        const g2=S.games[k], tg=tagOf(g2);
-        return `<div class="ovr" style="--gc:${gcol(g2)}"><span class="t">${fmt(T[k])}</span><span>${label(k,0)} gegen ${label(k,1)}${tg?`<span class="g">${esc(tg)}</span>`:''}</span>${c.refs[k]!==null?`<span class="s">Schiri: ${esc(name(c.refs[k]))}</span>`:''}</div>`;
+    const F=fieldsOf(st), idx=[...c.nextSet].sort((x,y)=>x-y), i=idx[0], sl=S.games[i].slot;
+    const refLine=k=>c.refs[k]!==null?`<p class="ov-ref">Schiri: ${esc(name(c.refs[k]))}</p>`:'';
+    if(idx.length===1){
+      const g=S.games[i], tag=tagOf(g);
+      h+=`<section class="ov-now" style="--gc:${gcol(g)}"><p class="ov-k">Jetzt dran<span>${fmt(T[i])} Uhr, Spiel ${i+1}${F>1?', Feld '+(g.f+1):''}${tag?', '+esc(tag):''}</span></p><div class="ov-match"><span>${label(i,0)}</span><span class="vs">gegen</span><span>${label(i,1)}</span></div>${refLine(i)}</section>`;
+    }else{
+      h+=`<section class="ov-now ov-multi" style="--gc:var(--ink)"><p class="ov-k">Jetzt dran<span>${fmt(T[i])} Uhr</span></p>`+idx.map(k=>{
+        const g=S.games[k], tg=tagOf(g);
+        return `<div class="ov-g" style="--gc:${gcol(g)}"><p class="ov-gk">Feld ${g.f+1}${tg?' · '+esc(tg):''}</p><div class="ov-match"><span>${label(k,0)}</span><span class="vs">gegen</span><span>${label(k,1)}</span></div>${refLine(k)}</div>`;
       }).join('')+'</section>';
+    }
+    const groups=[]; S.games.forEach((g2,k)=>{if(g2.slot>sl){let e=groups.find(x=>x.slot===g2.slot); if(!e){e={slot:g2.slot,list:[]}; groups.push(e);} e.list.push(k);}});
+    const nx=groups.slice(0,4);
+    if(nx.length){
+      h+='<section class="ov-list"><h2>Danach</h2>'+nx.map(sg=>`<div class="ovr"><span class="t">${fmt(T[sg.list[0]])}</span><div class="ovc">${sg.list.map(k=>{
+        const g2=S.games[k], tg=tagOf(g2);
+        return `<div class="ovg" style="--gc:${gcol(g2)}"><span>${label(k,0)} gegen ${label(k,1)}${tg?`<span class="g">${esc(tg)}</span>`:''}${F>1?`<span class="g ftg">Feld ${g2.f+1}</span>`:''}</span>${c.refs[k]!==null?`<span class="s">Schiri: ${esc(name(c.refs[k]))}</span>`:''}</div>`;
+      }).join('')}</div></div>`).join('')+'</section>';
     }
     h+=podiumHTML(c,false);
   }
@@ -633,7 +687,8 @@ function renderOverview(){
 }
 
 /* ---------- Einrichten ---------- */
-function structKey(d){return JSON.stringify([+d.teamCount,d.mode,modeOf(d.mode).groups>1?d.groupOf:[],!!d.hinRueck]);}
+function structKey(d){return JSON.stringify([+d.teamCount,d.mode,modeOf(d.mode).groups>1?d.groupOf:[],!!d.hinRueck,fieldsOf(d)]);}
+const startNoteHTML=d=>d.startAuto?'<p class="help">Aktuelle Uhrzeit, wird beim Erstellen übernommen.</p>':'<button type="button" class="btn ghost" data-act="start-now">Auf aktuelle Zeit setzen</button>';
 function hasResults(){return !!S&&Object.values(S.results).some(r=>r&&(num(r.h)!==null||num(r.a)!==null));}
 function validate(d){
   const m=modeOf(d.mode), e=[];
@@ -654,12 +709,15 @@ function validate(d){
 function renderSetup(){
   if(!draft){
     draft=S?clone(S.settings):defaultsDraft();
+    if(draft.fields===undefined) draft.fields=1;
+    if(S) draft.startAuto=false;
   }
   const d=draft, m=modeOf(d.mode);
   let h='<div class="setup">';
   h+=`<section class="card"><h2>Turnier</h2>
     <label class="fld"><span>Name (optional)</span><input type="text" data-f="name" value="${esc(d.name)}" placeholder="z. B. Fußballturnier 7b"></label>
     <div class="fld"><span id="lbl-count">Anzahl Teams</span><div class="count" role="group" aria-labelledby="lbl-count"><button type="button" class="sb" data-cnt="-1" aria-label="Ein Team weniger">−</button><output>${d.teamCount}</output><button type="button" class="sb" data-cnt="1" aria-label="Ein Team mehr">+</button></div></div>
+    <div class="fld"><span id="lbl-fld">Spielfelder (Hallen)</span><div class="count" role="group" aria-labelledby="lbl-fld"><button type="button" class="sb" data-fld="-1" aria-label="Ein Spielfeld weniger">−</button><output>${fieldsOf(d)}</output><button type="button" class="sb" data-fld="1" aria-label="Ein Spielfeld mehr">+</button></div><p class="help">Bei mehreren Feldern laufen Spiele gleichzeitig. Ein Team spielt nie auf zwei Feldern zugleich.</p></div>
   </section>`;
   h+=`<section class="card"><h2>Modus</h2><div class="modes">${MODES.map(x=>{
       const dis=d.teamCount<x.min;
@@ -669,7 +727,7 @@ function renderSetup(){
   </section>`;
   h+=`<section class="card"><h2>Teams</h2>${m.groups>1?'<p class="help">Die Gruppen sind der Reihe nach vorbelegt. Mit A, B oder C lässt sich ein Team umsetzen.</p>':''}<div class="teams">${d.teams.map((t,i)=>`<div class="trow"><span class="tno">${i+1}</span><input type="text" data-team="${i}" value="${esc(t)}" placeholder="Team ${i+1}" aria-label="Name von Team ${i+1}">${m.groups>1?`<div class="gsel" role="group" aria-label="Gruppe für Team ${i+1}">${[...Array(m.groups)].map((_,g)=>`<button type="button" class="gb${d.groupOf[i]===g?' on':''}" style="--gc:var(--g${g})" data-grp="${g}" data-ti="${i}" aria-pressed="${d.groupOf[i]===g}">${LETTERS[g]}</button>`).join('')}</div>`:''}</div>`).join('')}</div><p class="gcount" id="gcount"></p></section>`;
   h+=`<section class="card"><h2>Zeitplan</h2><div class="grid4">
-    <label class="fld"><span>Beginn</span><input type="time" data-f="start" value="${esc(d.start)}"></label>
+    <div class="fld"><label class="fld" style="margin:0"><span>Beginn</span><input type="time" data-f="start" value="${esc(d.start)}"></label><div class="startnote" id="startNote">${startNoteHTML(d)}</div></div>
     <label class="fld"><span>Spieldauer in Minuten</span><input type="number" min="1" max="60" inputmode="numeric" data-f="dur" value="${esc(d.dur)}" placeholder="automatisch"></label>
     <label class="fld"><span>Wechselzeit in Minuten</span><input type="number" min="0" max="30" inputmode="numeric" data-f="change" value="${esc(d.change)}"></label>
     ${m.ko?`<label class="fld"><span>Pause vor der Endrunde</span><input type="number" min="0" max="60" inputmode="numeric" data-f="pause" value="${esc(d.pause)}"></label>`:''}
@@ -694,7 +752,9 @@ function refreshSummary(){
   else{
     const games=buildGames(d), ko=games.filter(g=>g.phase==='ko').length, end=endTime(d,games), lim=toMin(d.end);
     const du=durOf(d,games);
-    h+=`<p class="sum-main"><strong>${games.length} Spiele</strong>${ko?`, davon ${ko} in der Endrunde`:''}. ${du.auto?`Spieldauer automatisch berechnet: <strong>${du.dur} min</strong> pro Spiel. `:''}Voraussichtliches Ende: <strong>${fmt(end)} Uhr</strong>.</p>`;
+    const F=fieldsOf(d), nsl=slotCount(games);
+    h+=`<p class="sum-main"><strong>${games.length} Spiele</strong>${F>1?` auf ${F} Spielfeldern in ${nsl} Zeitfenstern`:''}${ko?`, davon ${ko} in der Endrunde`:''}. ${du.auto?`Spieldauer automatisch berechnet: <strong>${du.dur} min</strong> pro Spiel. `:''}Voraussichtliches Ende: <strong>${fmt(end)} Uhr</strong>.</p>`;
+    if(d.refs&&F>1&&d.teamCount<3*F) h+=`<p class="help">Bei ${F} Feldern und ${d.teamCount} Teams steht nicht für jedes Spiel ein spielfreies Team als Schiri bereit.</p>`;
     if(du.auto&&du.dur<4) h+=`<p class="warn">Das sind nur ${du.dur} ${du.dur===1?'Minute':'Minuten'} pro Spiel. Eventuell passt ein Modus mit weniger Spielen besser.</p>`;
     if(lim!==null){
       const diff=end-lim;
@@ -709,7 +769,7 @@ function refreshSummary(){
   }else if(pendingConfirm==='new'){
     h+=`<p class="warn">Das aktuelle Turnier mit allen Ergebnissen wird gelöscht.</p><div class="btns"><button type="button" class="btn danger" data-act="new-yes">Turnier löschen und neu anlegen</button><button type="button" class="btn ghost" data-act="cancel">Abbrechen</button></div>`;
   }else{
-    if(structural) h+='<p class="help">Teams, Gruppen oder Modus wurden geändert. Der Spielplan wird dann neu erstellt.</p>';
+    if(structural) h+='<p class="help">Teams, Gruppen, Modus oder Spielfelder wurden geändert. Der Spielplan wird dann neu erstellt.</p>';
     h+=`<div class="btns"><button type="button" class="btn primary" data-act="apply"${errs.length?' disabled':''}>Änderungen übernehmen</button><button type="button" class="btn ghost" data-act="new">Neues Turnier anlegen</button></div>`;
   }
   el.innerHTML=h;
@@ -717,20 +777,25 @@ function refreshSummary(){
 function goPlan(){draft=null; pendingConfirm=null; view='plan'; render(); window.scrollTo(0,0);}
 function act(a){
   if(a==='create'){
-    S={v:1,settings:clone(draft),games:buildGames(draft),results:{},lots:makeLots(draft.teamCount)};
+    S={v:1,settings:finalize(draft),games:buildGames(draft),results:{},lots:makeLots(draft.teamCount)};
     save(); goPlan();
   }else if(a==='apply'){
     const structural=structKey(draft)!==structKey(S.settings);
     if(structural&&hasResults()){pendingConfirm='rebuild'; refreshSummary(); return;}
     if(structural){S.games=buildGames(draft); S.results={}; S.lots=makeLots(draft.teamCount);}
-    S.settings=clone(draft); save(); goPlan();
+    S.settings=finalize(draft); save(); goPlan();
   }else if(a==='rebuild-yes'){
-    S.settings=clone(draft); S.games=buildGames(draft); S.results={}; S.lots=makeLots(draft.teamCount);
+    S.settings=finalize(draft); S.games=buildGames(draft); S.results={}; S.lots=makeLots(draft.teamCount);
     save(); goPlan();
   }else if(a==='new'){pendingConfirm='new'; refreshSummary();}
   else if(a==='new-yes'){
     S=null; try{localStorage.removeItem(KEY);}catch(e){}
     draft=defaultsDraft(); pendingConfirm=null; view='setup'; render(); window.scrollTo(0,0);
+  }else if(a==='start-now'){
+    draft.startAuto=true; draft.start=nowExact();
+    const el=document.querySelector('[data-f="start"]'); if(el) el.value=draft.start;
+    const nt=$('#startNote'); if(nt) nt.innerHTML=startNoteHTML(draft);
+    refreshSummary();
   }else if(a==='cancel'){pendingConfirm=null; refreshSummary();}
 }
 
@@ -855,10 +920,15 @@ function init(){
       if(n) n.scrollIntoView({behavior:reduceMotion()?'auto':'smooth',block:'center'});
       return;
     }
+    if(b.dataset.fld){
+      const cur=fieldsOf(draft), n=Math.max(1,Math.min(4,Math.floor(draft.teamCount/2),cur+(+b.dataset.fld)));
+      if(n===cur) return;
+      draft.fields=n; pendingConfirm=null; renderSetup(); return;
+    }
     if(b.dataset.cnt){
       const n=Math.max(2,Math.min(16,draft.teamCount+(+b.dataset.cnt)));
       if(n===draft.teamCount) return;
-      draft.teamCount=n;
+      draft.teamCount=n; draft.fields=fieldsOf(draft);
       while(draft.teams.length<n) draft.teams.push('');
       draft.teams.length=n;
       draft.groupOf=defaultGroups(n,modeOf(draft.mode).groups);
@@ -886,7 +956,11 @@ function init(){
       save(); refreshPlan(); return;
     }
     if(t.dataset.team!==undefined){draft.teams[+t.dataset.team]=t.value; return;}
-    if(t.dataset.f&&t.type!=='checkbox'){draft[t.dataset.f]=t.value; pendingConfirm=null; refreshSummary();}
+    if(t.dataset.f&&t.type!=='checkbox'){
+      draft[t.dataset.f]=t.value; pendingConfirm=null;
+      if(t.dataset.f==='start'){draft.startAuto=false; const nt=$('#startNote'); if(nt) nt.innerHTML=startNoteHTML(draft);}
+      refreshSummary();
+    }
   });
   app.addEventListener('change',e=>{
     const t=e.target;
@@ -918,6 +992,14 @@ function init(){
   $('#swDur').addEventListener('blur',()=>swPaint());
   swLoop();
   app.addEventListener('focusin',e=>{if(e.target.classList.contains('si')) setTimeout(()=>{try{e.target.select();}catch(_){}} ,0);});
+  // Beginn "aktuelle Zeit" bleibt im Einrichten-Dialog aktuell, bis er von Hand geändert wird
+  setInterval(()=>{
+    if(view!=='setup'||!draft||!draft.startAuto) return;
+    const now=nowExact(); if(now===draft.start) return;
+    draft.start=now;
+    const el=document.querySelector('[data-f="start"]'); if(el&&document.activeElement!==el) el.value=now;
+    refreshSummary();
+  },10000);
   render();
 }
 globalThis.__TP={buildGames,compute,setState:s=>{S=s;},podium};
