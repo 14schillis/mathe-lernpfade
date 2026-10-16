@@ -210,6 +210,47 @@ tr.q td.pl{box-shadow:inset 4px 0 0 var(--gc)}
 .sw-time.over{color:var(--warn)}
 .sw .btn{padding:9px 10px;min-height:44px;font-size:.95rem;white-space:nowrap;flex:none}
 .sw .btn.primary{min-width:4.6rem}
+/* Mehrere Spielfelder nebeneinander */
+.fhead{display:none}
+body.wide .wrap{max-width:1320px}
+@media (min-width:760px){
+  .slot[data-c="2"],.fhead[data-c="2"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+  .fhead[data-c="2"]{margin:0 0 6px}
+  .fhead[data-c="2"] span{font:700 1.1rem var(--cond);color:var(--muted)}
+  .slot[data-c="2"] .game{grid-column:var(--col)}
+  .slot[data-c="2"] .ftag{display:none}
+  .slot[data-c="2"] .match{grid-template-columns:1fr 1fr;gap:8px 12px}
+  .slot[data-c="2"] .score{grid-column:1 / -1;grid-row:2;justify-content:center}
+  .slot[data-c="2"] .team.away{text-align:left}
+}
+@media (min-width:1000px){
+  .slot[data-c="3"],.fhead[data-c="3"]{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 12px}
+  .fhead[data-c="3"]{margin:0 0 6px}
+  .fhead[data-c="3"] span{font:700 1.1rem var(--cond);color:var(--muted)}
+  .slot[data-c="3"] .game{grid-column:var(--col)}
+  .slot[data-c="3"] .ftag{display:none}
+  .slot[data-c="3"] .match{grid-template-columns:1fr 1fr;gap:8px 12px}
+  .slot[data-c="3"] .score{grid-column:1 / -1;grid-row:2;justify-content:center}
+  .slot[data-c="3"] .team.away{text-align:left}
+  .slot[data-c="3"] .sb{width:2.2rem;height:2.2rem}
+  .slot[data-c="3"] .si{width:2.9rem;height:2.9rem;font-size:1.7rem}
+  .slot[data-c="3"] .score{gap:6px}
+  .slot[data-c="3"] .stp{gap:3px}
+}
+@media (min-width:1280px){
+  .slot[data-c="4"],.fhead[data-c="4"]{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 12px}
+  .fhead[data-c="4"]{margin:0 0 6px}
+  .fhead[data-c="4"] span{font:700 1.1rem var(--cond);color:var(--muted)}
+  .slot[data-c="4"] .game{grid-column:var(--col)}
+  .slot[data-c="4"] .ftag{display:none}
+  .slot[data-c="4"] .match{grid-template-columns:1fr 1fr;gap:8px 12px}
+  .slot[data-c="4"] .score{grid-column:1 / -1;grid-row:2;justify-content:center}
+  .slot[data-c="4"] .team.away{text-align:left}
+  .slot[data-c="4"] .sb{width:2.2rem;height:2.2rem}
+  .slot[data-c="4"] .si{width:2.9rem;height:2.9rem;font-size:1.7rem}
+  .slot[data-c="4"] .score{gap:6px}
+  .slot[data-c="4"] .stp{gap:3px}
+}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
@@ -286,7 +327,7 @@ function defaultGroups(n,g){return Array.from({length:n},(_,i)=>g===1?0:Math.flo
 function toMin(t){const m=/^(\d{1,2}):(\d{2})/.exec(t||''); return m?(+m[1])*60+(+m[2]):null;}
 function fmt(m){m=((Math.round(m)%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function nowExact(){const d=new Date(); return fmt(d.getHours()*60+d.getMinutes());}
-const fieldsOf=st=>Math.max(1,Math.min(4,Math.floor((+st.teamCount||2)/2),Math.round(+st.fields)||1));
+function fieldsOf(st){return Math.max(1,Math.min(4,Math.floor((+st.teamCount||2)/2),Math.round(+st.fields)||1));}
 function finalize(d){const o=clone(d); if(o.startAuto) o.start=nowExact(); o.startAuto=false; return o;}
 function defaultsDraft(){
   const n=6;
@@ -547,6 +588,7 @@ function render(){
   }
   $('#title').textContent=S?(S.settings.name.trim()||'Turnier'):'Neues Turnier';
   swPaint();
+  document.body.classList.toggle('wide',!!S&&view==='plan'&&fieldsOf(S.settings)>=3);
   if(view==='setup') renderSetup();
   else if(view==='plan') renderPlan();
   else if(view==='tables') renderTables();
@@ -561,11 +603,15 @@ function renderPlan(){
   const st=S.settings, m=modeOf(st.mode), T=times(st,S.games), end=endTime(st,S.games);
   const firstKO=S.games.findIndex(g=>g.phase==='ko');
   let h=`<div class="bar"><p class="info">${S.games.length} Spiele${fieldsOf(st)>1?` auf ${fieldsOf(st)} Feldern`:''} je ${durOf(st,S.games).dur} min${durOf(st,S.games).auto?' (automatisch berechnet)':''}, Ende ca. ${fmt(end)} Uhr</p><button type="button" class="btn ghost" id="jump">Zum aktuellen Spiel</button></div>`;
+  const F=fieldsOf(st);
+  const fhead=F>1?`<div class="fhead" data-c="${F}" aria-hidden="true">${Array.from({length:F},(_,k)=>`<span>Feld ${k+1}</span>`).join('')}</div>`:'';
   S.games.forEach((g,i)=>{
     if(i===0&&firstKO>0) h+=`<h2 class="phase">Vorrunde</h2>`;
     if(i===firstKO&&firstKO>0) h+=`<h2 class="phase">Endrunde${+st.pause?`<span>nach ${+st.pause} min Pause</span>`:''}</h2>`;
+    if(i===0||(i===firstKO&&firstKO>0)) h+=fhead;
+    if(F>1&&(i===0||S.games[i-1].slot!==g.slot)) h+=`<div class="slot" data-c="${F}">`;
     const tag=g.phase==='ko'?g.label:(m.groups>1?'Gruppe '+LETTERS[g.g]:'');
-    h+=`<article class="game" data-i="${i}" style="--gc:${gcol(g)}">
+    h+=`<article class="game" data-i="${i}" style="--gc:${gcol(g)};--col:${(g.f||0)+1}">
       <div class="meta"><span class="time">${fmt(T[i])}</span><span>Spiel ${i+1}</span>${fieldsOf(st)>1?`<span class="ftag">Feld ${g.f+1}</span>`:''}${tag?`<span class="tag">${esc(tag)}</span>`:''}<span class="flag"></span></div>
       <div class="match">
         <div class="team home"><span class="nm"></span><span class="hint"></span></div>
@@ -575,6 +621,7 @@ function renderPlan(){
       ${g.phase==='ko'?`<div class="deci" hidden><span class="deci-l">Unentschieden. Ergebnis der Entscheidung, z. B. Siebenmeterschießen:</span><div class="score small">${stepper(g.id,'ph')}<span class="colon">:</span>${stepper(g.id,'pa')}</div></div>`:''}
       <div class="ref"></div>
     </article>`;
+    if(F>1&&(i===S.games.length-1||S.games[i+1].slot!==g.slot)) h+='</div>';
   });
   $('#app').innerHTML=h;
   refreshPlan();
