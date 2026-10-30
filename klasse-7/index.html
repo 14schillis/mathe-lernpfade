@@ -2,80 +2,45 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mathematik – Jahrgangsstufe 7</title>
-<style>
-:root{
-  --ink:#1b2430; --soft:#4a5566; --line:#dde2e9; --bg:#f6f7f9; --head:#1d3fb8; --bar:#4caf1a;
-  --lp-bg:#ccfbf1;  --lp-fg:#0f766e;  --lp-bd:#5eead4;
-  --pr-bg:#dbeafe;  --pr-fg:#1e40af;  --pr-bd:#93c5fd;
-  --st-bg:#dcfce7;  --st-fg:#166534;  --st-bd:#86efac;
-  --ex-bg:#fef3c7;  --ex-fg:#92400e;  --ex-bd:#fcd34d;
-  --sp-bg:#ede9fe;  --sp-fg:#5b21b6;  --sp-bd:#c4b5fd;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.4}
-main{max-width:900px;margin:0 auto;padding:36px 20px 48px}
-
-header{border-left:6px solid var(--bar);padding:2px 0 2px 16px;margin-bottom:30px}
-.kicker{color:var(--soft);font-size:1rem}
-h1{margin:2px 0 4px;font-size:2.1rem;line-height:1.15}
-.subtitle{color:var(--soft);font-size:.98rem;margin:0}
-
-section{margin-bottom:30px}
-h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:2px solid var(--head)}
-
-.rows{margin:10px 0 0 6px;border-left:3px solid var(--line);padding-left:14px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
-  padding:10px 4px;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.row-title{font-weight:600;font-size:1.04rem;flex:1 1 260px}
-.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
-
-.pill{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;
-  font-size:.92rem;font-weight:650;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.pill:active{transform:scale(.97)}
-.pill:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
-.lp{background:var(--lp-bg);color:var(--lp-fg);border-color:var(--lp-bd)}
-.pr{background:var(--pr-bg);color:var(--pr-fg);border-color:var(--pr-bd)}
-.st{background:var(--st-bg);color:var(--st-fg);border-color:var(--st-bd)}
-.ex{background:var(--ex-bg);color:var(--ex-fg);border-color:var(--ex-bd)}
-.sp{background:var(--sp-bg);color:var(--sp-fg);border-color:var(--sp-bd)}
-@media (hover:hover){.pill:hover{filter:brightness(.95)}}
-
-@media(max-width:600px){
-  main{padding:22px 14px 36px}
-  h1{font-size:1.7rem}
-  .pills{justify-content:flex-start}
-  .rows{margin-left:2px;padding-left:10px}
-}
-</style>
+<link rel="stylesheet" href="../assets/uebersicht.css">
 </head>
-<body>
+<body data-bereich="k7">
 <main>
 
-<header>
-  <div class="kicker">Mathematik</div>
+<div class="topbar"><a class="back" href="../">Alle Klassen</a></div>
+
+<header class="hero">
+  <span class="kicker">Mathematik</span>
   <h1>Jahrgangsstufe 7</h1>
-  <p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
+  <p>Interaktive Lernpfade, Präsentationen und Übungen</p>
+  <div class="big" aria-hidden="true">7</div>
 </header>
+
+<div class="legend" aria-hidden="true">
+  <span class="lp">Lernpfad</span>
+  <span class="pr">Präsentation</span>
+  <span class="st">Werkstatt</span>
+  <span class="sp">Spiel</span>
+</div>
 
 <section>
   <h2>1. Terme mit Variablen</h2>
   <div class="rows">
 
     <div class="row">
-      <div class="row-title">1.1a Terme und Termwerte</div>
+      <div class="row-title"><span class="nr">1.1a</span>Terme und Termwerte</div>
       <div class="pills">
-        <a class="pill lp" href="terme-mit-variablen/1-1a-terme-und-termwerte/">Lernpfad</a>
-        <a class="pill sp" href="artefakte/termwerte-spiel/" title="Termwerte-Spiel">Spiel</a>
+        <a class="pill lp" href="1-01a-terme-und-termwerte-lernpfad/">Lernpfad</a>
+        <a class="pill sp" href="1-01a-termwerte-spiel/" title="Termwerte-Spiel">Spiel</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">1.2 Aufstellen und Interpretieren von Termen</div>
+      <div class="row-title"><span class="nr">1.2</span>Aufstellen und Interpretieren von Termen</div>
       <div class="pills">
-        <a class="pill lp" href="terme-mit-variablen/1-2-aufstellen-und-interpretieren-von-termen/">Lernpfad</a>
+        <a class="pill lp" href="1-02-aufstellen-und-interpretieren-von-termen-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
@@ -87,33 +52,33 @@ h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:
   <div class="rows">
 
     <div class="row">
-      <div class="row-title">2.1 Umformen von Produkten und Potenzen</div>
+      <div class="row-title"><span class="nr">2.1</span>Umformen von Produkten und Potenzen</div>
       <div class="pills">
-        <a class="pill pr" href="artefakte/produkte-potenzen-display/" title="Produkte und Potenzen entdecken">Präsentation</a>
-        <a class="pill st" href="artefakte/produkte-potenzen-werkstatt/" title="Produkte und Potenzen üben">Werkstatt</a>
+        <a class="pill pr" href="2-01-produkte-potenzen-praesentation/" title="Produkte und Potenzen entdecken">Präsentation</a>
+        <a class="pill st" href="2-01-produkte-potenzen-werkstatt/" title="Produkte und Potenzen üben">Werkstatt</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">2.2 Umformen von Summen</div>
+      <div class="row-title"><span class="nr">2.2</span>Umformen von Summen</div>
       <div class="pills">
-        <a class="pill pr" href="artefakte/summen-display/" title="Summen umformen">Präsentation</a>
-        <a class="pill st" href="artefakte/summen-werkstatt/" title="Summen umformen üben">Werkstatt</a>
+        <a class="pill pr" href="2-02-summen-praesentation/" title="Summen umformen">Präsentation</a>
+        <a class="pill st" href="2-02-summen-werkstatt/" title="Summen umformen üben">Werkstatt</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">2.3 Ausmultiplizieren und Ausklammern</div>
+      <div class="row-title"><span class="nr">2.3</span>Ausmultiplizieren und Ausklammern</div>
       <div class="pills">
-        <a class="pill pr" href="artefakte/inuit-party/" title="Inuit-Party: Ausmultiplizieren und Ausklammern">Präsentation</a>
+        <a class="pill pr" href="2-03-inuit-party-praesentation/" title="Inuit-Party: Ausmultiplizieren und Ausklammern">Präsentation</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">2.4 Binomische Formeln</div>
+      <div class="row-title"><span class="nr">2.4</span>Binomische Formeln</div>
       <div class="pills">
-        <a class="pill pr" href="artefakte/binomische-formeln-display/" title="Binomische Formeln entdecken">Präsentation</a>
-        <a class="pill st" href="artefakte/binomische-formeln-werkstatt/" title="Binomische Formeln üben">Werkstatt</a>
+        <a class="pill pr" href="2-04-binomische-formeln-praesentation/" title="Binomische Formeln entdecken">Präsentation</a>
+        <a class="pill st" href="2-04-binomische-formeln-werkstatt/" title="Binomische Formeln üben">Werkstatt</a>
       </div>
     </div>
 

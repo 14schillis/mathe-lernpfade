@@ -2,108 +2,67 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mathematik – Interaktive Lernpfade</title>
-
-<style>
-  body{
-    margin:0;
-    background:#f6f7f9;
-    color:#1b2430;
-    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  }
-
-  main{
-    max-width:900px;
-    margin:0 auto;
-    padding:40px 20px;
-  }
-
-  h1{
-    color:#1f4e79;
-    margin-bottom:8px;
-  }
-
-  .subtitle{
-    color:#4a5566;
-    margin-bottom:32px;
-  }
-
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:20px;
-  }
-
-  .card{
-    background:#fff;
-    border:1px solid #dde2e9;
-    border-radius:10px;
-    padding:24px;
-  }
-
-  h2{
-    margin-top:0;
-    color:#1f4e79;
-  }
-
-  .card p{
-    color:#4a5566;
-  }
-
-  a{
-    display:inline-block;
-    margin-top:8px;
-    padding:11px 16px;
-    border-radius:8px;
-    background:#1f4e79;
-    color:#fff;
-    text-decoration:none;
-    font-weight:600;
-  }
-
-  a:hover{
-    background:#17405f;
-  }
-
-  @media(max-width:650px){
-    .grid{
-      grid-template-columns:1fr;
-    }
-  }
-</style>
+<link rel="stylesheet" href="assets/uebersicht.css">
 </head>
-
 <body>
-
 <main>
 
-  <h1>Mathematik – Interaktive Lernpfade</h1>
-  <p class="subtitle">Übersicht nach Jahrgangsstufen</p>
+<header class="hero">
+  <span class="kicker">Mathematik</span>
+  <h1>Interaktive Lernpfade</h1>
+  <p>Lernpfade, Präsentationen und Übungen für den Mathematikunterricht, nach Jahrgangsstufen geordnet.</p>
+  <div class="big" aria-hidden="true">π</div>
+</header>
 
- <div class="grid">
+<div class="tiles">
 
-  <div class="card">
-    <h2>Jahrgangsstufe 7</h2>
-    <p>Interaktive Lernpfade für die 7. Klasse.</p>
-    <a href="klasse-7/">Zu den Lernpfaden</a>
-  </div>
+  <a class="tile" data-bereich="k7" href="klasse-7/">
+    <span class="num">7</span>
+    <h3>Jahrgangsstufe 7</h3>
+    <p>Lernpfade, Präsentationen und Übungen</p>
+    <span class="go">Öffnen</span>
+  </a>
 
-  <div class="card">
-    <h2>Jahrgangsstufe 10</h2>
-    <p>Interaktive Lernpfade für die 10. Klasse.</p>
-    <a href="klasse-10/">Zu den Lernpfaden</a>
-  </div>
+  <a class="tile" data-bereich="k10" href="klasse-10/">
+    <span class="num">10</span>
+    <h3>Jahrgangsstufe 10</h3>
+    <p>Lernpfade, Präsentationen und Übungen</p>
+    <span class="go">Öffnen</span>
+  </a>
 
-  <div class="card">
-    <h2>Jahrgangsstufe 13</h2>
-    <p>Interaktive Lernpfade für die 13. Klasse.</p>
-    <a href="klasse-13/">Zu den Lernpfaden</a>
-  </div>
+  <a class="tile" data-bereich="k13" href="klasse-13/">
+    <span class="num">13</span>
+    <h3>Jahrgangsstufe 13</h3>
+    <p>Lernpfade, Präsentationen und Übungen</p>
+    <span class="go">Öffnen</span>
+  </a>
+
+</div>
+
+<h2 class="sub-h">Weitere Angebote</h2>
+
+<div class="tiles small">
+
+  <a class="tile" data-bereich="kinder" href="kinderspiele/">
+    <span class="ico" style="--icon:var(--i-star)"></span>
+    <div>
+      <h3>Kinderspiele</h3>
+      <p>Rechenspiele für zwischendurch, zum Beispiel in der Vertretungsstunde</p>
+    </div>
+  </a>
+
+  <a class="tile" data-bereich="sport" href="sport/">
+    <span class="ico" style="--icon:var(--i-cup)"></span>
+    <div>
+      <h3>Sport</h3>
+      <p>Turnierplaner und Dreiecksturnier</p>
+    </div>
+  </a>
 
 </div>
 
 </main>
-
 </body>
 </html>

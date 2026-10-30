@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Inuit-Party · Ausmultiplizieren und Ausklammern</title>
+<style>
+:root{--bg:#0e1a2b;--ink:#f2f6fb;--mut:#8fa4bf;--c1:#f5a524;--c2:#4cc3ff;--c3:#5be0a0;--c4:#ff7aa8;--c5:#b9a2ff;--c6:#ff6b6b;--ui:system-ui,"Segoe UI",Arial,sans-serif;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,serif}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font:26px/1.2 var(--ui);overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#vp{position:absolute;inset:0 0 84px 0}
+#fr{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0}
+#sg{position:absolute;inset:0}
+#ti{position:absolute;left:48px;top:34px;font-size:34px;font-weight:600;color:var(--mut)}
+#tm{position:absolute;left:48px;top:84px;font-size:22px;color:var(--c5);display:none;letter-spacing:.08em}
+.o{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;transition:left .7s ease,top .7s ease,opacity .5s}
+.i .o{transition:none!important}
+.m{font:500 60px/1 var(--math)}
+i:not(.hd):not(.bd),b,sup{font-family:var(--math)}
+.m.big{font-size:96px}
+.m i,.m b{font-weight:600}.m b{font-style:normal}
+sup{font-size:.6em;line-height:0;vertical-align:.55em}
+.c1{color:var(--c1);--c:var(--c1)}.c2{color:var(--c2);--c:var(--c2)}.c3{color:var(--c3);--c:var(--c3)}.c4{color:var(--c4);--c:var(--c4)}.c5{color:var(--c5);--c:var(--c5)}.c6{color:var(--c6);--c:var(--c6)}
+.dim{color:#9db2cc}.sym{z-index:3;background:#0e1a2bcc;border-radius:50%;padding:4px 12px}.pr{background:#0e1a2bd9;border-radius:12px;padding:6px 12px}
+.q{font-size:46px;font-weight:500;color:#d5e1f0}
+.cap{font-size:42px;color:var(--c5);letter-spacing:.03em}
+.sm{font-size:30px;color:var(--mut)}
+.lab{font:600 28px var(--ui);color:var(--mut)}
+.lab2{font-size:28px;color:var(--mut)}
+.strat{font-size:38px;color:#d5e1f0}
+.aus{border:2px solid #2b4163;border-radius:14px;padding:6px 26px 10px;text-align:center;color:var(--mut);font-size:20px}
+.aus .m{font-size:40px;color:#b8c8dc}.aus i,.aus b{color:inherit}
+.f{width:96px;height:160px;transform:translate(-50%,-100%)}
+.hd{position:absolute;left:28px;top:10px;width:38px;height:38px;border-radius:50%;background:#f2d7bd}
+.bd{position:absolute;left:5px;top:50px;width:86px;height:98px;border-radius:44px 44px 22px 22px;background:var(--c)}
+.hood{position:absolute;left:17px;top:0;width:62px;height:58px;border-radius:50% 50% 44% 44%;background:var(--c);border:5px solid #ece6da}
+.bo,.mi{position:absolute;background:#40587a}
+.bo{left:12px;top:146px;width:34px;height:14px;border-radius:12px 12px 5px 5px;border-bottom:4px solid #cfd8e4}
+.bo.r{left:50px}
+.mi{left:0;top:96px;width:16px;height:16px;border-radius:50%;background:#efe5d3}
+.mi.r{left:80px}
+.v1 .hood{border-radius:50% 50% 44% 44%/62% 62% 38% 38%;border-color:#f3f0ea}
+.v2 .hood{left:14px;width:68px;border-color:#e2d9c8}
+.v3 .hood{border-radius:50% 50% 40% 40%/74% 74% 26% 26%;border-color:#eee8dd}
+.v0 .bd{background-image:linear-gradient(0deg,#ffffff4d 0 14px,transparent 14px)}
+.v1 .bd{background-image:linear-gradient(90deg,transparent 40px,#ffffff59 40px 46px,transparent 46px)}
+.v2 .bd{background-image:linear-gradient(0deg,transparent 56px,#ffffff4d 56px 60px,transparent 60px 68px,#ffffff4d 68px 72px,transparent 72px)}
+.v3 .bd{background-image:radial-gradient(circle,#ffffff80 2.5px,transparent 3px);background-size:14px 14px;background-position:3px 78px;background-repeat:repeat-x}
+.v1 .mi,.v3 .mi{width:14px;height:20px;border-radius:7px}
+.v1 .mi.r,.v3 .mi.r{left:82px}
+.v2 .bo,.v3 .bo{left:14px;top:142px;width:30px;height:18px;border-radius:10px 10px 4px 4px}
+.v2 .bo.r,.v3 .bo.r{left:52px}
+.lb{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:12px;background:var(--c);color:#0e1a2b;padding:2px 20px;border-radius:14px;font:700 44px var(--math)}
+.hd::before{content:'';position:absolute;left:10px;top:14px;width:5px;height:5px;border-radius:50%;background:#0e1a2b;box-shadow:13px 0 0 #0e1a2b}
+.hd::after{content:'';position:absolute;left:10px;top:23px;width:18px;height:8px;border:3px solid #0e1a2b;border-top:0;border-radius:0 0 18px 18px}
+.sad .hd::after{top:26px;height:7px;border:3px solid #0e1a2b;border-bottom:0;border-radius:18px 18px 0 0}
+.hl{filter:drop-shadow(0 0 16px #fff)}
+.ig{height:370px;transform:translate(-50%,-100%);border:5px solid #7db8e6;border-bottom:0;border-radius:50% 50% 0 0/45% 45% 0 0;background:repeating-linear-gradient(0deg,transparent 0 46px,#7db8e633 46px 48px),#7db8e61a}
+.ig::before,.ig::after{position:absolute;top:-20px;font:200 420px/1 serif;color:#7db8e6;opacity:.5}
+.ig::before{content:'(';left:-150px}.ig::after{content:')';right:-150px}
+.pl{width:26px;height:26px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 9px #ffffff30}
+.sl{opacity:0;transition:opacity .4s}.sl.on{opacity:1}
+.bt{pointer-events:auto;cursor:pointer;padding:22px 18px;border-radius:22px;background:#1b2e49;border:3px solid #34507a;font-size:30px;width:310px;white-space:normal;line-height:1.15;text-align:center}
+.bt.sel{border-color:#fff}.bt.ok{background:#14513a;border-color:var(--c3)}.bt.no{background:#5a2330;border-color:var(--c6)}.bt.dim{opacity:.35}
+#nav{position:absolute;left:0;right:0;bottom:0;height:84px;display:flex;gap:14px;align-items:center;padding:0 24px;background:#0a1422;border-top:1px solid #243752}
+.nb{font-family:var(--ui);height:60px;padding:0 26px;font-size:24px;border-radius:16px;border:2px solid #34507a;background:#1b2e49;color:var(--ink);cursor:pointer}
+#bn{background:#2b6cb0;border-color:#5aa0e6}
+#ct{margin-left:auto;color:var(--mut);font-size:22px}
+#ov{display:none;position:absolute;inset:0;background:#0e1a2bf5;z-index:5;padding:40px;grid-template-columns:repeat(4,1fr);gap:18px;align-content:center}
+.tl{background:#162840;border:2px solid #2b4163;border-radius:18px;padding:22px;font-size:26px;cursor:pointer}
+.tl b{display:block;font-size:40px;color:var(--c1)}
+</style></head><body>
+<div id="vp"><div id="fr"><div id="ti"></div><div id="tm">LEHRERMODUS</div><div id="sg"></div></div></div>
+<div id="nav"><button class="nb" id="bp">‹ Zurück</button><button class="nb" id="bn">Weiter ›</button><button class="nb" id="bo">▦ Übersicht</button><button class="nb" id="br">↺ Zurücksetzen</button><button class="nb" id="bf">⛶ Vollbild</button><button class="nb" id="bs" hidden>Lösung anzeigen</button><span id="ct"></span></div>
+<div id="ov"></div>
+<script>
+const $=i=>document.getElementById(i),st=$('sg'),E={},FL=500,TCH=new URLSearchParams(location.search).get('teacher')=='1';
+let I=0,TM=[],sc=1,NC=0,cur=0,si=0,PK={};
+const later=(f,t)=>I?f():TM.push(setTimeout(f,t));
+const M=(s,n)=>s.replace(/\{(\d)\|([^}]*)\}|\^(\w+)|([a-z])|[*-]/g,(m,k,t,p,l)=>k?`<b class=c${k}>${M(t,1)}</b>`:p?`<sup>${p}</sup>`:l?(n||l>'d'?`<i>${l}</i>`:`<i class=c${'abcd'.indexOf(l)+1}>${l}</i>`):m=='*'?'·':'−');
+function T(id,h,x,y,c,w){let e=E[id];if(!e){e=E[id]=document.createElement('div');e.className='o '+(c||'');e.style.left=x+'px';e.style.top=y+'px';if(w)e.style.width=w+'px';st.appendChild(e);if(!/now/.test(c||'')){e.style.opacity=0;void e.offsetWidth;e.style.opacity=1}}else if(x!=null){e.style.left=x+'px';e.style.top=y+'px'}if(h!=null)e.innerHTML=h;return e}
+function R(id,n){const e=E[id];if(!e)return;delete E[id];if(I||n)e.remove();else{e.style.opacity=0;setTimeout(()=>e.remove(),520)}}
+const clr=()=>Object.keys(E).forEach(k=>R(k,1));
+const X=s=>s.replace(/\[(.)\|([^\]]*)\]|[^\[]+/g,(m,n,t)=>n?`<span class="sl${/[A-Z]/.test(n)?' on':''}" data-s="${n}">${M(t)}</span>`:M(m));
+const EQ=(id,h,y)=>T(id,X(h),800,y,'m');
+const sl=n=>st.querySelector(`[data-s="${n}"]`);
+const S=s=>[...s].forEach(n=>{const e=sl(n);e&&e.classList.add('on')});
+const rc=e=>{const r=e.getBoundingClientRect(),b=st.getBoundingClientRect();return[(r.left+r.width/2-b.left)/sc,(r.top+r.height/2-b.top)/sc]};
+const fly=(id,n)=>{const[x,y]=rc(sl(n));T(id,null,x,y);later(()=>{S(n);R(id,1)},720)};
+function mg(a,b,sel='b'){const B=sl(b),[tx,ty]=rc(B);[].concat(a).forEach(s=>sl(s).querySelectorAll(sel).forEach(el=>{const id='k'+NC++,[x,y]=rc(el);T(id,el.outerHTML,x,y,'m now');later(()=>T(id,null,tx,ty),40);later(()=>R(id,1),760)}));later(()=>B.classList.add('on'),760)}
+const F=(id,l,c,x,y)=>T(id,`<i class=bo></i><i class="bo r"></i><i class=bd></i><i class=hood></i><i class=hd></i><i class=mi></i><i class="mi r"></i><span class=lb>${M(l,1)}</span>`,x,y,'f c'+c+' v'+Math.max(0,'abcd'.indexOf(id[0])));
+const G=(id,cx,w,y)=>T(id,'',cx,y+90,'ig',w);
+const P=(id,x,y)=>T(id,'',x,y,'pl');
+const Q=s=>s?T('q',s,800,175,'q'):R('q');
+const K=(id,c,on)=>E[id]&&E[id].classList.toggle(c,on);
+const A=s=>T('aus',`<small>Ausgangsaufgabe</small><div class=m>${M(s)}</div>`,1380,88,'aus now');
+const hi=(w,x,tx,py,pr,id)=>{T(w,null,x,FL);later(()=>{const mx=(x+tx)/2;P('p'+id,mx,FL-125);T('r'+id,pr,mx,py,'m pr');later(()=>R('p'+id),1200)},650)};
+const one=(a,b,c)=>{G('g',930,860,FL);F('b',b,2,740,FL);F('c',c,3,1120,FL);T('ps','+',900,FL-130,'m dim sym');F('a',a,1,280,FL)};
+const two=(a,b,c,d,w,x,y,z)=>{G('g',1000,860,FL);F('c',c,y,800,FL);F('d',d,z,1200,FL);T('ps','+',960,FL-130,'m dim sym');F('a',a,w,170,FL);F('b',b,x,360,FL);T('p2','+',265,FL-130,'m dim sym')};
+const exl=s=>s[0]=='~'?s.slice(1):s.includes('|')?`<span class=lab>${s.split('|')[0]}</span> ${M(s.split('|')[1])}`:M(s);
+const OL=o=>/^[a-dxy0-9^]+$/.test(o)?M(o):o;
+function quiz(its,pos,q,big){return its.flatMap(it=>{
+ const bt=r=>it.o.forEach((o,j)=>{const id='o'+j,p=PK[it.t];T(id,OL(o),pos[j],480,'bt');E[id].className='o bt '+(r?(j==it.c?'ok':j==p?'no':'dim'):j==p?'sel':'');E[id].onclick=()=>{if(!r){PK[it.t]=j;it.o.forEach((_,i)=>E['o'+i]&&E['o'+i].classList.toggle('sel',i==j))}}});
+ const L=i=>T('x'+i,exl(it.ex[i]),800,640+i*95,'m');
+ return[()=>{clr();T('t',M(it.t),800,300,'m '+(big||'big'));Q(q);bt(0)},()=>{if(it.t2)T('t',M(it.t2));bt(1);L(0)},...it.ex.slice(1).map((_,i)=>()=>L(i+1))]})}
+const sp={1:[750,300],2:[1150,300],3:[750,620],4:[1250,620]};
+const E8='(a+b)(c+d)[0|=][1|ac][p|+][2|ad][q|+][3|bc][r|+][4|bd]';
+const SC=[
+{t:'Die Party beginnt',s:[
+()=>{one('a','b','c');Q(`Was passiert, wenn ${M('a')} zur Party ins Iglu kommt?`)},
+()=>{Q();hi('a',640,740,300,M('ab'),'1')},
+()=>hi('a',1020,1120,300,M('ac'),'2'),
+()=>{EQ('e','a(b+c)[0|=][1|ab][p|+][2|ac]',730);S('0p');fly('r1','1');fly('r2','2')},
+()=>T('cap','Distributivgesetz',800,835,'cap')]},
+{t:'Warum müssen beide begrüßt werden?',s:[
+()=>{one('a','b','c');Q('Eine Vermutung aus der Klasse:');EQ('e','a(b+c)[A|=][B|ab][C|+][D|c]',730)},
+()=>{Q();hi('a',640,740,300,M('ab'),'1');later(()=>T('a',null,1540,FL),1600);later(()=>K('c','sad',1),2200)},
+()=>{Q('Was fehlt?');T('x','✕',1120,FL-215,'m c6 big')},
+()=>{Q();R('x');T('a',null,1020,FL);later(()=>hi('a',1020,1120,300,M('ac'),'2'),700);later(()=>K('c','sad',0),1450);later(()=>{EQ('e','a(b+c)=ab+[2|ac]',730);fly('r2','2')},1700)},
+()=>Q('Jeder im Iglu muss begrüßt werden.')]},
+{t:'Mit Zahlen und Variablen',s:[
+()=>{one('3','2x','5');A('3(2x+5)');Q(`Was passiert, wenn ${M('{1|3}')} ins Iglu kommt?`);EQ('e','{1|3}({2|2}{2|x}+{3|5})[a|=][b|{1|3}*{2|2}{2|x}][c|+][d|{1|3}*{3|5}][e|=][f|{2|6}{2|x}][g|+][h|{3|15}]',730)},
+()=>{Q();hi('a',640,740,300,M('{1|3}*{2|2x}'),'1')},
+()=>hi('a',1020,1120,300,M('{1|3}*{3|5}'),'2'),
+()=>{S('ac');fly('r1','b');fly('r2','d')},
+()=>{S('eg');mg('b','f');mg('d','h');Q('Die Zahlen laufen zusammen.')}]},
+{t:'Vorzeichen mitnehmen',s:[
+()=>{one('-2','3x','-4');A('-2(3x-4)');Q(`Was passiert, wenn ${M('{1|-2}')} ins Iglu kommt?`);EQ('e','{1|-2}({2|3}{2|x}-{3|4})[a|=][b|{1|(-2)}*{2|3}{2|x}][c|+][d|{1|(-2)}*{3|(-4)}][e|=][f|{2|-6}{2|x}][g|{3|+8}]',730)},
+()=>{Q();hi('a',640,740,300,M('{1|(-2)}*{2|3x}'),'1')},
+()=>hi('a',1020,1120,300,M('{1|(-2)}*{3|(-4)}'),'2'),
+()=>{Q('Das Vorzeichen gehört zum Faktor und geht mit.');S('ac');fly('r1','b');fly('r2','d')},
+()=>{S('eg');mg('b','f');mg('d','g')}]},
+{t:'Rückwärts denken: Ausklammern',s:[
+()=>{G('g',930,860,FL);F('a1','a',1,710,FL);F('b','b',2,820,FL);F('a2','a',1,1040,FL);F('c','c',3,1150,FL);T('ps','+',930,FL-130,'m dim sym');A('ab+ac');T('r1',M('ab'),765,300,'m pr');T('r2',M('ac'),1095,300,'m pr');P('p1',765,FL-125);P('p2x',1095,FL-125);EQ('e','[P|ab]+[Q|ac][1|=][2|a(][3|b+c][4|)]',730);Q('Welcher Faktor kommt in beiden Produkten vor?')},
+()=>{K('a1','hl',1);K('a2','hl',1);Q(`Der Faktor ${M('a')} steckt in beiden Produkten.`)},
+()=>{Q();K('a1','hl',0);T('a1',null,280,FL);T('a2',null,280,FL);later(()=>R('a2'),720);T('b',null,740,FL);T('c',null,1120,FL);T('ps',null,900,FL-130);['r1','r2','p1','p2x'].forEach(i=>R(i));mg(['P','Q'],'2','i.c1')},
+()=>{S('134');T('cap','Ausklammern = Distributivgesetz rückwärts',800,845,'cap')}]},
+{t:'Was kann ausgeklammert werden?',s:quiz([
+{t:'6x+9',o:['2','3','6','x'],c:1,ex:['6x=3·2x   9=3·3','6x+9=3(2x+3)']},
+{t:'4ab+8a',o:['4','a','4a','8a'],c:2,ex:['4ab=4a·b   8a=4a·2','4ab+8a=4a(b+2)']},
+{t:'5x+5y',o:['5','x','y','5x'],c:0,ex:['5x=5·x   5y=5·y','5x+5y=5(x+y)']},
+{t:'3a+4b',o:['3','a','b','kein sinnvoller gemeinsamer Faktor'],c:3,ex:['~Kein sinnvoller gemeinsamer Faktor','~3a+4b lässt sich nicht ausklammern']}],
+[290,630,970,1310],'Welcher gemeinsame Faktor steckt in allen Summanden?')},
+{t:'Fehlerdetektiv Ausklammern',s:quiz([
+{t:'6x+9=3(2x+9)',t2:'6x+9=3(2x+{6|9})',o:['Richtig','Falsch'],c:1,ex:['Probe:|3(2x+9)=6x+27≠6x+9','Richtig:|6x+9=3(2x+3)']},
+{t:'4ab+8a=4a(b+8)',t2:'4ab+8a=4a(b+{6|8})',o:['Richtig','Falsch'],c:1,ex:['Probe:|4a(b+8)=4ab+32a≠4ab+8a','Richtig:|4ab+8a=4a(b+2)']},
+{t:'5x+10=5(x+2)',t2:'5x+10=5{3|(x+2)}',o:['Richtig','Falsch'],c:0,ex:['Probe:|5(x+2)=5x+10']}],
+[300,1300],'Richtig oder falsch?','big')},
+{t:'Zwei Gruppen treffen sich',s:[
+()=>{two('a','b','c','d',1,2,3,4);A('(a+b)(c+d)');Q('Wer muss wen begrüßen?')},
+()=>{Q();hi('a',700,800,300,M('ac'),'1')},
+()=>hi('a',1100,1200,300,M('ad'),'2'),
+()=>hi('b',700,800,620,M('bc'),'3'),
+()=>hi('b',1300,1200,620,M('bd'),'4'),
+()=>{Q('Jeder mit jedem.');EQ('e',E8,780);S('0pqr');[1,2,3,4].forEach(n=>fly('r'+n,n))}]},
+{t:'Typischer Fehler bei zwei Summen',s:[
+()=>{two('a','b','c','d',1,2,3,4);A('(a+b)(c+d)');Q(`Behauptung: ${M('(a+b)(c+d)=ac+bd')}`)},
+()=>{hi('a',700,800,300,M('ac'),'1');hi('b',1300,1200,620,M('bd'),'4');later(()=>{EQ('e',E8,780);S('0r');fly('r1','1');fly('r4','4')},1000)},
+()=>{Q('Welche Begegnungen fehlen?');T('g1','?',1150,300,'m c6 big');T('g2','?',750,620,'m c6 big')},
+()=>{R('g1');R('g2');Q('Jeder mit jedem.');hi('a',1100,1200,300,M('ad'),'2');later(()=>hi('b',700,800,620,M('bc'),'3'),1500);later(()=>{S('pq');fly('r2','2');fly('r3','3')},2800)}]},
+{t:'Zwei Summen mit Zahlen und Variablen',s:[
+()=>{two('x','2','x','3',1,2,3,4);A('(x+2)(x+3)');Q('Wer muss wen begrüßen?');
+ EQ('e1','[1|{1|x}*{3|x}][p|+][2|{1|x}*{4|3}][q|+][3|{2|2}*{3|x}][r|+][4|{2|2}*{4|3}]',660);
+ EQ('e2','[5|{5|x^2}][s|+][6|{4|3}{4|x}][u|+][7|{2|2}{2|x}][v|+][8|{2|6}]',745);
+ EQ('e3','[9|{5|x^2}][w|+][a|{4|5}{4|x}][y|+][b|{2|6}]',830)},
+()=>{Q();hi('a',700,800,300,M('{1|x}*{3|x}'),'1')},
+()=>hi('a',1100,1200,300,M('{1|x}*{4|3}'),'2'),
+()=>hi('b',700,800,620,M('{2|2}*{3|x}'),'3'),
+()=>hi('b',1300,1200,620,M('{2|2}*{4|3}'),'4'),
+()=>{S('pqr');T('l1','① Ausmultiplizieren',190,660,'lab2');[1,2,3,4].forEach(n=>fly('r'+n,n))},
+()=>{S('suv');T('l2','② Zusammenfassen',190,745,'lab2');mg('1','5');mg('2','6');mg('3','7');mg('4','8')},
+()=>{S('9wyb');mg(['6','7'],'a')}]},
+{t:'Gemischte Vorzeichen',s:[
+()=>{two('x','-2','x','4',1,2,3,4);A('(x-2)(x+4)');Q('Wer muss wen begrüßen?');
+ EQ('e1','[1|{5|x^2}][2|{4|+4x}][3|{2|-2x}][4|{3|-8}]',700);
+ EQ('e2','[5|{5|x^2}][6|{4|+2x}][8|{3|-8}]',800)},
+()=>{Q();hi('a',700,800,300,M('{1|x}*{3|x}'),'1')},
+()=>hi('a',1100,1200,300,M('{1|x}*{4|4}'),'2'),
+()=>hi('b',700,800,620,M('{2|(-2)}*{3|x}'),'3'),
+()=>hi('b',1300,1200,620,M('{2|(-2)}*{4|4}'),'4'),
+()=>{Q('Jedes Produkt einzeln ausgerechnet. Das Vorzeichen bleibt erhalten.');['{5|x^2}','{4|4x}','{2|-2x}','{3|-8}'].forEach((h,i)=>T('r'+(i+1),M(h),...sp[i+1]))},
+()=>{Q();[1,2,3,4].forEach(n=>fly('r'+n,n))},
+()=>{Q(`Gleichartig: ${M('4x')} und ${M('-2x')}`);mg(['2','3'],'6');S('58')}]},
+{t:'Welches Verfahren brauche ich?',s:quiz([
+{t:'3(x+4)',o:['ausmultiplizieren','ausklammern','zwei Summen multiplizieren'],c:0,ex:['3(x+4)=3x+12']},
+{t:'6x+12',o:['ausmultiplizieren','ausklammern','zwei Summen multiplizieren'],c:1,ex:['6x+12=6(x+2)']},
+{t:'(x+2)(x+5)',o:['ausmultiplizieren','ausklammern','zwei Summen multiplizieren'],c:2,ex:['(x+2)(x+5)=x^2+5x+2x+10','=x^2+7x+10']},
+{t:'4a+8ab',o:['ausmultiplizieren','ausklammern','zwei Summen multiplizieren'],c:1,ex:['4a=4a·1   8ab=4a·2b','4a+8ab=4a(1+2b)']}],
+[290,800,1310],'Welches Verfahren brauche ich?')},
+{t:'Abschlussübersicht',s:(()=>{const r=(k,f,c)=>()=>{T('f'+k,M(f),560,280+k*150,'m');T('c'+k,c,1150,280+k*150,'sm')};
+return[r(0,'a(b+c)=ab+ac','Ausmultiplizieren: einer mit allen'),r(1,'ab+ac=a(b+c)','Ausklammern: gemeinsamen Faktor herausziehen'),r(2,'(a+b)(c+d)=ac+ad+bc+bd','Zwei Summen: jeder mit jedem'),()=>T('sg','Struktur erkennen → multiplizieren / ausklammern → anschließend zusammenfassen',800,760,'strat')]})()}
+];
+function ui(){$('ti').textContent=(cur+1)+' · '+SC[cur].t;$('ct').textContent=`Szene ${cur+1}/${SC.length} · Schritt ${si+1}/${SC[cur].s.length}`}
+function run(n,k,an){TM.forEach(clearTimeout);TM=[];st.innerHTML='';for(const d in E)delete E[d];cur=n;si=k;const s=SC[n].s;I=1;st.classList.add('i');
+ for(let i=0;i<=k;i++){if(an&&i==k){I=0;void st.offsetWidth;st.classList.remove('i')}s[i]()}
+ I=0;void st.offsetWidth;st.classList.remove('i');ui()}
+const next=()=>{if(si<SC[cur].s.length-1){si++;SC[cur].s[si]();ui()}else if(cur<SC.length-1)run(cur+1,0,1)};
+const prev=()=>{if(si>0)run(cur,si-1);else if(cur>0)run(cur-1,SC[cur-1].s.length-1)};
+window.go=i=>{$('ov').style.display='none';run(i,0,1)};
+$('bn').onclick=next;$('bp').onclick=prev;
+$('bo').onclick=()=>{const o=$('ov');o.style.display=o.style.display=='grid'?'none':'grid'};
+$('br').onclick=()=>{PK={};run(cur,0,1)};
+$('bs').onclick=()=>run(cur,SC[cur].s.length-1);
+$('bf').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
+$('ov').innerHTML=SC.map((s,i)=>`<div class=tl onclick="go(${i})"><b>${i+1}</b>${s.t}</div>`).join('');
+addEventListener('keydown',e=>{if(e.key=='ArrowRight'||e.key==' '){e.preventDefault();next()}else if(e.key=='ArrowLeft')prev();else if(e.key=='f')$('bf').click()});
+function fit(){const v=$('vp'),w=v.clientWidth,h=v.clientHeight;sc=Math.min(w/1600,h/900);$('fr').style.transform=`translate(${(w-1600*sc)/2}px,${(h-900*sc)/2}px) scale(${sc})`}
+addEventListener('resize',fit);
+if(TCH){$('bs').hidden=false;$('tm').style.display='block'}
+fit();run(0,0,1);
+</script></body></html>

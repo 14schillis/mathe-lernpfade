@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Summen umformen – Übungswerkstatt</title>
+<style>
+:root{
+  --bg:#f1f5f9; --card:#fff; --ink:#0f172a; --soft:#64748b; --line:#e2e8f0;
+  --blue:#2563eb; --blue-soft:#dbeafe; --blue-dark:#1e3a8a;
+  --g:#16a34a; --gs:#dcfce7; --gd:#166534;
+  --y:#d97706; --ys:#fef3c7; --yd:#92400e;
+  --r:#dc2626; --rs:#fee2e2; --rd:#991b1b;
+  --mf:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif;
+}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,"Segoe UI",Roboto,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  display:flex;flex-direction:column;height:100vh;height:100dvh;-webkit-text-size-adjust:100%;
+  padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid #93b4f5;outline-offset:2px}
+
+/* Kopf */
+header{flex:0 0 auto;display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;
+  padding:calc(env(safe-area-inset-top) + 8px) clamp(10px,2vw,22px) 8px}
+h1{font-size:1.2rem;color:var(--blue-dark);line-height:1.2}
+h1 small{display:block;font-size:.78rem;font-weight:500;color:var(--soft)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{min-height:44px;padding:4px 16px;border-radius:999px;background:#fff;border:2px solid var(--line);font-weight:650;font-size:.95rem}
+.tab .n{font-weight:500;color:var(--soft);margin-left:.4em;font-size:.85rem}
+.tab[aria-current="true"]{color:#fff;border-color:transparent}
+.tab[aria-current="true"] .n{color:#ffffffcc}
+.tab.ha[aria-current="true"]{background:var(--blue)}
+.tab.l[aria-current="true"]{background:var(--g)}
+.tab.m[aria-current="true"]{background:var(--y)}
+.tab.s[aria-current="true"]{background:var(--r)}
+
+/* Layout */
+main{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(200px,250px) minmax(0,1fr);
+  gap:12px;padding:0 clamp(10px,2vw,22px) 10px;width:100%;max-width:1360px;margin:0 auto}
+@media (orientation:portrait){
+  main{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+}
+.side{min-height:0;display:flex;flex-direction:column;gap:8px}
+.info{font-size:.88rem;color:var(--soft)}
+.done-banner{background:var(--gs);color:var(--gd);border-radius:10px;padding:6px 10px;font-weight:650;font-size:.9rem}
+.list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:0;padding-bottom:4px}
+@media (orientation:portrait){
+  .list{flex-direction:row;flex-wrap:wrap;overflow:visible}
+}
+.li{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:6px 12px;
+  background:#fff;border:2px solid var(--line);border-left-width:6px;border-radius:10px;text-align:left;font-weight:600;font-size:.93rem}
+.li.ha{border-left-color:var(--blue)}.li.l{border-left-color:var(--g)}.li.m{border-left-color:var(--y)}.li.s{border-left-color:var(--r)}
+.li.sel{background:var(--blue-soft);border-color:var(--blue);border-left-width:6px}
+.li .ck{display:none;color:var(--g);font-weight:800}
+.li.done .ck{display:inline}
+@media (orientation:portrait){.li{flex:0 0 auto}}
+
+.right{min-height:0;display:flex;flex-direction:column;gap:8px}
+.cardwrap{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  background:var(--card);border-radius:14px;box-shadow:0 2px 10px #0f172a1f;padding:14px 20px 16px}
+.ch{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lv{font-size:.78rem;font-weight:700;border-radius:999px;padding:2px 10px;letter-spacing:.03em}
+.lv.ha{background:var(--blue-soft);color:var(--blue-dark)}.lv.l{background:var(--gs);color:var(--gd)}
+.lv.m{background:var(--ys);color:var(--yd)}.lv.s{background:var(--rs);color:var(--rd)}
+.lab{font-weight:700;font-size:1.05rem}
+.instr{color:var(--soft);font-size:.92rem;margin-top:2px}
+.mline{font-family:var(--mf);font-style:normal;white-space:nowrap;overflow:visible}
+.mline i{font-style:italic}
+.mline sup{font-size:.62em;vertical-align:.55em;line-height:0}
+.mline .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .1em;line-height:1.15;font-size:.82em}
+.mline .fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .18em}
+.mline .fr>span:last-child{padding:0 .18em}
+.big{font-size:clamp(1.7rem,3.6vw,2.6rem);margin:12px 0 8px;line-height:1.5;background:var(--bg);border-radius:12px;padding:10px 16px;text-align:center}
+.stage{display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;min-height:2.2em}
+.tk{flex:none;display:inline-block;white-space:nowrap;border-radius:.2em;padding:0 .02em}
+.tk.o.bi{margin:0 .26em}
+.tk.o.un{margin-right:.04em}
+.tk.chg{animation:chgk 2.2s}
+@keyframes chgk{0%,60%{background:#fde047;color:#b45309}}
+.tk.gh{position:fixed;pointer-events:none;margin:0;z-index:50}
+.orig{margin-top:10px;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.orig .mline{font-size:1.15rem;font-weight:400;letter-spacing:0;text-transform:none;color:#475569;margin-top:1px;display:block}
+.tip{margin-top:10px;background:var(--ys);border-left:6px solid var(--y);border-radius:10px;padding:8px 14px;font-size:.98rem}
+.tip b{color:var(--yd)}
+.res{margin-top:12px;background:var(--gs);border-left:6px solid var(--g);border-radius:10px;padding:8px 14px}
+.res small{display:block;font-size:.76rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gd)}
+.res .mline{font-size:clamp(1.4rem,2.8vw,2rem);margin-top:2px}
+.res .alt{font-size:.9rem;color:var(--gd);margin-top:2px}
+.res .alt .mline{display:inline;font-size:1.15em}
+.steps{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.stp{display:flex;gap:12px;align-items:flex-start}
+.sn{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;margin-top:4px}
+.sb{flex:1;min-width:0;border-left:3px solid var(--blue-soft);padding-left:12px}
+.sb .mline{font-size:clamp(1.25rem,2.4vw,1.7rem);line-height:1.5}
+.sb .mline+.mline{margin-top:2px}
+.why{font-size:.95rem;color:#334155;margin-top:2px}
+.why .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.1;margin:0 .1em;font-family:var(--mf)}
+.why .fr>span:first-child{border-bottom:1px solid currentColor;padding:0 .15em}
+.why .fr>span:last-child{padding:0 .15em}
+.fade{animation:fade .35s ease-out}
+.stp.wait{visibility:hidden}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.fade,.tk.chg{animation:none}}
+
+.bar{flex:0 0 auto;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.btn{min-height:52px;padding:0 22px;border-radius:14px;font-weight:700;font-size:1.02rem;background:#fff;color:var(--blue-dark);
+  box-shadow:0 1px 5px #0f172a33}
+.btn.pri{background:var(--blue);color:#fff}
+.btn.ok{background:var(--g);color:#fff}
+.btn:active{transform:scale(.97)}
+.hint0{color:var(--soft);font-size:.92rem;margin-right:auto;align-self:center}
+@media (max-width:719px){html,body{overflow:auto;height:auto}body{display:block;height:auto}main{display:block}.cardwrap{overflow:visible}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Summen umformen<small>Übungswerkstatt · Klasse 7</small></h1>
+  <nav class="tabs" id="tabs" aria-label="Stufen"></nav>
+</header>
+<main>
+  <aside class="side">
+    <div class="info" id="info"></div>
+    <div id="banner"></div>
+    <div class="list" id="list"></div>
+  </aside>
+  <section class="right">
+    <div class="cardwrap" id="card"></div>
+    <div class="bar" id="bar"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(q){return document.querySelector(q)};
+
+/* ---------- Schreibweise: x^2, {3/8}, 7{3/8} ---------- */
+function fm(s){
+  return s.replace(/[a-zö]/g,"<i>$&</i>")
+    .replace(/\^(\d)/g,"<sup>$1</sup>")
+    .replace(/\{(-?\d+)\/(\d+)\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>')
+    .replace(/-/g,"\u2212");
+}
+function wm(s){
+  return s.replace(/\{(-?\d+)\/(\d+)\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+}
+
+/*DATA*/
+var TABS=[
+ {k:"ha",n:"Hausaufgabe",d:"Nr. 8 a), c), e): Vergleiche mit deinem Heft."},
+ {k:"l",n:"Leicht",d:"Hier wirst du sicher."},
+ {k:"m",n:"Mittel",d:"Mehrere Variablen, Brüche und Potenzen."},
+ {k:"s",n:"Schwer",d:"Für Schnelle und Mutige."}
+];
+var TASKS=[
+/* ---- Hausaufgabe ---- */
+{id:"8a",tab:"ha",lab:"Nr. 8 a)",e:"15a - (9a + 19b) - (2a - 3b)",r:"4a - 16b",
+ tip:"Vor beiden Klammern steht ein Minus: Beim Auflösen wechseln alle Vorzeichen in der Klammer.",
+ st:[{m:["15a - 9a - 19b - 2a + 3b"],w:"Beide Klammern sind Minusklammern: Alle Vorzeichen in der Klammer wechseln.",x:1},
+     {m:["15a - 9a - 2a - 19b + 3b"],w:"Gleichartige Terme nebeneinander schreiben: erst die a-Terme, dann die b-Terme.",x:1},
+     {m:["4a - 16b"],w:"15 − 9 − 2 = 4 und −19 + 3 = −16.",x:1}]},
+{id:"8c",tab:"ha",lab:"Nr. 8 c)",e:"(u - v + w) - (u + v - w)",r:"-2v + 2w",
+ tip:"Die erste Klammer ist eine Plusklammer (Vorzeichen bleiben), die zweite eine Minusklammer (Vorzeichen wechseln).",
+ st:[{m:["u - v + w - u - v + w"],w:"Erste Klammer: weglassen, Vorzeichen bleiben. Zweite Klammer: alle Vorzeichen wechseln.",x:1},
+     {m:["u - u - v - v + w + w"],w:"Gleichartige Terme sortieren.",x:1},
+     {m:["-2v + 2w"],w:"u − u = 0, −v − v = −2v und w + w = 2w.",x:1}]},
+{id:"8e",tab:"ha",lab:"Nr. 8 e)",e:"-3x - [(a - 4x) - (2a - x)]",r:"a",
+ tip:"Von innen nach außen: erst die runden Klammern auflösen und zusammenfassen, dann die eckige Klammer.",
+ st:[{m:["-3x - [a - 4x - 2a + x]"],w:"Innere Klammern: Die erste ist eine Plusklammer, die zweite eine Minusklammer (Vorzeichen wechseln).",x:1},
+     {m:["-3x - [-a - 3x]"],w:"In der eckigen Klammer zusammenfassen: a − 2a = −a und −4x + x = −3x.",x:1},
+     {m:["-3x + a + 3x"],w:"Eckige Klammer mit Minus davor: alle Vorzeichen wechseln.",x:1},
+     {m:["a"],w:"−3x + 3x = 0, es bleibt a.",x:1}]},
+
+/* ---- Leicht ---- */
+{id:"18ga",tab:"l",lab:"Nr. 18 grün a)",e:"17b - 5b + b",r:"13b",
+ tip:"Ein einzelnes b ist 1b.",
+ st:[{m:["17b - 5b + 1b"],w:"b hat den Koeffizienten 1.",x:1},
+     {m:["13b"],w:"17 − 5 + 1 = 13.",x:1}]},
+{id:"18gb",tab:"l",lab:"Nr. 18 grün b)",e:"-18x^2 + 6x^2 - 9x^2",r:"-21x^2",
+ tip:"Alle Terme sind gleichartig (x²): Nur die Zahlen davor werden verrechnet.",
+ st:[{m:["-12x^2 - 9x^2"],w:"−18 + 6 = −12.",x:1},
+     {m:["-21x^2"],w:"−12 − 9 = −21.",x:1}]},
+{id:"18gc",tab:"l",lab:"Nr. 18 grün c)",e:"7,1z - 3,9z - 4,5z + 17,6 - 6,6z",r:"-7,9z + 17,6",
+ tip:"Sortiere: Alle Terme mit z zusammen. Die Zahl 17,6 bleibt für sich.",
+ st:[{m:["7,1z - 3,9z - 4,5z - 6,6z + 17,6"],w:"Gleichartige Terme sortieren: erst die z-Terme, dann die reine Zahl.",x:1},
+     {m:["-7,9z + 17,6"],w:"7,1 − 3,9 = 3,2; 3,2 − 4,5 = −1,3; −1,3 − 6,6 = −7,9.",x:1}]},
+{id:"18gd",tab:"l",lab:"Nr. 18 grün d)",e:"1,5y - 2,89y - 0,39y + y - 3",r:"-0,78y - 3",
+ tip:"Das einzelne y bedeutet 1y.",
+ st:[{m:["1,5y - 2,89y - 0,39y + 1y - 3"],w:"y hat den Koeffizienten 1.",x:1},
+     {m:["-0,78y - 3"],w:"1,5 − 2,89 − 0,39 + 1 = −0,78. Die −3 hat kein y und bleibt stehen.",x:1}]},
+{id:"8b",tab:"l",lab:"Nr. 8 b)",e:"7u + 5 + (u - 3) - (11u - 3)",r:"-3u + 5",
+ tip:"Plusklammer: Vorzeichen bleiben. Minusklammer: Vorzeichen wechseln. Danach gleichartige Terme sammeln.",
+ st:[{m:["7u + 5 + u - 3 - 11u + 3"],w:"Plusklammer: Vorzeichen bleiben. Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["7u + u - 11u + 5 - 3 + 3"],w:"Sortieren: erst die u-Terme, dann die Zahlen.",x:1},
+     {m:["-3u + 5"],w:"7 + 1 − 11 = −3 und 5 − 3 + 3 = 5.",x:1}]},
+{id:"ab3a",tab:"l",lab:"AB 3 a)",e:"x + (6x - 4) - (12 - 2x)",r:"9x - 16",
+ tip:"Plusklammer: Vorzeichen bleiben. Minusklammer: Vorzeichen wechseln.",
+ st:[{m:["x + 6x - 4 - 12 + 2x"],w:"Plusklammer: Vorzeichen bleiben. Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["x + 6x + 2x - 4 - 12"],w:"Sortieren: erst die x-Terme, dann die Zahlen.",x:1},
+     {m:["9x - 16"],w:"1 + 6 + 2 = 9 und −4 − 12 = −16.",x:1}]},
+{id:"ab3b",tab:"l",lab:"AB 3 b)",e:"3a - (4ab + 8) + (4a - 3ab)",r:"7a - 7ab - 8",
+ tip:"a und ab sind nicht gleichartig. Sortiere nach a, ab und Zahl.",
+ st:[{m:["3a - 4ab - 8 + 4a - 3ab"],w:"Minusklammer: Vorzeichen wechseln. Plusklammer: Vorzeichen bleiben.",x:1},
+     {m:["3a + 4a - 4ab - 3ab - 8"],w:"Sortieren: a-Terme, ab-Terme und die Zahl.",x:1},
+     {m:["7a - 7ab - 8"],w:"3 + 4 = 7 und −4 − 3 = −7. a und ab sind nicht gleichartig.",x:1}]},
+
+/* ---- Mittel ---- */
+{id:"18ya",tab:"m",lab:"Nr. 18 gelb a)",e:"{9/16}d + {8/13}e - ({2/3}e + {17/12}d)",r:"-{41/48}d - {2/39}e",
+ tip:"Minusklammer auflösen, dann d-Terme und e-Terme getrennt zusammenfassen. Die Brüche müssen dafür gleichnamig sein.",
+ st:[{m:["{9/16}d + {8/13}e - {2/3}e - {17/12}d"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["{9/16}d - {17/12}d + {8/13}e - {2/3}e"],w:"Sortieren: erst die d-Terme, dann die e-Terme.",x:1},
+     {m:["({27/48} - {68/48})d + ({24/39} - {26/39})e"],w:"Gleichnamig machen: Hauptnenner 48 bei d und 39 bei e.",x:1},
+     {m:["-{41/48}d - {2/39}e"],w:"27 − 68 = −41 und 24 − 26 = −2.",x:1}]},
+{id:"18yb",tab:"m",lab:"Nr. 18 gelb b)",e:"65p^2 - (44p^2 + 37p) - 13p",r:"21p^2 - 50p",
+ tip:"p² und p sind nicht gleichartig.",
+ st:[{m:["65p^2 - 44p^2 - 37p - 13p"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["21p^2 - 50p"],w:"65 − 44 = 21 und −37 − 13 = −50. p² und p sind nicht gleichartig.",x:1}]},
+{id:"18yc",tab:"m",lab:"Nr. 18 gelb c)",e:"4u + v - 2w - (3u + 2v + 4w)",r:"u - v - 6w",
+ tip:"Minusklammer: Alle drei Vorzeichen wechseln. Danach u, v und w getrennt zusammenfassen.",
+ st:[{m:["4u + v - 2w - 3u - 2v - 4w"],w:"Minusklammer: alle drei Vorzeichen wechseln.",x:1},
+     {m:["4u - 3u + v - 2v - 2w - 4w"],w:"Sortieren: u-, v- und w-Terme.",x:1},
+     {m:["u - v - 6w"],w:"4 − 3 = 1 (also 1u = u), 1 − 2 = −1 und −2 − 4 = −6.",x:1}]},
+{id:"18yd",tab:"m",lab:"Nr. 18 gelb d)",e:"2x - y + 3z - (x + y + z)",r:"x - 2y + 2z",
+ tip:"Minusklammer: Alle drei Vorzeichen wechseln. Ein einzelnes x ist 1x.",
+ st:[{m:["2x - y + 3z - x - y - z"],w:"Minusklammer: alle drei Vorzeichen wechseln.",x:1},
+     {m:["2x - x - y - y + 3z - z"],w:"Sortieren: x-, y- und z-Terme.",x:1},
+     {m:["x - 2y + 2z"],w:"2 − 1 = 1; −1 − 1 = −2; 3 − 1 = 2.",x:1}]},
+{id:"8f",tab:"m",lab:"Nr. 8 f)",e:"22x - [y - (y - 2x) - (8x + 3y)]",r:"28x + 3y",
+ tip:"Von innen nach außen: erst die runden Klammern, dann zusammenfassen, dann die eckige Klammer.",
+ st:[{m:["22x - [y - y + 2x - 8x - 3y]"],w:"Innere Klammern auflösen, beide sind Minusklammern.",x:1},
+     {m:["22x - [-6x - 3y]"],w:"In der eckigen Klammer zusammenfassen: y − y = 0 und 2x − 8x = −6x.",x:1},
+     {m:["22x + 6x + 3y"],w:"Eckige Klammer mit Minus davor: alle Vorzeichen wechseln.",x:1},
+     {m:["28x + 3y"],w:"22 + 6 = 28.",x:1}]},
+{id:"8g",tab:"m",lab:"Nr. 8 g)",e:"4,4 - 2,4ö - ({1/2}ö - {1/20})",r:"4,45 - 2,9ö",
+ tip:"Minusklammer auflösen. Zum Zusammenfassen hilft es, die Brüche in Dezimalzahlen umzuwandeln.",
+ st:[{m:["4,4 - 2,4ö - {1/2}ö + {1/20}"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["4,4 - 2,4ö - 0,5ö + 0,05"],w:"Brüche als Dezimalzahlen: {1/2} = 0,5 und {1/20} = 0,05.",x:1},
+     {m:["4,45 - 2,9ö"],w:"4,4 + 0,05 = 4,45 und −2,4 − 0,5 = −2,9.",x:1}]},
+{id:"8h",tab:"m",lab:"Nr. 8 h)",e:"{3/8}m - (6m - 0,375)",r:"-5,625m + 0,375",alt:"-{45/8}m + {3/8}",
+ tip:"Schreibe {3/8} als Dezimalzahl (3 : 8) und löse dann die Minusklammer auf.",
+ st:[{m:["{3/8}m - 6m + 0,375"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["0,375m - 6m + 0,375"],w:"3 : 8 = 0,375, also {3/8} = 0,375.",x:1},
+     {m:["-5,625m + 0,375"],w:"0,375 − 6 = −5,625.",x:1}]},
+{id:"19a",tab:"m",lab:"Nr. 19 a)",e:"3x·2y^2 + 5xy^2",r:"11xy^2",
+ tip:"Erst die Produkte vereinfachen: Zahlen mit Zahlen multiplizieren, Variablen mit Variablen.",
+ st:[{m:["6xy^2 + 5xy^2"],w:"3 · 2 = 6.",x:1},
+     {m:["11xy^2"],w:"Beide Terme sind gleichartig (xy²): 6 + 5 = 11.",x:1}]},
+{id:"19b",tab:"m",lab:"Nr. 19 b)",e:"1,5p·2q - 3,5q·4p",r:"-11pq",
+ tip:"Erst die Produkte vereinfachen. Bei Faktoren darf man die Reihenfolge tauschen.",
+ st:[{m:["3pq - 14pq"],w:"1,5 · 2 = 3 und 3,5 · 4 = 14. Außerdem q · p = pq.",x:1},
+     {m:["-11pq"],w:"3 − 14 = −11.",x:1}]},
+{id:"19c",tab:"m",lab:"Nr. 19 c)",e:"-{2/3}rs^2·(-6s) - {4/5}rs·(-3s)",r:"4rs^3 + {12/5}rs^2",
+ tip:"Erst die Produkte ausrechnen. Bei Potenzen mit gleicher Basis werden die Exponenten addiert (s² · s = s³).",
+ st:[{m:["4rs^3 - {4/5}rs·(-3s)"],w:"Erstes Produkt: (−{2/3}) · (−6) = 4 und s² · s = s³.",x:1},
+     {m:["4rs^3 + {12/5}rs^2"],w:"Zweites Produkt: (−{4/5}) · (−3) = {12/5} und s · s = s².",x:1},
+     {m:["4rs^3 + {12/5}rs^2"],w:"rs³ und rs² sind nicht gleichartig (die Exponenten sind verschieden). Es bleibt bei zwei Summanden.",x:1}]},
+{id:"19d",tab:"m",lab:"Nr. 19 d)",e:"3a^3 + (-3a)^3",r:"-24a^3",
+ tip:"(−3a)³ bedeutet: Jeder Faktor kommt in die dritte Potenz, also (−3)³ · a³.",
+ st:[{m:["3a^3 - 27a^3"],w:"(−3a)³ = (−3)³ · a³ = −27a³, also 3a³ − 27a³.",x:1},
+     {m:["-24a^3"],w:"3 − 27 = −24.",x:1}]},
+{id:"ab3c",tab:"m",lab:"AB 3 c)",e:"18f·g^2 - {5/2}f·(2g)^2 + {1/4}fg·2f",r:"8fg^2 + {1/2}f^2g",
+ tip:"Erst potenzieren und multiplizieren, dann zusammenfassen. Bei (2g)² gehört die 2 mit in die Potenz.",
+ st:[{m:["18fg^2 - {5/2}f·4g^2 + {1/4}fg·2f"],w:"(2g)² = 2² · g² = 4g².",x:1},
+     {m:["18fg^2 - 10fg^2 + {1/2}f^2g"],w:"{5/2} · 4 = 10; {1/4} · 2 = {1/2} und f · f = f².",x:1},
+     {m:["8fg^2 + {1/2}f^2g"],w:"18 − 10 = 8. fg² und f²g sind nicht gleichartig.",x:1}]},
+
+/* ---- Schwer ---- */
+{id:"18ra",tab:"s",lab:"Nr. 18 rot a)",e:"{2/7}k + {1/7} - {3/14}",r:"{2/7}k - {1/14}",
+ tip:"Nur die Zahlen ohne k lassen sich zusammenfassen. Mach dafür die Brüche gleichnamig.",
+ st:[{m:["{2/7}k + {2/14} - {3/14}"],w:"{1/7} wird auf Vierzehntel erweitert: {1/7} = {2/14}.",x:1},
+     {m:["{2/7}k - {1/14}"],w:"{2/14} − {3/14} = −{1/14}. Der k-Term bleibt allein.",x:1}]},
+{id:"18rb",tab:"s",lab:"Nr. 18 rot b)",e:"7{3/8}x^2 - (-11{1/3}x + 9{3/5}) - 4{5/6}x^2 - 2{7/15} + 8{11/14}x",r:"2{13/24}x^2 + 20{5/42}x - 12{1/15}",
+ tip:"Minusklammer auflösen und dann drei Sorten Terme sortieren: x², x und reine Zahlen. Gemischte Zahlen rechnest du am besten als unechte Brüche.",
+ st:[{m:["7{3/8}x^2 + 11{1/3}x - 9{3/5} - 4{5/6}x^2 - 2{7/15} + 8{11/14}x"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["7{3/8}x^2 - 4{5/6}x^2 + 11{1/3}x + 8{11/14}x - 9{3/5} - 2{7/15}"],w:"Sortieren: x²-Terme, x-Terme und Zahlen.",x:1},
+     {m:["7{3/8} - 4{5/6} = {59/8} - {29/6} = {177/24} - {116/24} = {61/24} = 2{13/24}"],w:"x²-Terme: gemischte Zahlen in unechte Brüche umwandeln, dann Hauptnenner 24."},
+     {m:["11{1/3} + 8{11/14} = {34/3} + {123/14} = {476/42} + {369/42} = {845/42} = 20{5/42}"],w:"x-Terme: Hauptnenner 42."},
+     {m:["-9{3/5} - 2{7/15} = -{48/5} - {37/15} = -{144/15} - {37/15} = -{181/15} = -12{1/15}"],w:"Zahlen: Hauptnenner 15."},
+     {m:["2{13/24}x^2 + 20{5/42}x - 12{1/15}"],w:"Die drei Ergebnisse zusammensetzen.",x:1}]},
+{id:"18rc",tab:"s",lab:"Nr. 18 rot c)",e:"8,2a + ({13/6}b - 6,4a - 2,6b) - {1/6}b + {1/5}a",r:"2a - 0,6b",
+ tip:"Die Klammer hat ein Plus davor und kann einfach wegfallen. Brüche und Dezimalzahlen: Wandle {1/5} in 0,2 um.",
+ st:[{m:["8,2a + {13/6}b - 6,4a - 2,6b - {1/6}b + {1/5}a"],w:"Plusklammer: Klammer weglassen, Vorzeichen bleiben.",x:1},
+     {m:["8,2a - 6,4a + {1/5}a + {13/6}b - {1/6}b - 2,6b"],w:"Sortieren: erst die a-Terme, dann die b-Terme.",x:1},
+     {m:["8,2a - 6,4a + 0,2a + {13/6}b - {1/6}b - 2,6b"],w:"{1/5} = 0,2.",x:1},
+     {m:["2a + 2b - 2,6b"],w:"8,2 − 6,4 + 0,2 = 2 und {13/6} − {1/6} = {12/6} = 2.",x:1},
+     {m:["2a - 0,6b"],w:"2 − 2,6 = −0,6.",x:1}]},
+{id:"18rd",tab:"s",lab:"Nr. 18 rot d)",e:"{26/3}a^2 - (-{18/5} - {5/4} + {27/6}a^2 - 0,5)",r:"{25/6}a^2 + 5,35",alt:"4{1/6}a^2 + {107/20}",
+ tip:"Minusklammer auflösen. Dann a²-Terme und Zahlen ohne Variable getrennt zusammenfassen.",
+ st:[{m:["{26/3}a^2 + {18/5} + {5/4} - {27/6}a^2 + 0,5"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["{26/3}a^2 - {27/6}a^2 + {18/5} + {5/4} + 0,5"],w:"Sortieren: a²-Terme und Zahlen.",x:1},
+     {m:["{26/3} - {27/6} = {52/6} - {27/6} = {25/6}"],w:"a²-Terme: Hauptnenner 6."},
+     {m:["{18/5} + {5/4} + 0,5 = 3,6 + 1,25 + 0,5 = 5,35"],w:"Zahlen: Brüche als Dezimalzahlen, 18 : 5 = 3,6 und 5 : 4 = 1,25."},
+     {m:["{25/6}a^2 + 5,35"],w:"Die beiden Ergebnisse zusammensetzen.",x:1}]},
+{id:"19e",tab:"s",lab:"Nr. 19 e)",e:"3·(u^2v)^3 - (4u^3)^2·v^3",r:"-13u^6v^3",
+ tip:"Bei Potenzen von Produkten wird jeder Faktor potenziert: (u²v)³ = (u²)³ · v³.",
+ st:[{m:["3u^6v^3 - 16u^6v^3"],w:"(u²v)³ = u⁶v³ und (4u³)² = 4² · u⁶ = 16u⁶, dazu kommt · v³.",x:1},
+     {m:["-13u^6v^3"],w:"3 − 16 = −13.",x:1}]},
+{id:"19f",tab:"s",lab:"Nr. 19 f)",e:"e^4·3f^2 - f^2g + (2e^2f)^2 - (-3f)^2·4g",r:"7e^4f^2 - 37f^2g",
+ tip:"Erst alle Potenzen und Produkte vereinfachen, dann gleichartige Terme sammeln.",
+ st:[{m:["3e^4f^2 - f^2g + 4e^4f^2 - 9f^2·4g"],w:"(2e²f)² = 4e⁴f² und (−3f)² = 9f² (Minus mal Minus ergibt Plus).",x:1},
+     {m:["3e^4f^2 - f^2g + 4e^4f^2 - 36f^2g"],w:"9 · 4 = 36.",x:1},
+     {m:["7e^4f^2 - 37f^2g"],w:"e⁴f²-Terme: 3 + 4 = 7. f²g-Terme: −1 − 36 = −37.",x:1}]},
+{id:"19g",tab:"s",lab:"Nr. 19 g)",e:"-(x^2y)^4 + (2x^3y^2)^2·{1/2}x^2",r:"x^8y^4",
+ tip:"Beim Potenzieren die Exponenten malnehmen, beim Multiplizieren gleicher Basen die Exponenten addieren.",
+ st:[{m:["-x^8y^4 + 4x^6y^4·{1/2}x^2"],w:"(x²y)⁴ = x⁸y⁴ und (2x³y²)² = 4x⁶y⁴.",x:1},
+     {m:["-x^8y^4 + 2x^8y^4"],w:"4 · {1/2} = 2 und x⁶ · x² = x⁸.",x:1},
+     {m:["x^8y^4"],w:"−1 + 2 = 1, also 1x⁸y⁴ = x⁸y⁴.",x:1}]},
+{id:"19h",tab:"s",lab:"Nr. 19 h)",e:"(-a^2b^3) + 2a^5b^3 - (2a^3)^2b^3 + (-a^3·b)",r:"-a^2b^3 - a^3b + 2a^5b^3 - 4a^6b^3",
+ tip:"Die Klammern haben ein Plus davor und fallen einfach weg. Schau dann genau, ob gleichartige Terme dabei sind.",
+ st:[{m:["-a^2b^3 + 2a^5b^3 - 4a^6b^3 - a^3b"],w:"Plusklammern: Klammer weglassen, Vorzeichen bleiben. (2a³)² = 4a⁶.",x:1},
+     {m:["-a^2b^3 - a^3b + 2a^5b^3 - 4a^6b^3"],w:"Gleichartige Terme gibt es hier nicht, denn die Exponenten stimmen nirgends überein. Es wird nur geordnet.",x:1}]},
+{id:"ab3d",tab:"s",lab:"AB 3 d)",e:"4v·2w - (3vw)^2 - (6v - 0,5w^2 - 3v^2w^2)",r:"-6v^2w^2 + 8vw - 6v + 0,5w^2",
+ tip:"Erst Produkte und Potenzen, dann die Minusklammer, zuletzt zusammenfassen.",
+ st:[{m:["8vw - 9v^2w^2 - (6v - 0,5w^2 - 3v^2w^2)"],w:"4 · 2 = 8 und (3vw)² = 9v²w².",x:1},
+     {m:["8vw - 9v^2w^2 - 6v + 0,5w^2 + 3v^2w^2"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["-6v^2w^2 + 8vw - 6v + 0,5w^2"],w:"v²w²-Terme: −9 + 3 = −6. Die übrigen Terme sind nicht gleichartig.",x:1}]},
+{id:"ab3e",tab:"s",lab:"AB 3 e)",e:"(2x^2)^3 - (-{1/4}x·{1/2}x + 2x^2)",r:"8x^6 - {15/8}x^2",alt:"8x^6 - 1{7/8}x^2",
+ tip:"Bei (2x²)³ kommt jeder Faktor in die dritte Potenz. In der Klammer erst das Produkt ausrechnen.",
+ st:[{m:["8x^6 - (-{1/8}x^2 + 2x^2)"],w:"(2x²)³ = 2³ · x⁶ = 8x⁶. In der Klammer: (−{1/4}) · {1/2} = −{1/8} und x · x = x².",x:1},
+     {m:["8x^6 + {1/8}x^2 - 2x^2"],w:"Minusklammer: alle Vorzeichen wechseln.",x:1},
+     {m:["8x^6 - {15/8}x^2"],w:"{1/8} − 2 = {1/8} − {16/8} = −{15/8}. x⁶ und x² sind nicht gleichartig.",x:1}]}
+];
+/*ENDDATA*/
+
+/* ---------- Zustand (nur im Arbeitsspeicher) ---------- */
+var S={tab:"ha",cur:"8a",done:{},ts:{}};
+function byId(id){for(var i=0;i<TASKS.length;i++){if(TASKS[i].id===id)return TASKS[i]}return TASKS[0]}
+function ts(id){return S.ts[id]||(S.ts[id]={tip:0,res:0,n:0})}
+function inTab(k){return TASKS.filter(function(t){return t.tab===k})}
+function tabName(k){for(var i=0;i<TABS.length;i++){if(TABS[i].k===k)return TABS[i].n}return ""}
+
+/* ---------- Zerlegung eines Terms in Bausteine ---------- */
+function varpart(t){
+  var u=t.replace(/\{[^}]*\}/g,"1"),pos=0;
+  function seq(){
+    var m={};
+    while(pos<u.length&&u[pos]!==")"&&u[pos]!=="]"){
+      var c=u[pos],f;
+      if(c==="("||c==="["){pos++;f=seq();pos++}
+      else if(/[a-z\u00f6]/.test(c)){f={};f[c]=1;pos++}
+      else{pos++;continue}
+      var e=1;
+      if(u[pos]==="^"){e=parseInt(u[pos+1],10);pos+=2}
+      for(var k in f)m[k]=(m[k]||0)+f[k]*e;
+    }
+    return m;
+  }
+  var mm=seq();
+  return Object.keys(mm).sort().map(function(k){return k+"^"+mm[k]}).join("");
+}
+function matchClose(m,i){
+  var d=0,j;
+  for(j=i;j<m.length;j++){
+    if(m[j]==="("||m[j]==="[")d++;
+    else if(m[j]===")"||m[j]==="]"){d--;if(d===0)return j}
+  }
+  return m.length-1;
+}
+function nextCh(m,j){while(j<m.length&&m[j]===" ")j++;return j<m.length?m[j]:""}
+function parse(m){
+  var toks=[],terms=[],groups=[],stack=[],i=0,n=m.length,c,p,j;
+  while(i<n){
+    c=m[i];
+    if(c===" "){i++;continue}
+    p=toks.length?toks[toks.length-1]:null;
+    if(c==="+"||c==="-"){toks.push({k:"o",s:c,un:(!p||(p.k==="b"&&p.open))});i++;continue}
+    if(c==="("||c==="["){
+      j=matchClose(m,i);
+      var after=nextCh(m,j+1),ts=(!p||p.k==="o"||(p.k==="b"&&p.open));
+      if(ts&&(after===""||"+-)]".indexOf(after)>=0)){
+        var g={open:toks.length,close:-1,lead:(p&&p.k==="o")?toks.length-1:null,terms:[]};
+        groups.push(g);stack.push(groups.length-1);
+        toks.push({k:"b",s:c,open:true,g:groups.length-1});i++;continue;
+      }
+    }
+    if(c===")"||c==="]"){
+      var gi=stack.pop();groups[gi].close=toks.length;
+      toks.push({k:"b",s:c,open:false,g:gi});i++;continue;
+    }
+    j=i;var d=0;
+    while(j<n){
+      var ch=m[j];
+      if(ch==="{"){j=m.indexOf("}",j)+1;continue}
+      if(ch==="("||ch==="["){d++}
+      else if(ch===")"||ch==="]"){if(d===0)break;d--}
+      else if((ch==="+"||ch==="-")&&d===0){break}
+      j++;
+    }
+    var txt=m.slice(i,j).replace(/\s+$/,"");
+    var own=(p&&p.k==="o")?toks.length-1:null;
+    terms.push({tok:toks.length,key:txt,own:own,enc:stack.slice(),vp:varpart(txt)});
+    toks.push({k:"t",s:txt});
+    i=j;
+  }
+  terms.forEach(function(t,ti){
+    var sg=(t.own!==null&&toks[t.own].s==="-")?-1:1;
+    t.enc.forEach(function(g){groups[g].terms.push(ti);var l=groups[g].lead;if(l!==null&&toks[l].s==="-")sg=-sg});
+    t.eff=sg;
+  });
+  return {toks:toks,terms:terms,groups:groups};
+}
+var _pc={};
+function parsed(str){return _pc[str]||(_pc[str]=parse(str))}
+function stageHtml(P){
+  var h="";
+  P.toks.forEach(function(t,i){
+    if(t.k==="o")h+='<span class="tk o '+(t.un?"un":"bi")+'" data-i="'+i+'">'+(t.s==="-"?"\u2212":"+")+'</span>';
+    else if(t.k==="b")h+='<span class="tk b" data-i="'+i+'">'+t.s+'</span>';
+    else h+='<span class="tk t" data-i="'+i+'">'+fm(t.s)+'</span>';
+  });
+  return h;
+}
+
+/* Zuordnung der Bausteine zweier aufeinanderfolgender Zeilen */
+function align(A,B){
+  var plan=[],used={},tmA=[],tmB=[],gmA=[],gmB=[],takenA=[],srcOfB={},i;
+  B.terms.forEach(function(bt,bi){
+    for(var ai=0;ai<A.terms.length;ai++){
+      var at=A.terms[ai];
+      if(tmA[ai]===undefined&&at.key===bt.key&&at.eff===bt.eff){tmA[ai]=bi;tmB[bi]=ai;break}
+    }
+  });
+  var cand=[];
+  B.groups.forEach(function(bg,bi){
+    A.groups.forEach(function(ag,ai){
+      if(A.toks[ag.open].s!==B.toks[bg.open].s)return;
+      var com=0;
+      bg.terms.forEach(function(bt){var at=tmB[bt];if(at!==undefined&&ag.terms.indexOf(at)>=0)com++});
+      if(com>0)cand.push({a:ai,b:bi,sc:com/(ag.terms.length+bg.terms.length-com)});
+    });
+  });
+  cand.sort(function(x,y){return y.sc-x.sc});
+  cand.forEach(function(c){if(gmA[c.a]===undefined&&gmB[c.b]===undefined){gmA[c.a]=c.b;gmB[c.b]=c.a}});
+  B.groups.forEach(function(bg,bi){
+    if(gmB[bi]!==undefined)return;
+    for(var ai=0;ai<A.groups.length;ai++){
+      if(gmA[ai]===undefined&&A.toks[A.groups[ai].open].s===B.toks[bg.open].s){gmA[ai]=bi;gmB[bi]=ai;break}
+    }
+  });
+
+  B.terms.forEach(function(bt,bi){
+    if(tmB[bi]!==undefined){plan[bt.tok]={mode:"move",src:[A.terms[tmB[bi]].tok]}}
+  });
+  var vps={};
+  B.terms.forEach(function(bt,bi){if(tmB[bi]===undefined){(vps[bt.vp]=vps[bt.vp]||{a:[],b:[]}).b.push(bi)}});
+  A.terms.forEach(function(at,ai){if(tmA[ai]===undefined&&vps[at.vp]){vps[at.vp].a.push(ai)}});
+  Object.keys(vps).forEach(function(k){
+    var g=vps[k];
+    g.b.forEach(function(bi,idx){
+      var src=[];
+      if(g.a.length===g.b.length){src=[g.a[idx]]}
+      else if(idx===0){src=g.a.slice()}
+      srcOfB[bi]=src;
+      plan[B.terms[bi].tok]={mode:src.length?"merge":"new",src:src.map(function(ai){return A.terms[ai].tok})};
+    });
+  });
+
+  function opPlan(list,bs){
+    if(!list.length)return {mode:"new",src:[]};
+    if(list.length===1)return {mode:(A.toks[list[0]].s===bs?"move":"flip"),src:list};
+    return {mode:"merge",src:list};
+  }
+  function firstTerm(g){return g.terms.length?Math.min.apply(null,g.terms):-1}
+  B.terms.forEach(function(bt,bi){
+    if(bt.own===null)return;
+    var list=[];
+    if(tmB[bi]!==undefined){
+      var ai=tmB[bi],at=A.terms[ai];
+      if(at.own!==null)list.push(at.own);
+      for(var q=at.enc.length-1;q>=0;q--){
+        var g=at.enc[q],ag=A.groups[g];
+        if(gmA[g]===undefined&&ag.lead!==null&&firstTerm(ag)===ai)list.push(ag.lead);
+      }
+    } else if(srcOfB[bi]){
+      srcOfB[bi].forEach(function(ai){var a=A.terms[ai];if(a.own!==null)list.push(a.own)});
+    }
+    plan[bt.own]=opPlan(list,B.toks[bt.own].s);
+  });
+  B.groups.forEach(function(bg,bi){
+    var ai=gmB[bi];
+    if(ai!==undefined){
+      var ag=A.groups[ai];
+      plan[bg.open]={mode:"move",src:[ag.open]};
+      plan[bg.close]={mode:"move",src:[ag.close]};
+      if(bg.lead!==null)plan[bg.lead]=opPlan(ag.lead!==null?[ag.lead]:[],B.toks[bg.lead].s);
+    } else {
+      plan[bg.open]={mode:"new",src:[]};
+      plan[bg.close]={mode:"new",src:[]};
+      if(bg.lead!==null)plan[bg.lead]={mode:"new",src:[]};
+    }
+  });
+  for(i=0;i<B.toks.length;i++){
+    if(!plan[i])plan[i]={mode:"new",src:[]};
+    plan[i].src.forEach(function(a){used[a]=1});
+  }
+  var ghosts=[];
+  for(i=0;i<A.toks.length;i++){if(!used[i])ghosts.push(i)}
+  return {plan:plan,ghosts:ghosts};
+}
+
+/* ---------- Animation der Umformung ---------- */
+var last=null,pending=null,revealT=null,fresh=false,backFlag=false;
+var reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+function snapshot(el){
+  var sp=el.children,r=[],h=[],c=[],i;
+  for(i=0;i<sp.length;i++){r.push(sp[i].getBoundingClientRect());h.push(sp[i].innerHTML);c.push(sp[i].className)}
+  return {rects:r,html:h,cls:c,fs:getComputedStyle(el).fontSize};
+}
+function mkGhost(snap,i){
+  var o=snap.rects[i],g=document.createElement("span");
+  g.className=snap.cls[i].replace(/\bchg\b/,"")+" gh mline";
+  g.innerHTML=snap.html[i];
+  g.style.cssText="left:"+o.left+"px;top:"+o.top+"px;font-size:"+snap.fs;
+  document.body.appendChild(g);
+  return g;
+}
+function animateStage(pd){
+  if(reduce)return;
+  var snap=pd.snap,A=pd.A,B=pd.B,al=align(A,B),st=document.getElementById("stage"),sp=st.children,i;
+  for(i=0;i<B.toks.length;i++){
+    var el=sp[i],pl=al.plan[i],r=el.getBoundingClientRect(),o;
+    if(pl.mode==="move"||pl.mode==="flip"){
+      o=snap.rects[pl.src[0]];
+      var dx=o.left-r.left,dy=o.top-r.top;
+      if(Math.abs(dx)+Math.abs(dy)>1)el.animate([{transform:"translate("+dx+"px,"+dy+"px)"},{transform:"none"}],{duration:700,delay:200,easing:"ease-in-out",fill:"backwards"});
+      if(pl.mode==="flip"){
+        el.classList.add("chg");
+        el.animate([{transform:"rotateX(90deg) scale(1.4)",opacity:0},{transform:"none",opacity:1}],{duration:600,delay:500,fill:"backwards"});
+      }
+    } else if(pl.mode==="merge"){
+      el.classList.add("chg");
+      el.animate([{transform:"scale(.5)",opacity:0},{transform:"scale(1.2)",opacity:1,offset:.75},{transform:"none",opacity:1}],{duration:750,delay:350,fill:"backwards"});
+      pl.src.forEach(function(a){
+        var g=mkGhost(snap,a),q=snap.rects[a];
+        var tx=r.left+r.width/2-q.left-q.width/2,ty=r.top+r.height/2-q.top-q.height/2;
+        g.animate([{transform:"none",opacity:1},{transform:"translate("+tx+"px,"+ty+"px) scale(.4)",opacity:0}],{duration:800,delay:150,easing:"ease-in",fill:"forwards"}).onfinish=function(){g.remove()};
+      });
+    } else {
+      if(B.toks[i].k==="t")el.classList.add("chg");
+      el.animate([{opacity:0,transform:"scale(.6)"},{opacity:1,transform:"none"}],{duration:500,delay:350,fill:"backwards"});
+    }
+  }
+  al.ghosts.forEach(function(a){
+    var g=mkGhost(snap,a);
+    g.animate([{opacity:1,transform:"none"},{opacity:0,transform:"scale(.5)"}],{duration:500,easing:"ease-in",fill:"forwards"}).onfinish=function(){g.remove()};
+  });
+}
+window.SW={parse:parse,align:align};
+
+/* ---------- Anzeige ---------- */
+function renderTabs(){
+  var h="";
+  TABS.forEach(function(T){
+    var all=inTab(T.k),d=all.filter(function(t){return S.done[t.id]}).length;
+    h+='<button class="tab '+T.k+'" data-act="tab" data-k="'+T.k+'" aria-current="'+(S.tab===T.k?"true":"false")+'">'+T.n+'<span class="n">'+d+'/'+all.length+'</span></button>';
+  });
+  $("#tabs").innerHTML=h;
+}
+function renderSide(){
+  var tb=TABS.filter(function(t){return t.k===S.tab})[0],all=inTab(S.tab);
+  $("#info").textContent=tb.d;
+  var d=all.filter(function(t){return S.done[t.id]}).length;
+  $("#banner").innerHTML=(d===all.length)?'<div class="done-banner">✓ Alles bearbeitet. Probiere die nächste Stufe!</div>':"";
+  var h="";
+  all.forEach(function(t){
+    h+='<button class="li '+t.tab+(t.id===S.cur?" sel":"")+(S.done[t.id]?" done":"")+'" data-act="pick" data-id="'+t.id+'"><span>'+t.lab+'</span><span class="ck">✓</span></button>';
+  });
+  $("#list").innerHTML=h;
+}
+function stageIndex(T,s){var k=-1,i;for(i=0;i<s.n;i++){if(T.st[i].x)k=i}return k}
+function renderCard(){
+  var T=byId(S.cur),s=ts(T.id),h="";
+  var idx=stageIndex(T,s),str=(idx<0)?T.e:T.st[idx].m[0],P=parsed(str);
+  var snap=null,old=document.getElementById("stage");
+  var wasFresh=fresh,wasBack=backFlag;fresh=false;backFlag=false;
+  if(revealT){clearTimeout(revealT);revealT=null}
+  if(!wasBack&&old&&last&&last.id===T.id&&last.idx!==idx)snap=snapshot(old);
+  var delayLast=!!snap&&!reduce;
+  h+='<div class="ch"><span class="lv '+T.tab+'">'+tabName(T.tab)+'</span><span class="lab">'+T.lab+'</span></div>';
+  h+='<div class="instr">Vereinfache so weit wie möglich. Rechne im Heft.</div>';
+  if(idx>=0)h+='<div class="orig">Ausgangsaufgabe<div class="mline" data-fit="1">'+fm(T.e)+'</div></div>';
+  h+='<div class="mline big stage" id="stage" data-fit="1">'+stageHtml(P)+'</div>';
+  if(s.tip){h+='<div class="tip fade"><b>Tipp:</b> '+wm(T.tip)+'</div>'}
+  if(s.res){
+    h+='<div class="res fade"><small>Ergebnis</small><div class="mline" data-fit="1">'+fm(T.r)+'</div>';
+    if(T.alt){h+='<div class="alt">gleichwertig: <span class="mline">'+fm(T.alt)+'</span></div>'}
+    h+='</div>';
+  }
+  if(s.n>0){
+    h+='<div class="steps">';
+    for(var i=0;i<s.n;i++){
+      var st=T.st[i];
+      h+='<div class="stp'+(i===s.n-1?(delayLast?" wait":(wasFresh?" fade":"")):"")+'"><div class="sn">'+(i+1)+'</div><div class="sb">';
+      st.m.forEach(function(m){h+='<div class="mline" data-fit="1">'+fm(m)+'</div>'});
+      h+='<div class="why">'+wm(st.w)+'</div></div></div>';
+    }
+    h+='</div>';
+  }
+  $("#card").innerHTML=h;
+  if(delayLast){
+    revealT=setTimeout(function(){
+      revealT=null;
+      var el=document.querySelector(".stp.wait");
+      if(el){el.classList.remove("wait");el.classList.add("fade");if(el.scrollIntoView)el.scrollIntoView({block:"nearest"})}
+    },1400);
+  }
+  pending=snap?{snap:snap,A:last.P,B:P}:null;
+  last={id:T.id,idx:idx,P:P};
+  var b="";
+  if(!s.res){
+    b+='<span class="hint0">Erst im Heft rechnen, dann Ergebnis zeigen.</span>';
+    if(!s.tip){b+='<button class="btn" data-act="tip">💡 Tipp</button>'}
+    b+='<button class="btn pri" data-act="res">Ergebnis zeigen</button>';
+  } else if(s.n===0){
+    b+='<span class="hint0">Stimmt dein Ergebnis?</span>';
+    b+='<button class="btn" data-act="steps">Rechenweg ansehen</button>';
+    b+='<button class="btn ok" data-act="ok">✓ Stimmt – weiter</button>';
+  } else if(s.n<T.st.length){
+    b+='<button class="btn" data-act="back">◀ Zurück</button>';
+    b+='<button class="btn pri" data-act="steps">Nächster Schritt ▶</button>';
+  } else {
+    b+='<button class="btn" data-act="back">◀ Zurück</button>';
+    b+='<button class="btn ok" data-act="ok">✓ Verstanden – weiter</button>';
+  }
+  $("#bar").innerHTML=b;
+}
+function fit(){
+  var els=document.querySelectorAll("[data-fit]");
+  for(var i=0;i<els.length;i++){
+    var n=els[i];n.style.fontSize="";
+    var fs=parseFloat(getComputedStyle(n).fontSize);
+    while(n.scrollWidth>n.clientWidth+1&&fs>12){fs*=.95;n.style.fontSize=fs+"px"}
+  }
+}
+function render(){renderTabs();renderSide();renderCard();fit();if(pending){var pd=pending;pending=null;animateStage(pd)}}
+
+/* ---------- Bedienung ---------- */
+function pick(id){
+  var T=byId(id);S.cur=T.id;S.tab=T.tab;
+  try{history.replaceState(null,"","#"+T.id)}catch(e){}
+  render();$("#card").scrollTop=0;
+}
+function next(){
+  var all=inTab(S.tab),i=all.map(function(t){return t.id}).indexOf(S.cur),j;
+  for(j=1;j<=all.length;j++){
+    var t=all[(i+j)%all.length];
+    if(!S.done[t.id]&&t.id!==S.cur){pick(t.id);return}
+  }
+  render();
+}
+document.addEventListener("click",function(e){
+  var el=e.target;
+  while(el&&el!==document&&!(el.getAttribute&&el.getAttribute("data-act")))el=el.parentNode;
+  if(!el||el===document)return;
+  var act=el.getAttribute("data-act"),T=byId(S.cur),s=ts(T.id);
+  if(act==="tab"){
+    var k=el.getAttribute("data-k"),all=inTab(k),t=all.filter(function(x){return !S.done[x.id]})[0]||all[0];
+    pick(t.id);return;
+  }
+  if(act==="pick"){pick(el.getAttribute("data-id"));return}
+  if(act==="tip"){s.tip=1}
+  else if(act==="res"){s.res=1}
+  else if(act==="steps"){s.n=Math.min(s.n+1,T.st.length);fresh=true}
+  else if(act==="back"){s.n=Math.max(0,s.n-1);backFlag=true}
+  else if(act==="ok"){S.done[T.id]=1;next();return}
+  render();
+});
+window.addEventListener("resize",fit);
+window.addEventListener("hashchange",function(){
+  var id=(location.hash||"").replace("#","");
+  if(id&&id!==S.cur&&TASKS.some(function(t){return t.id===id}))pick(id);
+});
+(function start(){
+  var id=(location.hash||"").replace("#","");
+  if(id&&TASKS.some(function(t){return t.id===id})){var T=byId(id);S.cur=T.id;S.tab=T.tab}
+  render();
+})();
+})();
+</script>
+</body>
+</html>

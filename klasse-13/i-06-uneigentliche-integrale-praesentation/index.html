@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Uneigentliche Integrale</title>
+<style>
+:root{--ac:#4f46e5;--ac2:#eceaff;--ink:#14172b;--mut:#6a7090;--ok:#0f9d6b;--okb:#e1f7ee;--no:#d9363e;--nob:#fdeced;--pos:#4f46e5;--neg:#ea7a14;--fc:#3730a3;--gc:#0d9488;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9dcec;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center}
+#st{position:relative;width:100vw;height:100vh;container-type:size;background:linear-gradient(135deg,#f9faff,#eef0fb);display:grid;grid-template-rows:auto auto 1fr auto;gap:1.8cqh;padding:2.6cqh calc(var(--u)*3);overflow:hidden}
+header{display:flex;align-items:center;gap:calc(var(--u)*1.4)}
+.bd{width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:calc(var(--u)*1.2);background:var(--ac);color:#fff;display:grid;place-items:center;font-size:calc(var(--u)*2.2);font-weight:700}
+h1{font-size:calc(var(--u)*2.5);font-weight:700;letter-spacing:-.02em;flex:1}
+.rt{display:flex;align-items:center;gap:calc(var(--u)*1.2);color:var(--mut);font-size:calc(var(--u)*1.6);font-weight:600}
+#pb{height:.6cqh;background:#dcdff3;border-radius:9px;overflow:hidden}
+#pf{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .5s}
+main{min-height:0;display:flex;flex-direction:column}
+.sc{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqh;animation:in .45s ease both}
+footer{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*1.4)}
+.g{display:flex;gap:calc(var(--u)*1.2)}
+.btn{font:inherit;font-size:calc(var(--u)*1.7);font-weight:600;min-height:7cqh;padding:0 calc(var(--u)*2.4);border:0;border-radius:calc(var(--u)*1.4);background:#fff;color:var(--ink);box-shadow:0 calc(var(--u)*.2) calc(var(--u)*.9) rgba(30,35,80,.12);cursor:pointer;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--ac);color:#fff;min-width:calc(var(--u)*22)}
+.btn.d{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.ic{min-height:5cqh;padding:0 calc(var(--u)*1.2)}
+.g .btn.ic{min-height:7cqh}
+m,.tx{font-family:var(--math)}
+m{white-space:nowrap;font-style:normal}
+m i{font-style:italic}
+sup,sub{font-size:.62em;line-height:0;font-style:normal;margin-left:.08em}
+sup{vertical-align:.7em}sub{vertical-align:-.3em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;font-size:.88em;line-height:1.15}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .06em}
+.fr>span:last-child{padding:.06em .2em 0}
+.in{display:inline-flex;align-items:center;vertical-align:-.5em;margin-right:.12em}
+.in .sg{font-size:1.9em;line-height:1;font-weight:300}
+.in .lm{display:flex;flex-direction:column;justify-content:space-between;font-size:.55em;height:2.7em;margin-left:-.3em}
+.ab{display:inline-block;font-size:1.5em;line-height:.6;vertical-align:-.12em;font-weight:300;margin:0 .04em}
+.q{font-size:calc(var(--u)*2);color:var(--mut);font-weight:500}
+.q m{font-size:1.15em}
+.body{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:calc(var(--u)*1.8)}
+.gp{background:#fff;border-radius:calc(var(--u)*2);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.09);padding:1cqh calc(var(--u)*1);min-width:0;min-height:0;display:flex}
+.gp svg{width:100%;height:100%}
+.pn{display:flex;flex-direction:column;gap:1.3cqh;justify-content:center;min-width:0}
+.cd{display:flex;align-items:center;gap:calc(var(--u)*1.2);background:#fff;border-radius:calc(var(--u)*1.6);padding:1.5cqh calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);border-left:calc(var(--u)*.7) solid var(--ac)}
+.cd.pos{border-left-color:var(--pos)}.cd.neg{border-left-color:var(--neg)}
+.cd.fin{border-left-color:var(--ok);background:var(--okb)}.cd.bad{border-left-color:var(--no);background:var(--nob)}
+.nm{flex:none;width:calc(var(--u)*3.2);height:calc(var(--u)*3.2);border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:calc(var(--u)*1.7)}
+.cp{display:block;font-size:calc(var(--u)*1.35);font-weight:600;color:var(--mut);margin-bottom:.4cqh}
+.cm{font-size:calc(var(--u)*2.2);line-height:1.55}
+.ln{display:flex;align-items:center;gap:calc(var(--u)*.9)}
+.dt{flex:none;width:calc(var(--u)*1.1);height:calc(var(--u)*1.1);border-radius:50%}
+.ln.pos .dt{background:var(--pos)}.ln.neg .dt{background:var(--neg)}
+.rule{background:#fff;border-left:calc(var(--u)*.7) solid var(--ac);border-radius:calc(var(--u)*1.6);padding:1.3cqh calc(var(--u)*2);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.1);font-size:calc(var(--u)*2.6);text-align:center}
+.rv{transition:opacity .5s}
+.rv:not(.on){opacity:0;visibility:hidden;pointer-events:none}
+/* Diagramm */
+.gl{stroke:#e6e9f6;stroke-width:2}
+.ax{stroke:var(--ink);stroke-width:3}
+.axh{fill:var(--ink)}
+.tick{stroke:var(--ink);stroke-width:3}
+.tx{font-size:32px;fill:var(--ink);text-anchor:middle}
+.tx.nm2{font-size:28px;fill:var(--mut)}
+.tx.end{text-anchor:end}
+.tx.lg{font-size:42px;font-weight:600}
+.tx.pos{fill:var(--pos)}.tx.neg{fill:var(--neg)}.tx.cf{fill:var(--fc)}.tx.cg{fill:var(--gc)}.tx.cc{fill:var(--mut)}
+.cv{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cv.f{stroke:var(--fc)}.cv.g{stroke:var(--gc)}
+.cv.gh{stroke:#aab0cc;stroke-dasharray:14 12;stroke-width:4}
+.ar{stroke:none}
+.ar.pos{fill:rgba(79,70,229,.28)}.ar.neg{fill:rgba(234,122,20,.34)}.ar.fin{fill:rgba(15,157,107,.42)}
+.dl{stroke:var(--mut);stroke-width:3;stroke-dasharray:9 8}
+.dot{fill:var(--ac);stroke:#fff;stroke-width:3}
+.mini .cv{stroke-width:10}.mini .ax{stroke-width:5}
+.sh{transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
+.sh.mv{transform:translateY(var(--dy))}
+/* Quiz */
+.chips{display:flex;gap:calc(var(--u)*1.1);align-items:center}
+.chip{font:inherit;font-size:calc(var(--u)*1.6);font-weight:600;flex:1;padding:1.2cqh calc(var(--u)*1.2);border-radius:calc(var(--u)*1.2);background:#fff;border:calc(var(--u)*.22) solid #dfe2f3;text-align:center;cursor:pointer;transition:.3s;color:var(--ink);line-height:1.25}
+.chip m{font-size:calc(var(--u)*2.4)}
+.sel{border-color:var(--ac)!important;background:var(--ac2)!important}
+.ok{border-color:var(--ok)!important;background:var(--okb)!important}
+.no{border-color:#f0b4b8!important;background:var(--nob)!important}
+.qb{background:#fff;border-radius:calc(var(--u)*1.6);padding:1.8cqh calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh}
+.qt{font-size:calc(var(--u)*2.3)}
+.ex{font-size:calc(var(--u)*2);color:var(--ok);font-weight:600}
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center}
+.qr{display:grid;grid-template-columns:calc(var(--u)*17) 1fr;gap:calc(var(--u)*1.6);align-items:center;background:#fff;border-radius:calc(var(--u)*1.6);padding:1cqh calc(var(--u)*1.4);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09)}
+.qr svg{width:100%;height:auto;display:block}
+.qd{font-size:calc(var(--u)*1.9);font-weight:600;margin-bottom:1cqh}
+.qd m{font-size:1.15em}
+/* Abschluss */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*1.6);flex:1;min-height:0}
+.card{background:#fff;border-radius:calc(var(--u)*2);padding:2cqh calc(var(--u)*1.6);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh;align-items:center;text-align:center;justify-content:center}
+.card svg{width:100%;height:auto;display:block}
+.card .t1{font-size:calc(var(--u)*1.9);font-weight:700}
+.card .eq{font-size:calc(var(--u)*2.6);min-height:5cqh;display:flex;align-items:center}
+.card .t2{font-size:calc(var(--u)*1.5);color:var(--mut)}
+.strat{display:flex;align-items:center;gap:calc(var(--u)*1.2)}
+.st{flex:1;background:#fff;border-radius:calc(var(--u)*1.6);padding:1.6cqh calc(var(--u)*1.6);font-size:calc(var(--u)*1.8);font-weight:600;display:flex;align-items:center;gap:calc(var(--u)*1.2);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.08)}
+.st b{flex:none;width:calc(var(--u)*3.4);height:calc(var(--u)*3.4);border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ar2{color:var(--mut);font-size:calc(var(--u)*2.4)}
+@keyframes in{from{opacity:0;transform:translateX(calc(var(--u)*2.4))}}
+@keyframes pop{from{opacity:0;transform:translateY(1.4cqh)}}
+#ov{position:absolute;inset:0;background:rgba(236,239,251,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;flex-direction:column;gap:3cqh;padding:4cqh calc(var(--u)*3.4);z-index:5}
+#ov.on{display:flex;animation:pop .3s}
+.oh{display:flex;justify-content:space-between;align-items:center}
+.oh h2{font-size:calc(var(--u)*3)}
+.tiles{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:calc(var(--u)*1.4)}
+.tile{font:inherit;border:calc(var(--u)*.25) solid transparent;background:#fff;border-radius:calc(var(--u)*1.8);padding:2cqh calc(var(--u)*1.4);text-align:left;display:flex;flex-direction:column;gap:1cqh;cursor:pointer;box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);color:var(--ink)}
+.tile b{color:var(--ac);font-size:calc(var(--u)*2)}
+.tile span{font-size:calc(var(--u)*1.6);font-weight:700}
+.tile em{font-style:normal;font-size:calc(var(--u)*1.8);margin-top:auto;color:var(--mut)}
+.tile.cur{border-color:var(--ac)}
+
+.lm2{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin-right:.15em}
+.lm2 .lb{font-size:.62em}
+.up{font-style:normal}
+.two{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*1.8)}
+.gcard{background:#fff;border-radius:calc(var(--u)*2);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*2) rgba(40,45,110,.09);padding:1.2cqh calc(var(--u)*1.2);min-width:0;min-height:0;display:flex;flex-direction:column;gap:.8cqh}
+.gt{font-size:calc(var(--u)*2.2);text-align:center}
+.gsvg{flex:1;min-height:0;display:flex}
+.gsvg svg{width:100%;height:100%}
+.gv{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*1)}
+.gf{font-size:calc(var(--u)*2)}
+.val{font-size:calc(var(--u)*2.4);font-family:var(--math);color:var(--ac);font-weight:600;white-space:nowrap}
+.lim{border-radius:calc(var(--u)*1.2);padding:.9cqh calc(var(--u)*1.2);font-size:calc(var(--u)*2.1);text-align:center}
+.lim.bad{background:var(--nob);border:calc(var(--u)*.2) solid #f0b4b8}
+.lim.fin{background:var(--okb);border:calc(var(--u)*.2) solid var(--ok)}
+.lc{font-size:calc(var(--u)*1.4);color:var(--mut);margin-top:.3cqh}
+.ctl{display:flex;align-items:center;gap:calc(var(--u)*1.6);background:#fff;border-radius:calc(var(--u)*1.6);padding:1.2cqh calc(var(--u)*1.8);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09)}
+.cb{font-size:calc(var(--u)*2.2);white-space:nowrap}
+.cb b{font-family:var(--math);display:inline-block;min-width:calc(var(--u)*9);color:var(--ac)}
+.chips2{display:flex;gap:calc(var(--u)*.9)}
+.ctl .chip{flex:none;padding:1cqh calc(var(--u)*1.1);font-size:calc(var(--u)*1.5)}
+.ctl .chip m{font-size:calc(var(--u)*1.9)}
+#sl{flex:1;min-width:0;-webkit-appearance:none;appearance:none;height:calc(var(--u)*1.1);border-radius:calc(var(--u)*1);background:#dcdff3;outline:none;touch-action:none}
+#sl::-webkit-slider-thumb{-webkit-appearance:none;width:calc(var(--u)*3);height:calc(var(--u)*3);border-radius:50%;background:var(--ac);border:calc(var(--u)*.4) solid #fff;box-shadow:0 calc(var(--u)*.2) calc(var(--u)*.8) rgba(30,35,80,.35);cursor:pointer}
+#sl::-moz-range-thumb{width:calc(var(--u)*3);height:calc(var(--u)*3);border-radius:50%;background:var(--ac);border:calc(var(--u)*.4) solid #fff;box-shadow:0 calc(var(--u)*.2) calc(var(--u)*.8) rgba(30,35,80,.35);cursor:pointer}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:calc(var(--u)*1.6);flex:1;min-height:0}
+.fc{background:#fff;border-radius:calc(var(--u)*1.8);padding:1.4cqh calc(var(--u)*1.2);box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.4) rgba(40,45,110,.09);border:calc(var(--u)*.25) solid transparent;display:flex;flex-direction:column;gap:.7cqh;align-items:center;text-align:center;cursor:pointer;transition:.3s;justify-content:center}
+.fc svg{width:100%;height:auto;display:block}
+.fl{font-size:calc(var(--u)*2.6)}
+.fd{font-size:calc(var(--u)*1.45);color:var(--mut)}
+.fv{font-size:calc(var(--u)*2.5);font-weight:600;min-height:3.4cqh}
+.fc.ok .fv{color:var(--ok)}.fc.no .fv{color:var(--no)}
+.rs{font-size:calc(var(--u)*1.8);color:var(--mut);margin-top:.6cqh}
+
+.ex{display:none;font-size:calc(var(--u)*1.9);color:var(--ok);font-weight:600;line-height:1.4}
+.ex.on{display:block}
+.chips.col{flex-direction:column;align-items:stretch}
+.chips.col .chip{flex:none;text-align:left;padding:1.1cqh calc(var(--u)*1.4);font-size:calc(var(--u)*1.8)}
+.chip.dim{opacity:.4}
+.chip.no{opacity:1}
+.qstack{display:grid}
+.qstack>.qb{grid-area:1/1;align-self:start}
+.qr3 .chip{font-size:calc(var(--u)*1.5)}
+.ro{font-size:calc(var(--u)*2.2);line-height:1.7}
+.ro b{font-family:var(--math);color:var(--ac)}
+.tx.ts{text-anchor:start}
+
+/* iPad-Optimierung: Vollbild statt 16:9-Kasten, scrollbar statt abgeschnitten */
+#st{--u:min(1vw,1.6vh)}
+@supports (height:100dvh){#st{height:100dvh;--u:min(1vw,1.6dvh)}}
+#st{padding-top:max(1.4cqh,env(safe-area-inset-top));padding-bottom:max(1.4cqh,env(safe-area-inset-bottom));padding-left:max(calc(var(--u)*2.2),env(safe-area-inset-left));padding-right:max(calc(var(--u)*2.2),env(safe-area-inset-right));gap:1.4cqh}
+.sc{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:4px}
+.sc>*{flex-shrink:0}
+.body{flex:1 0 auto;min-height:max(44cqh,300px);grid-template-columns:1.25fr 1fr}
+.gp{min-height:max(40cqh,260px)}
+.pn{justify-content:flex-start;overflow:visible}
+.stack{flex:1 0 auto;justify-content:flex-start}
+.g3{flex:1 0 auto}
+.ctl{position:sticky;bottom:0;z-index:3}
+.q{font-size:max(15px,calc(var(--u)*2))}
+.qt{font-size:max(17px,calc(var(--u)*2.1))}
+.chip{font-size:max(16px,calc(var(--u)*1.7));min-height:44px;display:flex;align-items:center}
+.chips.col .chip{font-size:max(16px,calc(var(--u)*1.8))}
+.qr3 .chip{font-size:max(15px,calc(var(--u)*1.5))}
+.chip m{font-size:1.15em}
+.ex{font-size:max(15px,calc(var(--u)*1.8))}
+.ro{font-size:max(16px,calc(var(--u)*2.1))}
+.cb{font-size:max(16px,calc(var(--u)*2.1))}
+.btn{min-height:max(44px,6.5cqh);font-size:max(15px,calc(var(--u)*1.6))}
+.btn.p{min-width:max(150px,calc(var(--u)*20))}
+.card .t1{font-size:max(17px,calc(var(--u)*1.9))}
+.card .eq{font-size:max(20px,calc(var(--u)*2.6))}
+.card .t2{font-size:max(15px,calc(var(--u)*1.6))}
+h1{font-size:max(18px,calc(var(--u)*2.5))}
+#sl{height:max(10px,calc(var(--u)*1.1))}
+#sl::-webkit-slider-thumb{width:max(30px,calc(var(--u)*3));height:max(30px,calc(var(--u)*3))}
+#sl::-moz-range-thumb{width:max(30px,calc(var(--u)*3));height:max(30px,calc(var(--u)*3))}
+.tx.nm2{font-size:30px}
+footer .btn{white-space:nowrap;padding:0 calc(var(--u)*1.5)}
+footer .btn.p{white-space:normal;line-height:1.15;padding:0 calc(var(--u)*1.2)}
+.gp{position:relative}
+.gp svg{position:absolute;left:calc(var(--u)*1);top:1cqh;width:calc(100% - var(--u)*2);height:calc(100% - 2cqh)}
+.stack{gap:1cqh}.stack .qb{padding:1.1cqh calc(var(--u)*1.4);gap:1cqh}
+.g3{align-items:start}
+@media (orientation:portrait){.body{display:contents}.gp{order:1;flex:0 0 auto;height:46cqh;min-height:0}.ctl{order:2;position:static}.pn{order:3}.g3{grid-template-columns:1fr}.chips2{flex-wrap:wrap}}
+
+.qstack>.cd{grid-area:1/1;align-self:start}
+.tb{width:100%;border-collapse:collapse;font-size:max(16px,calc(var(--u)*2.1))}
+.tb th{font-size:max(14px,calc(var(--u)*1.5));color:var(--mut);font-weight:600;padding:.5cqh 0 1cqh}
+.tb td{text-align:center;padding:.9cqh calc(var(--u)*.8);border-top:1px solid #e6e9f6;font-family:var(--math)}
+.tb td.sum{color:var(--ac);font-weight:600}
+.seg{stroke:#8b90b5;stroke-width:2}
+.two{flex:1 0 auto;min-height:max(46cqh,330px)}
+.gsvg{position:relative;min-height:max(24cqh,170px)}
+.gsvg svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.g4{flex:1 0 auto}
+.gcard .gv{flex-wrap:wrap}
+.gcard .gt{height:calc(var(--u)*5.8);display:flex;align-items:center;justify-content:center;flex:none}
+.tb td{padding:.45cqh calc(var(--u)*.8)!important}
+.tb .fr{font-size:.78em}
+.tb{font-size:max(15px,calc(var(--u)*1.9))}
+.tb th{padding:.2cqh 0 .6cqh}
+.pn>.cd.fin{padding:1cqh calc(var(--u)*1.4)}
+.tb td.dec{color:var(--mut);text-align:left;font-size:.92em;white-space:nowrap}
+.tb tr.fin td{background:var(--okb);border-top:2px solid var(--ok);font-weight:600;padding:.8cqh calc(var(--u)*.8)}
+.tb th[colspan]{text-align:center}
+.fall{transition:opacity .5s,transform .8s cubic-bezier(.3,.8,.3,1)}
+.fall:not(.on){transform:translate(-170px,0)}
+.tb{font-size:max(14px,calc(var(--u)*1.7))!important}
+.tb td{padding:.28cqh calc(var(--u)*.8)!important}
+.tb tr.fin td{padding:.6cqh calc(var(--u)*.8)!important}
+.tb th{padding:.1cqh 0 .4cqh!important}
+</style>
+</head>
+<body>
+<div id="st">
+<header><div class="bd" id="bd">1</div><h1 id="ti"></h1><div class="rt"><span id="pg"></span><button class="btn ic" onclick="fs()">⛶</button></div></header>
+<div id="pb"><i id="pf"></i></div>
+<main id="mn"></main>
+<footer>
+<div class="g"><button class="btn" id="bk" onclick="nav(-1)">‹ Zurück</button><button class="btn" onclick="ov(1)">▦ Übersicht</button></div>
+<div class="g"><button class="btn ic" onclick="bk1()" title="Schritt zurück">↶</button><button class="btn p" id="sb" onclick="nx()"></button><button class="btn" onclick="go(cur)">↺ Zurücksetzen</button></div>
+<div class="g"><button class="btn d" id="fw" onclick="nav(1)">Weiter ›</button></div>
+</footer>
+<div id="ov"></div>
+</div>
+<script>
+const g=id=>document.getElementById(id);
+/* ---------- Mini-Formelsatz ---------- */
+const mt=(s,i)=>{let d=0;for(let j=i;j<s.length;j++){if(s[j]=='{')d++;else if(s[j]=='}'&&--d==0)return j}return s.length};
+function M(s){let o='',i=0;
+while(i<s.length){const c=s[i];
+if(c=='^'||c=='_'){const tg=c=='^'?'sup':'sub';i++;let t;if(s[i]=='{'){const j=mt(s,i);t=s.slice(i+1,j);i=j+1}else{t=s[i];i++}o+=`<${tg}>${M(t)}</${tg}>`}
+else if(c=='{'){const j=mt(s,i),p=s.slice(i+1,j).split('|');i=j+1;o+=`<span class="fr"><span>${M(p[0])}</span><span>${M(p[1])}</span></span>`}
+else if(c=='@'){const j=s.indexOf('@',i+1),p=s.slice(i+1,j).split(',');i=j+1;o+=`<span class="in"><span class="sg">∫</span><span class="lm"><span>${M(p[1])}</span><span>${M(p[0])}</span></span></span>`}
+else if(c=='|'){o+='<span class="ab">|</span>';i++}
+else if(s.startsWith('lim',i)){i+=3;let b='';if(s[i]=='_'){i++;const j=mt(s,i);b=s.slice(i+1,j);i=j+1}o+=`<span class="lm2"><span>lim</span>${b?`<span class="lb">${M(b)}</span>`:''}</span>`}
+else if(s.startsWith('ln',i)){o+='<span class="up">ln</span>';i+=2}
+else if(/[a-z]/i.test(c)){o+='<i>'+c+'</i>';i++}
+else{o+=c=='*'?'·':c=='-'?'−':c;i++}}
+return o}
+const T=s=>s.replace(/\$([^$]+)\$/g,(_,x)=>'<m>'+M(x)+'</m>');
+const SM=s=>{let o='',sub=0;for(let i=0;i<s.length;i++){let c=s[i];
+if(c=='_'){i++;c=s[i];o+=`<tspan dy="10" font-size="66%"${/[a-z]/i.test(c)?' font-style="italic"':''}>${c}</tspan>`;sub=1;continue}
+const it=/[a-z]/i.test(c);o+=`<tspan${sub?' dy="-10"':''}${it?' font-style="italic"':''}>${c=='-'?'−':c}</tspan>`;sub=0}
+return o};
+const rr=v=>Math.round(v*10)/10;
+/* ---------- Diagramme ---------- */
+const A=(c,s,x)=>s==null?`class="${c}"`:`class="rv ${c}" data-s="${s}"${x!=null?` data-x="${x}"`:''}`;
+let CP=0;
+function plot(o){
+const W=1000,H=o.h||600,mi=o.mini,pl=mi?30:80,pr=mi?30:(o.mr||50),pt=mi?24:34,pb=mi?30:60,[x0,x1]=o.xr,[y0,y1]=o.yr,gs=o.gs||1;
+const sx=(W-pl-pr)/(x1-x0),sy=(H-pt-pb)/(y1-y0),X=x=>pl+(x-x0)*sx,Y=y=>H-pb-(y-y0)*sy,r=v=>Math.round(v*10)/10;
+const P={X,Y,sx,sy};
+P.path=(f,a,b,geo,cut)=>{a=Math.max(a,x0);b=Math.min(b,x1);const n=220;let d='',started=false,prevOut=false,prevX=null;
+for(let k=0;k<=n;k++){const x=geo?a*Math.pow(b/a,k/n):a+(b-a)*k/n,yy=Y(f(x)),out=yy<pt;
+if(cut&&out){prevOut=true;prevX=x;continue}
+if(cut&&prevOut&&prevX!==null){let lo=prevX,hi=x;for(let q=0;q<40;q++){const m=(lo+hi)/2;if(Y(f(m))<pt)lo=m;else hi=m}d+=(started?'L':'M')+r(X(hi))+' '+pt;started=true}
+d+=(started?'L':'M')+r(X(x))+' '+Math.max(r(yy),pt);started=true;prevOut=false}
+return d};
+P.area=(f,h,a,b,geo)=>{a=Math.max(a,x0);b=Math.min(b,x1);let d=P.path(f,a,b,geo);if(h){const n=220;for(let k=n;k>=0;k--){const x=a+(b-a)*k/n;d+='L'+r(X(x))+' '+r(Y(h(x)))}}else d+=`L${r(X(b))} ${r(Y(0))}L${r(X(a))} ${r(Y(0))}`;return d+'Z'};
+P.cv=(c,f,a,b,s,x,geo)=>`<path ${A('cv '+c,s,x)} d="${P.path(f,a,b,geo,true)}"/>`;
+P.ar=(c,f,h,a,b,s,x,geo)=>`<path ${A('ar '+c,s,x)} d="${P.area(f,h,a,b,geo)}"/>`;
+P.t=(x,y,s,c,st,xx,dx=0,dy=0)=>`<text ${A('tx '+(c||''),st,xx)} x="${r(X(x)+dx)}" y="${r(Y(y)+dy)}">${SM(s)}</text>`;
+P.base=()=>{let s='';
+if(!mi){for(let v=Math.ceil(x0/gs-1e-6)*gs;v<=x1+1e-6;v+=gs)s+=`<line class="gl" x1="${r(X(v))}" y1="${r(Y(y0))}" x2="${r(X(v))}" y2="${r(Y(y1))}"/>`;
+for(let v=Math.ceil(y0/gs-1e-6)*gs;v<=y1+1e-6;v+=gs)s+=`<line class="gl" x1="${r(X(x0))}" y1="${r(Y(v))}" x2="${r(X(x1))}" y2="${r(Y(v))}"/>`}
+const ax=X(0),ay=Y(0),ex=X(x1),ey=Y(y1);
+s+=`<line class="ax" x1="${r(X(x0))}" y1="${r(ay)}" x2="${r(ex-6)}" y2="${r(ay)}"/><line class="ax" x1="${r(ax)}" y1="${r(Y(y0))}" x2="${r(ax)}" y2="${r(ey+6)}"/>`;
+s+=`<path class="axh" d="M${r(ex)} ${r(ay)}l-20 -9v18z"/><path class="axh" d="M${r(ax)} ${r(ey)}l-9 20h18z"/>`;
+if(!mi){(o.xt||[]).forEach(t=>{s+=`<line class="tick" x1="${r(X(t))}" y1="${r(ay-8)}" x2="${r(X(t))}" y2="${r(ay+8)}"/><text class="tx nm2" x="${r(X(t))}" y="${r(ay+40)}">${t}</text>`});
+(o.yt||[]).forEach(t=>{s+=`<line class="tick" x1="${r(ax-8)}" y1="${r(Y(t))}" x2="${r(ax+8)}" y2="${r(Y(t))}"/><text class="tx nm2 end" x="${r(ax-18)}" y="${r(Y(t)+10)}">${t}</text>`});
+s+=`<text class="tx nm2" x="${r(ex-14)}" y="${r(ay-18)}">${SM('x')}</text><text class="tx nm2" x="${r(ax+28)}" y="${r(ey+36)}">${SM('y')}</text>`}
+return s};
+P.svg=inner=>`<svg class="${mi?'mini':''}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${P.base()}${inner}</svg>`;
+return P}
+const fF=x=>1/x,fG=x=>1/(x*x);
+/* Folie 2: b -> oo */
+const pr=plot({h:580,xr:[-.4,10.5],yr:[-.15,1.32],xt:[1,2,4,6,8,10],yt:[1]});
+const mkB=(i,fn,cc)=>pr.svg(`<path id="ar${i}" class="ar pos" d=""/>`+pr.cv(cc,fn,.38,10.5,null,null,1)+`<line class="dl" x1="${pr.X(1)}" x2="${pr.X(1)}" y1="${pr.Y(0)}" y2="${pr.Y(1)}"/><line id="bl${i}" class="dl" y1="${pr.Y(-.15)}" y2="${pr.Y(1.32)}"/><text id="bt${i}" class="tx pos" y="${pr.Y(1.2)}">${SM('b')}</text>`);
+/* Folie 3: z -> 0 */
+const pz=plot({h:580,clip:1,xr:[-.2,3.0],yr:[-.4,7.5],xt:[1,2,3],yt:[2,4,6]});
+const mkZ=(i,fn,cc)=>pz.svg(`<path id="ar${i}" class="ar neg" d=""/>`+pz.cv(cc,fn,.08,3,null,null,1)+`<line class="dl" x1="${pz.X(1)}" x2="${pz.X(1)}" y1="${pz.Y(0)}" y2="${pz.Y(1)}"/><line id="bl${i}" class="dl" y1="${pz.Y(-.4)}" y2="${pz.Y(7.5)}"/><text id="bt${i}" class="tx neg" y="${pz.Y(6.9)}">${SM('z')}</text>`);
+/* Vorschaubilder Folie 4 */
+const mR=plot({mini:1,clip:1,xr:[-.5,10.5],yr:[-.6,2.6]}),mU=plot({mini:1,clip:1,xr:[-.3,3.2],yr:[-.5,5]});
+const thR=(fn,cc)=>mR.svg(mR.ar('pos',fn,null,1,12)+mR.cv(cc,fn,.38,10.5,null,null,1));
+const thU=(fn,cc)=>mU.svg(mU.ar('neg',fn,null,.001,1,null,null,1)+mU.cv(cc,fn,.1,3.2,null,null,1));
+/* ---------- Bausteine ---------- */
+const BODYX=(a,b)=>a+b;
+const RULE=(s,h)=>`<div class="rule rv" data-s="${s}">${T(h)}</div>`;
+const CHP=(t,ok,h)=>`<span class="chip" data-hit="${h}" data-ok="${ok}" onclick="pk(this)">${T(t)}</span>`;
+const GCs=(title,svg)=>`<div class="gcard"><div class="gt">${T(title)}</div><div class="gsvg">${svg}</div></div>`;
+const GC=(title,svg,form,vid,lim,cls,cap)=>`<div class="gcard"><div class="gt">${T(title)}</div><div class="gsvg">${svg}</div><div class="gv"><div class="gf">${T(form)}</div><b class="val" id="${vid}"></b></div><div class="lim rv ${cls}" data-s="1">${T(lim)}${cap?`<div class="lc">${cap}</div>`:''}</div></div>`;
+const SCH=(fn,v,t)=>`<span class="chip" onclick="${fn}(${v})">${T(t)}</span>`;
+const CTL=(lab,chips)=>`<div class="ctl"><span class="cb">${T(lab)} = <b id="bv"></b></span><input type="range" id="sl" min="0" max="1000" value="0" oninput="onSl(this.value)"><div class="chips2">${chips}</div></div>`;
+const FC=(l,d,th,v,ok)=>`<div class="fc" data-hit="1" data-ok="${ok}" onclick="pk(this)">${th}<div class="fl">${T(l)}</div><div class="fd">${T(d)}</div><div class="fv rv" data-s="2">${T(v)}</div></div>`;
+
+/* ---------- Neue Bausteine ---------- */
+const frM=(a,c)=>`<m>${M(`{${a}|${c}}`)}</m>`;
+const CS=(s,x,cls,cap,h,extra)=>`<div class="cd rv ${cls||''}" data-s="${s}"${x!=null?` data-x="${x}"`:''}><div><span class="cp">${cap}</span><div class="cm">${T(h)}</div>${extra?`<div class="lc">${extra}</div>`:''}</div></div>`;
+/* Fliesen */
+function tilesSvg(){const PAL=['#c7d2fe','#fed7aa','#bbf7d0','#fbcfe8','#e9d5ff','#fde68a'],LAB=['1','½','¼','⅛','1/16','1/32'],FS=[54,48,42,34,26,21];
+const sc=455,ox=45,oy=50;let x=0,y=0,w=2,h=1,v=1,s='';
+s+=`<rect x="${ox}" y="${oy}" width="${2*sc}" height="${sc}" fill="#fff" stroke="#14172b" stroke-width="4"/>`;
+for(let k=0;k<14;k++){let t;if(v){t={x,y,w:w/2,h};x+=w/2;w/=2}else{t={x,y,w,h:h/2};y+=h/2;h/=2}v=!v;
+const st=k<6?k+1:7;
+s+=`<rect class="rv" data-s="${st}" x="${rr(ox+t.x*sc)}" y="${rr(oy+t.y*sc)}" width="${rr(t.w*sc)}" height="${rr(t.h*sc)}" fill="${PAL[k%6]}" stroke="#14172b" stroke-width="${k<6?3:1.5}"/>`;
+if(k<6)s+=`<text class="rv tx" data-s="${st}" x="${rr(ox+(t.x+t.w/2)*sc)}" y="${rr(oy+(t.y+t.h/2)*sc+FS[k]*.3)}" style="font-size:${FS[k]}px">${LAB[k]}</text>`}
+s+=`<text class="tx nm2" x="${ox+sc}" y="${oy+sc+44}">Gesamtfläche: 2 m²</text>`;
+return `<svg viewBox="0 0 1000 610" preserveAspectRatio="xMidYMid meet">${s}</svg>`}
+const SUMM=()=>{const t=['1','{1|2}','{1|4}','{1|8}','{1|16}','{1|32}'],sz=[1,.94,.86,.78,.7,.62];return `<div class="cd"><div><span class="cp">Die Summanden werden immer kleiner</span><div class="cm" style="white-space:nowrap">${t.map((x,k)=>`<span class="rv" data-s="${k+1}" style="font-size:${sz[k]}em">${k?'+ ':''}${T('$'+x+'$')}</span>`).join(' ')} <span class="rv" data-s="7">+ …</span></div></div></div>`};
+/* Streifen unter 1/x^2 */
+const ps=plot({h:640,xr:[-.4,10.6],yr:[-.15,1.25],xt:[1,2,3,4,5,6,7,8,9,10],yt:[1],mr:390});
+function stripsSvg(){let s='';const lab=['½','⅙','1/12','1/20','1/30','1/42'];
+for(let n=1;n<=10;n++){const st=Math.min(n,7);s+=ps.ar(n%2?'pos':'neg',fG,null,n,n+1,st)}
+s+=ps.cv('g',fG,.9,10.6);
+for(let n=1;n<=3;n++)s+=ps.t(n+.5,fG(n+.5)+.1,lab[n-1],n%2?'pos':'neg',n);
+/* Quadrat 1 m²: die Streifen fallen als Fliesen hinein (Breite = Fläche) */
+const qx=680,qy=80,qw=270,qh=270;let prev=0;
+s+=`<rect x="${qx}" y="${qy}" width="${qw}" height="${qh}" fill="#fff"/>`;
+for(let n=1;n<=9;n++){const S=n/(n+1),st=Math.min(n,7);
+s+=`<rect class="rv fall ar ${n%2?'pos':'neg'} seg" data-s="${st}" x="${rr(qx+prev*qw)}" y="${qy}" width="${rr((S-prev)*qw)}" height="${qh}"/>`;
+if(n<=2)s+=`<text class="rv fall tx" data-s="${st}" x="${rr(qx+(prev+(S-prev)/2)*qw)}" y="${qy+qh/2+10}" style="font-size:${n==1?48:30}px">${lab[n-1]}</text>`;prev=S}
+/* weitere Blöcke für 100, 1000, 10000 Streifen */
+[[9/10,100/101,8,'neg'],[100/101,1000/1001,9,'pos'],[1000/1001,10000/10001,10,'neg'],[10000/10001,1000000/1000001,11,'pos']].forEach(([f,t,st,c])=>{
+s+=`<rect class="rv fall ar ${c} seg" data-s="${st}" x="${rr(qx+f*qw)}" y="${qy}" width="${Math.max(rr((t-f)*qw),1)}" height="${qh}"/>`});
+/* Rest, der noch fehlt */
+const GAP=['0,5','≈ 0,333','0,25','0,2','≈ 0,167','≈ 0,143','0,1','≈ 0,0099','≈ 0,000999','≈ 0,0001','≈ 0,000001'];
+GAP.forEach((g,k)=>{s+=`<text class="rv tx" data-s="${k+1}" data-x="${k+2}" x="${qx+qw/2-14}" y="590" style="font-size:26px">Es fehlt noch: ${g} m²</text>`});
+s+=`<text class="rv tx" data-s="12" x="${qx+qw/2-14}" y="590" style="font-size:26px">Es fehlt nichts mehr: → 0</text>`;
+/* Lupe: immer stärker hineinzoomen, damit der fehlende Rest sichtbar bleibt */
+const ly=480,lh=64;
+[[.9,100/101,8,'0,9',10],[.99,1000/1001,9,'0,99',100],[.999,10000/10001,10,'0,999',1000],[.99999,1000000/1000001,11,'0,99999','10⁵']].forEach(([L,S2,st,lt,z])=>{
+s+=`<rect class="rv" data-s="${st}" data-x="${st+1}" x="${rr(qx+L*qw)}" y="${qy}" width="${rr((1-L)*qw)}" height="${qh}" fill="none" stroke="#ea7a14" stroke-width="4" stroke-dasharray="10 7"/>`;
+s+=`<g class="rv" data-s="${st}" data-x="${st+1}"><text class="tx nm2" x="${qx+qw/2}" y="${ly-16}" style="font-size:28px">Lupe ×${z}: ${lt} bis 1</text><rect x="${qx}" y="${ly}" width="${qw}" height="${lh}" fill="#fff" stroke="#ea7a14" stroke-width="4"/><rect class="ar pos" x="${qx}" y="${ly}" width="${rr((S2-L)/(1-L)*qw)}" height="${lh}"/><rect x="${qx}" y="${ly}" width="${qw}" height="${lh}" fill="none" stroke="#ea7a14" stroke-width="4"/></g>`});
+s+=`<rect class="rv ar fin seg" data-s="12" x="${qx}" y="${qy}" width="${qw}" height="${qh}"/>`;
+s+=`<rect x="${qx}" y="${qy}" width="${qw}" height="${qh}" fill="none" stroke="#14172b" stroke-width="4"/>`;
+s+=`<text class="tx nm2" x="${qx+qw/2}" y="${qy+qh+44}">Quadrat: 1 m²</text>`;
+s+=`<text class="rv tx lg cg" data-s="12" x="${qx+qw/2}" y="${qy-24}">Summe → 1</text>`;
+return ps.svg(s)}
+const TB=(s,a,b,c,d)=>`<tr class="rv" data-s="${s}"><td>${T(a)}</td><td>${T(b)}</td><td class="sum">${T(c)}</td><td class="dec">${d}</td></tr>`;
+/* Regler */
+const nf=(n,mn,mx)=>n.toLocaleString('de-DE',{minimumFractionDigits:mn,maximumFractionDigits:mx});
+const bFromT=t=>t<500?1+9*t/500:Math.pow(10,1+5*(t-500)/500);
+const tFromB=b=>b<=10?(b-1)/9*500:500+(Math.log10(b)-1)/5*500;
+const zFromT=t=>t<500?1-.9*t/500:Math.pow(10,-1-5*(t-500)/500);
+const tFromZ=z=>z>=.1?(1-z)/.9*500:500+(-Math.log10(z)-1)/5*500;
+function updB(b){const far=b>10.4,bb=Math.min(b,10.5),x=far?pr.X(10.05):pr.X(b),dg=b<1000?3:b<1e5?5:6;
+[1,2].forEach(i=>{g('ar'+i).setAttribute('d',pr.area(i==1?fG:fF,null,1,Math.max(bb,1.0001)));
+const l=g('bl'+i),t=g('bt'+i);l.setAttribute('x1',x);l.setAttribute('x2',x);l.style.visibility=far?'hidden':'visible';t.setAttribute('x',x);t.innerHTML=far?SM('b')+'<tspan> →</tspan>':SM('b')});
+g('vf').textContent='= '+nf(Math.log(b),2,2);g('vg').textContent='= '+nf(1-1/b,0,dg);
+g('bv').textContent=b<10?nf(b,1,1):nf(b,0,0)}
+function updZ(z){const x=pz.X(z);
+[1,2].forEach(i=>{g('ar'+i).setAttribute('d',pz.area(i==1?fG:fF,null,Math.min(z,.9999),1,1));
+const l=g('bl'+i),t=g('bt'+i);l.setAttribute('x1',x);l.setAttribute('x2',x);t.setAttribute('x',x+(z<.1?30:0))});
+g('vf').textContent='= '+nf(0-Math.log(z),2,2);g('vg').textContent='= '+nf(1/z-1,0,2);
+g('bv').textContent=z>=.01?nf(z,2,3):nf(z,0,6)}
+function setB(b){g('sl').value=tFromB(b);updB(b)}
+function setZ(z){g('sl').value=tFromZ(z);updZ(z)}
+function onSl(v){v=+v;cur==2?updB(bFromT(v)):updZ(zFromT(v))}
+/* ---------- Folien ---------- */
+const S=[
+{t:'Unendlich viele Fliesen – endliche Fläche?',e:'$1+{1|2}+{1|4}+…=2$',q:'Aussage: „Wird bei einer Fläche unendlich oft ein Stück ergänzt, so wird sie unendlich groß.“ Fliesen mit 1 m², ½ m², ¼ m² … werden aneinandergelegt.',
+b:['1. Fliese legen','2. Fliese','3. Fliese','4. Fliese','5. Fliese','6. Fliese','Unendlich weiter'],
+h:`<div class="body"><div class="gp">${tilesSvg()}</div><div class="pn"><div class="qstack">${
+ CS(1,2,'','1. Fliese: 1 m²','$S=1$','Es fehlt noch 1 m² bis 2 m².')+
+ CS(2,3,'','2. Fliese: ½ m²','$S=1+{1|2}=1,5$','Nur halb so groß wie die Fliese davor. Es fehlt noch ½ m².')+
+ CS(3,4,'','3. Fliese: ¼ m²','$S=1,5+{1|4}=1,75$','Wieder nur halb so groß wie die davor. Es fehlt noch ¼ m².')+
+ CS(4,5,'','4. Fliese: ⅛ m²','$S=1,75+{1|8}=1,875$','Die neuen Stücke werden immer kleiner. Es fehlt noch ⅛ m².')+
+ CS(5,6,'','5. Fliese: 1/16 m²','$S=1,875+{1|16}=1,9375$','Immer kleiner. Es fehlt noch 1/16 m².')+
+ CS(6,7,'','6. Fliese: 1/32 m²','$S=1,9375+{1|32}=1,96875$','Immer kleiner. Es fehlt noch 1/32 m².')+
+ CS(7,null,'fin','Unendlich viele Fliesen','$1+{1|2}+{1|4}+{1|8}+…=2$','Unendlich viele Summanden – aber sie werden so schnell kleiner, dass die Summe endlich bleibt: 2 m².')
+}</div>${SUMM()}</div></div>`},
+{t:'Unendlich viele Streifen unter 1/x²',e:'$@1,∞@{1|x^2}dx$',q:'Streifen unter $g(x)={1|x^2}$ von 1 bis +∞ – ihre Flächen werden gestapelt.',
+b:['1. Streifen','2. Streifen','3. Streifen','4. Streifen','5. Streifen','6. Streifen','Alle Streifen','Nach 100 Streifen','Nach 1000 Streifen','Nach 10000 Streifen','Nach 1000000 Streifen','Summe zeigen'],
+h:`<div class="body"><div class="gp">${stripsSvg()}</div><div class="pn"><div class="cd"><table class="tb"><tr><th>Streifen</th><th>Fläche</th><th colspan="2">Summe</th></tr>${
+ TB(1,'$[1;2]$',frM(1,2),frM(1,2),'0,5')+TB(2,'$[2;3]$',frM(1,6),frM(2,3),'≈ 0,667')+TB(3,'$[3;4]$',frM(1,12),frM(3,4),'0,75')+TB(4,'$[4;5]$',frM(1,20),frM(4,5),'0,8')+TB(5,'$[5;6]$',frM(1,30),frM(5,6),'≈ 0,833')+TB(6,'$[6;7]$',frM(1,42),frM(6,7),'≈ 0,857')+
+ TB(8,'$n=100$',frM(1,10100),frM(100,101),'≈ 0,990099')+TB(9,'$n=1000$',frM(1,1001000),frM(1000,1001),'≈ 0,999001')+TB(10,'$n=10000$',frM(1,100010000),frM(10000,10001),'≈ 0,99990001')+TB(11,'$n=1000000$','$≈1·10^{-12}$',frM(1000000,1000001),'≈ 0,999999')+
+ `<tr class="rv fin" data-s="12"><td colspan="4">${T('$A_n={1|n}-{1|n+1}$ &nbsp; $S_n=1-{1|n+1}→1$')}</td></tr>`
+}</table></div></div></div>`},
+{t:'Fläche nach rechts: b → ∞',e:'$lim_{b→+∞}A(b)$',q:'Ziehe b nach rechts. Was passiert mit den Flächen unter $G_g$ und $G_f$?',
+b:['Grenzwerte zeigen'],init:()=>setB(2),
+h:`<div class="two">${GC('$g(x)={1|x^2}$',mkB(1,fG,'g'),'$A_3(b)=@1,b@{1|x^2}dx=1-{1|b}$','vg','$lim_{b→+∞}A_3(b)=1$','fin','endlich, obwohl die Fläche bis ins Unendliche reicht!')}${GC('$f(x)={1|x}$',mkB(2,fF,'f'),'$A_1(b)=@1,b@{1|x}dx=ln b$','vf','$lim_{b→+∞}A_1(b)=+∞$','bad','&nbsp;')}</div>${CTL('$b$',SCH('setB',2,'$b=2$')+SCH('setB',10,'$b=10$')+SCH('setB',100,'$b=100$')+SCH('setB',1000000,'$b=10^6$'))}`},
+{t:'Fläche nach oben: z → 0',e:'$lim_{z→0}A(z)$',q:'Ziehe z nach links gegen 0. Was passiert mit den Flächen?',
+b:['Grenzwerte zeigen'],init:()=>setZ(.5),
+h:`<div class="two">${GC('$g(x)={1|x^2}$',mkZ(1,fG,'g'),'$A_4(z)={1|z}-1$','vg','$lim_{z→0}A_4(z)=+∞$','bad')}${GC('$f(x)={1|x}$',mkZ(2,fF,'f'),'$A_2(z)=@z,1@{1|x}dx=-ln z$','vf','$lim_{z→0}A_2(z)=+∞$','bad')}</div>${CTL('$z$',SCH('setZ',.5,'$z=0,5$')+SCH('setZ',.1,'$z=0,1$')+SCH('setZ',.01,'$z=0,01$')+SCH('setZ',.000001,'$z=10^{-6}$'))}`},
+{t:'Uneigentliche Integrale',e:'Definition',q:'Welche der vier Flächen hat einen endlichen Inhalt? Tippe auf eine Karte.',
+b:['Auflösung zeigen','Werte zeigen','Definition'],
+h:`<div class="g4">${FC('$A_1$','unter $G_f$, von 1 bis +∞',thR(fF,'f'),'$+∞$',0)}${FC('$A_2$','unter $G_f$, von 0 bis 1',thU(fF,'f'),'$+∞$',0)}${FC('$A_3$','unter $G_g$, von 1 bis +∞',thR(fG,'g'),'$1$',1)}${FC('$A_4$','unter $G_g$, von 0 bis 1',thU(fG,'g'),'$+∞$',0)}</div>${RULE(3,'$lim_{b→+∞}@a,b@f(x)dx$ &nbsp; bzw. &nbsp; $lim_{z→a}@z,b@f(x)dx$<div class="rs">Existiert der Grenzwert, heißt er uneigentliches Integral.</div>')}`}
+];
+/* ---------- Steuerung ---------- */
+let cur=0,step=0;
+function go(i){cur=i;step=0;const s=S[i];
+g('bd').textContent=i+1;g('ti').textContent=s.t;g('pg').textContent=(i+1)+' / '+S.length;g('pf').style.width=(i+1)/S.length*100+'%';
+g('mn').innerHTML='<div class="sc"><div class="q">'+T(s.q)+'</div>'+s.h+'</div>';
+g('bk').disabled=!i;g('fw').disabled=i==S.length-1;if(s.init)s.init();upd()}
+function upd(){const s=S[cur],m=g('mn');
+m.querySelectorAll('[data-s]').forEach(e=>{const a=+e.dataset.s,x=e.dataset.x!=null?+e.dataset.x:99;e.classList.toggle('on',step>=a&&step<x)});
+m.querySelectorAll('[data-hit]').forEach(e=>{const o=step>=+e.dataset.hit;e.classList.toggle('ok',o&&e.dataset.ok=='1');e.classList.toggle('no',o&&e.dataset.ok!='1')});
+const d=step>=s.b.length;g('sb').textContent=d?'✓ Alles gezeigt':s.b[step];g('sb').disabled=d}
+function nx(){if(step<S[cur].b.length){step++;upd()}}
+function bk1(){if(step>0){step--;upd()}}
+function nav(d){const n=cur+d;if(n>=0&&n<S.length)go(n)}
+function pk(e){if(step>=+e.dataset.hit)return;[...e.parentNode.children].forEach(c=>c.classList.remove('sel'));e.classList.add('sel')}
+function ov(o){const e=g('ov');if(o){e.innerHTML='<div class="oh"><h2>Übersicht</h2><button class="btn" onclick="ov(0)">✕ Schließen</button></div><div class="tiles">'+S.map((s,i)=>`<button class="tile${i==cur?' cur':''}" onclick="ov(0);go(${i})"><b>${i+1}</b><span>${s.t}</span><em>${T(s.e)}</em></button>`).join('')+'</div>'}e.classList.toggle('on',!!o)}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('keydown',e=>{if(e.target.tagName=='INPUT'&&(e.key.startsWith('Arrow')))return;if(e.key=='ArrowRight')nav(1);else if(e.key=='ArrowLeft')nav(-1);else if(e.key==' '||e.key=='Enter'){e.preventDefault();nx()}else if(e.key=='Backspace'){e.preventDefault();bk1()}else if(e.key=='Escape')ov(0)});
+go(0);
+</script>
+</body>
+</html>

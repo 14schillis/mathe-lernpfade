@@ -2,105 +2,69 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mathematik – Jahrgangsstufe 10</title>
-<style>
-:root{
-  --ink:#1b2430; --soft:#4a5566; --line:#dde2e9; --bg:#f6f7f9; --head:#1d3fb8; --bar:#4caf1a;
-  --lp-bg:#ccfbf1;  --lp-fg:#0f766e;  --lp-bd:#5eead4;
-  --pr-bg:#dbeafe;  --pr-fg:#1e40af;  --pr-bd:#93c5fd;
-  --st-bg:#dcfce7;  --st-fg:#166534;  --st-bd:#86efac;
-  --ex-bg:#fef3c7;  --ex-fg:#92400e;  --ex-bd:#fcd34d;
-  --sp-bg:#ede9fe;  --sp-fg:#5b21b6;  --sp-bd:#c4b5fd;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.4}
-main{max-width:900px;margin:0 auto;padding:36px 20px 48px}
-
-header{border-left:6px solid var(--bar);padding:2px 0 2px 16px;margin-bottom:30px}
-.kicker{color:var(--soft);font-size:1rem}
-h1{margin:2px 0 4px;font-size:2.1rem;line-height:1.15}
-.subtitle{color:var(--soft);font-size:.98rem;margin:0}
-
-section{margin-bottom:30px}
-h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:2px solid var(--head)}
-
-.rows{margin:10px 0 0 6px;border-left:3px solid var(--line);padding-left:14px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
-  padding:10px 4px;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.row-title{font-weight:600;font-size:1.04rem;flex:1 1 260px}
-.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
-
-.pill{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;
-  font-size:.92rem;font-weight:650;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.pill:active{transform:scale(.97)}
-.pill:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
-.lp{background:var(--lp-bg);color:var(--lp-fg);border-color:var(--lp-bd)}
-.pr{background:var(--pr-bg);color:var(--pr-fg);border-color:var(--pr-bd)}
-.st{background:var(--st-bg);color:var(--st-fg);border-color:var(--st-bd)}
-.ex{background:var(--ex-bg);color:var(--ex-fg);border-color:var(--ex-bd)}
-.sp{background:var(--sp-bg);color:var(--sp-fg);border-color:var(--sp-bd)}
-@media (hover:hover){.pill:hover{filter:brightness(.95)}}
-
-@media(max-width:600px){
-  main{padding:22px 14px 36px}
-  h1{font-size:1.7rem}
-  .pills{justify-content:flex-start}
-  .rows{margin-left:2px;padding-left:10px}
-}
-</style>
+<link rel="stylesheet" href="../assets/uebersicht.css">
 </head>
-<body>
+<body data-bereich="k10">
 <main>
 
-<header>
-  <div class="kicker">Mathematik</div>
+<div class="topbar"><a class="back" href="../">Alle Klassen</a></div>
+
+<header class="hero">
+  <span class="kicker">Mathematik</span>
   <h1>Jahrgangsstufe 10</h1>
-  <p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
+  <p>Interaktive Lernpfade, Präsentationen und Übungen</p>
+  <div class="big" aria-hidden="true">10</div>
 </header>
+
+<div class="legend" aria-hidden="true">
+  <span class="lp">Lernpfad</span>
+  <span class="pr">Präsentation</span>
+  <span class="st">Übungshalle</span>
+</div>
 
 <section>
   <h2>Exponentielles Wachstum und Logarithmus</h2>
   <div class="rows">
 
     <div class="row">
-      <div class="row-title">I.1 Wachstumsprozesse</div>
+      <div class="row-title"><span class="nr">I.1</span>Wachstumsprozesse</div>
       <div class="pills">
-        <a class="pill lp" href="exponentielles-wachstum-logarithmus/1-1-wachstumsprozesse/">Lernpfad</a>
-        <a class="pill pr" href="artefakte/wuerfelsimulation/" title="Würfelsimulation – exponentielle Abnahme">Präsentation</a>
+        <a class="pill lp" href="i-01-wachstumsprozesse-lernpfad/">Lernpfad</a>
+        <a class="pill pr" href="i-01-wuerfelsimulation-praesentation/" title="Würfelsimulation – exponentielle Abnahme">Präsentation</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.2 Exponentialfunktionen</div>
+      <div class="row-title"><span class="nr">I.2</span>Exponentialfunktionen</div>
       <div class="pills">
-        <a class="pill lp" href="exponentielles-wachstum-logarithmus/1-2-exponentialfunktion/">Lernpfad</a>
-        <a class="pill st" href="artefakte/exponentialfunktionen-uebungshalle/" title="Übungshalle zu Exponentialfunktionen">Übungshalle</a>
+        <a class="pill lp" href="i-02-exponentialfunktion-lernpfad/">Lernpfad</a>
+        <a class="pill st" href="i-02-exponentialfunktionen-uebungshalle/" title="Übungshalle zu Exponentialfunktionen">Übungshalle</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.3 Logarithmus – die Umkehrung des Potenzierens</div>
+      <div class="row-title"><span class="nr">I.3</span>Logarithmus – die Umkehrung des Potenzierens</div>
       <div class="pills">
-        <a class="pill lp" href="exponentielles-wachstum-logarithmus/1-3-logarithmus/">Lernpfad</a>
+        <a class="pill lp" href="i-03-logarithmus-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.4 Einfache Exponentialgleichungen</div>
+      <div class="row-title"><span class="nr">I.4</span>Einfache Exponentialgleichungen</div>
       <div class="pills">
-        <a class="pill lp" href="exponentielles-wachstum-logarithmus/1-4-exponentialgleichungen/">Lernpfad</a>
-        <a class="pill st" href="exponentielles-wachstum-logarithmus/1-4-exponentialgleichungen/" title="Übungshalle zu Exponentialgleichungen">Übungshalle</a>
-        <a class="pill pr" href="artefakte/exponentialfunktionen-aufgabe5/" title="Hausaufgabe 5 – Exponentialgleichungen lösen">Präsentation: Hausaufgabe 5</a>
-        <a class="pill pr" href="artefakte/exponentialgleichungen-aufgabe15/" title="Hausaufgabe 15 – Exponentialgleichungen umformen">Präsentation: Hausaufgabe 15</a>
+        <a class="pill lp" href="i-04-exponentialgleichungen-uebungshalle/">Lernpfad</a>
+        <a class="pill st" href="i-04-exponentialgleichungen-uebungshalle/" title="Übungshalle zu Exponentialgleichungen">Übungshalle</a>
+        <a class="pill pr" href="i-04-exponentialgleichungen-hausaufgabe5-praesentation/" title="Hausaufgabe 5 – Exponentialgleichungen lösen">Präsentation: Hausaufgabe 5</a>
+        <a class="pill pr" href="i-04-exponentialgleichungen-hausaufgabe15-praesentation/" title="Hausaufgabe 15 – Exponentialgleichungen umformen">Präsentation: Hausaufgabe 15</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.5 Modellieren mit Funktionen</div>
+      <div class="row-title"><span class="nr">I.5</span>Modellieren mit Funktionen</div>
       <div class="pills">
-        <a class="pill lp" href="exponentielles-wachstum-logarithmus/1-5-modellieren/">Lernpfad</a>
+        <a class="pill lp" href="i-05-modellieren-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
@@ -112,9 +76,9 @@ h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:
   <div class="rows">
 
     <div class="row">
-      <div class="row-title">Fit für den BMT 10</div>
+      <div class="row-title"><span class="nr">BMT</span>Fit für den BMT 10</div>
       <div class="pills">
-        <a class="pill st" href="bmt10-training/" title="Fit für den BMT 10 – Übungseinheit">Übungseinheit</a>
+        <a class="pill st" href="bmt10-training-uebung/" title="Fit für den BMT 10 – Übungseinheit">Übungseinheit</a>
       </div>
     </div>
 

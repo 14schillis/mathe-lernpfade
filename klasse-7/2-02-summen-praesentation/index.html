@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Umformen von Summen</title>
+<style>
+:root{--mf:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+html,body{height:100%;overflow:hidden}
+body{font:2.2vh/1.3 system-ui,"Segoe UI",Roboto,sans-serif;background:#f1f5f9;color:#0f172a;display:flex;flex-direction:column}
+header{display:flex;align-items:baseline;gap:2vw;padding:2.2vh 3vw 0;height:8.5vh}
+h1{font-size:3.6vh;font-weight:700}
+header small{flex:1;color:#64748b;font-size:2vh}
+#badge{display:none;background:#fef3c7;color:#92400e;padding:.4vh 1.4vh;border-radius:9vh;font-size:1.9vh;font-weight:600}
+#bar{height:.7vh;background:#e2e8f0;margin:1.2vh 3vw 0;border-radius:9px;overflow:hidden}
+#bar i{display:block;height:100%;background:#2563eb;transition:width .4s}
+#stage{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;padding:0 4vw}
+#stage.v{padding:0 17vw}
+footer{display:flex;gap:1.5vw;padding:1.5vh 3vw 2.5vh;justify-content:center}
+button{font:inherit;font-size:2.6vh;font-weight:600;border:0;border-radius:2vh;padding:0 2.2vw;height:9vh;background:#fff;color:#1e293b;box-shadow:0 .2vh .7vh #0003;cursor:pointer}
+button:active{transform:scale(.96)}
+#nx,#pv{min-width:15vw}#nx{background:#2563eb;color:#fff}
+button:disabled{opacity:.35}
+#sb{display:none;background:#fef3c7}
+.ex,.m,.gh{font-family:var(--mf)}
+.ex{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.12em;font-size:min(9vw,16vh);line-height:1.3;border-radius:.3em;padding:.05em .3em;transition:background .5s}
+.ex.m2{font-size:min(7.4vw,14vh)}.ex.sm{font-size:min(5.8vw,11vh)}.ex.chips{font-size:min(6.5vw,12vh);gap:.35em}
+.ex.ph1{background:#dbeafe88}.ex.ph2{background:#ffedd588}
+.tk{display:inline-block;padding:0 .12em;border-radius:.2em;position:relative;transition:background .4s,opacity .4s}
+.tk b{color:#dc2626}
+.pr{margin:0 -.14em}
+sup{font-size:.58em;vertical-align:.6em;line-height:0}
+.ca{background:#bfdbfe;color:#1e3a8a}.cb{background:#fed7aa;color:#9a3412}.cc{background:#bbf7d0;color:#166534}.hl{background:#fde68a}
+.dim{opacity:.3}
+.chip{padding:.05em .35em;border-radius:.4em;background:#fff;border:.05em solid #cbd5e1;box-shadow:0 .03em .1em #0003;cursor:pointer}
+.chip.sel{background:#dbeafe;border-color:#2563eb}.chip.ok{background:#dcfce7;border-color:#16a34a}
+.sep{width:.05em;height:1em;background:#94a3b8;padding:0;margin:0 .25em}
+.chg{animation:chg 2.2s}@keyframes chg{0%,60%{background:#fde047;color:#b45309}}
+.gh{position:fixed;pointer-events:none;margin:0;z-index:5;white-space:nowrap}
+.t{font-size:3.4vh;color:#334155;text-align:center;max-width:78vw}.t b{color:#0f172a}
+.m{font-size:1.2em}.cnt{font-size:2.4vh;color:#94a3b8}
+.rule{background:#fff;border-left:1vh solid #2563eb;padding:2vh 3vw;border-radius:2vh;font-size:3.8vh;box-shadow:0 .3vh 1vh #0002}
+.orig{position:absolute;top:1.5vh;left:50%;transform:translateX(-50%);background:#ffffffcc;border:.2vh solid #e2e8f0;border-radius:1.4vh;padding:.7vh 1.8vw;text-align:center;white-space:nowrap;pointer-events:none}
+.orig small{display:block;font-size:1.7vh;color:#94a3b8;letter-spacing:.04em}
+.orig div{font-family:var(--mf);font-size:min(3.4vw,5.6vh);color:#475569;line-height:1.25}
+.orig .m{font-size:1em}.orig .gp{display:inline-block;width:3vw}
+.vb{position:absolute;top:50%;margin-top:-15vh;width:14vw;height:30vh;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:3vh;font-size:3.4vh;font-weight:700;cursor:pointer;box-shadow:0 .3vh 1vh #0003;padding:1vw;transition:all .3s;background:#dbeafe;color:#1e3a8a}
+.vb.l{left:2vw}.vb.r{right:2vw;background:#ffedd5;color:#9a3412}
+.vb.g.l{background:#dcfce7;color:#166534}.vb.g.r{background:#fee2e2;color:#991b1b}
+.vb.sel{outline:.7vh solid #2563eb}.vb.dim{opacity:.3}.vb.good{background:#16a34a;color:#fff;transform:scale(1.06)}
+.card{display:flex;align-items:center;gap:2vw;background:#fff;border-radius:2vh;padding:1.5vh 2vw;width:86vw;box-shadow:0 .3vh 1vh #0002;animation:in .5s}
+.card b{flex:none;background:#2563eb;color:#fff;border-radius:50%;width:5.5vh;height:5.5vh;display:grid;place-items:center;font-size:3vh}
+.card span{flex:1;font-size:3.3vh;font-weight:600}.card em{font-style:normal;font-family:var(--mf);font-size:3.8vh;color:#1e40af}.card .m{font-size:1em}
+@keyframes in{from{opacity:0;transform:translateY(2vh)}}
+#sol{display:none;position:fixed;left:3vw;right:3vw;bottom:14vh;background:#fffbeb;border:.3vh solid #f59e0b;border-radius:2vh;padding:2vh 2vw;font-size:3vh;z-index:6;line-height:1.6}
+#ov{display:none;position:fixed;inset:0;background:#f1f5f9f5;padding:6vh 6vw;grid-template-columns:repeat(5,1fr);gap:2vh;z-index:9;align-content:center}
+#ov.on{display:grid}
+#ov div{background:#fff;border-radius:2vh;padding:2vh;font-size:2.8vh;font-weight:600;box-shadow:0 .3vh 1vh #0002;cursor:pointer;min-height:18vh}
+#ov b{display:block;font-size:5vh;color:#2563eb}
+</style>
+</head>
+<body>
+<header><h1 id="ti"></h1><small>Umformen von Summen · 2.2</small><span id="badge">Lehrermodus</span></header>
+<div id="bar"><i></i></div>
+<div id="stage"></div>
+<div id="sol"></div>
+<div id="ov"></div>
+<footer>
+<button id="pv">◀ Zurück</button>
+<button id="ovb">☰ Übersicht</button>
+<button id="rs">↺ Zurücksetzen</button>
+<button id="sb">Lösung anzeigen</button>
+<button id="fs">⛶</button>
+<button id="nx">Weiter ▶</button>
+</footer>
+<script>
+const $=q=>document.querySelector(q),st=$('#stage'),TM=new URLSearchParams(location.search).get('teacher')==='1';
+let si=0,ki=0,nodes={},order=[],after=[],sn={},votes={},sel1=new Set();
+const f=s=>s.replace(/[a-z]/g,'<i>$&</i>').replace(/\^(\d)/g,'<sup>$1</sup>').replace(/-/g,'−');
+const M=s=>'<span class="m">'+f(s)+'</span>';
+const tk=s=>s.split('|').map((p,i)=>{const r=p.match(/^(?:(\w+):)?(.*?)(?:\.([\w+]+))?(?:<([\w,]+))?$/);return[r[1]||'i'+i,r[2],r[3]||'',r[4]?r[4].split(','):[]]});
+function node(k,c){let n=nodes[k];if(!n){n=nodes[k]=document.createElement('div');n.dataset.k=k}n.className=c;order.push(k);return n}
+function T(k,h,c){const n=node(k,'t '+(c||''));if(n._h!==h){n._h=h;n.innerHTML=h;after.push(()=>n.animate([{opacity:0,transform:'translateY(1.5vh)'},{opacity:1,transform:'none'}],{duration:450}))}}
+function O(a){const n=node('o','orig'),h='<small>Ausgangsaufgabe</small><div>'+a.map(M).join('<span class="gp"></span>')+'</div>';if(n._h!==h){n._h=h;n.innerHTML=h}}
+function snap(){sn={};st.querySelectorAll('.ex').forEach(n=>[...n.children].forEach(c=>sn[n.dataset.k+'/'+c.dataset.i]={r:c.getBoundingClientRect(),h:c.dataset.h,c:c.className,e:c.innerHTML}))}
+function ghost(g,r,mg,fs){const e=document.createElement('span');e.className=g.c+' gh';e.innerHTML=g.e;e.style.cssText='left:'+g.r.left+'px;top:'+g.r.top+'px;font-size:'+fs;document.body.appendChild(e);
+ const dx=mg?r.left+r.width/2-g.r.left-g.r.width/2:0,dy=mg?r.top+r.height/2-g.r.top-g.r.height/2:0;
+ e.animate([{transform:'none',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale('+(mg?.4:.5)+')',opacity:0}],{duration:mg?750:450,easing:'ease-in',fill:'forwards'}).onfinish=()=>e.remove()}
+function X(k,tt,c){
+ const n=node(k,'ex '+(c||'')),ids=tt.map(t=>t[0]),mg=new Set(tt.flatMap(t=>t[3]));
+ n.textContent='';
+ const els=tt.map(([id,h,cl])=>{const s=document.createElement('span'),o=sn[k+'/'+id];s.dataset.i=id;s.dataset.h=h;s.className='tk '+cl.replace(/\+/g,' ');
+  s.innerHTML=h[0]=='!'?h.slice(1):f(h);if(h=='('||h==')')s.classList.add('pr');if(o&&o.h!==h)s.classList.add('chg');n.appendChild(s);return s});
+ after.push(()=>{
+  const fs=getComputedStyle(n).fontSize;
+  els.forEach((s,i)=>{const fr=tt[i][3],h=tt[i][1],o=sn[k+'/'+tt[i][0]],r=s.getBoundingClientRect();
+   fr.forEach(q=>{const g=sn[k+'/'+q];if(g)ghost(g,r,1,fs)});
+   if(fr.length&&!o)s.animate([{transform:'scale(.5)',opacity:0},{transform:'scale(1.2)',opacity:1,offset:.75},{transform:'none',opacity:1}],{duration:750,fill:'backwards'});
+   else if(o){const dx=o.r.left-r.left,dy=o.r.top-r.top;
+    if(Math.abs(dx)+Math.abs(dy)>2)s.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'none'}],{duration:700,easing:'ease-in-out'});
+    if(o.h!==h)s.animate([{transform:'rotateX(90deg) scale(1.4)',opacity:0},{transform:'none',opacity:1}],{duration:600,delay:250,fill:'backwards'})}
+   else s.animate([{opacity:0,transform:'scale(.6)'},{opacity:1,transform:'none'}],{duration:500,fill:'backwards'})});
+  Object.keys(sn).filter(q=>q.indexOf(k+'/')==0).forEach(q=>{const id=q.slice(k.length+1);if(!ids.includes(id)&&!mg.has(id))ghost(sn[q],0,0,fs)})
+ })}
+const vs=o=>{o.map=[];o.items.forEach((it,j)=>{o.map.push([j,0],[j,1]);if(it.fx)o.map.push([j,2])});o.n=o.map.length;
+ o.sol=o.items.map(it=>M(tk(it.e).map(t=>t[1]).join(''))+' → <b>'+o.lb[it.a]+'</b>').join('<br>');
+ o.r=k=>{const[j,p]=o.map[k],it=o.items[j],vt=votes[si+'.'+j],tt=tk(p==2?it.fx:it.e);
+  T('c',(j+1)+' / '+o.items.length,'cnt');X('e'+j,tt,tt.length>8?'sm':'');T('q',p?it.w:o.q);
+  [0,1].forEach(i=>{const n=node('b'+i,'vb '+(i?'r':'l')+(o.g?' g':'')+(p?(it.a==i?' good':' dim'):(vt===i?' sel':'')));
+   if(n._h!==o.lb[i]){n._h=o.lb[i];n.textContent=o.lb[i]}n.onclick=()=>{if(!p){votes[si+'.'+j]=i;render()}}})};
+ return o};
+const CD=[['1','Gleichartige Terme erkennen',M('3x, -x, 0,5x')],['2','Koeffizienten addieren / subtrahieren',M('2a+3a=5a')],['3','Plusklammer: Zeichen bleiben',M('8+(6-3)=8+6-3')],['4','Minusklammer: Zeichen wechseln',M('9-(5-3)=9-5+3')],['5','Danach gleichartige Terme zusammenfassen',M('5y^2-(12x-y^2+5x)=6y^2-17x')]];
+const scenes=[
+{t:'Gleichartig oder nicht?',n:3,sol:'Gleichartig: '+M('4x')+', '+M('2x')+', '+M('0,5x')+'. Nicht gleichartig: '+M('2y')+' (andere Variable), '+M('x^2')+' (andere Potenz), '+M('xy')+', '+M('x+y')+'.',
+ r:k=>{const C=[['a','4x'],['b','2x'],['c','0,5x'],['d','2y'],['e','x^2'],['g','xy'],['h','x+y']],cf=h=>'!<b>'+h.slice(0,-1)+'</b><i>x</i>';let t;
+  if(k==0)t=C.map(([i,h])=>[i,h,'chip'+(sel1.has(i)?' sel':''),[]]);
+  else t=[...C.filter(c=>'abc'.includes(c[0])).map(([i,h])=>[i,k==2?cf(h):h,'chip ok',[]]),['sep','','sep',[]],...C.filter(c=>!'abc'.includes(c[0])).map(([i,h])=>[i,h,'chip dim',[]])];
+  X('e',t,'chips');
+  if(k==0)T('t','Die Klasse entscheidet: Welche Terme sind gleichartig?');
+  if(k==1)T('t','Diese drei Terme sind gleichartig.');
+  if(k==2)T('r','<b>Gleichartige Terme</b> unterscheiden sich höchstens im <b>Zahlfaktor</b> (Koeffizient).','rule')}},
+{t:'Zusammenfassen sichtbar machen',n:4,sol:M('2a+4b+3a=2a+3a+4b=5a+4b'),
+ r:k=>{const E=['a:2a|b:+|c:4b|d:+|e:3a','a:2a.ca|b:+|c:4b.cb|d:+|e:3a.ca','a:2a.ca|b:+|e:3a.ca|d:+|c:4b.cb','s:5a.ca<a,b,e|d:+|c:4b.cb'],
+  C=['Was lässt sich zusammenfassen?','Gleichartige Terme erkennen','Summanden vertauschen (Kommutativgesetz)',M('2a+3a=(2+3)a=5a')];
+  O(['2a+4b+3a']);
+  X('e',tk(E[k]));T('t',C[k]);if(k==3)T('r','<b>Koeffizienten addieren</b>, Variable bleibt.','rule')}},
+vs({t:'Was darf nicht zusammengefasst werden?',q:'Zusammenfassbar?',lb:['zusammenfassbar','nicht zusammenfassbar'],items:[
+ {e:'a:3ab|b:-|c:2b',a:1,w:M('ab')+' und '+M('b')+': verschiedener Variablenteil.',fx:'a:3ab.ca|b:-|c:2b.cb'},
+ {e:'a:2x|b:+|c:x^2',a:1,w:M('x')+' und '+M('x^2')+': andere Potenz.',fx:'a:2x.ca|b:+|c:x^2.cb'},
+ {e:'a:4x|b:+|c:4',a:1,w:M('4x')+' enthält eine Variable, '+M('4')+' nicht.',fx:'a:4x.ca|b:+|c:4.cb'},
+ {e:'a:7xy|b:-|c:xy',a:0,w:'Gleicher Variablenteil '+M('xy')+'; Koeffizienten 7 und 1.',fx:'r:6xy.ca<a,b,c'}]}),
+vs({t:'Fehlerdetektiv',g:1,q:'Richtig oder falsch?',lb:['richtig','falsch'],items:[
+ {e:'3|+|4x|=|7x',a:1,w:M('3')+' und '+M('4x')+' sind nicht gleichartig.',fx:'3|+|4x|=|3+4x'},
+ {e:'6y|-|2y|=|4y',a:0,w:'Koeffizienten subtrahieren, Variable bleibt.'},
+ {e:'2x|+|x^2|=|3x^2',a:1,w:M('x')+' und '+M('x^2')+' sind nicht gleichartig.',fx:'2x|+|x^2|=|2x+x^2'},
+ {e:'5a|-|a|=|5',a:1,w:M('a')+' hat den Koeffizienten 1: '+M('5a-1a=4a')+'.',fx:'5a|-|1a|=|4a'}]}),
+{t:'Plusklammer entdecken',n:7,sol:M('8+(6+3)=8+6+3=17')+'<br>'+M('3ab+(6ab-b^2)=3ab+6ab-b^2=9ab-b^2'),
+ r:k=>{const E=['a:8|b:+|c:(|d:6|e:+|g:3|h:)','a:8|b:+|c:(|d:6|e:+|g:3|h:)','a:8|b:+.cc|d:6|e:+.cc|g:3','v1:3ab|v2:+|v3:(|v4:6ab|v5:-|v6:b^2|v7:)','v1:3ab|v2:+.cc|v4:6ab|v5:-.cc|v6:b^2','w:9ab<v1,v2,v4|v5:-|v6:b^2','w:9ab<v1,v2,v4|v5:-|v6:b^2'],
+  C=['Was passiert, wenn man die Klammer weglässt?',M('8+(6+3)=8+9=17'),M('8+6+3=17')+' – gleiches Ergebnis','Und mit Variablen?','Klammer weg – die Zeichen bleiben',M('3ab+6ab=9ab'),''];
+  O([k<3?'8+(6+3)':'3ab+(6ab-b^2)']);
+  X('e',tk(E[k]));if(C[k])T('t',C[k]);if(k==6)T('r','<b>Plusklammer:</b> Klammer weglassen, Zeichen bleiben.','rule')}},
+{t:'Minusklammer entdecken',n:9,sol:M('9-(5-3)=9+(-5)+(+3)=9-5+3=7')+'<br>'+M('a-(b+c)=a-b-c')+' und '+M('a-(b-c)=a-b+c'),
+ r:k=>{const E=['a:9|b:-|c:(|d:5|e:-|g:3|h:)','a:9|b:-|c:(|d:5|e:-|g:3|h:)','a:9|b:+|c:(|d:-5|n1:)|e:+|n2:(|g:+3|h:)','a:9|d:-5|g:+3','p1:a|p2:-|p3:(|p4:b|p5:+|p6:c|p7:)'],
+  R='p1:a|p4:-b<p2|p5:-|p6:c',F=['','','','','',R,R,R,R],
+  C=['Was ergibt das?',M('9-(5-3)=9-2=7'),'Minus vor der Klammer: Gegenzahl addieren',M('9+(-5)+(+3)=9-5+3=7'),'Allgemein:','','','',''];
+  O(k<4?['9-(5-3)']:k<6?['a-(b+c)']:['a-(b+c)','a-(b-c)']);
+  X('e',tk(k<5?E[k]:R),k>3?'sm':'');
+  if(k>=6)X('f',tk(k==6?'q1:a|q2:-|q3:(|q4:b|q5:-|q6:c|q7:)':'q1:a|q4:-b<q2|q5:+|q6:c'),'sm');
+  if(C[k])T('t',C[k]);if(k==8)T('r','<b>Minusklammer:</b> Alle Zeichen in der Klammer wechseln.','rule')}},
+vs({t:'Plus- oder Minusklammer?',q:'Was passiert mit den Zeichen in der Klammer?',lb:['Zeichen bleiben','Zeichen wechseln'],items:[
+ {e:'a:12|b:+|c:(|d:4|e:-|g:x|h:)',a:0,w:'Plusklammer: Zeichen bleiben.',fx:'a:12|b:+|d:4|e:-|g:x'},
+ {e:'a:12|b:-|c:(|d:4|e:-|g:x|h:)',a:1,w:'Minusklammer: Zeichen wechseln.',fx:'a:12|b:-|d:4|e:+|g:x'},
+ {e:'a:7x|b:+|c:(|d:x|e:-|g:2|h:)',a:0,w:'Plusklammer: Zeichen bleiben.',fx:'a:7x|b:+|d:x|e:-|g:2'},
+ {e:'a:2a|b:-|c:(|d:a|e:+|g:3b|h:)',a:1,w:'Minusklammer: Zeichen wechseln.',fx:'a:2a|b:-|d:a|e:-|g:3b'}]}),
+{t:'Gemeinsam vereinfachen',n:6,sol:M('5y^2-(12x-y^2+5x)=5y^2-12x+y^2-5x=6y^2-17x'),
+ r:k=>{const E=['a:5y^2|m:-|lp:(|b:12x|s1:-|c:y^2|s2:+|d:5x|rp:)','a:5y^2|m:-.hl|lp:(|b:12x|s1:-.hl|c:y^2|s2:+.hl|d:5x|rp:)','a:5y^2|b:-12x<m|s1:+|c:y^2|s2:-|d:5x','a:5y^2.ca|b:-12x.cb|s1:+|c:y^2.ca|s2:-|d:5x.cb','a:5y^2.ca|s1:+|c:y^2.ca|b:-12x.cb|s2:-|d:5x.cb','p:6y^2.ca<a,s1,c|q:-17x.cb<b,s2,d'],
+  P=['','① Klammer auflösen','① Klammer auflösen','② Zusammenfassen','② Zusammenfassen','② Zusammenfassen'],
+  C=['Wie geht man vor?','Minusklammer: Alle Zeichen in der Klammer wechseln','','Gleichartige Terme erkennen','Sortieren',M('5+1=6')+' und '+M('-12-5=-17')];
+  O(['5y^2-(12x-y^2+5x)']);
+  if(k)T('p',P[k]);X('e',tk(E[k]),'m2 '+(k<1?'':k<3?'ph1':'ph2'));if(C[k])T('t',C[k])}},
+vs({t:'Fehlerdetektiv: Minusklammer',g:1,q:'Stimmt die Umformung?',lb:['richtig','falsch'],items:[
+ {e:'7|-|(|2x|-|3|)|=|7|-|2x|-|3',a:1,w:'Welches Vorzeichen? '+M('-3')+' wird zu '+M('+3')+'.',fx:'7|-|(|2x|-|3|)|=|7|-|2x|+|3'},
+ {e:'9|-|(|5|-|3|)|=|9|-|5|+|3',a:0,w:'Beide Zeichen in der Klammer wurden gewechselt.'},
+ {e:'4a|-|(|2a|+|5|)|=|4a|-|2a|+|5',a:1,w:'Welches Vorzeichen? '+M('+5')+' wird zu '+M('-5')+'.',fx:'4a|-|(|2a|+|5|)|=|4a|-|2a|-|5'},
+ {e:'m|-|(|a|-|b|)|=|m|-|a|-|b',a:1,w:'Welches Vorzeichen? '+M('-b')+' wird zu '+M('+b')+'.',fx:'m|-|(|a|-|b|)|=|m|-|a|+|b'}]}),
+{t:'Abschlussübersicht',n:5,sol:'Alle fünf Merkpunkte nacheinander aufdecken.',
+ r:k=>{CD.forEach((c,i)=>{if(i<=k){const n=node('c'+i,'card');if(!n._h){n._h=1;n.innerHTML='<b>'+c[0]+'</b><span>'+c[1]+'</span><em>'+c[2]+'</em>'}}})}}
+];
+function render(){
+ snap();order=[];after=[];const S=scenes[si];
+ st.className=S.lb?'v':'';S.r(ki);
+ [...st.children].forEach(c=>{if(!order.includes(c.dataset.k)){c.remove();delete nodes[c.dataset.k]}});
+ order.forEach((k,i)=>{if(st.children[i]!==nodes[k])st.insertBefore(nodes[k],st.children[i]||null)});
+ after.forEach(g=>g());
+ $('#ti').textContent=(si+1)+' · '+S.t;
+ $('#bar i').style.width=((si+(ki+1)/S.n)/scenes.length*100)+'%';
+ $('#pv').disabled=!si&&!ki;$('#nx').disabled=si==scenes.length-1&&ki==S.n-1}
+function clear(){st.textContent='';nodes={};$('#sol').style.display='none'}
+function go(d){const S=scenes[si];
+ if(d>0){if(ki<S.n-1)ki++;else if(si<scenes.length-1){si++;ki=0;clear()}else return}
+ else{if(ki>0)ki--;else if(si>0){si--;ki=scenes[si].n-1;clear()}else return}
+ render()}
+function jump(i){si=i;ki=0;clear();render()}
+function reset(){Object.keys(votes).forEach(k=>{if(k.split('.')[0]==si)delete votes[k]});if(si==0)sel1.clear();jump(si)}
+st.onclick=e=>{const s=e.target.closest('.chip');if(s&&si==0&&ki==0){const i=s.dataset.i;sel1.has(i)?sel1.delete(i):sel1.add(i);render()}};
+$('#nx').onclick=()=>go(1);$('#pv').onclick=()=>go(-1);$('#rs').onclick=reset;
+$('#ovb').onclick=()=>$('#ov').classList.toggle('on');
+$('#fs').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$('#sb').onclick=()=>{const s=$('#sol');s.innerHTML=scenes[si].sol;s.style.display=s.style.display=='block'?'none':'block'};
+if(TM){$('#badge').style.display='inline-block';$('#sb').style.display='inline-block'}
+scenes.forEach((s,i)=>{const d=document.createElement('div');d.innerHTML='<b>'+(i+1)+'</b>'+s.t;d.onclick=()=>{$('#ov').classList.remove('on');jump(i)};$('#ov').appendChild(d)});
+document.onkeydown=e=>{if(e.key=='ArrowRight'||e.key==' ')go(1);else if(e.key=='ArrowLeft')go(-1);else if(e.key=='Escape')$('#ov').classList.remove('on')};
+render();
+</script>
+</body>
+</html>

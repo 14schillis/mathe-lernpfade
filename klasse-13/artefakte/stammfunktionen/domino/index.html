@@ -1,99 +1,16 @@
 <!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Domino Stammfunktionen – Lineare Verkettung</title>
-<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'}};</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
-<style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--ok:#2e7d32;--bad:#c62828}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;min-height:100vh;color:#f4f1e6;font-family:Georgia,'Times New Roman',serif;padding:16px;
-background:radial-gradient(ellipse at 50% 30%,#2f7a52 0%,#1e5a3c 60%,#133d29 100%)}
-.wrap{max-width:980px;margin:auto}
-h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 3px rgba(0,0,0,.5)}
-h2{font-size:.95rem;margin:22px 0 6px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
-p{margin:4px 0 12px;font-size:.95rem;opacity:.92}
-#chain{display:flex;flex-wrap:wrap;padding:10px 6px;border-radius:12px;background:rgba(0,0,0,.18);box-shadow:inset 0 2px 8px rgba(0,0,0,.45)}
-.pool{display:flex;flex-wrap:wrap;gap:16px 14px;padding:10px 6px}
-.dom{position:relative;display:flex;width:290px;height:84px;margin:6px 0;border-radius:10px;cursor:pointer;color:#1d1d1b;
-background:linear-gradient(160deg,#fffdf4,#ebe4cc);border:1px solid #b9ae8a;
-box-shadow:0 1px 0 #fff inset,0 4px 0 #b7ab84,0 7px 10px rgba(0,0,0,.45);transition:transform .15s,box-shadow .15s}
-.dom>div{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-width:0;overflow:hidden;font-size:.95rem}
-.dom>div+div{background:linear-gradient(160deg,#e3dcc2,#d4ccaa);border-radius:0 9px 9px 0}
-.dom::after{content:'';position:absolute;left:50%;top:10%;bottom:10%;width:3px;margin-left:-1.5px;background:#8f855f;border-radius:2px;box-shadow:1px 0 0 #fff8}
-.dom::before{content:'';position:absolute;left:50%;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;z-index:2;
-background:radial-gradient(circle at 35% 30%,#f3d77a,#a8801f);box-shadow:0 1px 2px rgba(0,0,0,.6)}
-.pool .dom:nth-child(3n+1){transform:rotate(-2deg)}.pool .dom:nth-child(3n+2){transform:rotate(1.5deg)}.pool .dom:nth-child(3n){transform:rotate(-.8deg)}
-.pool .dom:hover{transform:translateY(-4px) rotate(0);box-shadow:0 1px 0 #fff inset,0 4px 0 #b7ab84,0 14px 14px rgba(0,0,0,.45)}
-#chain .dom{margin:6px 0;border-radius:0;animation:pl .25s ease-out}
-#chain .dom:first-child{border-radius:10px 0 0 10px}
-#chain .dom>div+div{border-radius:0}
-@keyframes pl{from{transform:translateY(-20px) scale(1.05);opacity:.3}}
-.fix{cursor:default;background:linear-gradient(160deg,#ffe9a8,#e6c35e)!important;border-color:#a8801f}
-.fix>div:first-child{font-weight:bold;letter-spacing:.2em;font-size:1.05rem}
-.fix>div+div{background:linear-gradient(160deg,#f6dc8a,#e0b94a)!important}
-.zl>div+div{font-weight:bold;letter-spacing:.2em}
-.ok{outline:3px solid #66bb6a;outline-offset:-3px;z-index:1}.bad{outline:3px solid #ef5350;outline-offset:-3px;z-index:1}
-.win{animation:glow 1s ease-in-out 3}
-@keyframes glow{50%{filter:brightness(1.15) drop-shadow(0 0 10px gold)}}
-.tag{position:absolute;top:3px;right:8px;font-size:.9rem;font-weight:bold;font-family:sans-serif;z-index:3}
-.ok .tag{color:var(--ok)}.bad .tag{color:var(--bad)}
-.btns{margin:14px 0 4px}
-button{font:inherit;font-size:.9rem;padding:9px 16px;border:0;border-radius:8px;background:#efe8d0;color:#2b2a24;cursor:pointer;margin:0 6px 6px 0;box-shadow:0 3px 0 #b7ab84,0 5px 6px rgba(0,0,0,.4)}
-button:active{transform:translateY(2px);box-shadow:0 1px 0 #b7ab84}
-button.p{background:#e6c35e;box-shadow:0 3px 0 #a8801f,0 5px 6px rgba(0,0,0,.4)}
-#msg{margin-top:8px;font-weight:bold;min-height:1.5em;font-size:1.05rem;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-</style></head><body><div class="wrap">
-<h1>Domino: Stammfunktionen – lineare Verkettung</h1>
-<p>Tippe unten ein Kärtchen an, um es an die Kette anzuhängen (nochmal antippen in der Kette entfernt es). Rechts steht jeweils ein Integral, links auf dem nächsten Kärtchen die passende Stammfunktion. Einige Kärtchen gehören nicht in die Kette. Prüfe zur Probe durch Ableiten!</p>
-<div id="chain"></div>
-<div class="btns"><button class="p" id="chk">Kette prüfen</button><button id="rst">Zurücksetzen</button><button id="shf">Mischen</button></div>
-<div id="msg"></div>
-<h2>Kärtchen</h2>
-<div class="pool" id="pool"></div>
-<script>
-const I={a:'(4-x)^2',b:'(2x+1)^2',c:'2x+1',d:'(2x+1)^3',e:'(2x+1)^{-3}',f:'\\sqrt{2x+1}',g:'e^{5x-12}',h:'\\sin(5x-12)',i:'\\cos(5x-12)'};
-const int=k=>`\\(\\displaystyle\\int ${I[k]}\\,dx=\\)`;
-const C=[
-{id:'E',l:'\\(-\\frac{1}{3}(4-x)^3+C\\)',ans:'a',r:'b'},
-{id:'L',l:'\\(\\frac{1}{6}(2x+1)^3+C\\)',ans:'b',r:'c'},
-{id:'I',l:'\\(\\frac{1}{4}(2x+1)^2+C\\)',ans:'c',r:'d'},
-{id:'D',l:'\\(\\frac{1}{8}(2x+1)^4+C\\)',ans:'d',r:'e'},
-{id:'O1',t:'O',l:'\\(-\\frac{1}{4}(2x+1)^{-2}+C\\)',ans:'e',r:'f'},
-{id:'K1',t:'K',l:'\\(\\frac{1}{3}(2x+1)^{1{,}5}+C\\)',ans:'f',r:'g'},
-{id:'O2',t:'O',l:'\\(\\frac{1}{5}e^{5x-12}+C\\)',ans:'g',r:'h'},
-{id:'R',l:'\\(-\\frac{1}{5}\\cos(5x-12)+C\\)',ans:'h',r:'i'},
-{id:'G',l:'\\(\\frac{1}{12}e^{5x-12}+C\\)',ans:null,r:'h'},
-{id:'H',l:'\\(-5\\cos(5x-12)+C\\)',ans:null,r:'h'},
-{id:'U',l:'\\((2x+1)^4+C\\)',ans:null,r:'h'},
-{id:'F',l:'\\(4\\cdot(2x+1)^4+C\\)',ans:null,r:'d'}
-];
-const ZIEL={id:'Z',t:'K',l:'\\(\\frac{1}{5}\\sin(5x-12)+C\\)',ans:'i',r:null};
-const pool=[...C,ZIEL];let chain=[],order=[];
-const lab=c=>c.t||c.id;
-function shuffle(){order=pool.map((_,i)=>i).sort(()=>Math.random()-.5);render()}
-function card(c,cls,fn,tag){const d=document.createElement('div');d.className='dom '+cls+(c.r===null?' zl':'');
- d.innerHTML=`<div>${c.l}</div><div>${c.r===null?'ZIEL':c.r===undefined?c.rr:int(c.r)}</div>`+(tag?`<span class="tag">${tag}</span>`:'');
- if(fn)d.onclick=fn;return d}
-function render(res){
- const ch=document.getElementById('chain');ch.innerHTML='';
- const s=document.createElement('div');s.className='dom fix';s.innerHTML=`<div>START</div><div>${int('a')}</div>`;ch.appendChild(s);
- chain.forEach((c,n)=>{const prev=n?chain[n-1].r:'a';
-  const cls=res?(c.ans===prev?'ok':'bad'):'';
-  ch.appendChild(card(c,cls,()=>{chain.splice(n,1);document.getElementById('msg').textContent='';render()},res?(c.ans===prev?'✓':'✗'):''))});
- const p=document.getElementById('pool');p.innerHTML='';
- order.forEach(i=>{const c=pool[i];if(!chain.includes(c))p.appendChild(card(c,'',()=>{chain.push(c);document.getElementById('msg').textContent='';render()}))});
- if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise();
-}
-document.getElementById('chk').onclick=()=>{
- render(true);const m=document.getElementById('msg');
- let prev='a',bad=chain.findIndex(c=>{const o=c.ans!==prev;prev=c.r;return o});
- const done=bad<0&&chain.length&&chain[chain.length-1]===ZIEL;
- if(bad>=0){m.style.color='#ffb4a8';m.textContent=`Kärtchen ${bad+1} passt nicht: Leite die Stammfunktion ab – ergibt sich der Integrand davor?`}
- else if(done){document.querySelectorAll('#chain .dom').forEach(e=>{e.classList.remove('win');void e.offsetWidth;e.classList.add('win')});m.style.color='#c8f7c5';m.textContent='Geschafft! Die Kette ist vollständig und alle Proben stimmen. 🎉'}
- else{m.style.color='#f4f1e6';m.textContent='Bisher alles richtig – es geht weiter bis zum ZIEL.'}
-};
-document.getElementById('rst').onclick=()=>{chain=[];document.getElementById('msg').textContent='';render()};
-document.getElementById('shf').onclick=shuffle;
-shuffle();
-</script></div></body></html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diese Seite ist umgezogen</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="../../../i-04-stammfunktionen-domino-uebung/">
+<script>location.replace("../../../i-04-stammfunktionen-domino-uebung/" + location.search + location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url=../../../i-04-stammfunktionen-domino-uebung/"></noscript>
+<style>body{font-family:"Segoe UI",system-ui,Arial,sans-serif;max-width:560px;margin:15vh auto;padding:0 20px;color:#1b2430}a{color:#1f4e79;font-weight:600}</style>
+</head>
+<body>
+<p>Diese Seite ist umgezogen. <a href="../../../i-04-stammfunktionen-domino-uebung/">Weiter zur neuen Adresse</a></p>
+</body>
+</html>

@@ -2,131 +2,95 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mathematik – Jahrgangsstufe 13</title>
-<style>
-:root{
-  --ink:#1b2430; --soft:#4a5566; --line:#dde2e9; --bg:#f6f7f9; --head:#1d3fb8; --bar:#4caf1a;
-  --lp-bg:#ccfbf1;  --lp-fg:#0f766e;  --lp-bd:#5eead4;
-  --pr-bg:#dbeafe;  --pr-fg:#1e40af;  --pr-bd:#93c5fd;
-  --st-bg:#dcfce7;  --st-fg:#166534;  --st-bd:#86efac;
-  --ex-bg:#fef3c7;  --ex-fg:#92400e;  --ex-bd:#fcd34d;
-  --sp-bg:#ede9fe;  --sp-fg:#5b21b6;  --sp-bd:#c4b5fd;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.4}
-main{max-width:900px;margin:0 auto;padding:36px 20px 48px}
-
-header{border-left:6px solid var(--bar);padding:2px 0 2px 16px;margin-bottom:30px}
-.kicker{color:var(--soft);font-size:1rem}
-h1{margin:2px 0 4px;font-size:2.1rem;line-height:1.15}
-.subtitle{color:var(--soft);font-size:.98rem;margin:0}
-
-section{margin-bottom:30px}
-h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:2px solid var(--head)}
-
-.rows{margin:10px 0 0 6px;border-left:3px solid var(--line);padding-left:14px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
-  padding:10px 4px;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.row-title{font-weight:600;font-size:1.04rem;flex:1 1 260px}
-.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
-
-.pill{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;
-  font-size:.92rem;font-weight:650;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.pill:active{transform:scale(.97)}
-.pill:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
-.lp{background:var(--lp-bg);color:var(--lp-fg);border-color:var(--lp-bd)}
-.pr{background:var(--pr-bg);color:var(--pr-fg);border-color:var(--pr-bd)}
-.st{background:var(--st-bg);color:var(--st-fg);border-color:var(--st-bd)}
-.ex{background:var(--ex-bg);color:var(--ex-fg);border-color:var(--ex-bd)}
-.sp{background:var(--sp-bg);color:var(--sp-fg);border-color:var(--sp-bd)}
-@media (hover:hover){.pill:hover{filter:brightness(.95)}}
-
-@media(max-width:600px){
-  main{padding:22px 14px 36px}
-  h1{font-size:1.7rem}
-  .pills{justify-content:flex-start}
-  .rows{margin-left:2px;padding-left:10px}
-}
-</style>
+<link rel="stylesheet" href="../assets/uebersicht.css">
 </head>
-<body>
+<body data-bereich="k13">
 <main>
 
-<header>
-  <div class="kicker">Mathematik</div>
+<div class="topbar"><a class="back" href="../">Alle Klassen</a></div>
+
+<header class="hero">
+  <span class="kicker">Mathematik</span>
   <h1>Jahrgangsstufe 13</h1>
-  <p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
+  <p>Interaktive Lernpfade, Präsentationen, Übungen und Experimente</p>
+  <div class="big" aria-hidden="true">13</div>
 </header>
+
+<div class="legend" aria-hidden="true">
+  <span class="lp">Lernpfad</span>
+  <span class="pr">Präsentation</span>
+  <span class="st">Übung</span>
+  <span class="ex">Experiment</span>
+</div>
 
 <section>
   <h2>Integralrechnung</h2>
   <div class="rows">
 
     <div class="row">
-      <div class="row-title">I.1 Das bestimmte Integral</div>
+      <div class="row-title"><span class="nr">I.1</span>Das bestimmte Integral</div>
       <div class="pills">
-        <a class="pill lp" href="integralrechnung/i-1-bestimmtes-integral/">Lernpfad</a>
+        <a class="pill lp" href="i-01-bestimmtes-integral-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.2a Das bestimmte Integral als Flächenbilanz</div>
+      <div class="row-title"><span class="nr">I.2a</span>Das bestimmte Integral als Flächenbilanz</div>
       <div class="pills">
-        <a class="pill lp" href="integralrechnung/i-2a-flaechenbilanz/">Lernpfad</a>
+        <a class="pill lp" href="i-02a-flaechenbilanz-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.2b Die Integralfunktion</div>
+      <div class="row-title"><span class="nr">I.2b</span>Die Integralfunktion</div>
       <div class="pills">
-        <a class="pill lp" href="integralrechnung/i-2b-integralfunktion/">Lernpfad</a>
-        <a class="pill ex" href="artefakte/integralfunktion/experiment/" title="Integralfunktion erkunden">Experiment</a>
+        <a class="pill lp" href="i-02b-integralfunktion-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.3 Hauptsatz der Differential- und Integralrechnung</div>
+      <div class="row-title"><span class="nr">I.3</span>Hauptsatz der Differential- und Integralrechnung</div>
       <div class="pills">
-        <a class="pill lp" href="1-3-hdi-entdecken/">Lernpfad</a>
-        <a class="pill st" href="artefakte/integralfunktion-skizzieren/" title="Integralfunktionen skizzieren">Übung</a>
+        <a class="pill lp" href="i-03-hdi-entdecken-lernpfad/">Lernpfad</a>
+        <a class="pill st" href="i-03-integralfunktion-skizzieren-uebung/" title="Integralfunktionen skizzieren">Übung</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.4 Stammfunktionen</div>
+      <div class="row-title"><span class="nr">I.4</span>Stammfunktionen</div>
       <div class="pills">
-        <a class="pill st" href="artefakte/stammfunktionen/domino/" title="Domino: Stammfunktionen – lineare Verkettung">Übung</a>
+        <a class="pill st" href="i-04-stammfunktionen-domino-uebung/" title="Domino: Stammfunktionen – lineare Verkettung">Übung</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.5 Flächenberechnung mit dem Integral</div>
+      <div class="row-title"><span class="nr">I.5</span>Flächenberechnung mit dem Integral</div>
       <div class="pills">
-        <a class="pill pr" href="artefakte/display-flaechenberechnung/" title="Flächenberechnung mit dem Integral">Präsentation</a>
+        <a class="pill pr" href="i-05-flaechenberechnung-praesentation/" title="Flächenberechnung mit dem Integral">Präsentation</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.6 Uneigentliche Integrale</div>
+      <div class="row-title"><span class="nr">I.6</span>Uneigentliche Integrale</div>
       <div class="pills">
-        <a class="pill pr" href="artefakte/display-uneigentliche-integrale/" title="Ins Unendliche reichende Flächen">Präsentation</a>
+        <a class="pill pr" href="i-06-uneigentliche-integrale-praesentation/" title="Ins Unendliche reichende Flächen">Präsentation</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.7 Das Integral als Gesamtänderung</div>
+      <div class="row-title"><span class="nr">I.7</span>Das Integral als Gesamtänderung</div>
       <div class="pills">
-        <a class="pill ex" href="artefakte/gesamtaenderung/" title="Aufzug und Wassertank: Gesamtänderung entdecken">Experiment: Aufzug und Tank</a>
-        <a class="pill ex" href="artefakte/gesamtaenderung-abiaufgabe/" title="Abituraufgabe 2019: Wirkstoffkonzentration – erst übersetzen, dann rechnen">Experiment: Abituraufgabe</a>
+        <a class="pill ex" href="i-07-gesamtaenderung-experiment/" title="Aufzug und Wassertank: Gesamtänderung entdecken">Experiment: Aufzug und Tank</a>
+        <a class="pill ex" href="i-07-gesamtaenderung-abiaufgabe-experiment/" title="Abituraufgabe 2019: Wirkstoffkonzentration – erst übersetzen, dann rechnen">Experiment: Abituraufgabe</a>
       </div>
     </div>
 
     <div class="row">
-      <div class="row-title">I.8 Rotationskörper und ihr Volumen</div>
+      <div class="row-title"><span class="nr">I.8</span>Rotationskörper und ihr Volumen</div>
       <div class="pills">
-        <a class="pill lp" href="1-8-rotationskoerper/">Lernpfad</a>
+        <a class="pill lp" href="i-08-rotationskoerper-lernpfad/">Lernpfad</a>
       </div>
     </div>
 
