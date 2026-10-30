@@ -1,77 +1,125 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mathematik – Jahrgangsstufe 7</title>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathematik – Jahrgangsstufe 7</title>
 <style>
-body{margin:0;background:#f6f7f9;color:#1b2430;font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
-main{max-width:900px;margin:0 auto;padding:40px 20px}
-h1{color:#1f4e79;margin-bottom:8px}.subtitle{color:#4a5566;margin-bottom:32px}
-.card{background:#fff;border:1px solid #dde2e9;border-radius:10px;padding:22px;margin-bottom:20px}
-h2{margin-top:0;color:#1f4e79}.chapter{margin:8px 0 14px}
-.chapter-link,.chapter-title{display:block;padding:13px 15px;border:1px solid #dde2e9;border-radius:8px;color:#1f4e79;text-decoration:none;font-weight:600;background:#fff;font-size:1rem}
-.chapter-link:hover{background:#eaf1f8}.artifact-list{margin:6px 0 0 28px}
-.artifact-link{position:relative;display:block;padding:9px 16px;margin:5px 0;border-left:3px solid #9fc3de;border-right:3px solid #9fc3de;border-radius:7px;background:#f8fbfe;color:#1f4e79;text-decoration:none;font-size:.92rem;font-weight:500;overflow:hidden}
-.artifact-link:hover{background:#eaf1f8}
-.artifact-link::before,.artifact-link::after{content:"";position:absolute;top:0;width:5px;height:100%}
-.artifact-link::before{left:0}.artifact-link::after{right:0}
-.artifact-presentation::before,.artifact-presentation::after{background:#3b82f6}
-.artifact-student::before,.artifact-student::after{background:#22a06b}
-.artifact-game::before,.artifact-game::after{background:#8b5cf6}
-.artifact-experiment::before,.artifact-experiment::after{background:#f59e0b}
-.artifact-type{color:#4a5566;font-size:.82rem;font-weight:600;margin-right:5px}
-@media(max-width:600px){main{padding:24px 14px}.card{padding:16px}.artifact-list{margin-left:16px}}
+:root{
+  --ink:#1b2430; --soft:#4a5566; --line:#dde2e9; --bg:#f6f7f9; --head:#1d3fb8; --bar:#4caf1a;
+  --lp-bg:#ccfbf1;  --lp-fg:#0f766e;  --lp-bd:#5eead4;
+  --pr-bg:#dbeafe;  --pr-fg:#1e40af;  --pr-bd:#93c5fd;
+  --st-bg:#dcfce7;  --st-fg:#166534;  --st-bd:#86efac;
+  --ex-bg:#fef3c7;  --ex-fg:#92400e;  --ex-bd:#fcd34d;
+  --sp-bg:#ede9fe;  --sp-fg:#5b21b6;  --sp-bd:#c4b5fd;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.4}
+main{max-width:900px;margin:0 auto;padding:36px 20px 48px}
+
+header{border-left:6px solid var(--bar);padding:2px 0 2px 16px;margin-bottom:30px}
+.kicker{color:var(--soft);font-size:1rem}
+h1{margin:2px 0 4px;font-size:2.1rem;line-height:1.15}
+.subtitle{color:var(--soft);font-size:.98rem;margin:0}
+
+section{margin-bottom:30px}
+h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:2px solid var(--head)}
+
+.rows{margin:10px 0 0 6px;border-left:3px solid var(--line);padding-left:14px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
+  padding:10px 4px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-title{font-weight:600;font-size:1.04rem;flex:1 1 260px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+
+.pill{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;
+  font-size:.92rem;font-weight:650;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.pill:active{transform:scale(.97)}
+.pill:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.lp{background:var(--lp-bg);color:var(--lp-fg);border-color:var(--lp-bd)}
+.pr{background:var(--pr-bg);color:var(--pr-fg);border-color:var(--pr-bd)}
+.st{background:var(--st-bg);color:var(--st-fg);border-color:var(--st-bd)}
+.ex{background:var(--ex-bg);color:var(--ex-fg);border-color:var(--ex-bd)}
+.sp{background:var(--sp-bg);color:var(--sp-fg);border-color:var(--sp-bd)}
+@media (hover:hover){.pill:hover{filter:brightness(.95)}}
+
+@media(max-width:600px){
+  main{padding:22px 14px 36px}
+  h1{font-size:1.7rem}
+  .pills{justify-content:flex-start}
+  .rows{margin-left:2px;padding-left:10px}
+}
 </style>
-</head><body>
+</head>
+<body>
 <main>
-<h1>Mathematik – Jahrgangsstufe 7</h1>
-<p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
 
-<div class="card">
-<h2>1. Terme mit Variablen</h2>
+<header>
+  <div class="kicker">Mathematik</div>
+  <h1>Jahrgangsstufe 7</h1>
+  <p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
+</header>
 
-<div class="chapter">
-<a class="chapter-link" href="terme-mit-variablen/1-1a-terme-und-termwerte/">1.1a Terme und Termwerte</a>
-<div class="artifact-list">
-<a class="artifact-link artifact-game" href="artefakte/termwerte-spiel/"><span class="artifact-type">↳ Spiel</span>Termwerte-Spiel</a>
-</div>
-</div>
+<section>
+  <h2>1. Terme mit Variablen</h2>
+  <div class="rows">
 
-<div class="chapter">
-<a class="chapter-link" href="terme-mit-variablen/1-2-aufstellen-und-interpretieren-von-termen/">1.2 Aufstellen und Interpretieren von Termen</a>
-</div>
-</div>
+    <div class="row">
+      <div class="row-title">1.1a Terme und Termwerte</div>
+      <div class="pills">
+        <a class="pill lp" href="terme-mit-variablen/1-1a-terme-und-termwerte/">Lernpfad</a>
+        <a class="pill sp" href="artefakte/termwerte-spiel/" title="Termwerte-Spiel">Spiel</a>
+      </div>
+    </div>
 
-<div class="card">
-<h2>2. Umformen von Termen</h2>
+    <div class="row">
+      <div class="row-title">1.2 Aufstellen und Interpretieren von Termen</div>
+      <div class="pills">
+        <a class="pill lp" href="terme-mit-variablen/1-2-aufstellen-und-interpretieren-von-termen/">Lernpfad</a>
+      </div>
+    </div>
 
-<div class="chapter">
-<div class="chapter-title">2.1 Umformen von Produkten und Potenzen</div>
-<div class="artifact-list">
-<a class="artifact-link artifact-presentation" href="artefakte/produkte-potenzen-display/"><span class="artifact-type">↳ Präsentation</span>Produkte und Potenzen entdecken</a>
-<a class="artifact-link artifact-student" href="artefakte/produkte-potenzen-werkstatt/"><span class="artifact-type">↳ Werkstatt</span>Produkte und Potenzen üben</a>
-</div>
-</div>
+  </div>
+</section>
 
-<div class="chapter">
-<div class="chapter-title">2.2 Umformen von Summen</div>
-<div class="artifact-list">
-<a class="artifact-link artifact-presentation" href="artefakte/summen-display/"><span class="artifact-type">↳ Präsentation</span>Summen umformen</a>
-<a class="artifact-link artifact-student" href="artefakte/summen-werkstatt/"><span class="artifact-type">↳ Werkstatt</span>Summen umformen üben</a>
-</div>
-</div>
+<section>
+  <h2>2. Umformen von Termen</h2>
+  <div class="rows">
 
-<div class="chapter">
-<div class="chapter-title">2.3 Ausmultiplizieren und Ausklammern</div>
-<div class="artifact-list">
-<a class="artifact-link artifact-presentation" href="artefakte/inuit-party/"><span class="artifact-type">↳ Präsentation</span>Inuit-Party: Ausmultiplizieren und Ausklammern</a>
-</div>
-</div>
+    <div class="row">
+      <div class="row-title">2.1 Umformen von Produkten und Potenzen</div>
+      <div class="pills">
+        <a class="pill pr" href="artefakte/produkte-potenzen-display/" title="Produkte und Potenzen entdecken">Präsentation</a>
+        <a class="pill st" href="artefakte/produkte-potenzen-werkstatt/" title="Produkte und Potenzen üben">Werkstatt</a>
+      </div>
+    </div>
 
-<div class="chapter">
-<div class="chapter-title">2.4 Binomische Formeln</div>
-<div class="artifact-list">
-<a class="artifact-link artifact-presentation" href="artefakte/binomische-formeln-display/"><span class="artifact-type">↳ Präsentation</span>Binomische Formeln entdecken</a>
-<a class="artifact-link artifact-student" href="artefakte/binomische-formeln-werkstatt/"><span class="artifact-type">↳ Werkstatt</span>Binomische Formeln üben</a>
-</div>
-</div>
+    <div class="row">
+      <div class="row-title">2.2 Umformen von Summen</div>
+      <div class="pills">
+        <a class="pill pr" href="artefakte/summen-display/" title="Summen umformen">Präsentation</a>
+        <a class="pill st" href="artefakte/summen-werkstatt/" title="Summen umformen üben">Werkstatt</a>
+      </div>
+    </div>
 
-</div>
+    <div class="row">
+      <div class="row-title">2.3 Ausmultiplizieren und Ausklammern</div>
+      <div class="pills">
+        <a class="pill pr" href="artefakte/inuit-party/" title="Inuit-Party: Ausmultiplizieren und Ausklammern">Präsentation</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="row-title">2.4 Binomische Formeln</div>
+      <div class="pills">
+        <a class="pill pr" href="artefakte/binomische-formeln-display/" title="Binomische Formeln entdecken">Präsentation</a>
+        <a class="pill st" href="artefakte/binomische-formeln-werkstatt/" title="Binomische Formeln üben">Werkstatt</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 </main>
-</body></html>
+</body>
+</html>
