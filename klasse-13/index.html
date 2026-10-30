@@ -4,264 +4,135 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mathematik – Jahrgangsstufe 13</title>
-
 <style>
-  body{
-    margin:0;
-    background:#f6f7f9;
-    color:#1b2430;
-    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  }
+:root{
+  --ink:#1b2430; --soft:#4a5566; --line:#dde2e9; --bg:#f6f7f9; --head:#1d3fb8; --bar:#4caf1a;
+  --lp-bg:#ccfbf1;  --lp-fg:#0f766e;  --lp-bd:#5eead4;
+  --pr-bg:#dbeafe;  --pr-fg:#1e40af;  --pr-bd:#93c5fd;
+  --st-bg:#dcfce7;  --st-fg:#166534;  --st-bd:#86efac;
+  --ex-bg:#fef3c7;  --ex-fg:#92400e;  --ex-bd:#fcd34d;
+  --sp-bg:#ede9fe;  --sp-fg:#5b21b6;  --sp-bd:#c4b5fd;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.4}
+main{max-width:900px;margin:0 auto;padding:36px 20px 48px}
 
-  main{
-    max-width:900px;
-    margin:0 auto;
-    padding:40px 20px;
-  }
+header{border-left:6px solid var(--bar);padding:2px 0 2px 16px;margin-bottom:30px}
+.kicker{color:var(--soft);font-size:1rem}
+h1{margin:2px 0 4px;font-size:2.1rem;line-height:1.15}
+.subtitle{color:var(--soft);font-size:.98rem;margin:0}
 
-  h1{
-    color:#1f4e79;
-    margin-bottom:8px;
-  }
+section{margin-bottom:30px}
+h2{margin:0;padding-bottom:8px;color:var(--head);font-size:1.3rem;border-bottom:2px solid var(--head)}
 
-  .subtitle{
-    color:#4a5566;
-    margin-bottom:32px;
-  }
+.rows{margin:10px 0 0 6px;border-left:3px solid var(--line);padding-left:14px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
+  padding:10px 4px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-title{font-weight:600;font-size:1.04rem;flex:1 1 260px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 
-  .card{
-    background:#fff;
-    border:1px solid #dde2e9;
-    border-radius:10px;
-    padding:22px;
-    margin-bottom:20px;
-  }
+.pill{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid;
+  font-size:.92rem;font-weight:650;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.pill:active{transform:scale(.97)}
+.pill:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.lp{background:var(--lp-bg);color:var(--lp-fg);border-color:var(--lp-bd)}
+.pr{background:var(--pr-bg);color:var(--pr-fg);border-color:var(--pr-bd)}
+.st{background:var(--st-bg);color:var(--st-fg);border-color:var(--st-bd)}
+.ex{background:var(--ex-bg);color:var(--ex-fg);border-color:var(--ex-bd)}
+.sp{background:var(--sp-bg);color:var(--sp-fg);border-color:var(--sp-bd)}
+@media (hover:hover){.pill:hover{filter:brightness(.95)}}
 
-  h2{
-    margin-top:0;
-    color:#1f4e79;
-  }
-
-  .chapter{
-    margin:8px 0 14px;
-  }
-
-  .chapter-link,
-  .chapter-title{
-    display:block;
-    padding:13px 15px;
-    border:1px solid #dde2e9;
-    border-radius:8px;
-    color:#1f4e79;
-    text-decoration:none;
-    font-weight:600;
-    background:#fff;
-    font-size:1rem;
-  }
-
-  .chapter-link:hover{
-    background:#eaf1f8;
-  }
-
-  .artifact-list{
-    margin:6px 0 0 28px;
-  }
-
-  .artifact-link{
-    position:relative;
-    display:block;
-    padding:9px 16px 9px 16px;
-    margin:5px 0;
-    border-left:3px solid #9fc3de;
-    border-right:3px solid #9fc3de;
-    border-radius:7px;
-    background:#f8fbfe;
-    color:#1f4e79;
-    text-decoration:none;
-    font-size:.92rem;
-    font-weight:500;
-    overflow:hidden;
-  }
-
-  .artifact-link:hover{
-    background:#eaf1f8;
-  }
-
-  .artifact-link::before,
-  .artifact-link::after{
-    content:"";
-    position:absolute;
-    top:0;
-    width:5px;
-    height:100%;
-  }
-
-  .artifact-link::before{
-    left:0;
-  }
-
-  .artifact-link::after{
-    right:0;
-  }
-
-  .artifact-presentation::before,
-  .artifact-presentation::after{
-    background:#3b82f6;
-  }
-
-  .artifact-student::before,
-  .artifact-student::after{
-    background:#22a06b;
-  }
-
-  .artifact-game::before,
-  .artifact-game::after{
-    background:#8b5cf6;
-  }
-
-  .artifact-experiment::before,
-  .artifact-experiment::after{
-    background:#f59e0b;
-  }
-
-  .artifact-type{
-    color:#4a5566;
-    font-size:.82rem;
-    font-weight:600;
-    margin-right:5px;
-  }
-
-  @media(max-width:600px){
-    main{
-      padding:24px 14px;
-    }
-
-    .card{
-      padding:16px;
-    }
-
-    .artifact-list{
-      margin-left:16px;
-    }
-  }
+@media(max-width:600px){
+  main{padding:22px 14px 36px}
+  h1{font-size:1.7rem}
+  .pills{justify-content:flex-start}
+  .rows{margin-left:2px;padding-left:10px}
+}
 </style>
-
 </head>
-
 <body>
-
 <main>
 
-  <h1>Mathematik – Jahrgangsstufe 13</h1>
+<header>
+  <div class="kicker">Mathematik</div>
+  <h1>Jahrgangsstufe 13</h1>
   <p class="subtitle">Interaktive Lernpfade und Übungsapplets</p>
+</header>
 
-  <div class="card">
+<section>
+  <h2>Integralrechnung</h2>
+  <div class="rows">
 
-    <h2>Integralrechnung</h2>
-
-    <div class="chapter">
-      <a class="chapter-link" href="integralrechnung/i-1-bestimmtes-integral/">
-        I.1 Das bestimmte Integral
-      </a>
-    </div>
-
-    <div class="chapter">
-      <a class="chapter-link" href="integralrechnung/i-2a-flaechenbilanz/">
-        I.2a Das bestimmte Integral als Flächenbilanz
-      </a>
-    </div>
-
-    <div class="chapter">
-      <a class="chapter-link" href="integralrechnung/i-2b-integralfunktion/">
-        I.2b Die Integralfunktion
-      </a>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-experiment" href="artefakte/integralfunktion/experiment/">
-          <span class="artifact-type">↳ Experiment</span>
-          Integralfunktion erkunden
-        </a>
+    <div class="row">
+      <div class="row-title">I.1 Das bestimmte Integral</div>
+      <div class="pills">
+        <a class="pill lp" href="integralrechnung/i-1-bestimmtes-integral/">Lernpfad</a>
       </div>
     </div>
 
-    <div class="chapter">
-      <a class="chapter-link" href="1-3-hdi-entdecken/">
-        I.3 Hauptsatz der Differential- und Integralrechnung
-      </a>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-student" href="artefakte/integralfunktion-skizzieren/">
-          <span class="artifact-type">↳ Übung</span>
-          Integralfunktionen skizzieren
-        </a>
+    <div class="row">
+      <div class="row-title">I.2a Das bestimmte Integral als Flächenbilanz</div>
+      <div class="pills">
+        <a class="pill lp" href="integralrechnung/i-2a-flaechenbilanz/">Lernpfad</a>
       </div>
     </div>
 
-    <div class="chapter">
-      <div class="chapter-title">
-        I.4 Stammfunktionen
-      </div>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-student" href="artefakte/stammfunktionen/domino/">
-          <span class="artifact-type">↳ Übung</span>
-          Domino: Stammfunktionen – lineare Verkettung
-        </a>
+    <div class="row">
+      <div class="row-title">I.2b Die Integralfunktion</div>
+      <div class="pills">
+        <a class="pill lp" href="integralrechnung/i-2b-integralfunktion/">Lernpfad</a>
+        <a class="pill ex" href="artefakte/integralfunktion/experiment/" title="Integralfunktion erkunden">Experiment</a>
       </div>
     </div>
 
-    <div class="chapter">
-      <div class="chapter-title">
-        I.5 Flächenberechnung mit dem Integral
-      </div>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-presentation" href="artefakte/display-flaechenberechnung/">
-          <span class="artifact-type">↳ Präsentation</span>
-          Flächenberechnung mit dem Integral
-        </a>
+    <div class="row">
+      <div class="row-title">I.3 Hauptsatz der Differential- und Integralrechnung</div>
+      <div class="pills">
+        <a class="pill lp" href="1-3-hdi-entdecken/">Lernpfad</a>
+        <a class="pill st" href="artefakte/integralfunktion-skizzieren/" title="Integralfunktionen skizzieren">Übung</a>
       </div>
     </div>
 
-    <div class="chapter">
-      <div class="chapter-title">
-        I.6 Uneigentliche Integrale
-      </div>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-presentation" href="artefakte/display-uneigentliche-integrale/">
-          <span class="artifact-type">↳ Präsentation</span>
-          Ins Unendliche reichende Flächen
-        </a>
+    <div class="row">
+      <div class="row-title">I.4 Stammfunktionen</div>
+      <div class="pills">
+        <a class="pill st" href="artefakte/stammfunktionen/domino/" title="Domino: Stammfunktionen – lineare Verkettung">Übung</a>
       </div>
     </div>
 
-    <div class="chapter">
-      <div class="chapter-title">
-        I.7 Das Integral als Gesamtänderung
-      </div>
-
-      <div class="artifact-list">
-        <a class="artifact-link artifact-experiment" href="artefakte/gesamtaenderung/">
-          <span class="artifact-type">↳ Experiment</span>
-          Aufzug und Wassertank: Gesamtänderung entdecken
-        </a>
-        <a class="artifact-link artifact-experiment" href="artefakte/gesamtaenderung-abiaufgabe/">
-          <span class="artifact-type">↳ Experiment</span>
-          Abituraufgabe 2019: Wirkstoffkonzentration – erst übersetzen, dann rechnen
-        </a>
+    <div class="row">
+      <div class="row-title">I.5 Flächenberechnung mit dem Integral</div>
+      <div class="pills">
+        <a class="pill pr" href="artefakte/display-flaechenberechnung/" title="Flächenberechnung mit dem Integral">Präsentation</a>
       </div>
     </div>
 
-    <div class="chapter">
-      <a class="chapter-link" href="1-8-rotationskoerper/">
-        I.8 Rotationskörper und ihr Volumen
-      </a>
+    <div class="row">
+      <div class="row-title">I.6 Uneigentliche Integrale</div>
+      <div class="pills">
+        <a class="pill pr" href="artefakte/display-uneigentliche-integrale/" title="Ins Unendliche reichende Flächen">Präsentation</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="row-title">I.7 Das Integral als Gesamtänderung</div>
+      <div class="pills">
+        <a class="pill ex" href="artefakte/gesamtaenderung/" title="Aufzug und Wassertank: Gesamtänderung entdecken">Experiment: Aufzug und Tank</a>
+        <a class="pill ex" href="artefakte/gesamtaenderung-abiaufgabe/" title="Abituraufgabe 2019: Wirkstoffkonzentration – erst übersetzen, dann rechnen">Experiment: Abituraufgabe</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="row-title">I.8 Rotationskörper und ihr Volumen</div>
+      <div class="pills">
+        <a class="pill lp" href="1-8-rotationskoerper/">Lernpfad</a>
+      </div>
     </div>
 
   </div>
+</section>
 
 </main>
-
 </body>
 </html>
