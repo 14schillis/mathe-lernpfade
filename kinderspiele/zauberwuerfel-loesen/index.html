@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Zauberwürfel lösen – Schritt für Schritt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e7eaee; --panel:#f5f6f8; --stage:#dde1e8; --stage-hi:#eceff3;
+  --ink:#131822; --muted:#566074; --line:#cbd2dc; --chip:#ffffff;
+  --accent:#d8202c; --accent-ink:#ffffff; --arrow:#ff2a3a; --focus:#ff2bd6;
+  --body:#15171c; --gray:#8e95a1;
+  --head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --text:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1117; --panel:#161a22; --stage:#1a1f29; --stage-hi:#232a37;
+    --ink:#eef1f6; --muted:#98a2b3; --line:#2a313d; --chip:#1d222c;
+    --accent:#ff4753; --accent-ink:#14060a; --arrow:#ff4b59; --body:#0b0c10; --gray:#616a78;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1117; --panel:#161a22; --stage:#1a1f29; --stage-hi:#232a37;
+  --ink:#eef1f6; --muted:#98a2b3; --line:#2a313d; --chip:#1d222c;
+  --accent:#ff4753; --accent-ink:#14060a; --arrow:#ff4b59; --body:#0b0c10; --gray:#616a78;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--text);-webkit-text-size-adjust:100%}
+[hidden]{display:none !important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1360px;margin:0 auto;padding:22px clamp(14px,3vw,32px) 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;margin-bottom:20px}
+h1{margin:0;font:700 clamp(28px,4.4vw,46px)/1.02 var(--head);letter-spacing:-.02em}
+.credit{margin:0;max-width:44ch;color:var(--muted);font-size:13.5px;line-height:1.45}
+.layout{display:grid;grid-template-columns:232px minmax(0,1fr) 336px;gap:26px;align-items:start}
+/* Schrittleiste */
+.rail{display:flex;flex-direction:column;gap:2px;position:sticky;top:14px}
+.rail button{display:grid;grid-template-columns:30px 1fr;column-gap:10px;text-align:left;border:0;background:transparent;padding:10px 12px;border-radius:12px;position:relative}
+.rail button:hover{background:var(--panel)}
+.rail .n{grid-row:1/3;font:700 22px/1 var(--head);color:var(--muted);align-self:center;text-align:center}
+.rail .t{font-weight:600;line-height:1.2}
+.rail .s{font-size:13px;color:var(--muted);line-height:1.25}
+.rail button[aria-current="step"]{background:var(--panel);box-shadow:inset 4px 0 0 var(--accent)}
+.rail button[aria-current="step"] .n{color:var(--accent)}
+/* Bühne */
+.main{min-width:0;display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{border:1.5px solid var(--line);background:var(--chip);border-radius:999px;padding:7px 14px;font-weight:500;font-size:14.5px}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{position:relative;height:clamp(320px,50vh,520px);border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,var(--stage-hi),var(--stage) 72%);touch-action:pan-y;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;cursor:grab}
+.stage.drag{cursor:grabbing}
+.scene{position:absolute;inset:0;perspective:1500px;perspective-origin:50% 45%}
+.world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.cube,.pivot{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.cubie{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.face{position:absolute;left:calc(var(--s)/-2);top:calc(var(--s)/-2);width:var(--s);height:var(--s);background:var(--body);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.stk{position:absolute;inset:7%;border-radius:15%;background:var(--c,#888)}
+.stk.hl{box-shadow:0 0 0 5px var(--focus)}
+#arrowHost{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.arrow{position:absolute;pointer-events:none;animation:fade .18s ease-out}
+.arrow svg{width:100%;height:100%;display:block;overflow:visible}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.tools{position:absolute;right:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tools button,.tools label{border:1.5px solid var(--line);background:color-mix(in srgb,var(--panel) 88%,transparent);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500}
+.tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hint{position:absolute;left:14px;bottom:10px;font-size:12.5px;color:var(--muted)}
+.banner{position:absolute;left:14px;top:14px;background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-weight:600;font-size:14px;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+/* Steuerung */
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.controls button.ic{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);background:var(--chip);display:grid;place-items:center;padding:0}
+.controls button.ic:disabled{opacity:.35;cursor:default}
+.controls button.play{height:46px;min-width:150px;border-radius:999px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;padding:0 22px;display:flex;align-items:center;justify-content:center;gap:10px}
+.controls svg{width:20px;height:20px;fill:currentColor}
+.speed{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.speed select{background:var(--chip);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit}
+.now{min-height:2.9em;padding:12px 16px;border-left:4px solid var(--accent);background:var(--panel);border-radius:0 14px 14px 0}
+.now b{font:700 22px/1 var(--head);margin-right:10px}
+.now span{color:var(--muted)}
+/* Zugband */
+.tape{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.grp{display:flex;flex-direction:column;gap:5px}
+.grp .gl{font-size:12.5px;color:var(--muted);text-align:center;border-bottom:2px solid var(--line);padding-bottom:3px;white-space:nowrap}
+.grp .row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;min-width:58px;padding:8px 8px 7px;border:1.5px solid var(--line);border-radius:12px;background:var(--chip)}
+.chip b{font:700 21px/1.1 var(--head)}
+.chip small{font-size:11.5px;line-height:1.15;color:var(--muted);text-align:center;max-width:86px;min-height:2.3em}
+.chip.done{opacity:.55}
+.chip[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);opacity:1}
+.chip[aria-current="true"] small{color:inherit}
+.chip.lab b{font-size:15px}
+.moves{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.moves button{border:1.5px solid var(--line);background:var(--chip);border-radius:12px;padding:10px 0;font:700 20px var(--head)}
+.moves button:active{background:var(--ink);color:var(--bg)}
+.moves button.wide{grid-column:span 2;font:600 15px var(--text)}
+/* Info */
+.info{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--panel);border-radius:18px;padding:18px 20px}
+.card h2{margin:0 0 8px;font:700 24px/1.15 var(--head);letter-spacing:-.01em}
+.card h3{margin:14px 0 4px;font:700 16px/1.2 var(--head)}
+.card p{margin:0 0 10px}
+.card p:last-child{margin-bottom:0}
+.card .muted{color:var(--muted);font-size:14.5px}
+.notes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.notes li{padding-left:14px;border-left:3px solid var(--line)}
+.net{display:block;width:100%;height:auto}
+.net rect{stroke:var(--line);stroke-width:1}
+.netcap{font-size:13px;color:var(--muted);margin:8px 0 0}
+code.alg{font:700 15px var(--head);background:var(--bg);padding:2px 7px;border-radius:7px;white-space:nowrap}
+@media (max-width:1080px){ .layout{grid-template-columns:200px minmax(0,1fr)} .info{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))} }
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .rail{flex-direction:row;overflow-x:auto;position:static;padding-bottom:6px;gap:6px;scrollbar-width:thin}
+  .rail button{flex:0 0 auto;grid-template-columns:auto;padding:8px 14px;border:1.5px solid var(--line);background:var(--chip);border-radius:999px;align-items:center}
+  .rail .n{grid-row:auto;display:none}
+  .rail .s{display:none}
+  .rail button[aria-current="step"]{box-shadow:none;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .stage{height:clamp(300px,50vh,440px)}
+  .speed{margin-left:0}
+  .tools{left:10px;right:auto;justify-content:flex-start}
+  .hint{display:none}
+  .banner{top:auto;bottom:10px}
+}
+@media (prefers-reduced-motion:reduce){ .arrow{animation:none} }
+
+/* ===== iPad & Touch ===== */
+.wrap{padding-left:max(clamp(14px,3vw,32px),env(safe-area-inset-left,0px));padding-right:max(clamp(14px,3vw,32px),env(safe-area-inset-right,0px))}
+.stage{height:clamp(320px,50dvh,560px)}
+button,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@supports not (background:color-mix(in srgb,red,blue)){ .tools button,.tools label{background:var(--panel)} }
+@media (min-width:700px){ h1 br{display:none} h1{font-size:clamp(26px,3.4vw,40px)} }
+/* iPad quer (11 Zoll und größer): drei Spalten, schmaler */
+@media (min-width:1081px) and (max-width:1180px){ .layout{grid-template-columns:200px minmax(0,1fr) 290px;gap:20px} .info{grid-column:auto;display:flex} }
+@media (min-width:1181px) and (max-width:1400px){ .layout{grid-template-columns:210px minmax(0,1fr) 310px;gap:22px} }
+@media (orientation:landscape) and (min-width:900px) and (max-height:900px){
+  .wrap{padding-top:14px;padding-bottom:28px} header.top{margin-bottom:12px} .credit{font-size:12.5px}
+  .stage{height:clamp(300px,47dvh,500px)}
+}
+/* iPad hoch: eine Spalte, große Bühne */
+@media (min-width:700px) and (max-width:1080px) and (orientation:portrait){ .stage{height:clamp(400px,46dvh,680px)} }
+/* Finger statt Maus */
+@media (pointer:coarse){
+  .stage{touch-action:pan-y}
+  .tabs button{min-height:44px;padding:9px 17px;font-size:15.5px}
+  .tools button,.tools label{min-height:44px;padding:9px 15px;font-size:14.5px}
+  .controls{gap:10px}
+  .controls button.ic{width:56px;height:56px}
+  .controls button.play{height:56px;min-width:176px;font-size:17px}
+  .speed select{min-height:48px;padding:10px 14px}
+  .chip{min-width:66px;min-height:66px;padding:10px 9px 8px}
+  .chip b{font-size:23px}
+  .chip small{font-size:12.5px}
+  .grp .row{gap:8px}
+  .moves{grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px}
+  .moves button{min-height:58px;font-size:23px}
+  .moves button.wide{font-size:16px}
+  .rail button{min-height:52px}
+  .now{padding:14px 18px}
+}
+@media (pointer:coarse) and (min-width:700px){ .stage{touch-action:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Zauberwürfel lösen, <br>Schritt für Schritt</h1>
+    <p class="credit">Zugfolgen nach dem Spickzettel „Rubik – Spickzettel Plus“ (Methode: Roland Frisch, Layout: Alex Tschakert, freshcuber.wordpress.com/3x3). Hier laufen sie als Animation ab.</p>
+  </header>
+  <div class="layout">
+    <nav class="rail" id="rail" aria-label="Schritte"></nav>
+    <section class="main">
+      <div class="tabs" id="tabs" role="group" aria-label="Fälle"></div>
+      <div class="stage" id="stage">
+        <div class="scene" id="scene"><div class="world" id="world"><div class="cube" id="cube"><div class="pivot" id="pivot"></div></div><div id="arrowHost"></div></div></div>
+        <div class="tools">
+          <button id="btnFocus" aria-pressed="true" title="Nur die wichtigen Steine farbig zeigen, der Rest bleibt grau">Fokus-Ansicht</button>
+          <button id="btnBack" title="Würfel um 180° drehen, um die Rückseite zu sehen">Rückseite</button>
+          <button id="btnView" title="Ansicht zurücksetzen">Ansicht</button>
+        </div>
+        <div class="hint">Ziehen dreht den Würfel</div>
+        <div class="banner" id="banner" hidden></div>
+      </div>
+      <div class="controls" id="controls">
+        <button class="ic" id="bFirst" aria-label="Zurück zum Anfang"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button class="ic" id="bPrev" aria-label="Ein Zug zurück"><svg viewBox="0 0 24 24"><path d="M15 5v14L5 12z"/></svg></button>
+        <button class="play" id="bPlay"></button>
+        <button class="ic" id="bNext" aria-label="Ein Zug vor"><svg viewBox="0 0 24 24"><path d="M9 5v14l10-7z"/></svg></button>
+        <label class="speed">Tempo
+          <select id="speed"><option value="0.6">langsam</option><option value="1" selected>normal</option><option value="1.8">schnell</option></select>
+        </label>
+      </div>
+      <div class="now" id="now" aria-live="polite"></div>
+      <div id="below"></div>
+    </section>
+    <aside class="info">
+      <article class="card" id="infoCard"></article>
+      <div class="card"><h2 style="font-size:18px">Alle Seiten auf einen Blick</h2><svg class="net" id="net" viewBox="0 0 252 190" role="img" aria-label="Aufgeklapptes Netz des Würfels"></svg><p class="netcap">Wie ein aufgeklappter Würfel: oben, links, vorn, rechts, hinten, unten.</p></div>
+    </aside>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+/* ===== Würfel-Kern (rein logisch, ohne Grafik) ===== */
+var FACES = { U:[0,1,0], D:[0,-1,0], F:[0,0,1], B:[0,0,-1], R:[1,0,0], L:[-1,0,0] };
+var MAT = {
+  0:[[1,0,0],[0,0,-1],[0,1,0]],
+  1:[[0,0,1],[0,1,0],[-1,0,0]],
+  2:[[0,-1,0],[1,0,0],[0,0,1]]
+};
+function mT(m){ return [[m[0][0],m[1][0],m[2][0]],[m[0][1],m[1][1],m[2][1]],[m[0][2],m[1][2],m[2][2]]]; }
+function mV(m,v){ return [m[0][0]*v[0]+m[0][1]*v[1]+m[0][2]*v[2], m[1][0]*v[0]+m[1][1]*v[1]+m[1][2]*v[2], m[2][0]*v[0]+m[2][1]*v[1]+m[2][2]*v[2]]; }
+function mM(a,b){ var r=[[0,0,0],[0,0,0],[0,0,0]]; for(var i=0;i<3;i++)for(var j=0;j<3;j++)for(var k=0;k<3;k++)r[i][j]+=a[i][k]*b[k][j]; return r; }
+var ID = [[1,0,0],[0,1,0],[0,0,1]];
+function eqv(a,b){ return a[0]===b[0]&&a[1]===b[1]&&a[2]===b[2]; }
+
+/* Zugdefinition: a = Achse, l = Ebene (-1,0,1 oder null = ganzer Würfel), s = Richtung (+1 = +90° um +Achse) */
+var MOVEDEF = {
+  R:{a:0,l:1,s:-1}, L:{a:0,l:-1,s:1}, U:{a:1,l:1,s:-1}, D:{a:1,l:-1,s:1}, F:{a:2,l:1,s:-1}, B:{a:2,l:-1,s:1},
+  x:{a:0,l:null,s:-1}, y:{a:1,l:null,s:-1}, z:{a:2,l:null,s:-1}
+};
+function parseMove(str){
+  var base = str.charAt(0), rest = str.slice(1), d = MOVEDEF[base];
+  if(!d) throw new Error('Unbekannter Zug: '+str);
+  var turns = 1, dir = d.s;
+  if(rest.indexOf('2')>=0) turns = 2;
+  if(rest.indexOf("'")>=0) dir = -dir;
+  return { name:str, base:base, a:d.a, l:d.l, dir:dir, turns:turns };
+}
+function invMove(str){
+  var b=str.charAt(0), r=str.slice(1);
+  if(r.indexOf('2')>=0) return str;
+  return r.indexOf("'")>=0 ? b : b+"'";
+}
+function invSeq(arr){ return arr.slice().reverse().map(invMove); }
+function repeat(arr,n){ var o=[]; for(var i=0;i<n;i++) o=o.concat(arr); return o; }
+
+function newCube(){
+  var cubies=[];
+  for(var x=-1;x<=1;x++)for(var y=-1;y<=1;y++)for(var z=-1;z<=1;z++){
+    if(x===0&&y===0&&z===0) continue;
+    var st=[];
+    [['R',[1,0,0]],['L',[-1,0,0]],['U',[0,1,0]],['D',[0,-1,0]],['F',[0,0,1]],['B',[0,0,-1]]].forEach(function(f){
+      var n=f[1]; if(n[0]*x+n[1]*y+n[2]*z===1) st.push({n:n,c:f[0]});
+    });
+    cubies.push({home:[x,y,z],pos:[x,y,z],rot:ID,st:st});
+  }
+  return cubies;
+}
+function applyMove(cubies, m){
+  if(typeof m==='string') m=parseMove(m);
+  for(var t=0;t<m.turns;t++){
+    var M = m.dir>0 ? MAT[m.a] : mT(MAT[m.a]);
+    cubies.forEach(function(c){
+      if(m.l===null || c.pos[m.a]===m.l){ c.pos=mV(M,c.pos); c.rot=mM(M,c.rot); }
+    });
+  }
+}
+function applySeq(cubies, arr){ arr.forEach(function(m){ applyMove(cubies,m); }); }
+function cubieAt(cubies,p){ for(var i=0;i<cubies.length;i++) if(eqv(cubies[i].pos,p)) return cubies[i]; }
+/* Farbe (Schlüssel U,D,F,B,R,L) des Aufklebers, der am Ort p in Richtung dir zeigt */
+function colorAt(cubies,p,dir){
+  var c=cubieAt(cubies,p); if(!c) return null;
+  for(var i=0;i<c.st.length;i++) if(eqv(mV(c.rot,c.st[i].n),dir)) return c.st[i].c;
+  return null;
+}
+function isSolved(cubies){
+  /* Würfel gilt als gelöst, wenn jede Seite einfarbig ist (unabhängig von der Ausrichtung) */
+  var ok=true;
+  Object.keys(FACES).forEach(function(k){
+    var d=FACES[k], col=null;
+    cubies.forEach(function(c){
+      if(c.pos[0]*d[0]+c.pos[1]*d[1]+c.pos[2]*d[2]===1){
+        var cc=colorAt(cubies,c.pos,d);
+        if(col===null) col=cc; else if(col!==cc) ok=false;
+      }
+    });
+  });
+  return ok;
+}
+/* Netz-Layout: liefert 3x3-Matrix der Farben pro Seite (Blick von außen) */
+function faceGrid(cubies, f){
+  var g=[], r, c, p, d=FACES[f];
+  for(r=0;r<3;r++){ g[r]=[]; for(c=0;c<3;c++){
+    var i=c-1, j=r-1;  // i: Spalte -1..1, j: Zeile -1..1 (oben nach unten)
+    if(f==='U') p=[i,1,j];
+    else if(f==='D') p=[i,-1,-j];
+    else if(f==='F') p=[i,-j,1];
+    else if(f==='B') p=[-i,-j,-1];
+    else if(f==='L') p=[-1,-j,i];
+    else p=[1,-j,-i];
+    g[r][c]=colorAt(cubies,p,d);
+  }}
+  return g;
+}
+if(false) module.exports={FACES:FACES,parseMove:parseMove,invMove:invMove,invSeq:invSeq,repeat:repeat,newCube:newCube,applyMove:applyMove,applySeq:applySeq,cubieAt:cubieAt,colorAt:colorAt,isSolved:isSolved,faceGrid:faceGrid};
+
+var DATA7 = {"a":{"setup":["R'","F","R'","B2","R","F'","R'","B2","R2"],"seq":[{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U","kind":"slot","n":1},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2},{"m":"U","kind":"next","n":1},{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U2","kind":"slot","n":2},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2}]},"b":{"setup":["R'","F","R'","B2","R","F'","R'","B2","R2","U","R'","F","R'","B2","R","F'","R'","B2","R2"],"seq":[{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U'","kind":"slot","n":3},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2},{"m":"U2","kind":"next","n":2},{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U","kind":"slot","n":1},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2},{"m":"U'","kind":"next","n":3},{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U'","kind":"slot","n":3},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2},{"m":"U'","kind":"final","n":3}]},"c":{"setup":["R'","F","R'","B2","R","F'","R'","B2","R2","U2","R'","F","R'","B2","R","F'","R'","B2","R2"],"seq":[{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U","kind":"slot","n":1},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2},{"m":"U2","kind":"next","n":2},{"m":"R'","kind":"out","i":0},{"m":"D'","kind":"out","i":1},{"m":"R","kind":"out","i":2},{"m":"U","kind":"slot","n":1},{"m":"R'","kind":"in","i":0},{"m":"D","kind":"in","i":1},{"m":"R","kind":"in","i":2},{"m":"U2","kind":"final","n":2}]}};
+
+/* ========== Inhalte ========== */
+var COLORS={U:'#f7d117',D:'#f4f5f1',F:'#16a34a',B:'#1d62d8',R:'#f58a1f',L:'#d7262e'};
+var STAGES={ // welche Steingruppen sind in welchem Schritt "wichtig" (farbig)
+  kreuz:['c','we'], ecken:['c','we','wc'], mitte:['c','we','wc','me'],
+  gkreuz:['c','we','wc','me','ye'], alle:['c','we','wc','me','ye','yc']
+};
+function lab(m){ var b=m.charAt(0), r=m.slice(1); if('xyz'.indexOf(b)>=0) b=b.toUpperCase(); return b+r.replace(/'/g,'\u2019'); }
+function mv(m,say,g,o){ o=o||{}; return {m:m,say:say||'',g:g||'',short:o.short||'',label:o.label||''}; }
+function mvs(arr){ return arr.map(function(i){return i.m;}); }
+function sc(o){
+  o.seq=o.seq||[];
+  if(!o.setup) o.setup=(o.pre||[]).concat(invSeq(mvs(o.seq)));
+  return o;
+}
+function burger(side,g){ // Burgermove
+  return side==='links'
+   ? [mv("L'",'Slot öffnen',g),mv("U'",'Ecke reinziehen',g),mv('L','Slot schließen',g)]
+   : [mv('R','Slot öffnen',g),mv('U','Ecke reinziehen',g),mv("R'",'Slot schließen',g)];
+}
+function fru(n,total){
+  var g= total>1 ? n+'. Durchgang' : 'Fru \u2013 ruf';
+  return [mv('F','Fru',g),mv('R','',g),mv('U','',g),mv("R'",'ruf',g),mv("U'",'',g),mv("F'",'',g)];
+}
+function sune(g){ return [mv('R','',g),mv('U','',g),mv("R'",'',g),mv('U','',g),mv('R','',g),mv('U2','',g),mv("R'",'',g)]; }
+function rrdd(n,total){ var g= total>1 ? n+'. Durchgang' : '';
+  return [mv("R'",'runter',g),mv("D'",'raus',g),mv('R','rauf',g),mv('D','rein',g)]; }
+function rep(fn,count){ var o=[]; for(var i=1;i<=count;i++) o=o.concat(fn(i,count)); return o; }
+
+var WHITE_TOP=['z2'];
+var STEPS=[
+ { id:'grund', n:'', title:'Grundlagen', sub:'Zugschreibweise und Haltung', free:true,
+   intro:[
+    'Jeder Buchstabe steht für eine Seite: <b>R</b> rechts, <b>L</b> links, <b>U</b> oben, <b>D</b> unten, <b>F</b> vorn, <b>B</b> hinten.',
+    'Ein Buchstabe allein heißt: eine Vierteldrehung im Uhrzeigersinn, wenn du direkt auf diese Seite schaust. Mit Strich (<b>R\u2019</b>) drehst du dagegen, mit einer 2 (<b>U2</b>) halb herum.',
+    '<b>Y</b> dreht den ganzen Würfel wie die obere Seite. So greifst du zur anderen Hand um. <b>Y\u2019</b> dreht in die Gegenrichtung.',
+    'Die roten Pfeile zeigen die Richtung des nächsten Zugs. In den meisten Bildern ist Gelb oben und Grün vorn. Nur im ersten Schritt liegt Weiß oben.'],
+   cases:[ sc({id:'frei', title:'Ausprobieren', setup:[], seq:[], show:null,
+     text:'Tippe auf die Züge unten und schau zu, was passiert. „Mischen“ verdreht den Würfel, „Zurücksetzen“ stellt ihn wieder her.'}) ] },
+ { id:'kreuz', n:'1', title:'Weißes Kreuz', sub:'Vier weiße Kanten', stage:'kreuz',
+   intro:[
+    'Bringe die <b>4 weißen Kanten</b> neben den weißen Mittelstein, und zwar so, dass sie zu den seitlichen Mittelsteinen passen (orange, grün, rot, blau).',
+    'Dafür gibt es keine festen Zugfolgen. Du drehst, schaust und probierst. Die beiden Griffe unten helfen oft, sie stammen aber nicht vom Papier. Weiß liegt in diesem Schritt oben, weil man das Kreuz so am besten sieht.'],
+   cases:[
+    sc({id:'ziel', title:'So sieht das Ziel aus', pre:WHITE_TOP, seq:[], show:STAGES.kreuz,
+      text:'Jede weiße Kante steht neben dem weißen Mittelstein, und ihre zweite Farbe passt zum Mittelstein der Seitenfläche.'}),
+    sc({id:'unten', title:'Kante unten, Weiß unten', pre:WHITE_TOP, show:STAGES.kreuz, focusStart:[[-1,-1,0]],
+      seq:[mv('D','Unten drehen, bis die Farbe passt'),mv('F2','Halb drehen: Kante springt hoch')],
+      text:'Die Kante liegt in der unteren Ebene, Weiß zeigt nach unten. Drehe die untere Ebene, bis die zweite Farbe zum Mittelstein darüber passt. Eine halbe Drehung dieser Seite bringt die Kante nach oben.'}),
+    sc({id:'seite', title:'Kante seitlich, Weiß nach vorn', pre:WHITE_TOP, show:STAGES.kreuz, focusStart:[[1,0,1]],
+      seq:[mv('R','Seite hochdrehen: Weiß landet oben')],
+      text:'Die Kante steckt in der mittleren Ebene und Weiß zeigt nach vorn. Drehst du die Seite, auf der die Kante steckt, nach oben, landet Weiß oben. Das klappt, wenn die zweite Farbe zum Mittelstein dieser Seite passt.'}),
+    sc({id:'drehen', title:'Weiß nach unten drehen', setup:WHITE_TOP, show:STAGES.kreuz,
+      seq:[mv('z2','Ganzen Würfel umdrehen','',{label:'Umdrehen'})],
+      text:'Ist das Kreuz fertig, drehst du den ganzen Würfel um. Das weiße Kreuz zeigt ab jetzt immer nach unten.'})
+   ]},
+ { id:'ecken', n:'2', title:'Weiße Fläche', sub:'Vier weiße Ecken', stage:'ecken',
+   intro:[
+    'Halte das weiße Kreuz ab jetzt immer <b>nach unten</b>. Drehe die gelbe Oberseite, bis eine weiße Ecke über dem Platz ist, wo sie hingehört.',
+    'Jeder Fall besteht aus einem <b>Burgermove</b>: drei Züge, die den Platz öffnen, die Ecke hineinziehen und den Platz wieder schließen.'],
+   cases:[
+    sc({id:'links', title:'Weiß zeigt nach links', view:{yaw:-36,pitch:24}, show:STAGES.ecken, focusStart:[[-1,1,1]],
+      seq:burger('links','Burgermove mit links'),
+      text:'Die Ecke steht vorn links über ihrem Platz, das weiße Feld zeigt zur linken Seite.',
+      hand:'Burgermove mit links: Drehe nur mit der linken Hand. Der Zeigefinger zieht U\u2019 nach vorn.'}),
+    sc({id:'rechts', title:'Weiß zeigt nach rechts', show:STAGES.ecken, focusStart:[[1,1,1]],
+      seq:burger('rechts','Burgermove mit rechts'),
+      text:'Die Ecke steht vorn rechts über ihrem Platz, das weiße Feld zeigt zur rechten Seite.',
+      hand:'Burgermove mit rechts: Drehe nur mit der rechten Hand. Der Zeigefinger zieht U nach vorn.'}),
+    sc({id:'oben', title:'Weiß zeigt nach oben', show:STAGES.ecken, focusStart:[[1,1,1]],
+      seq:[mv('R','Slot öffnen','Erst: Weiß zur Seite bringen'),mv('U2','Ecke 2× ziehen','Erst: Weiß zur Seite bringen'),mv("R'",'Slot schließen','Erst: Weiß zur Seite bringen'),
+           mv("U'",'Weiße Ecke zurück über den Slot holen','')].concat(burger('rechts','Burgermove mit rechts')),
+      text:'Die Ecke steht vorn rechts über ihrem Platz, das weiße Feld zeigt nach oben. Erst ziehst du die Ecke zweimal herum, holst sie dann zurück über den Slot und machst den Burgermove mit rechts.'}),
+    sc({id:'unten', title:'Falsche weiße Ecke unten', show:STAGES.ecken, focusStart:[[1,-1,1]],
+      setup:['R',"U'","R'","F'","U'",'F'],
+      seq:burger('rechts','Burgermove mit rechts'),
+      text:'Du findest oben keine weiße Ecke, aber unten steckt noch eine weiße Ecke falsch (hier verdreht). Hole sie mit einem Burgermove nach oben und baue sie danach wie oben ein.'})
+   ]},
+ { id:'mitte', n:'3', title:'Zweite Ebene', sub:'Vier Kanten ohne Gelb', stage:'mitte',
+   intro:[
+    'Suche oben eine <b>Kante ohne Gelb</b> und bringe sie über den farblich passenden Mittelstein. Du siehst ein umgekehrtes T.',
+    'Gesprochen: Kante wegdrehen, Burgermove, Ecke zurückholen, Hand umgreifen, Burgermove.'],
+   extra:'Steckt schon eine Kante in der mittleren Ebene, aber am falschen Platz oder falsch gekippt, dann bringe sie dort weg: Baue für sie eine Kante von oben ein (auf dem Papier: eine gelbe Kante). So wird sie nach oben gedrückt und du kannst sie wie oben richtig einbauen.',
+   cases:[
+    sc({id:'links', title:'Kante links einbauen', pre:["y'"], show:STAGES.mitte, focusStart:[[0,1,1]],
+      seq:[mv("U'",'Kante vom Ziel wegdrehen','',{short:'wegdrehen'})].concat(burger('links','Burgermove mit links'),
+           [mv('U','Weiße Ecke zurück über den Slot holen','',{short:'Ecke zurück'}),
+            mv("y'",'Umgreifen zur anderen Hand','',{short:'umgreifen'})],
+           burger('rechts','Burgermove mit rechts')),
+      text:'Die Kante steht über dem Mittelstein, dessen Farbe vorn zu sehen ist (hier Grün). Ihre Farbe oben (hier Rot) gehört zum linken Mittelstein.'}),
+    sc({id:'rechts', title:'Kante rechts einbauen', pre:['y'], show:STAGES.mitte, focusStart:[[0,1,1]],
+      seq:[mv('U','Kante vom Ziel wegdrehen','',{short:'wegdrehen'})].concat(burger('rechts','Burgermove mit rechts'),
+           [mv("U'",'Weiße Ecke zurück über den Slot holen','',{short:'Ecke zurück'}),
+            mv('y','Umgreifen zur anderen Hand','',{short:'umgreifen'})],
+           burger('links','Burgermove mit links')),
+      text:'Die Kante steht über dem Mittelstein, dessen Farbe vorn zu sehen ist (hier Grün). Ihre Farbe oben (hier Orange) gehört zum rechten Mittelstein.'})
+   ]},
+ { id:'gkreuz', n:'4', title:'Gelbes Kreuz', sub:'Fru, ruf', stage:'gkreuz',
+   intro:[
+    'Schau dir die vier gelben Kanten an. Es können entweder 0, 2 oder 4 Kanten mit der gelben Seite nach oben zeigen.',
+    'Die Zugfolge <code class="alg">F R U R\u2019 U\u2019 F\u2019</code> merkst du dir so: „Fru, ruf mol de Hühners rin in\u2019n Stall!“'],
+   cases:[
+    sc({id:'balken', title:'Gelber Balken', show:STAGES.gkreuz, focusStart:[[-1,1,0],[1,1,0]],
+      seq:rep(fru,1),
+      text:'Du siehst einen gelben Balken. Halte ihn waagerecht und mache die Zugfolge einmal.'}),
+    sc({id:'winkel', title:'Gelber Winkel', show:STAGES.gkreuz, focusStart:[[0,1,-1],[-1,1,0]],
+      seq:rep(fru,2),
+      text:'Du siehst einen gelben Winkel. Halte ihn auf „9 Uhr“ (die beiden gelben Kanten zeigen nach hinten und nach links) und mache die Zugfolge zweimal.'}),
+    sc({id:'punkt', title:'Keine gelbe Kante oben', show:STAGES.gkreuz,
+      seq:fru(1,3).concat([mv('U2','Winkel auf „9 Uhr“ drehen','',{short:'Winkel drehen'})],fru(2,3),fru(3,3)),
+      text:'Wenn keine gelbe Kante nach oben zeigt, erzeugst du zuerst einen gelben Winkel (einmal die Zugfolge). Dann drehst du die Oberseite, bis der Winkel auf „9 Uhr“ steht, und machst die Zugfolge zweimal.'})
+   ]},
+ { id:'gkanten', n:'5', title:'Gelbe Kanten tauschen', sub:'Sune', stage:'gkreuz',
+   intro:[
+    'Drehe die gelbe Oberseite so, dass <b>genau zwei Kanten</b> zur Farbe des angrenzenden Mittelsteins passen. Wenn schon alle Kanten passen, brauchst du gar nichts zu tun.',
+    'Die Zugfolge <code class="alg">R U R\u2019 U R U2 R\u2019</code> heißt „Sune“.'],
+   cases:[
+    sc({id:'nachbar', title:'Falsche Kanten benachbart', show:STAGES.gkreuz, focusStart:[[0,1,1],[-1,1,0]],
+      seq:sune('Sune').concat([mv('U','Oberseite drehen','',{short:'ausrichten'})]),
+      text:'Die 2 falschen Kanten sind benachbart. Halte sie nach vorn und links. Dann folgt Sune + U.'}),
+    sc({id:'gegenueber', title:'Falsche Kanten gegenüber', show:STAGES.gkreuz, focusStart:[[0,1,1],[0,1,-1]],
+      seq:sune('Sune').concat([mv("U'",'Oberseite drehen','',{short:'drehen'})],sune('Sune')),
+      text:'Die 2 falschen Kanten liegen gegenüber. Halte sie nach vorn und hinten. Dann folgt Sune + U\u2019 + Sune.'})
+   ]},
+ { id:'gflaeche', n:'6', title:'Gelbe Fläche', sub:'Runter, raus, rauf, rein', stage:'alle',
+   intro:[
+    'Drehe die gelbe Oberseite so, dass <b>vorn rechts</b> eine Ecke steht, bei der Gelb noch nicht nach oben zeigt.',
+    'Die Zugfolge <code class="alg">R\u2019 D\u2019 R D</code> sprichst du „runter, raus, rauf, rein“. Zeigt das gelbe Feld nach rechts, machst du sie 2×. Zeigt es nach vorn, machst du sie 4×.',
+    'Drehe jetzt <b>nur</b> die gelbe Oberseite (nicht den ganzen Würfel!), bis die nächste Ecke vorn rechts steht, und benutze wieder 2× oder 4×. Lass dich nicht irritieren, wenn Weiß zwischendrin chaotisch wirkt.'],
+   hand:'D\u2019 und D drehst du mit dem Ringfinger der linken Hand.',
+   cases:[
+    sc({id:'z24', title:'Erst 2×, dann 4×', show:null, focusRule:'twisted',
+      seq:rep(rrdd,2).map(function(x){x.g='Gelb zeigt nach rechts: 2×'; return x;}).concat([mv('U','Nächste Ecke nach vorn rechts','',{short:'nächste Ecke'})],
+          rep(rrdd,4).map(function(x){x.g='Gelb zeigt nach vorn: 4×'; return x;}),[mv("U'",'Oberseite zurückdrehen','',{short:'zurück'})]),
+      text:'Bei der ersten Ecke zeigt Gelb nach rechts, also 2×. Bei der zweiten Ecke zeigt Gelb nach vorn, also 4×.'}),
+    sc({id:'z42', title:'Erst 4×, dann 2×', show:null, focusRule:'twisted',
+      seq:rep(rrdd,4).map(function(x){x.g='Gelb zeigt nach vorn: 4×'; return x;}).concat([mv('U','Nächste Ecke nach vorn rechts','',{short:'nächste Ecke'})],
+          rep(rrdd,2).map(function(x){x.g='Gelb zeigt nach rechts: 2×'; return x;}),[mv("U'",'Oberseite zurückdrehen','',{short:'zurück'})]),
+      text:'Hier beginnst du mit einer Ecke, bei der Gelb nach vorn zeigt (4×). Danach folgt eine Ecke mit Gelb nach rechts (2×).'})
+   ]},
+ { id:'gecken', n:'7', title:'Gelbe Ecken tauschen', sub:'Ausbauen, einbauen', stage:'alle',
+   intro:[
+    'Halte den Würfel so, dass vorn rechts auf der Oberseite eine Ecke steht, die <b>nicht zu den Kanten daneben</b> passt.',
+    '<b>Ausbauen:</b> Baue die falsche Ecke aus und parke sie kurz unten links: „runter, raus, rauf“ (<code class="alg">R\u2019 D\u2019 R</code>). Drehe dann <b>nur</b> die Oberseite, bis der Platz, wo die geparkte Ecke hingehört, vorn rechts ist.',
+    '<b>Einbauen:</b> Baue dort die Ecke ein: „runter, rein, rauf“ (<code class="alg">R\u2019 D R</code>). Drehe wieder nur die Oberseite, bis die nächste falsche gelbe Ecke vorn rechts steht, und mache das für jede falsche Ecke. Zum Schluss drehst du die Oberseite, bis alles zusammenpasst.'],
+   cases:[
+    sc({id:'drei', title:'Drei Ecken falsch', show:null, focusRule:'wrongCorners', setup:DATA7.a.setup, seq:corners7(DATA7.a.seq),
+      text:'Hier sind drei Ecken falsch. Es braucht zwei Durchgänge aus Ausbauen und Einbauen.'}),
+    sc({id:'vier', title:'Vier Ecken falsch', show:null, focusRule:'wrongCorners', setup:DATA7.b.setup, seq:corners7(DATA7.b.seq),
+      text:'Hier sind alle vier Ecken falsch. Es braucht drei Durchgänge, am Ende wird die Oberseite noch ausgerichtet.'})
+   ]}
+];
+function corners7(items){
+  return items.map(function(it){
+    if(it.kind==='out') return mv(it.m,['runter','raus','rauf'][it.i],'Ausbauen');
+    if(it.kind==='in') return mv(it.m,['runter','rein','rauf'][it.i],'Einbauen');
+    if(it.kind==='slot') return mv(it.m,'Oberseite drehen, bis der Platz der geparkten Ecke vorn rechts ist','',{short:'Platz drehen'});
+    if(it.kind==='next') return mv(it.m,'Oberseite drehen, bis die nächste falsche gelbe Ecke vorn rechts steht','',{short:'nächste Ecke'});
+    return mv(it.m,'Oberseite drehen, bis alles zusammenpasst','',{short:'ausrichten'});
+  });
+}
+
+/* ========== Darstellung (CSS-3D) ========== */
+var S=72;
+function $(id){ return document.getElementById(id); }
+var stageEl=$('stage'), worldEl=$('world'), cubeEl=$('cube'), pivotEl=$('pivot'), arrowHost=$('arrowHost');
+worldEl.style.setProperty('--s',S+'px');
+var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function r4(x){ var v=Math.round(x*10000)/10000; return v===0?0:v; }
+function toCss(Rm,t){
+  var m=[1,-1,1];
+  function e(i,j){ return Rm[i][j]*m[i]*m[j]; }
+  return 'matrix3d('+[e(0,0),e(1,0),e(2,0),0, e(0,1),e(1,1),e(2,1),0, e(0,2),e(1,2),e(2,2),0, t[0],t[1],t[2],1].map(r4).join(',')+')';
+}
+function groupOf(h){
+  var n=Math.abs(h[0])+Math.abs(h[1])+Math.abs(h[2]);
+  if(n===1) return 'c';
+  if(n===2) return h[1]===-1?'we':(h[1]===0?'me':'ye');
+  return h[1]===-1?'wc':'yc';
+}
+var model=newCube(), els=[];
+var FACEDEF=[['R','rotateY(90deg)'],['L','rotateY(-90deg)'],['U','rotateX(90deg)'],['D','rotateX(-90deg)'],['F',''],['B','rotateY(180deg)']];
+function mkCubie(c){
+  var el=document.createElement('div'); el.className='cubie';
+  var stk=[];
+  FACEDEF.forEach(function(f){
+    var fe=document.createElement('div'); fe.className='face';
+    fe.style.transform=(f[1]?f[1]+' ':'')+'translateZ('+(S/2)+'px)';
+    el.appendChild(fe);
+    if(c.st.some(function(s){return s.c===f[0];})){
+      var se=document.createElement('div'); se.className='stk'; fe.appendChild(se); stk.push({el:se,key:f[0]});
+    }
+  });
+  cubeEl.appendChild(el);
+  return {c:c,el:el,stk:stk};
+}
+els=model.map(mkCubie);
+function resetModel(setup){
+  model=newCube(); els.forEach(function(e,i){ e.c=model[i]; });
+  applySeq(model,setup||[]);
+}
+function syncAll(){
+  els.forEach(function(e){ var c=e.c; e.el.style.transform=toCss(c.rot,[S*c.pos[0],-S*c.pos[1],S*c.pos[2]]); });
+}
+/* Fokus & Farben */
+var focusMode=true, focusSet={}, scen=null;
+function curShow(){ return (focusMode && scen && scen.show) ? scen.show : null; }
+function paint(){
+  var show=curShow();
+  els.forEach(function(e){
+    var on=!show || show.indexOf(groupOf(e.c.home))>=0, hl=!!focusSet[e.c.home.join()];
+    e.stk.forEach(function(s){ s.el.style.setProperty('--c', on?COLORS[s.key]:'var(--gray)'); s.el.classList.toggle('hl',hl); });
+  });
+}
+/* Pfeile: gerade Pfeile auf der Vorderseite (wie auf dem Papier), Kreisbogen für F, Z und B */
+function arrowEl(str){
+  var m=parseMove(str), base=m.base, W=S*3.4, cx=W/2, cy=W/2, svg='', dbl=m.turns===2;
+  var A='var(--arrow)', HALO='#fff';
+  function poly(pts){ return pts.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' '); }
+  function line(x0,y0,x1,y1){
+    var dx=x1-x0, dy=y1-y0, L=Math.sqrt(dx*dx+dy*dy), ux=dx/L, uy=dy/L, nx=-uy, ny=ux, hl=22, hw=19;
+    function head(px,py){ return poly([[px+ux*hl,py+uy*hl],[px-nx*hw,py-ny*hw],[px+nx*hw,py+ny*hw]]); }
+    var tip=[x1,y1], back=[x1-ux*(dbl?hl*1.5:0), y1-uy*(dbl?hl*1.5:0)];
+    var ex=x1-ux*4, ey=y1-uy*4;
+    var s='<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="'+HALO+'" stroke-opacity=".85" stroke-width="20" stroke-linecap="round"/>'
+          +'<line x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="'+A+'" stroke-width="11" stroke-linecap="round"/>';
+    var tips=[[x1-ux*hl,y1-uy*hl]]; if(dbl) tips.push([x1-ux*hl*2.2,y1-uy*hl*2.2]);
+    tips.forEach(function(t){ s+='<polygon points="'+head(t[0],t[1])+'" fill="'+A+'" stroke="'+HALO+'" stroke-opacity=".85" stroke-width="3" stroke-linejoin="round"/>'; });
+    return s;
+  }
+  var half=S*1.28, rows=[cy-S,cy,cy+S], cols=[cx-S,cx,cx+S];
+  var hz={U:[-1,[cy-S]],D:[1,[cy+S]],y:[-1,rows]}, vt={R:[-1,[cx+S]],L:[1,[cx-S]],x:[-1,cols]};
+  var dirSign = (m.dir===MOVEDEF[base].s)?1:-1;
+  var zplane=S*1.5+10;
+  if(hz[base]){
+    var d=hz[base][0]*dirSign;
+    hz[base][1].forEach(function(yy){ svg+= d>0?line(cx-half,yy,cx+half,yy):line(cx+half,yy,cx-half,yy); });
+  } else if(vt[base]){
+    var d2=vt[base][0]*dirSign;
+    vt[base][1].forEach(function(xx){ svg+= d2>0?line(xx,cy-half,xx,cy+half):line(xx,cy+half,xx,cy-half); });
+  } else { // F, B, z: Kreisbogen
+    var rot=base==='z', neg=base==='B', rad=rot?S*1.5:S*1.1, span=dbl?300:205, a0=150, a1=a0+span;
+    var cwPlus=(!neg&&dirSign>0)||(neg&&dirSign<0);
+    var t0=a0*Math.PI/180, t1=a1*Math.PI/180;
+    var p0=[cx+rad*Math.cos(t0),cy+rad*Math.sin(t0)], p1=[cx+rad*Math.cos(t1),cy+rad*Math.sin(t1)];
+    var ux=-Math.sin(t1), uy=Math.cos(t1), nx=Math.cos(t1), ny=Math.sin(t1);
+    var hd=poly([[p1[0]+ux*26,p1[1]+uy*26],[p1[0]+nx*19,p1[1]+ny*19],[p1[0]-nx*19,p1[1]-ny*19]]);
+    var dd='M'+p0[0].toFixed(1)+' '+p0[1].toFixed(1)+' A'+rad+' '+rad+' 0 '+(span>180?1:0)+' 1 '+p1[0].toFixed(1)+' '+p1[1].toFixed(1);
+    svg+='<g style="transform:'+(cwPlus?'none':'scaleX(-1)')+';transform-origin:'+cx+'px '+cy+'px"><path d="'+dd+'" fill="none" stroke="'+HALO+'" stroke-opacity=".85" stroke-width="20" stroke-linecap="round"/><path d="'+dd+'" fill="none" stroke="'+A+'" stroke-width="11" stroke-linecap="round"/><polygon points="'+hd+'" fill="'+A+'" stroke="'+HALO+'" stroke-opacity=".85" stroke-width="3" stroke-linejoin="round"/></g>';
+    if(dbl) svg+='<text x="'+cx+'" y="'+(cy+15)+'" text-anchor="middle" font-size="46" font-weight="700" font-family="Bricolage Grotesque, sans-serif" fill="'+A+'" stroke="'+HALO+'" stroke-opacity=".85" stroke-width="3" paint-order="stroke">2</text>';
+    if(neg) zplane=-zplane;
+  }
+  var el=document.createElement('div'); el.className='arrow';
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+W+'">'+svg+'</svg>';
+  el.style.cssText='width:'+W+'px;height:'+W+'px;left:'+(-W/2)+'px;top:'+(-W/2)+'px;transform:translateZ('+zplane+'px)';
+  return el;
+}
+function setArrow(str){
+  arrowHost.innerHTML='';
+  if(str) arrowHost.appendChild(arrowEl(str));
+}
+/* Animation eines Zugs */
+var anim=null;
+function dur(str){ var t=/2/.test(str)?1.45:1; return reduce?140:(540*t)/speed; }
+function rotM(a,th){
+  var c=Math.cos(th), s=Math.sin(th);
+  if(a===0) return [[1,0,0],[0,c,-s],[0,s,c]];
+  if(a===1) return [[c,0,s],[0,1,0],[-s,0,c]];
+  return [[c,-s,0],[s,c,0],[0,0,1]];
+}
+function animateMove(str,ms){
+  return new Promise(function(resolve){
+    var m=parseMove(str);
+    var inLayer=els.filter(function(e){ return m.l===null || e.c.pos[m.a]===m.l; });
+    inLayer.forEach(function(e){ pivotEl.appendChild(e.el); });
+    var total=m.dir*m.turns*Math.PI/2, t0=null, done=false;
+    function finish(apply){
+      if(done) return; done=true; anim=null;
+      if(apply) applyMove(model,m);
+      inLayer.forEach(function(e){ cubeEl.appendChild(e.el); });
+      pivotEl.style.transform='';
+      syncAll();
+      resolve(apply);
+    }
+    anim={cancel:function(){ finish(false); }};
+    function frame(ts){
+      if(done) return;
+      if(t0===null) t0=ts;
+      var p=Math.min(1,(ts-t0)/ms), e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+      pivotEl.style.transform=toCss(rotM(m.a,total*e),[0,0,0]);
+      if(p<1) requestAnimationFrame(frame); else finish(true);
+    }
+    requestAnimationFrame(frame);
+  });
+}
+/* Kamera */
+var yaw=36, pitch=24, scaleK=1;
+function applyView(){ worldEl.style.transform='scale3d('+scaleK+','+scaleK+','+scaleK+') rotateX('+(-pitch)+'deg) rotateY('+(-yaw)+'deg)'; }
+function fit(){ var r=stageEl.getBoundingClientRect(); scaleK=Math.max(.45,Math.min(r.width,r.height)/(S*5.0)); applyView(); }
+if(window.ResizeObserver) new ResizeObserver(fit).observe(stageEl); else window.addEventListener('resize',fit);
+fit();
+(function(){
+  var down=false,lx=0,ly=0,pid=null;
+  stageEl.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.tools')) return;
+    down=true; lx=e.clientX; ly=e.clientY; pid=e.pointerId; stageEl.classList.add('drag');
+    try{ stageEl.setPointerCapture(pid); }catch(_){}
+  });
+  stageEl.addEventListener('pointermove',function(e){
+    if(!down) return;
+    var dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY;
+    yaw-=dx*.45;
+    if(e.pointerType!=='touch'||window.matchMedia('(pointer:coarse) and (min-width:700px)').matches) pitch=Math.max(-85,Math.min(85,pitch+dy*.4));
+    applyView();
+  });
+  function up(){ down=false; stageEl.classList.remove('drag'); }
+  stageEl.addEventListener('pointerup',up); stageEl.addEventListener('pointercancel',up);
+})();
+function tweenView(ty,tp){
+  var y0=yaw,p0=pitch,t0=null,ms=reduce?1:450;
+  (function f(ts){ if(t0===null) t0=ts; var p=Math.min(1,(ts-t0)/ms), e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    yaw=y0+(ty-y0)*e; pitch=p0+(tp-p0)*e; applyView(); if(p<1) requestAnimationFrame(f); })(performance.now?performance.now():0);
+}
+$('btnBack').addEventListener('click',function(){ tweenView(yaw+180,pitch); });
+$('btnView').addEventListener('click',function(){ var k=Math.round((yaw-36)/360); tweenView(36+360*k,24); });
+$('btnFocus').addEventListener('click',function(){ focusMode=!focusMode; this.setAttribute('aria-pressed',focusMode); paint(); updateNet(); });
+
+/* Netz */
+var NS='http://www.w3.org/2000/svg', netEl=$('net'), netCells=[];
+var NETPOS={U:[1,0],L:[0,1],F:[1,1],R:[2,1],B:[3,1],D:[1,2]};
+function cellPos(f,r,c){ var i=c-1,j=r-1;
+  if(f==='U') return [i,1,j]; if(f==='D') return [i,-1,-j]; if(f==='F') return [i,-j,1];
+  if(f==='B') return [-i,-j,-1]; if(f==='L') return [-1,-j,i]; return [1,-j,-i]; }
+(function buildNet(){
+  Object.keys(NETPOS).forEach(function(f){
+    for(var r=0;r<3;r++)for(var c=0;c<3;c++){
+      var rc=document.createElementNS(NS,'rect');
+      rc.setAttribute('x',4+NETPOS[f][0]*61+c*19+1); rc.setAttribute('y',4+NETPOS[f][1]*61+r*19+1);
+      rc.setAttribute('width',17); rc.setAttribute('height',17); rc.setAttribute('rx',4);
+      netEl.appendChild(rc); netCells.push({el:rc,f:f,p:cellPos(f,r,c)});
+    }
+  });
+})();
+function updateNet(){
+  var show=curShow();
+  netCells.forEach(function(n){
+    var cub=cubieAt(model,n.p), col=colorAt(model,n.p,FACES[n.f]);
+    var on=!show||show.indexOf(groupOf(cub.home))>=0;
+    n.el.style.fill= on? COLORS[col] : 'var(--gray)';
+  });
+}
+
+/* ========== Steuerung ========== */
+var stepIdx=0, caseIdx=0, idx=0, playing=false, busy=false, runId=0, speed=1;
+var railEl=$('rail'), tabsEl=$('tabs'), belowEl=$('below'), nowEl=$('now'), infoEl=$('infoCard'), bannerEl=$('banner');
+var bFirst=$('bFirst'), bPrev=$('bPrev'), bPlay=$('bPlay'), bNext=$('bNext'), controlsEl=$('controls');
+var ICON_PLAY='<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>', ICON_PAUSE='<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+var TOPC=[[1,1,1],[-1,1,1],[-1,1,-1],[1,1,-1]];
+var CORNERFIT=[[[1,1,1],FACES.F,FACES.R,[0,1,1],[1,1,0]],[[-1,1,1],FACES.F,FACES.L,[0,1,1],[-1,1,0]],[[-1,1,-1],FACES.B,FACES.L,[0,1,-1],[-1,1,0]],[[1,1,-1],FACES.B,FACES.R,[0,1,-1],[1,1,0]]];
+function cornerFits(s){ return colorAt(model,s[0],FACES.U)==='U' && colorAt(model,s[0],s[1])===colorAt(model,s[3],s[1]) && colorAt(model,s[0],s[2])===colorAt(model,s[4],s[2]); }
+function computeFocus(s){
+  var set={};
+  (s.focusStart||[]).forEach(function(p){ var c=cubieAt(model,p); if(c) set[c.home.join()]=true; });
+  if(s.focusRule==='twisted') TOPC.forEach(function(p){ if(colorAt(model,p,FACES.U)!=='U') set[cubieAt(model,p).home.join()]=true; });
+  if(s.focusRule==='wrongCorners') CORNERFIT.forEach(function(q){ if(!cornerFits(q)) set[cubieAt(model,q[0]).home.join()]=true; });
+  return set;
+}
+function abortAll(){ runId++; playing=false; if(anim) anim.cancel(); busy=false; }
+function loadCase(si,ci){
+  abortAll();
+  stepIdx=si; caseIdx=ci; scen=STEPS[si].cases[ci]; idx=0;
+  resetModel(scen.setup);
+  focusSet=computeFocus(scen);
+  syncAll(); paint(); updateNet();
+  var v=scen.view||{yaw:36,pitch:24}; var kk=Math.round((yaw-v.yaw)/360); tweenView(v.yaw+360*kk,v.pitch);
+  renderRail(); renderTabs(); renderInfo(); renderBelow(); refresh();
+}
+function seqLen(){ return scen.seq.length; }
+function refresh(){
+  var free=!!STEPS[stepIdx].free, n=seqLen();
+  controlsEl.hidden=free||n===0;
+  nowEl.hidden=free;
+  var chips=belowEl.querySelectorAll('.chip');
+  for(var i=0;i<chips.length;i++){ chips[i].classList.toggle('done',i<idx); if(i===idx) chips[i].setAttribute('aria-current','true'); else chips[i].removeAttribute('aria-current'); }
+  bFirst.disabled=idx===0; bPrev.disabled=idx===0; bNext.disabled=idx>=n;
+  bPlay.innerHTML=(playing?ICON_PAUSE:ICON_PLAY)+'<span>'+(playing?'Pause':(idx>=n?'Nochmal':(idx>0?'Weiter':'Abspielen')))+'</span>';
+  if(n===0){ nowEl.innerHTML='<b>Ziel</b><span>'+scen.title+'</span>'; }
+  else if(idx<n){ var it=scen.seq[idx]; nowEl.innerHTML='<span>Nächster Zug</span> &nbsp;<b>'+(it.label||lab(it.m))+'</b><span>'+(it.say||'')+'</span>'; }
+  else nowEl.innerHTML='<b>Fertig</b><span>'+(scen.done||'Alle Züge sind gespielt.')+'</span>';
+  setArrow(idx<n && !free ? scen.seq[idx].m : null);
+  bannerEl.hidden=!(n>0 && idx>=n && !free);
+  bannerEl.textContent='Geschafft: '+scen.title;
+}
+function afterChange(){ updateNet(); refresh(); }
+function stepFwd(){
+  if(busy||idx>=seqLen()) return Promise.resolve(false);
+  busy=true; var my=runId, it=scen.seq[idx];
+  setArrow(it.m);
+  return animateMove(it.m,dur(it.m)).then(function(ok){
+    if(my!==runId||!ok) return false;
+    busy=false; idx++; afterChange(); return true;
+  });
+}
+function stepBack(){
+  if(busy||idx<=0) return Promise.resolve(false);
+  busy=true; var my=runId, it=scen.seq[idx-1];
+  setArrow(invMove(it.m));
+  return animateMove(invMove(it.m),dur(it.m)).then(function(ok){
+    if(my!==runId||!ok) return false;
+    busy=false; idx--; afterChange(); return true;
+  });
+}
+function jumpTo(i){
+  abortAll();
+  resetModel(scen.setup);
+  applySeq(model,mvs(scen.seq.slice(0,i)));
+  idx=i; syncAll(); updateNet(); refresh();
+}
+function play(){
+  if(playing){ playing=false; refresh(); return; }
+  if(busy) return;
+  if(idx>=seqLen()) jumpTo(0);
+  playing=true; refresh(); var my=runId;
+  (function loop(){
+    if(!playing||my!==runId) return;
+    if(idx>=seqLen()){ playing=false; refresh(); return; }
+    stepFwd().then(function(ok){
+      if(my!==runId) return;
+      if(!ok||!playing){ playing=false; refresh(); return; }
+      setTimeout(loop,280/speed);
+    });
+  })();
+}
+bFirst.addEventListener('click',function(){ jumpTo(0); });
+bPrev.addEventListener('click',function(){ playing=false; stepBack(); });
+bNext.addEventListener('click',function(){ playing=false; stepFwd(); });
+bPlay.addEventListener('click',play);
+$('speed').addEventListener('change',function(){ speed=parseFloat(this.value); });
+document.addEventListener('keydown',function(e){
+  if(e.target.closest && e.target.closest('select,input')) return;
+  if(STEPS[stepIdx].free) return;
+  if(e.key==='ArrowRight'){ playing=false; stepFwd(); e.preventDefault(); }
+  else if(e.key==='ArrowLeft'){ playing=false; stepBack(); e.preventDefault(); }
+  else if(e.key===' ' && !(e.target.closest && e.target.closest('button'))){ play(); e.preventDefault(); }
+});
+
+/* ========== Oberfläche ========== */
+function renderRail(){
+  railEl.innerHTML='';
+  STEPS.forEach(function(st,i){
+    var b=document.createElement('button'); b.type='button';
+    b.innerHTML='<span class="n">'+(st.n||'0')+'</span><span class="t">'+st.title+'</span><span class="s">'+st.sub+'</span>';
+    if(i===stepIdx) b.setAttribute('aria-current','step');
+    b.addEventListener('click',function(){ loadCase(i,0); });
+    railEl.appendChild(b);
+  });
+}
+function renderTabs(){
+  var st=STEPS[stepIdx]; tabsEl.innerHTML='';
+  tabsEl.hidden=st.cases.length<2;
+  st.cases.forEach(function(c,i){
+    var b=document.createElement('button'); b.type='button'; b.textContent=c.title;
+    b.setAttribute('aria-pressed',i===caseIdx);
+    b.addEventListener('click',function(){ loadCase(stepIdx,i); });
+    tabsEl.appendChild(b);
+  });
+}
+function renderInfo(){
+  var st=STEPS[stepIdx];
+  var h='<h2>'+(st.n?'Schritt '+st.n+': ':'')+st.title+'</h2>'+st.intro.map(function(p){return '<p>'+p+'</p>';}).join('');
+  if(st.hand) h+='<p class="muted">'+st.hand+'</p>';
+  if(!st.free){ h+='<h3>'+scen.title+'</h3><p>'+scen.text+'</p>'; if(scen.hand) h+='<p class="muted">'+scen.hand+'</p>'; }
+  if(st.extra) h+='<h3>Kante sitzt falsch in der mittleren Ebene</h3><p>'+st.extra+'</p>';
+  infoEl.innerHTML=h;
+}
+var FREEMOVES=["U","U'","D","D'","L","L'","R","R'","F","F'","B","B'","y","y'"];
+var freeQ=Promise.resolve();
+function freeMove(m){
+  freeQ=freeQ.then(function(){ setArrow(m); return animateMove(m,dur(m)); }).then(function(){ setArrow(null); updateNet(); });
+}
+function renderBelow(){
+  belowEl.innerHTML='';
+  var st=STEPS[stepIdx];
+  if(st.free){
+    var g=document.createElement('div'); g.className='moves';
+    FREEMOVES.forEach(function(m){ var b=document.createElement('button'); b.type='button'; b.textContent=lab(m); b.setAttribute('aria-label','Zug '+lab(m)); b.addEventListener('click',function(){ freeMove(m); }); g.appendChild(b); });
+    var sh=document.createElement('button'); sh.type='button'; sh.className='wide'; sh.textContent='Mischen';
+    sh.addEventListener('click',function(){ abortAll(); freeQ=Promise.resolve(); var f=['U','D','L','R','F','B'],t=['',"'",'2'],a=[]; for(var i=0;i<22;i++) a.push(f[Math.floor(Math.random()*6)]+t[Math.floor(Math.random()*3)]); applySeq(model,a); syncAll(); updateNet(); setArrow(null); });
+    var rs=document.createElement('button'); rs.type='button'; rs.className='wide'; rs.textContent='Zurücksetzen';
+    rs.addEventListener('click',function(){ abortAll(); freeQ=Promise.resolve(); resetModel([]); syncAll(); updateNet(); setArrow(null); });
+    g.appendChild(sh); g.appendChild(rs); belowEl.appendChild(g);
+    return;
+  }
+  var tape=document.createElement('div'); tape.className='tape';
+  var i=0, seq=scen.seq;
+  while(i<seq.length){
+    var g0=seq[i].g, j=i;
+    if(g0){ while(j<seq.length && seq[j].g===g0) j++; } else j=i+1;
+    var holder=tape;
+    if(g0){ var grp=document.createElement('div'); grp.className='grp'; var gl=document.createElement('div'); gl.className='gl'; gl.textContent=g0; var row=document.createElement('div'); row.className='row'; grp.appendChild(row); grp.appendChild(gl); tape.appendChild(grp); holder=row; }
+    for(var k=i;k<j;k++){ holder.appendChild(chipFor(k)); }
+    i=j;
+  }
+  belowEl.appendChild(tape);
+}
+function chipFor(k){
+  var it=scen.seq[k], b=document.createElement('button'); b.type='button'; b.className='chip'+(it.label?' lab':'');
+  b.innerHTML='<b>'+(it.label||lab(it.m))+'</b><small>'+(it.short||it.say||'')+'</small>';
+  b.title=it.say||''; b.addEventListener('click',function(){ jumpTo(k); });
+  return b;
+}
+loadCase(0,0);
+})();
+
+</script>
+</body>
+</html>
