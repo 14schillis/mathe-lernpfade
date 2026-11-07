@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vom Histogramm zur Dichte</title>
+<style>
+:root{--ac:#4f46e5;--ac2:#eceaff;--ink:#14172b;--mut:#6a7090;--ok:#0f9d6b;--okb:#e1f7ee;--no:#d9363e;--nob:#fdeced;--pos:#4f46e5;--neg:#ea7a14;--fc:#3730a3;--gc:#0d9488;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9dcec;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center}
+#st{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;background:linear-gradient(135deg,#f9faff,#eef0fb);display:grid;grid-template-rows:auto auto 1fr auto;gap:1.8cqh;padding:2.6cqh 3cqw;overflow:hidden}
+header{display:flex;align-items:center;gap:1.4cqw}
+.bd{width:4.4cqw;height:4.4cqw;border-radius:1.2cqw;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:2.2cqw;font-weight:700}
+h1{font-size:2.5cqw;font-weight:700;letter-spacing:-.02em;flex:1}
+.rt{display:flex;align-items:center;gap:1.2cqw;color:var(--mut);font-size:1.6cqw;font-weight:600}
+#pb{height:.6cqh;background:#dcdff3;border-radius:9px;overflow:hidden}
+#pf{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .5s}
+main{min-height:0;display:flex;flex-direction:column}
+.sc{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqh;animation:in .45s ease both}
+footer{display:flex;justify-content:space-between;align-items:center;gap:1.4cqw}
+.g{display:flex;gap:1.2cqw}
+.btn{font:inherit;font-size:1.7cqw;font-weight:600;min-height:7cqh;padding:0 2.4cqw;border:0;border-radius:1.4cqw;background:#fff;color:var(--ink);box-shadow:0 .2cqw .9cqw rgba(30,35,80,.12);cursor:pointer;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--ac);color:#fff;min-width:22cqw}
+.btn.d{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.ic{min-height:5cqh;padding:0 1.2cqw}
+.g .btn.ic{min-height:7cqh}
+m,.tx{font-family:var(--math)}
+m{white-space:nowrap;font-style:normal}
+m i{font-style:italic}
+sup,sub{font-size:.62em;line-height:0;font-style:normal;margin-left:.08em}
+sup{vertical-align:.7em}sub{vertical-align:-.3em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;font-size:.88em;line-height:1.15}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .06em}
+.fr>span:last-child{padding:.06em .2em 0}
+.in{display:inline-flex;align-items:center;vertical-align:-.5em;margin-right:.12em}
+.in .sg{font-size:1.9em;line-height:1;font-weight:300}
+.in .lm{display:flex;flex-direction:column;justify-content:space-between;font-size:.55em;height:2.7em;margin-left:-.3em}
+.ab{display:inline-block;font-size:1.5em;line-height:.6;vertical-align:-.12em;font-weight:300;margin:0 .04em}
+.q{font-size:2cqw;color:var(--mut);font-weight:500}
+.q m{font-size:1.15em}
+.body{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:1.8cqw}
+.gp{background:#fff;border-radius:2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);padding:1cqh 1cqw;min-width:0;min-height:0;display:flex}
+.gp svg{width:100%;height:100%}
+.pn{display:flex;flex-direction:column;gap:1.3cqh;justify-content:center;min-width:0}
+.cd{display:flex;align-items:center;gap:1.2cqw;background:#fff;border-radius:1.6cqw;padding:1.5cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);border-left:.7cqw solid var(--ac)}
+.cd.pos{border-left-color:var(--pos)}.cd.neg{border-left-color:var(--neg)}
+.cd.fin{border-left-color:var(--ok);background:var(--okb)}.cd.bad{border-left-color:var(--no);background:var(--nob)}
+.nm{flex:none;width:3.2cqw;height:3.2cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:1.7cqw}
+.cp{display:block;font-size:1.35cqw;font-weight:600;color:var(--mut);margin-bottom:.4cqh}
+.cm{font-size:2.2cqw;line-height:1.55}
+.ln{display:flex;align-items:center;gap:.9cqw}
+.dt{flex:none;width:1.1cqw;height:1.1cqw;border-radius:50%}
+.ln.pos .dt{background:var(--pos)}.ln.neg .dt{background:var(--neg)}
+.rule{background:#fff;border-left:.7cqw solid var(--ac);border-radius:1.6cqw;padding:1.3cqh 2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.1);font-size:2.6cqw;text-align:center}
+.rv{transition:opacity .5s}
+.rv:not(.on){opacity:0;visibility:hidden;pointer-events:none}
+/* Diagramm */
+.gl{stroke:#e6e9f6;stroke-width:2}
+.ax{stroke:var(--ink);stroke-width:3}
+.axh{fill:var(--ink)}
+.tick{stroke:var(--ink);stroke-width:3}
+.tx{font-size:32px;fill:var(--ink);text-anchor:middle}
+.tx.nm2{font-size:28px;fill:var(--mut)}
+.tx.end{text-anchor:end}
+.tx.lg{font-size:42px;font-weight:600}
+.tx.pos{fill:var(--pos)}.tx.neg{fill:var(--neg)}.tx.cf{fill:var(--fc)}.tx.cg{fill:var(--gc)}.tx.cc{fill:var(--mut)}
+.cv{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cv.f{stroke:var(--fc)}.cv.g{stroke:var(--gc)}
+.cv.gh{stroke:#aab0cc;stroke-dasharray:14 12;stroke-width:4}
+.ar{stroke:none}
+.ar.pos{fill:rgba(79,70,229,.28)}.ar.neg{fill:rgba(234,122,20,.34)}.ar.fin{fill:rgba(15,157,107,.42)}
+.dl{stroke:var(--mut);stroke-width:3;stroke-dasharray:9 8}
+.dot{fill:var(--ac);stroke:#fff;stroke-width:3}
+.mini .cv{stroke-width:10}.mini .ax{stroke-width:5}
+.sh{transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
+.sh.mv{transform:translateY(var(--dy))}
+/* Quiz */
+.chips{display:flex;gap:1.1cqw;align-items:center}
+.chip{font:inherit;font-size:1.6cqw;font-weight:600;flex:1;padding:1.2cqh 1.2cqw;border-radius:1.2cqw;background:#fff;border:.22cqw solid #dfe2f3;text-align:center;cursor:pointer;transition:.3s;color:var(--ink);line-height:1.25}
+.chip m{font-size:2.4cqw}
+.sel{border-color:var(--ac)!important;background:var(--ac2)!important}
+.ok{border-color:var(--ok)!important;background:var(--okb)!important}
+.no{border-color:#f0b4b8!important;background:var(--nob)!important}
+.chip.no:not(.sel){opacity:.45;background:#fff!important;border-color:#dfe2f3!important}
+.qb{background:#fff;border-radius:1.6cqw;padding:1.8cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh}
+.qt{font-size:2.3cqw}
+.ex{font-size:2cqw;color:var(--ok);font-weight:600}
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center}
+.qr{display:grid;grid-template-columns:17cqw 1fr;gap:1.6cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1cqh 1.4cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09)}
+.qr svg{width:100%;height:auto;display:block}
+.qd{font-size:1.9cqw;font-weight:600;margin-bottom:1cqh}
+.qd m{font-size:1.15em}
+/* Abschluss */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;flex:1;min-height:0}
+.card{background:#fff;border-radius:2cqw;padding:2cqh 1.6cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh;align-items:center;text-align:center;justify-content:center}
+.card svg{width:100%;height:auto;display:block}
+.card .t1{font-size:1.9cqw;font-weight:700}
+.card .eq{font-size:2.6cqw;min-height:5cqh;display:flex;align-items:center}
+.card .t2{font-size:1.5cqw;color:var(--mut)}
+.strat{display:flex;align-items:center;gap:1.2cqw}
+.st{flex:1;background:#fff;border-radius:1.6cqw;padding:1.6cqh 1.6cqw;font-size:1.8cqw;font-weight:600;display:flex;align-items:center;gap:1.2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.08)}
+.st b{flex:none;width:3.4cqw;height:3.4cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ar2{color:var(--mut);font-size:2.4cqw}
+@keyframes in{from{opacity:0;transform:translateX(2.4cqw)}}
+@keyframes pop{from{opacity:0;transform:translateY(1.4cqh)}}
+#ov{position:absolute;inset:0;background:rgba(236,239,251,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;flex-direction:column;gap:3cqh;padding:4cqh 3.4cqw;z-index:5}
+#ov.on{display:flex;animation:pop .3s}
+.oh{display:flex;justify-content:space-between;align-items:center}
+.oh h2{font-size:3cqw}
+.tiles{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:1.4cqw}
+.tile{font:inherit;border:.25cqw solid transparent;background:#fff;border-radius:1.8cqw;padding:2cqh 1.4cqw;text-align:left;display:flex;flex-direction:column;gap:1cqh;cursor:pointer;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);color:var(--ink)}
+.tile b{color:var(--ac);font-size:2cqw}
+.tile span{font-size:1.6cqw;font-weight:700}
+.tile em{font-style:normal;font-size:1.8cqw;margin-top:auto;color:var(--mut)}
+.tile.cur{border-color:var(--ac)}
+
+.body{grid-template-rows:minmax(0,1fr)}.gp{overflow:hidden}.pn{min-height:0}
+.cm{font-size:2cqw;line-height:1.4}.cd{padding:1.2cqh 1.5cqw}
+.plt text{paint-order:stroke;stroke:#fff;stroke-width:7px;stroke-linejoin:round}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.4cqh 1.6cqw}
+
+.bar{stroke:#fff;stroke-width:2.5}
+.bar.pos{fill:rgba(79,70,229,.30)}.bar.hi{fill:rgba(234,122,20,.55)}.bar.hi2{fill:rgba(234,122,20,.85)}.bar.fin{fill:rgba(15,157,107,.42)}
+.bar.th{stroke-width:1.2}
+.sp{stroke:#fff;stroke-width:3}
+.dln{stroke:var(--neg);stroke-width:7;stroke-linecap:round}
+.drp circle{fill:var(--ac);opacity:.85}
+.qr2{display:grid;grid-template-columns:1fr 24cqw 25cqw;gap:1.6cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1.2cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09)}
+.qd2{font-size:2.2cqw;font-weight:600;line-height:1.25}
+.qr2 .chip{font-size:2cqw}
+.thm{display:flex;flex-direction:column;gap:.4cqh}
+.thm svg{width:100%;height:auto;display:block}
+.wm{font-size:1.3cqw;color:var(--ok);font-weight:600;text-align:center}
+.mr{flex:none;width:11cqw}.mr svg{width:100%;display:block}
+.rws{display:flex;flex-direction:column;gap:.6cqh;font-size:1.9cqw;font-family:inherit;min-width:21cqw}
+.rw{display:flex;justify-content:space-between;gap:2cqw}.rw b{font-weight:700;color:var(--ac)}
+.cm .rws{line-height:1.3}
+</style>
+</head>
+<body>
+<div id="st">
+<header><div class="bd" id="bd">1</div><h1 id="ti"></h1><div class="rt"><span id="pg"></span><button class="btn ic" onclick="fs()">⛶</button></div></header>
+<div id="pb"><i id="pf"></i></div>
+<main id="mn"></main>
+<footer>
+<div class="g"><button class="btn" id="bk" onclick="nav(-1)">‹ Zurück</button><button class="btn" onclick="ov(1)">▦ Übersicht</button></div>
+<div class="g"><button class="btn ic" onclick="bk1()" title="Schritt zurück">↶</button><button class="btn p" id="sb" onclick="nx()"></button><button class="btn" onclick="go(cur)">↺ Zurücksetzen</button></div>
+<div class="g"><button class="btn d" id="fw" onclick="nav(1)">Weiter ›</button></div>
+</footer>
+<div id="ov"></div>
+</div>
+<script>
+const g=id=>document.getElementById(id);
+/* ---------- Mini-Formelsatz ---------- */
+const mt=(s,i)=>{let d=0;for(let j=i;j<s.length;j++){if(s[j]=='{')d++;else if(s[j]=='}'&&--d==0)return j}return s.length};
+function M(s){let o='',i=0;
+while(i<s.length){const c=s[i];
+if(c=='^'||c=='_'){const tg=c=='^'?'sup':'sub';i++;let t;if(s[i]=='{'){const j=mt(s,i);t=s.slice(i+1,j);i=j+1}else{t=s[i];i++}o+=`<${tg}>${M(t)}</${tg}>`}
+else if(c=='{'){const j=mt(s,i),p=s.slice(i+1,j).split('|');i=j+1;o+=`<span class="fr"><span>${M(p[0])}</span><span>${M(p[1])}</span></span>`}
+else if(c=='@'){const j=s.indexOf('@',i+1),p=s.slice(i+1,j).split(',');i=j+1;o+=`<span class="in"><span class="sg">∫</span><span class="lm"><span>${M(p[1])}</span><span>${M(p[0])}</span></span></span>`}
+else if(c=='|'){o+='<span class="ab">|</span>';i++}
+else if(/[a-zα-ωΑ-Ω]/i.test(c)){o+='<i>'+c+'</i>';i++}
+else{o+=c=='*'?'·':c=='-'?'−':c=='<'?'&lt;':c;i++}}
+return o}
+const T=s=>s.replace(/\$([^$]+)\$/g,(_,x)=>'<m>'+M(x)+'</m>');
+const SM=s=>{let o='',sub=0;for(let i=0;i<s.length;i++){let c=s[i];
+if(c=='_'){i++;c=s[i];o+=`<tspan dy="10" font-size="66%"${/[a-z]/i.test(c)?' font-style="italic"':''}>${c}</tspan>`;sub=1;continue}
+const it=/[a-z]/i.test(c);o+=`<tspan${sub?' dy="-10"':''}${it?' font-style="italic"':''}>${c=='-'?'−':c}</tspan>`;sub=0}
+return o};
+/* ---------- Diagramme ---------- */
+const A=(c,s,x)=>s==null?`class="${c}"`:`class="rv ${c}" data-s="${s}"${x!=null?` data-x="${x}"`:''}`;
+function plot(o){
+const W=1000,H=600,mi=o.mini,pl=mi?30:(o.pl||80),pr=mi?30:50,pt=mi?24:34,pb=mi?30:60,[x0,x1]=o.xr,[y0,y1]=o.yr,gs=o.gs||1,gx=o.gx||gs,gy=o.gy||gs;
+const sx=(W-pl-pr)/(x1-x0),sy=(H-pt-pb)/(y1-y0),X=x=>pl+(x-x0)*sx,Y=y=>H-pb-(y-y0)*sy,r=v=>Math.round(v*10)/10;
+const P={X,Y,sx,sy};
+P.path=(f,a,b,n=200)=>{let d='';for(let k=0;k<=n;k++){const x=a+(b-a)*k/n;d+=(k?'L':'M')+r(X(x))+' '+r(Y(f(x)))}return d};
+P.area=(f,h,a,b,n=200)=>{let d=P.path(f,a,b,n);for(let k=n;k>=0;k--){const x=a+(b-a)*k/n;d+='L'+r(X(x))+' '+r(Y(h?h(x):0))}return d+'Z'};
+P.cv=(c,f,a,b,s,x)=>`<path ${A('cv '+c,s,x)} d="${P.path(f,a,b)}"/>`;
+P.ar=(c,f,h,a,b,s,x)=>`<path ${A('ar '+c,s,x)} d="${P.area(f,h,a,b)}"/>`;
+P.t=(x,y,s,c,st,xx,dx=0,dy=0)=>`<text ${A('tx '+(c||''),st,xx)} x="${r(X(x)+dx)}" y="${r(Y(y)+dy)}">${SM(s)}</text>`;
+P.dot=(x,y,st,xx)=>`<circle ${A('dot',st,xx)} cx="${r(X(x))}" cy="${r(Y(y))}" r="11"/>`;
+P.base=()=>{let s='';
+if(!mi){for(let v=Math.ceil(x0/gx-1e-6)*gx;v<=x1+1e-6;v+=gx)s+=`<line class="gl" x1="${r(X(v))}" y1="${r(Y(y0))}" x2="${r(X(v))}" y2="${r(Y(y1))}"/>`;
+for(let v=Math.ceil(y0/gy-1e-6)*gy;v<=y1+1e-6;v+=gy)s+=`<line class="gl" x1="${r(X(x0))}" y1="${r(Y(v))}" x2="${r(X(x1))}" y2="${r(Y(v))}"/>`}
+const ax=X(o.ox!=null?o.ox:0),ay=Y(o.oy!=null?o.oy:0),ex=X(x1),ey=Y(y1);
+s+=`<line class="ax" x1="${r(X(x0))}" y1="${r(ay)}" x2="${r(ex-6)}" y2="${r(ay)}"/><line class="ax" x1="${r(ax)}" y1="${r(Y(y0))}" x2="${r(ax)}" y2="${r(ey+6)}"/>`;
+s+=`<path class="axh" d="M${r(ex)} ${r(ay)}l-20 -9v18z"/><path class="axh" d="M${r(ax)} ${r(ey)}l-9 20h18z"/>`;
+if(!mi){(o.xt||[]).forEach(t=>{const[v,l]=Array.isArray(t)?t:[t,String(t).replace('-','−')];s+=`<line class="tick" x1="${r(X(v))}" y1="${r(ay-8)}" x2="${r(X(v))}" y2="${r(ay+8)}"/><text class="tx nm2" x="${r(X(v))}" y="${r(ay+40)}">${l}</text>`});
+(o.yt||[]).forEach(t=>{const[v,l]=Array.isArray(t)?t:[t,String(t).replace('-','−')];s+=`<line class="tick" x1="${r(ax-8)}" y1="${r(Y(v))}" x2="${r(ax+8)}" y2="${r(Y(v))}"/><text class="tx nm2 end" x="${r(ax-18)}" y="${r(Y(v)+10)}">${l}</text>`});
+s+=`<text class="tx nm2" x="${r(ex-14)}" y="${r(ay-18)}">${SM('x')}</text><text class="tx nm2" x="${r(ax+28)}" y="${r(ey+36)}">${SM('y')}</text>`}
+return s};
+P.svg=inner=>`<svg class="plt ${mi?'mini':''}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${P.base()}${inner}</svg>`;
+return P}
+/* ---------- Hilfen ---------- */
+const r1=v=>Math.round(v*10)/10;
+const phi=(x,m,s)=>Math.exp(-.5*((x-m)/s)**2)/(s*Math.sqrt(2*Math.PI));
+const bar=(P,a,b,h,c,s,x)=>`<rect ${A('bar '+c,s,x)} x="${r1(P.X(a))}" y="${r1(P.Y(h))}" width="${r1(P.X(b)-P.X(a))}" height="${r1(P.Y(0)-P.Y(h))}"/>`;
+const vln=(P,x,h,c,s,xx)=>`<line ${A(c,s,xx)} x1="${r1(P.X(x))}" y1="${r1(P.Y(0))}" x2="${r1(P.X(x))}" y2="${r1(P.Y(h))}"/>`;
+function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ringPath=k=>{const o=k,i=k-1;let d=`M${o} 0A${o} ${o} 0 1 0 ${-o} 0A${o} ${o} 0 1 0 ${o} 0Z`;if(i>0)d+=`M${i} 0A${i} ${i} 0 1 0 ${-i} 0A${i} ${i} 0 1 0 ${i} 0Z`;return d};
+/* ---------- Bausteine ---------- */
+const C=(s,cls,h,cap,nm)=>`<div class="cd rv ${cls||''}" data-s="${s}">${nm?`<b class="nm">${nm}</b>`:''}<div>${cap?`<span class="cp">${T(cap)}</span>`:''}<div class="cm">${T(h)}</div></div></div>`;
+const LN=(c,m)=>`<div class="ln ${c}"><i class="dt"></i>${m}</div>`;
+const BODY=(svg,cards,extra)=>`<div class="body"><div class="gp">${svg}</div><div class="pn">${cards}</div></div>${extra||''}`;
+const RULE=(s,h)=>`<div class="rule rv" data-s="${s}">${T(h)}</div>`;
+const CHP=(t,ok,h)=>`<span class="chip" data-hit="${h}" data-ok="${ok}" onclick="pk(this)">${T(t)}</span>`;
+const QB=(title,chips,ex,h)=>`<div class="qb"><div class="qt">${T(title)}</div><div class="chips">${chips}</div><div class="ex rv" data-s="${h}">${T(ex)}</div></div>`;
+/* ---------- Folie 1: diskret oder stetig ---------- */
+const dots=(xs,dense)=>xs.map(x=>`<circle cx="${x}" cy="26" r="${dense?2.6:7}" fill="#4f46e5"/>`).join('');
+const NL=(inner)=>`<svg viewBox="0 0 240 52" preserveAspectRatio="xMidYMid meet"><line x1="6" y1="26" x2="234" y2="26" stroke="#14172b" stroke-width="2.5"/><path d="M236 26l-9-5v10z" fill="#14172b"/>${inner}</svg>`;
+const th_a=NL(dots([20,50,80,110,140,170,200]));
+const th_b=NL(dots([20,50,80,110,140,170])+`<text x="196" y="33" font-size="22" fill="#4f46e5">…</text>`);
+const th_c=NL(`<line x1="30" y1="26" x2="210" y2="26" stroke="#4f46e5" stroke-width="10" stroke-linecap="round"/>`);
+const th_d=NL(dots(Array.from({length:30},(_,i)=>24+i*6.4),1)+`<text x="212" y="33" font-size="20" fill="#4f46e5">…</text>`);
+const QD=(q,ok,h,thumb,wm)=>`<div class="qr2"><div class="qd2">${T(q)}</div><div class="chips">${CHP('diskret',ok=='d'?1:0,h)}${CHP('stetig',ok=='s'?1:0,h)}</div><div class="thm rv" data-s="${h}">${thumb}<div class="wm">${T(wm)}</div></div></div>`;
+/* ---------- Folie 2/3: Regentropfen ---------- */
+const rnd=mul(20261101),drops=[];for(let i=0;i<400;i++){const r=5*Math.sqrt(rnd()),a=2*Math.PI*rnd();drops.push([r*Math.cos(a),r*Math.sin(a),r])}
+const cnt=[0,0,0,0,0];drops.forEach(d=>{cnt[Math.min(4,Math.floor(d[2]))]++});
+const dc=(x,d=2)=>x.toFixed(d).replace('.',',').replace('-','−');
+const dropsSvg=(a,b)=>drops.slice(a,b).map(d=>`<circle cx="${d[0].toFixed(2)}" cy="${d[1].toFixed(2)}" r=".095"/>`).join('');
+let tints='';for(let k=1;k<=5;k++)tints+=`<path d="${ringPath(k)}" fill-rule="evenodd" fill="rgba(79,70,229,${k%2?.07:.17})"/>`;
+let dashes='';for(let k=1;k<=4;k++)dashes+=`<circle r="${k}" fill="none" stroke="#9aa0c0" stroke-width=".04" stroke-dasharray=".16 .16"/>`;
+let ruler='<line x1="0" y1="0" x2="5" y2="0" stroke="#14172b" stroke-width=".06"/>';for(let k=0;k<=5;k++)ruler+=`<line x1="${k}" y1="-.14" x2="${k}" y2=".14" stroke="#14172b" stroke-width=".06"/><text x="${k}" y=".62" font-size=".46" text-anchor="middle" fill="#14172b">${k}</text>`;
+const svg2=`<svg viewBox="-5.6 -5.6 11.2 11.2" preserveAspectRatio="xMidYMid meet"><circle r="5" fill="#fff" stroke="#9aa0c0" stroke-width=".1"/><g class="rv" data-s="3">${tints}</g>${dashes}<g class="drp rv" data-s="1">${dropsSvg(0,40)}</g><g class="drp rv" data-s="2">${dropsSvg(40,400)}</g>${ruler}<text x="5.35" y="-.2" font-size=".4" fill="#6a7090" text-anchor="end">dm</text></svg>`;
+const ringMini=`<svg viewBox="-5.3 -5.3 10.6 10.6"><circle r="5" fill="#fff" stroke="#9aa0c0" stroke-width=".16"/><path d="${ringPath(4)}" fill-rule="evenodd" fill="rgba(234,122,20,.55)"/><circle r="3" fill="none" stroke="#9aa0c0" stroke-width=".1" stroke-dasharray=".3 .3"/></svg>`;
+const ringRows=cnt.map((n,k)=>`<div class="rw"><span>${k} bis ${k+1} dm</span><b>${n} Tropfen</b></div>`).join('');
+/* Folie 3: Histogramm Breite 1 */
+const P3=plot({xr:[-.5,5.6],yr:[0,.43],gx:100,gy:.1,xt:[1,2,3,4,5],yt:[[.1,'0,1'],[.2,'0,2'],[.3,'0,3'],[.4,'0,4']]});
+let in3='';[1,2,3,4,5].forEach(k=>{const h=(2*k-1)/25,hi=k==4;in3+=bar(P3,k-1,k,h,hi?'hi':'pos',hi?1:2)+P3.t(k-.5,h+.025,(2*k-1)+'/25',hi?'neg':'cf',hi?1:2)});
+const svg3=P3.svg(in3);
+/* Folie 4: schmalere Rechtecke */
+const P4=plot({xr:[-.5,5.6],yr:[0,.46],gx:100,gy:.1,xt:[1,2,3,4,5],yt:[[.1,'0,1'],[.2,'0,2'],[.3,'0,3'],[.4,'0,4']]});
+let in4='';[[1,0,1],[.5,1,2],[.25,2,3],[.1,3,4]].forEach(([w,s,x])=>{const n=Math.round(5/w);for(let i=0;i<n;i++){const a=i*w,b=a+w,h=(a+b)/25,hi=(w==.5&&i==6);in4+=bar(P4,a,b,h,hi?'hi':(w==.1?'pos th':'pos'),s,x)}});
+const f4=x=>2*x/25;
+in4+=P4.ar('pos',f4,null,0,5,4)+P4.cv('f',f4,0,5,4)+P4.t(4.55,.43,'y=m·x','cf',4,5)+P4.t(3.6,.40,'y=2/25·x','cf',5);
+const svg4=P4.svg(in4);
+/* Folie 5: Dichtefunktion */
+const P5=plot({xr:[-.5,5.6],yr:[0,.46],gx:100,gy:.1,xt:[1,2,3,4,5],yt:[[.1,'0,1'],[.2,'0,2'],[.3,'0,3'],[.4,'0,4']]});
+const svg5=P5.svg(P5.ar('pos',f4,null,3,4,1)+P5.cv('f',f4,0,5)+vln(P5,3,f4(3),'dln',3)+vln(P5,4,f4(4),'dl',1)+P5.t(4.55,.43,'G_f','cf')+P5.t(3.5,.075,'0,28','pos',2,null,0,0));
+/* Folie 6: Dichte >1 */
+const P6=plot({xr:[-.12,.55],yr:[0,4.9],gx:100,gy:1,xt:[[.25,'0,25'],[.5,'0,5']],yt:[1,2,3,4]});
+const svg6=P6.svg(bar(P6,0,.25,4,'pos')+P6.cv('f',x=>4,0,.25)+P6.t(.125,2,'A=1','lg pos')+P6.t(.4,4.2,'f(x)=4','cf'));
+/* Folie 7/8: Körpergrößen */
+const KL=[[145,.0012],[150,.008],[155,.0254],[160,.054],[165,.0582],[170,.0352],[175,.0138],[180,.0036],[185,.0004]];
+const ytK=[1,2,3,4,5,6].map(i=>[i/100,'0,0'+i]),xtK=[145,150,155,160,165,170,175,180,185,190];
+const KP=()=>plot({xr:[143,192],yr:[0,.07],ox:143,pl:130,gx:5,gy:.01,xt:xtK,yt:ytK});
+const ph=x=>phi(x,166,6.5);
+const P7=KP();let in7='';KL.forEach(([a,h])=>{in7+=bar(P7,a,a+5,h,'pos')});
+for(let x=146;x<190;x++)if(x%5)in7+=vln(P7,x,(KL.find(k=>x>k[0]&&x<k[0]+5)||[0,0])[1],'sp',2);
+in7+=bar(P7,170,175,.0352,'hi',1,2)+bar(P7,172,173,.0352,'hi2',2)+P7.t(172.5,.0165,'0,176','nm2',1,2)+P7.t(172.5,.0165,'0,0352','nm2',2,3)
+ +P7.cv('f',ph,143.5,190.5,3)+P7.t(185,.027,'G_φ','cf',3)
+ +vln(P7,166,ph(166),'dl',4)+P7.dot(159.5,ph(159.5),4)+P7.dot(172.5,ph(172.5),4)+P7.t(166,.0645,'μ=166','lg cf',4)+P7.t(159.5,ph(159.5)+.004,'μ−σ','cc',4)+P7.t(172.5,ph(172.5)+.004,'μ+σ','cc',4);
+const svg7=P7.svg(in7);
+const P8=KP();
+const svg8=P8.svg(P8.ar('fin',ph,null,143.5,170,3)+P8.ar('pos',ph,null,170,175,1)+P8.cv('f',ph,143.5,190.5)+P8.t(185,.027,'G_φ','cf')+P8.t(172.5,.0085,'0,186','nm2',2)+P8.t(161,.024,'0,731','lg cf',3));
+/* Folie 9: Überblick */
+const m91=plot({mini:1,xr:[-.7,6.7],yr:[0,.4]}),m92=plot({mini:1,xr:[-.5,5.6],yr:[0,.46]}),m93=plot({mini:1,xr:[-4,4],yr:[0,.45]});
+const bn=[1,6,15,20,15,6,1];
+const th91=()=>m91.svg(bn.map((c,k)=>bar(m91,k-.17,k+.17,c/64,'pos')).join(''));
+const th92=()=>m92.svg(m92.ar('pos',f4,null,0,5)+m92.cv('f',f4,0,5));
+const th93=()=>m93.svg(m93.ar('pos',x=>phi(x,0,1),null,-4,4)+m93.cv('f',x=>phi(x,0,1),-4,4));
+/* ---------- Folien ---------- */
+const S=[
+{t:'II.1 · Diskret oder stetig?',e:'Wertemenge',q:'Ist die Zufallsgröße diskret oder stetig? Entscheidend ist ihre Wertemenge.',
+b:['Zeilen 1 und 2 auflösen','Zeile 3 auflösen','Zeile 4 auflösen'],
+h:`<div class="stack">${QD('Anzahl der Wappen bei sechs Münzwürfen','d',1,th_a,'Wertemenge: 0, 1, …, 6')}${QD('Anzahl der Würfe, bis zum ersten Mal die Sechs fällt','d',1,th_b,'Wertemenge: 1, 2, 3, … (unendlich viele einzelne Werte)')}${QD('Körpergröße einer Person in cm','s',2,th_c,'Wertemenge: ein ganzes Intervall')}${QD('Laufzeit über 100 m, gerundet auf Hundertstelsekunden','d',3,th_d,'Wertemenge: 10,00; 10,01; 10,02; … (einzelne Werte)')}</div>`},
+{t:'II.1 · Regen auf dem Tisch',e:'Abstand $X$',q:'Regen auf einen runden Tisch (Radius 5 dm): Wo landen die Tropfen?',
+b:['40 Tropfen','400 Tropfen','Kreisringe zählen','Warum außen mehr?'],
+h:BODY(svg2,C(1,'','$X$: Abstand eines Tropfens zum Mittelpunkt<br>Wertemenge: das Intervall $[0; 5]$','Zufallsgröße, stetig')+C(3,'',`<div class="rws">${ringRows}</div>`,'Gezählt in 400 Tropfen')+C(4,'fin','Außen liegt mehr Fläche:<br>Kreisring 5: $9π$, Kreisring 1: $π$','Große Abstände sind häufiger')) },
+{t:'II.1 · Kreisringe und Histogramm',e:'$P(3≤X≤4)={7|25}$',q:'Wie wahrscheinlich ist ein Abstand in einem Kreisring?',
+b:['Kreisring [3; 4]','Alle fünf Kreisringe','Summe prüfen'],
+h:BODY(svg3,`<div class="cd rv" data-s="1"><div class="mr">${ringMini}</div><div><span class="cp">Anteil an der Tischfläche</span><div class="cm">${T('$P(3≤X≤4)$')}<br>${T('$={π*(4^2-3^2)|π*5^2}={7|25}$')}</div></div></div>`+C(2,'','<div class="two">'+LN('pos','$P(0≤X≤1)={1|25}$')+LN('pos','$P(1≤X≤2)={3|25}$')+LN('pos','$P(2≤X≤3)={5|25}$')+LN('pos','$P(4≤X≤5)={9|25}$')+'</div>','Entsprechend')+C(3,'fin','${1+3+5+7+9|25}=1$','Summe aller Rechtecke; bei Breite 1 ist Höhe = Wahrscheinlichkeit')) },
+{t:'II.1 · Schmalere Rechtecke',e:'$f(x)={2|25}x$',q:'Was passiert mit dem Histogramm, wenn die Rechtecke schmaler werden?',
+b:['Breite 0,5','Breite 0,25','Breite 0,1','Dreieck und Gerade','Steigung bestimmen'],
+h:BODY(svg4,C(1,'','$P(3≤X≤3,5)=0,5·h$<br>also $h=2·P(3≤X≤3,5)$','Breite 0,5: Höhe ≠ Wahrscheinlichkeit')+C(3,'pos','Die Form nähert sich einem rechtwinkligen Dreieck','Immer schmaler')+C(4,'','Die Hypotenuse liegt auf der Ursprungsgeraden $y=m·x$','Grenzfall')+C(5,'fin','${1|2}·5·(m·5)=1$, also $m={2|25}$','Dreiecksfläche = 1')) },
+{t:'II.1 · Dichtefunktion',e:'$P=@a,b@f(x)dx$',q:'Wahrscheinlichkeit als Fläche unter dem Graphen von $f$ mit $f(x)={2|25}x$',
+b:['Fläche markieren','Ausrechnen','Einzelner Wert','Definition'],
+h:BODY(svg5,C(1,'pos','$P(3≤X≤4)=@3,4@f(x)dx$','Wahrscheinlichkeit = Fläche')+C(2,'fin','$={1|25}·(16-9)={7|25}=0,28$','Ergebnis')+C(3,'neg','$P(X=3)=@3,3@f(x)dx=0$<br>Die Kreislinie hat keine Fläche.','Ein einzelner Wert'),RULE(4,'Dichtefunktion: $f(x)≥0$ und $@-∞,∞@f(x)dx=1$')) },
+{t:'II.1 · Quiz: Dichte',e:'Quiz',q:'Die Funktionswerte einer Dichtefunktion sind keine Wahrscheinlichkeiten.',
+b:['Frage 1 auflösen','Frage 2 auflösen'],
+h:BODY(svg6,QB('Für $0≤x≤0,25$ sei $f(x)=4$, sonst $f(x)=0$. Ist $f$ eine Dichtefunktion?',CHP('Nein, $f(x)>1$',0,1)+CHP('Ja, die Fläche ist 1',1,1)+CHP('Nein, die Fläche ist 4',0,1),'Fläche $=0,25·4=1$. Werte über 1 sind erlaubt.',1)+QB('Wie groß ist $P(X=0,1)$?',CHP('4',0,2)+CHP('0',1,2)+CHP('0,1',0,2),'Einzelne Werte haben die Wahrscheinlichkeit 0.',2)) },
+{t:'II.3 · Körpergrößen',e:'$h={P|b}$',q:'Körpergrößen erwachsener Frauen: Intervalle immer feiner wählen',
+b:['Rechteck [170; 175[','Rechteckbreite 1','Glockenkurve','μ und σ'],
+h:BODY(svg7,C(1,'','$P(170≤X<175)=b·h=0,176$<br>$h={0,176|5}≈0,035$','Rechteckbreite 5')+C(2,'','$P(172≤X<173)=0,0352$<br>$h={0,0352|1}≈0,035$','Rechteckbreite 1: die Höhe bleibt')+C(3,'pos','Die Histogramme nähern sich der Glockenkurve $φ_{166;6,5}$.','Immer kleinere Intervalle')+C(4,'fin','$μ=166$: Erwartungswert von $X$<br>$σ=6,5$: Standardabweichung von $X$','Parameter')) },
+{t:'II.3 · Normalverteilung',e:'$N_{μ;σ}$',q:'Wie wahrscheinlich ist es, dass eine zufällig gewählte Frau zwischen 170 cm und 175 cm groß ist?',
+b:['Fläche über [170; 175]','Wert berechnen','Fläche bis 170','Definition'],
+h:BODY(svg8,C(1,'pos','$P(170≤X≤175)=@170,175@φ_{166;6,5}(x)dx$','Fläche unter der Glockenkurve')+C(2,'fin','$≈0,186$','Taschenrechner oder Tabellenkalkulation')+C(3,'fin','$P(X≤170)=Φ_{166;6,5}(170)≈0,731$','Kumulative Verteilungsfunktion'),RULE(4,'$X$ ist normalverteilt mit $μ$ und $σ$ (kurz $N_{μ;σ}$-verteilt), wenn $φ_{μ;σ}$ ihre Dichtefunktion ist.')) },
+{t:'Überblick',e:'diskret – stetig – normal',q:'Drei Arten, eine Wahrscheinlichkeitsverteilung darzustellen.',
+b:['Weg zeigen'],
+h:`<div class="g3"><div class="card">${th91()}<div class="t1">Diskrete Zufallsgröße</div><div class="eq">${T('$P(X=k)$')}</div><div class="t2">Wahrscheinlichkeit = Höhe des Stabes</div></div><div class="card">${th92()}<div class="t1">Stetige Zufallsgröße</div><div class="eq">${T('$P(a≤X≤b)=@a,b@f(x)dx$')}</div><div class="t2">${T('Wahrscheinlichkeit = Fläche, $P(X=x)=0$')}</div></div><div class="card">${th93()}<div class="t1">Normalverteilung</div><div class="eq">${T('$f=φ_{μ;σ}$')}</div><div class="t2">Glockenkurve mit Erwartungswert μ und Standardabweichung σ</div></div></div>
+<div class="strat rv" data-s="1"><div class="st"><b>1</b>Histogramm: Höhe = Wahrscheinlichkeit : Breite</div><span class="ar2">→</span><div class="st"><b>2</b>Breite gegen 0: Dichtefunktion</div><span class="ar2">→</span><div class="st"><b>3</b>Wahrscheinlichkeit = Fläche unter dem Graphen</div></div>`}
+];
+/* ---------- Steuerung ---------- */
+let cur=0,step=0;
+function go(i){cur=i;step=0;const s=S[i];
+g('bd').textContent=i+1;g('ti').textContent=s.t;g('pg').textContent=(i+1)+' / '+S.length;g('pf').style.width=(i+1)/S.length*100+'%';
+g('mn').innerHTML='<div class="sc"><div class="q">'+T(s.q)+'</div>'+s.h+'</div>';
+g('bk').disabled=!i;g('fw').disabled=i==S.length-1;upd()}
+function upd(){const s=S[cur],m=g('mn');
+m.querySelectorAll('[data-s]').forEach(e=>{const a=+e.dataset.s,x=e.dataset.x!=null?+e.dataset.x:99;e.classList.toggle('on',step>=a&&step<x)});
+m.querySelectorAll('[data-m]').forEach(e=>e.classList.toggle('mv',step>=+e.dataset.m));
+m.querySelectorAll('[data-hit]').forEach(e=>{const o=step>=+e.dataset.hit;e.classList.toggle('ok',o&&e.dataset.ok=='1');e.classList.toggle('no',o&&e.dataset.ok!='1')});
+const d=step>=s.b.length;g('sb').textContent=d?'✓ Alles gezeigt':s.b[step];g('sb').disabled=d}
+function nx(){if(step<S[cur].b.length){step++;upd()}}
+function bk1(){if(step>0){step--;upd()}}
+function nav(d){const n=cur+d;if(n>=0&&n<S.length)go(n)}
+function pk(e){if(step>=+e.dataset.hit)return;[...e.parentNode.children].forEach(c=>c.classList.remove('sel'));e.classList.add('sel')}
+function ov(o){const e=g('ov');if(o){e.innerHTML='<div class="oh"><h2>Übersicht</h2><button class="btn" onclick="ov(0)">✕ Schließen</button></div><div class="tiles">'+S.map((s,i)=>`<button class="tile${i==cur?' cur':''}" onclick="ov(0);go(${i})"><b>${i+1}</b><span>${s.t}</span><em>${T(s.e)}</em></button>`).join('')+'</div>'}e.classList.toggle('on',!!o)}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('keydown',e=>{if(e.key=='ArrowRight')nav(1);else if(e.key=='ArrowLeft')nav(-1);else if(e.key==' '||e.key=='Enter'){e.preventDefault();nx()}else if(e.key=='Backspace'){e.preventDefault();bk1()}else if(e.key=='Escape')ov(0)});
+go(0);
+</script>
+</body>
+</html>

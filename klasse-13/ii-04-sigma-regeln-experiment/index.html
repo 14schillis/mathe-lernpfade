@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sigma-Regeln entdecken</title>
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--fg:#17202b;--mut:#5d6b7a;--line:#cfd8e2;--g1:#e6ebf1;--g2:#bcc7d4;--ax:#17202b;--f:#1f6feb;--F:#d6336c;--sk:#0a8f6a;--ok:#0a8f6a;--okb:#e3f6ee;--no:#b4492f;--nob:#fbece7;--fill:rgba(31,111,235,.16);--hl:rgba(31,111,235,.34)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:17px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 340px}
+@media (orientation:portrait),(max-width:759px){#app{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,46%) minmax(0,1fr)}}
+#gv{min-height:0;min-width:0;background:var(--card);position:relative}
+svg{display:block;width:100%;height:100%}
+aside{padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-left:1px solid var(--line);overflow:auto;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+@media (orientation:portrait),(max-width:759px){aside{border-left:0;border-top:1px solid var(--line)}}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.kap{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+h1{font-size:21px;line-height:1.2;margin:2px 0 0}
+#tmode{font-size:12px;font-weight:700;color:#fff;background:#6b4fd8;border-radius:8px;padding:3px 8px;display:none;white-space:nowrap}
+.tm #tmode{display:inline-block}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;padding:0 4px;font-size:14px;white-space:nowrap}
+button{font:inherit;font-size:16px;min-height:46px;min-width:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+button.on,button.pri{background:var(--f);border-color:var(--f);color:#fff}
+button:disabled{opacity:.4}
+button:focus-visible,input:focus-visible{outline:3px solid var(--f);outline-offset:2px}
+.ctl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.row{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px}
+.row label{font-weight:700;min-width:70px;font-variant-numeric:tabular-nums}
+.row label i{font-style:normal;color:var(--f)}
+input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--f);touch-action:pan-y}
+.tg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:15px;padding:2px 0}
+.tg label{display:flex;align-items:center;gap:6px;min-height:36px}
+.tg input{width:20px;height:20px;accent-color:var(--f)}
+.read{font-size:15px;color:var(--mut);padding:2px 0 4px}
+.read b{color:var(--fg);font-variant-numeric:tabular-nums}
+.task{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.task.done{border-color:var(--ok);background:var(--okb)}
+.task .nr{font-size:12px;font-weight:700;color:var(--mut);letter-spacing:.06em}
+.task p{margin:0}
+.flds{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.fld{display:flex;align-items:center;gap:6px}
+.fld input[type=text]{width:84px;height:44px;font:inherit;font-size:17px;text-align:center;border:1.5px solid var(--g2);border-radius:10px;background:#fff;color:var(--fg);-webkit-user-select:text;user-select:text}
+.fld input.bad{border-color:var(--no);background:var(--nob)}
+.fld input.good{border-color:var(--ok);background:var(--okb)}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;padding:8px 12px;line-height:1.3;min-height:46px}
+.opt.bad{background:var(--nob);color:#8a3a26;border-color:#e8b9ac}
+.opt.good{background:var(--okb);border-color:var(--ok);font-weight:600}
+.fb{font-size:15px;line-height:1.35}
+.fb.ok{color:var(--ok);font-weight:600}.fb.no{color:var(--no)}.fb.hint{color:#8a6a00}
+.sol{font-size:15px;background:#f1ebff;border-radius:10px;padding:8px 10px;color:#3a2a80}
+.pre{font-size:15px;min-height:40px;padding:0 12px}
+.ba{display:flex;gap:8px;flex-wrap:wrap}
+.rs{margin-top:auto;font-size:14px;min-height:40px;color:var(--mut)}
+.g1{stroke:var(--g1);stroke-width:1}.ax{stroke:var(--ax);stroke-width:1.8}
+.t{fill:var(--mut);font-size:13px}.tl{fill:var(--fg);font-size:14px;font-weight:600}
+.halo{paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+.cf{fill:none;stroke:var(--f);stroke-width:3.5}.cF{fill:none;stroke:var(--F);stroke-width:3.5}
+.ar{fill:var(--fill)}.ar2{fill:var(--hl)}
+.vl{stroke:var(--mut);stroke-width:1.5;stroke-dasharray:6 5}
+.vl2{stroke:var(--f);stroke-width:1.6;stroke-dasharray:5 4}
+.dh{fill:var(--F);stroke:#fff;stroke-width:2}.dw{fill:var(--sk);stroke:#fff;stroke-width:2}.dp{fill:var(--f);stroke:#fff;stroke-width:2}.do{fill:#fff;stroke:var(--fg);stroke-width:2}
+.bar{fill:rgba(31,111,235,.20);stroke:var(--f);stroke-width:1.5}
+.tn{stroke:var(--sk);stroke-width:3;stroke-linecap:round}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="gv"><svg id="sg" role="img" aria-label="Graph einer Glockenfunktion mit markiertem Intervall um den Erwartungswert"></svg></div>
+<aside id="side">
+<div class="hd"><div><div class="kap">Q13 · II.4</div><h1>Sigma-Regeln entdecken</h1></div><span id="tmode">Lehrermodus</span></div>
+<div class="tabs" id="tabs"></div>
+<div id="ctl"></div>
+<div id="tasks"></div>
+<button class="rs" id="rs">Neu starten</button>
+</aside>
+</div>
+<script>
+(function(){"use strict";
+var $=function(id){return document.getElementById(id)};
+var TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+if(TEACHER)document.body.classList.add('tm');
+/* ---------- Mathematik ---------- */
+function erf(x){var s=x<0?-1:1;x=Math.abs(x);var t=1/(1+.3275911*x);var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);return s*y}
+function phi(x,m,s){return Math.exp(-.5*Math.pow((x-m)/s,2))/(s*Math.sqrt(2*Math.PI))}
+function Phi(x,m,s){return .5*(1+erf((x-m)/(s*Math.SQRT2)))}
+function fm(v,d){if(d==null)d=1;var t=(Math.abs(v)<Math.pow(10,-d)/2?0:v).toFixed(d).replace('.',',');return t.replace('-','−')}
+function pn(s){s=String(s).replace(',','.').replace('−','-').trim();var v=parseFloat(s);return isFinite(v)&&/^-?\d*\.?\d+$/.test(s)?v:NaN}
+/* ---------- Zustand ---------- */
+function fresh(){return{tab:1,mu:0,sg:1,k:1,T:{}}}
+var S=fresh();
+function PK(k){return erf(k/Math.SQRT2)}
+/* ---------- Aufgaben ---------- */
+var TASKS={
+1:[
+ {id:'s1a',t:'num',q:'Stelle k = 1 ein. Verändere dann μ und σ und beobachte P. Wie groß ist P(μ − σ ≤ X ≤ μ + σ)?',pre:'k=1',f:[{l:'P ≈',a:.683,tol:.003}],h:['Lies P unter dem Regler ab. Probiere mehrere Werte für μ und σ.','Auf drei Nachkommastellen: 0,6…'],sol:'P ≈ 0,683, egal wie μ und σ gewählt sind.'},
+ {id:'s1b',t:'mc',q:'Was passiert mit P, wenn du bei k = 1 die Werte μ und σ veränderst?',o:['P bleibt immer gleich.','P wird größer, wenn σ größer wird.','P hängt von μ ab.'],ok:0,h:['Beobachte die Zahl P, nicht die Form der Glocke.','Bei breiterer Glocke wird auch das Intervall breiter. Beides gleicht sich aus.'],sol:'P hängt nur von k ab, nicht von μ und σ.'},
+ {id:'s1c',t:'num',q:'Stelle k = 2 und k = 3 ein. Lies jeweils P ab.',pre:'k=2',f:[{l:'k = 2: P ≈',a:.954,tol:.003},{l:'k = 3: P ≈',a:.997,tol:.003}],h:['Du kannst k mit dem Regler oder mit den Knöpfen k = 1, 2, 3 einstellen.','Zum Beispiel 0,954 und 0,997.'],sol:'P(μ ± 2σ) ≈ 0,954 und P(μ ± 3σ) ≈ 0,997.'},
+ {id:'s1d',t:'num',q:'Mit welcher Wahrscheinlichkeit liegt X weiter als 3σ von μ entfernt? Gib das Ergebnis als Dezimalzahl an.',pre:'k=3',f:[{l:'P ≈',a:.003,tol:.0016}],h:['Innerhalb von 3σ liegen 0,997. Der Rest liegt außerhalb.','Gegenereignis: 1 − 0,997.'],sol:'1 − 0,997 = 0,003. Das sind 0,3 %.'},
+ {id:'s1e',t:'num',q:'Stelle k = 1 ein. Wie groß ist P(μ ≤ X ≤ μ + σ), also nur die rechte Hälfte des Intervalls?',pre:'k=1',f:[{l:'P ≈',a:.3415,tol:.004}],h:['Das Intervall [μ − σ ; μ + σ] ist symmetrisch zu μ.','Nimm die Hälfte von 0,683.'],sol:'0,683 : 2 ≈ 0,342.'}
+],
+2:[
+ {id:'s2a',t:'num',q:'Stelle k so ein, dass P möglichst genau den Zielwert trifft. Trage das passende k ein.',pre:'k=1.5',f:[{l:'P = 0,90: k ≈',a:1.645,tol:.03},{l:'P = 0,95: k ≈',a:1.96,tol:.03},{l:'P = 0,99: k ≈',a:2.576,tol:.04}],h:['Bewege den Regler langsam und achte auf die dritte Nachkommastelle von P.','Für P = 0,95 liegt k knapp unter 2. Für P = 0,99 knapp über 2,5.'],sol:'k ≈ 1,64 für 90 %, k ≈ 1,96 für 95 % und k ≈ 2,58 für 99 %.'},
+ {id:'s2b',t:'num',q:'Es gilt μ = 2 und σ = 1,5. In welchem Intervall liegt X mit etwa 95 % Wahrscheinlichkeit?',pre:'mu=2,sg=1.5,k=1.96',f:[{l:'von',a:-.94,tol:.1},{l:'bis',a:4.94,tol:.1}],h:['Lies die Randpunkte der markierten Fläche ab. Das k für 95 % ist 1,96.','Rechnung: μ − 1,96σ und μ + 1,96σ.'],sol:'2 − 1,96 · 1,5 ≈ −0,94 und 2 + 1,96 · 1,5 ≈ 4,94.'},
+ {id:'s2c',t:'num',q:'Für k = 1,64 gilt P = 0,90 (μ = 0, σ = 1). Wie groß ist dann P(X ≤ μ + 1,64σ)?',pre:'mu=0,sg=1,k=1.64',f:[{l:'P ≈',a:.95,tol:.005}],h:['Außerhalb des Intervalls liegen 10 %. Wie verteilen sich diese 10 % auf links und rechts?','Links von μ − 1,64σ liegen 5 %. Dazu kommt alles im Intervall und nichts mehr von rechts außen.'],sol:'5 % liegen links außerhalb, 5 % rechts außerhalb. Also P(X ≤ μ + 1,64σ) = 1 − 0,05 = 0,95.'},
+ {id:'s2d',t:'mc',q:'Welche Aussage stimmt?',o:['Für P = 0,95 braucht man immer k = 1,96, egal welche Werte μ und σ haben.','Bei kleinerem σ braucht man für P = 0,95 ein kleineres k.','Bei größerem μ braucht man für P = 0,95 ein größeres k.'],ok:0,h:['Ändere μ und σ und beobachte, bei welchem k P = 0,95 erreicht wird.','Das k hängt nur von P ab.'],sol:'Die Faktoren 1,64 / 1,96 / 2,58 gelten für jede Normalverteilung.'}
+],
+3:[
+ {id:'s3a',t:'num',q:'Stelle σ = 2 ein (μ = 0). Wie ändert sich die Standard-Glocke (μ = 0, σ = 1, gestrichelt)?',pre:'mu=0,sg=2,k=1',f:[{l:'x-Richtung: Faktor',a:2,tol:.05},{l:'y-Richtung: Faktor',a:.5,tol:.03}],h:['Vergleiche die Ränder des Intervalls und die Höhe der Hochpunkte.','Der Rand liegt bei σ statt bei 1. Der Hochpunkt hat 0,20 statt 0,40.'],sol:'Die Glocke wird in x-Richtung mit σ = 2 gestreckt und in y-Richtung mit 1 : σ = 0,5 gestaucht.'},
+ {id:'s3b',t:'mc',q:'Warum bleibt P gleich, obwohl die Glocke breiter wird?',o:['Beim Strecken in x-Richtung mit σ und Stauchen in y-Richtung mit 1 : σ bleibt der Flächeninhalt gleich.','Die Glocke wird breiter, aber nicht niedriger.','Die Fläche ändert sich eigentlich doch, aber nur ein bisschen.'],ok:0,h:['Betrachte beide Grafiken. Die markierten Flächen sind gleich groß.','Breiter mal niedriger: Was passiert mit dem Flächeninhalt?'],sol:'Der Faktor σ in x-Richtung und der Faktor 1 : σ in y-Richtung heben sich beim Flächeninhalt auf.'},
+ {id:'s3c',t:'num',q:'Für μ = 3, σ = 2 und k = 2 wird das Intervall [μ − kσ ; μ + kσ] markiert. Wo liegen die Ränder?',pre:'mu=3,sg=2,k=2',f:[{l:'links',a:-1,tol:.1},{l:'rechts',a:7,tol:.1}],h:['Lies die Ränder an der unteren Grafik ab.','3 − 2 · 2 und 3 + 2 · 2.'],sol:'3 − 4 = −1 und 3 + 4 = 7.'},
+ {id:'s3d',t:'num',q:'Die Größe X ist normalverteilt mit μ = 100 und σ = 15. Wie groß ist P(70 ≤ X ≤ 130)?',f:[{l:'P ≈',a:.954,tol:.004}],h:['Wie viele σ liegen die Grenzen 70 und 130 von μ entfernt?','Die Grenzen sind μ ± 2σ.'],sol:'70 = 100 − 2 · 15 und 130 = 100 + 2 · 15. Also P ≈ 0,954.'}
+]};
+var TAB=[null,{n:'1 Intervalle'},{n:'2 Umkehren'},{n:'3 Warum?'}];
+var XR=[-10,10];
+/* ---------- Layout und Zeichnen ---------- */
+var W=0,H=0;
+function box(x0,y0,w,h,xr,yr){return{x0:x0,y0:y0,w:w,h:h,xr:xr,yr:yr,X:function(x){return x0+(x-xr[0])/(xr[1]-xr[0])*w},Y:function(y){return y0+h-(y-yr[0])/(yr[1]-yr[0])*h}}}
+function axes(P,xt,yt,lab,xlab){var o='',v;
+ for(v=Math.ceil(P.xr[0]/xt-1e-9)*xt;v<=P.xr[1]+1e-9;v+=xt){o+='<line class="g1" x1="'+P.X(v)+'" y1="'+P.Y(P.yr[0])+'" x2="'+P.X(v)+'" y2="'+P.Y(P.yr[1])+'"/>';if(xlab!==false)o+='<text class="t" text-anchor="middle" x="'+P.X(v)+'" y="'+(P.Y(P.yr[0])+17)+'">'+fm(v,0)+'</text>'}
+ for(v=P.yr[0];v<=P.yr[1]+1e-9;v+=yt){o+='<line class="g1" x1="'+P.X(P.xr[0])+'" y1="'+P.Y(v)+'" x2="'+P.X(P.xr[1])+'" y2="'+P.Y(v)+'"/>';o+='<text class="t" text-anchor="end" x="'+(P.X(P.xr[0])-6)+'" y="'+(P.Y(v)+4)+'">'+fm(v,2)+'</text>'}
+ o+='<line class="ax" x1="'+P.X(P.xr[0])+'" y1="'+P.Y(P.yr[0])+'" x2="'+P.X(P.xr[1])+'" y2="'+P.Y(P.yr[0])+'"/><line class="ax" x1="'+P.X(P.xr[0])+'" y1="'+P.Y(P.yr[0])+'" x2="'+P.X(P.xr[0])+'" y2="'+P.Y(P.yr[1])+'"/>';
+ if(lab)o+='<text class="tl" x="'+(P.X(P.xr[1])-6)+'" y="'+(P.Y(P.yr[1])+16)+'" text-anchor="end" style="fill:'+lab[1]+';font-style:italic;font-size:18px">'+lab[0]+'</text>';
+ return o}
+function path(P,fn,a,b,n){var d='',k,x;n=n||240;for(k=0;k<=n;k++){x=a+(b-a)*k/n;d+=(k?'L':'M')+P.X(x).toFixed(1)+' '+P.Y(fn(x)).toFixed(1)}return d}
+function area(P,fn,a,b){var d=path(P,fn,a,b,200);return d+'L'+P.X(b).toFixed(1)+' '+P.Y(0).toFixed(1)+'L'+P.X(a).toFixed(1)+' '+P.Y(0).toFixed(1)+'Z'}
+function txt(x,y,s,cls,anch){return '<text class="'+(cls||'tl')+' halo" x="'+x+'" y="'+y+'" text-anchor="'+(anch||'start')+'">'+s+'</text>'}
+function dot(P,x,y,c,r){return '<circle class="'+c+'" cx="'+P.X(x)+'" cy="'+P.Y(y)+'" r="'+(r||7)+'"/>'}
+function sgl(j){return j===0?'μ':(j>0?'+':'−')+(Math.abs(j)===1?'':Math.abs(j))+'σ'}
+function clip(x){return Math.max(XR[0],Math.min(XR[1],x))}
+function band(P,m,s,k,showSig){var f=function(x){return phi(x,m,s)},a=clip(m-k*s),b=clip(m+k*s),o='';
+ o+='<path class="ar2" d="'+area(P,f,a,b)+'"/><path class="cf" d="'+path(P,f,XR[0],XR[1],400)+'"/>';
+ if(showSig){for(var j=-3;j<=3;j++){var x=m+j*s;if(x<XR[0]||x>XR[1])continue;o+='<line class="vl" style="stroke-dasharray:3 5;opacity:.7" x1="'+P.X(x)+'" y1="'+P.Y(0)+'" x2="'+P.X(x)+'" y2="'+P.Y(P.yr[1])+'"/>'+txt(P.X(x),P.Y(P.yr[1])+14,sgl(j),'t','middle')}}
+ if(k>0){[m-k*s,m+k*s].forEach(function(x){if(x>=XR[0]&&x<=XR[1])o+='<line class="vl2" x1="'+P.X(x)+'" y1="'+P.Y(0)+'" x2="'+P.X(x)+'" y2="'+P.Y(Math.max(f(x),0.001))+'"/>'+dot(P,x,0,'dp',5)})}
+ return o}
+function draw(){
+ var g=$('gv'),o='';W=g.clientWidth||800;H=g.clientHeight||560;
+ var ml=54,mr=18,mt=14,mb=34,m=S.mu,s=S.sg,k=S.k,Pv=PK(k);
+ if(S.tab<3){
+  var P=box(ml,mt,W-ml-mr,H-mt-mb,XR,[0,.7]);
+  o+=axes(P,2,.2,['φ','#1f6feb']);
+  o+=band(P,m,s,k,true);
+  var pk=phi(m,m,s),cy=Math.min(pk*.5,.3)+.04;
+  if(k>=.25)o+=txt(P.X(m),P.Y(cy),'P = '+fm(Pv,3),'tl','middle');
+  
+ }else{
+  var hh=H-mt-mb-30,h1=Math.round(hh*.5),h2=hh-h1,
+   P1=box(ml,mt,W-ml-mr,h1,XR,[0,.7]),P2=box(ml,mt+h1+30,W-ml-mr,h2,XR,[0,.7]);
+  o+=axes(P1,2,.2,['φ mit μ = 0, σ = 1','#6b4fd8'],false);
+  o+=band(P1,0,1,k,false);
+  o+=txt(P1.X(0),P1.Y(.17),'P = '+fm(Pv,3),'tl','middle');
+  o+=txt(P1.X(0)+12,P1.Y(phi(0,0,1))+4,'Hochpunkt '+fm(phi(0,0,1),2),'t','start');
+  o+=axes(P2,2,.2,['φ','#1f6feb']);
+  o+='<path d="'+path(P2,function(x){return phi(x,m,1)},XR[0],XR[1],300)+'" fill="none" stroke="#6b4fd8" stroke-width="2" stroke-dasharray="6 5" opacity=".75"/>';
+  o+=band(P2,m,s,k,false);
+  o+=txt(P2.X(m),P2.Y(Math.min(phi(m,m,s)*.5,.3)+.04),'P = '+fm(Pv,3),'tl','middle');
+  o+=txt(P2.X(m)+12,P2.Y(phi(m,m,s))+4,'Hochpunkt '+fm(phi(m,m,s),2),'t','start');
+ }
+ $('sg').setAttribute('viewBox','0 0 '+W+' '+H);$('sg').innerHTML=o}
+/* ---------- Bedienfeld ---------- */
+function sl(id,lab,min,max,step,val){return '<div class="row"><label for="r_'+id+'"><i>'+lab+'</i> = <span id="o_'+id+'"></span></label><input type="range" id="r_'+id+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"></div>'}
+function buildCtl(){var o='';
+ if(S.tab===1)o=sl('mu','μ',-4,4,.1,S.mu)+sl('sg','σ',.6,3,.1,S.sg)+sl('k','k',0,4,.1,S.k)+'<div class="ba"><button class="pre" data-pre="k=1">k = 1</button><button class="pre" data-pre="k=2">k = 2</button><button class="pre" data-pre="k=3">k = 3</button></div><div class="read" id="rd"></div>';
+ else if(S.tab===2)o=sl('mu','μ',-4,4,.1,S.mu)+sl('sg','σ',.6,3,.1,S.sg)+sl('k','k',0,4,.01,S.k)+'<div class="read" id="rd"></div>';
+ else o=sl('mu','μ',-4,4,.1,S.mu)+sl('sg','σ',.6,3,.1,S.sg)+sl('k','k',.1,3,.1,Math.max(.1,S.k))+'<div class="read" id="rd"></div>';
+ $('ctl').className='ctl';$('ctl').innerHTML=o;upd()}
+function upd(){
+ if(S.tab===3&&S.k<.1)S.k=.1;
+ var kd=S.tab===2?2:1;
+ $('o_mu').textContent=fm(S.mu,1);$('o_sg').textContent=fm(S.sg,1);$('o_k').textContent=fm(S.k,kd);
+ var a=S.mu-S.k*S.sg,b=S.mu+S.k*S.sg;
+ $('rd').innerHTML='Intervall: <b>['+fm(a,2)+' ; '+fm(b,2)+']</b><br>P(μ − kσ ≤ X ≤ μ + kσ) = <b>'+fm(PK(S.k),3)+'</b>';
+ draw()}
+/* ---------- Aufgabenkarten ---------- */
+function st(id){return S.T[id]||(S.T[id]={tries:0,done:false,vals:[],sel:[]})}
+function renderTasks(){var L=TASKS[S.tab],o='';
+ L.forEach(function(t,i){var s=st(t.id),h='<div class="task'+(s.done?' done':'')+'" data-id="'+t.id+'"><span class="nr">AUFGABE '+(i+1)+'</span><p>'+t.q+'</p>';
+  if(t.pre)h+='<div class="ba"><button class="pre" data-pre="'+t.pre+'">Einstellung setzen</button></div>';
+  if(t.t==='num'){h+='<div class="flds">'+t.f.map(function(f,k){var v=s.vals[k]||'',c=s.done?' good':(s.bad&&s.bad[k]?' bad':'');return '<span class="fld">'+f.l+' <input type="text" inputmode="decimal" autocomplete="off" data-k="'+k+'" value="'+v+'" class="'+c.trim()+'"'+(s.done?' disabled':'')+'></span>'}).join('')+'</div>';
+   if(!s.done)h+='<div class="ba"><button class="pri" data-chk="'+t.id+'">Prüfen</button></div>'}
+  else{h+='<div class="opts">'+t.o.map(function(x,k){var c=s.sel.indexOf(k)>=0?(k===t.ok?' good':' bad'):'';return '<button class="opt'+c+'" data-opt="'+k+'"'+(s.sel.indexOf(k)>=0&&k!==t.ok||s.done?' disabled':'')+'>'+x+'</button>'}).join('')+'</div>'}
+  h+='<div class="fb '+(s.done?'ok':s.tries?'no':'')+'" id="fb_'+t.id+'">'+(s.done?'Richtig.':(s.tries?(s.msg||'Noch nicht.'):''))+'</div>';
+  if(TEACHER)h+='<div class="ba"><button data-sol="'+t.id+'" style="min-height:40px;font-size:14px">Lösung anzeigen</button></div>'+(s.sol?'<div class="sol">'+t.sol+'</div>':'');
+  o+=h+'</div>'});
+ $('tasks').innerHTML=o}
+function hintFor(t,tries){var hs=t.h;return hs[Math.min(tries-1,hs.length-1)]}
+function checkNum(t){var s=st(t.id),good=[],allok=true,inputs=document.querySelectorAll('[data-id="'+t.id+'"] input[type=text]');
+ inputs.forEach(function(inp,k){s.vals[k]=inp.value});
+ t.f.forEach(function(f,k){var v=pn(s.vals[k]),ok=!isNaN(v)&&Math.abs(v-f.a)<=f.tol;good[k]=ok;if(!ok)allok=false});
+ if(allok){s.done=true;s.bad=null;s.msg=''}else{s.tries++;s.bad=good.map(function(g){return !g});s.msg='Noch nicht. '+hintFor(t,s.tries)}
+ renderTasks()}
+function applyPre(str){str.split(',').forEach(function(p){var kv=p.split('='),k=kv[0],v=parseFloat(kv[1]);
+ if(k==='mu')S.mu=v;else if(k==='sg')S.sg=v;else if(k==='k')S.k=v});buildCtl()}
+/* ---------- Ereignisse ---------- */
+$('side').addEventListener('input',function(e){var t=e.target;if(t.type==='range'){var v=parseFloat(t.value),k=t.id.slice(2);S[k]=v;upd()}});
+$('side').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+ if(t.dataset.tab){S.tab=+t.dataset.tab;go()}
+ else if(t.dataset.pre){applyPre(t.dataset.pre)}
+ else if(t.dataset.chk){var T=TASKS[S.tab].filter(function(q){return q.id===t.dataset.chk})[0];checkNum(T)}
+ else if(t.dataset.opt!=null){var card=t.closest('.task'),T2=TASKS[S.tab].filter(function(q){return q.id===card.dataset.id})[0],s=st(T2.id),k=+t.dataset.opt;
+  if(s.sel.indexOf(k)<0)s.sel.push(k);if(k===T2.ok){s.done=true;s.msg=''}else{s.tries++;s.msg='Noch nicht. '+hintFor(T2,s.tries)}renderTasks()}
+ else if(t.dataset.sol){var s3=st(t.dataset.sol);s3.sol=!s3.sol;renderTasks()}});
+$('rs').addEventListener('click',function(){var tab=S.tab;S=fresh();S.tab=tab;go()});
+function go(){
+ $('tabs').innerHTML=[1,2,3].map(function(i){return '<button data-tab="'+i+'" class="'+(i===S.tab?'on':'')+'">'+TAB[i].n+'</button>'}).join('');
+ buildCtl();renderTasks();$('side').scrollTop=0}
+window.addEventListener('resize',draw);
+if(window.ResizeObserver)new ResizeObserver(function(){draw()}).observe($('gv'));
+['selectstart','dragstart','contextmenu'].forEach(function(t){document.addEventListener(t,function(e){if(e.target.tagName!=='INPUT')e.preventDefault()})});
+go();
+})();
+</script>
+</body>
+</html>

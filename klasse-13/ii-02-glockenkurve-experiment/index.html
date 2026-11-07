@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glockenkurve erkunden</title>
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--fg:#17202b;--mut:#5d6b7a;--line:#cfd8e2;--g1:#e6ebf1;--g2:#bcc7d4;--ax:#17202b;--f:#1f6feb;--F:#d6336c;--sk:#0a8f6a;--ok:#0a8f6a;--okb:#e3f6ee;--no:#b4492f;--nob:#fbece7;--fill:rgba(31,111,235,.16);--hl:rgba(31,111,235,.34)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:17px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 340px}
+@media (orientation:portrait),(max-width:759px){#app{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,46%) minmax(0,1fr)}}
+#gv{min-height:0;min-width:0;background:var(--card);position:relative}
+svg{display:block;width:100%;height:100%}
+aside{padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-left:1px solid var(--line);overflow:auto;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+@media (orientation:portrait),(max-width:759px){aside{border-left:0;border-top:1px solid var(--line)}}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.kap{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+h1{font-size:21px;line-height:1.2;margin:2px 0 0}
+#tmode{font-size:12px;font-weight:700;color:#fff;background:#6b4fd8;border-radius:8px;padding:3px 8px;display:none;white-space:nowrap}
+.tm #tmode{display:inline-block}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;padding:0 6px;font-size:15px}
+button{font:inherit;font-size:16px;min-height:46px;min-width:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+button.on,button.pri{background:var(--f);border-color:var(--f);color:#fff}
+button:disabled{opacity:.4}
+button:focus-visible,input:focus-visible{outline:3px solid var(--f);outline-offset:2px}
+.ctl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.row{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px}
+.row label{font-weight:700;min-width:70px;font-variant-numeric:tabular-nums}
+.row label i{font-style:normal;color:var(--f)}
+input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--f);touch-action:pan-y}
+.tg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:15px;padding:2px 0}
+.tg label{display:flex;align-items:center;gap:6px;min-height:36px}
+.tg input{width:20px;height:20px;accent-color:var(--f)}
+.read{font-size:15px;color:var(--mut);padding:2px 0 4px}
+.read b{color:var(--fg);font-variant-numeric:tabular-nums}
+.task{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.task.done{border-color:var(--ok);background:var(--okb)}
+.task .nr{font-size:12px;font-weight:700;color:var(--mut);letter-spacing:.06em}
+.task p{margin:0}
+.flds{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.fld{display:flex;align-items:center;gap:6px}
+.fld input[type=text]{width:84px;height:44px;font:inherit;font-size:17px;text-align:center;border:1.5px solid var(--g2);border-radius:10px;background:#fff;color:var(--fg);-webkit-user-select:text;user-select:text}
+.fld input.bad{border-color:var(--no);background:var(--nob)}
+.fld input.good{border-color:var(--ok);background:var(--okb)}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;padding:8px 12px;line-height:1.3;min-height:46px}
+.opt.bad{background:var(--nob);color:#8a3a26;border-color:#e8b9ac}
+.opt.good{background:var(--okb);border-color:var(--ok);font-weight:600}
+.fb{font-size:15px;line-height:1.35}
+.fb.ok{color:var(--ok);font-weight:600}.fb.no{color:var(--no)}.fb.hint{color:#8a6a00}
+.sol{font-size:15px;background:#f1ebff;border-radius:10px;padding:8px 10px;color:#3a2a80}
+.pre{font-size:15px;min-height:40px;padding:0 12px}
+.ba{display:flex;gap:8px;flex-wrap:wrap}
+.rs{margin-top:auto;font-size:14px;min-height:40px;color:var(--mut)}
+.g1{stroke:var(--g1);stroke-width:1}.ax{stroke:var(--ax);stroke-width:1.8}
+.t{fill:var(--mut);font-size:13px}.tl{fill:var(--fg);font-size:14px;font-weight:600}
+.halo{paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+.cf{fill:none;stroke:var(--f);stroke-width:3.5}.cF{fill:none;stroke:var(--F);stroke-width:3.5}
+.ar{fill:var(--fill)}.ar2{fill:var(--hl)}
+.vl{stroke:var(--mut);stroke-width:1.5;stroke-dasharray:6 5}
+.vl2{stroke:var(--f);stroke-width:1.6;stroke-dasharray:5 4}
+.dh{fill:var(--F);stroke:#fff;stroke-width:2}.dw{fill:var(--sk);stroke:#fff;stroke-width:2}.dp{fill:var(--f);stroke:#fff;stroke-width:2}.do{fill:#fff;stroke:var(--fg);stroke-width:2}
+.bar{fill:rgba(31,111,235,.20);stroke:var(--f);stroke-width:1.5}
+.tn{stroke:var(--sk);stroke-width:3;stroke-linecap:round}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="gv"><svg id="sg" role="img" aria-label="Graph der Gauß'schen Glockenfunktion"></svg></div>
+<aside id="side">
+<div class="hd"><div><div class="kap">Q13 · II.2 und II.3</div><h1>Glockenkurve erkunden</h1></div><span id="tmode">Lehrermodus</span></div>
+<div class="tabs" id="tabs"></div>
+<div id="ctl"></div>
+<div id="tasks"></div>
+<button class="rs" id="rs">Neu starten</button>
+</aside>
+</div>
+<script>
+(function(){"use strict";
+var $=function(id){return document.getElementById(id)};
+var TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+if(TEACHER)document.body.classList.add('tm');
+/* ---------- Mathematik ---------- */
+function erf(x){var s=x<0?-1:1;x=Math.abs(x);var t=1/(1+.3275911*x);var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);return s*y}
+function phi(x,m,s){return Math.exp(-.5*Math.pow((x-m)/s,2))/(s*Math.sqrt(2*Math.PI))}
+function Phi(x,m,s){return .5*(1+erf((x-m)/(s*Math.SQRT2)))}
+function fm(v,d){if(d==null)d=1;var t=(Math.abs(v)<Math.pow(10,-d)/2?0:v).toFixed(d).replace('.',',');return t.replace('-','−')}
+function pn(s){s=String(s).replace(',','.').replace('−','-').trim();var v=parseFloat(s);return isFinite(v)&&/^-?\d*\.?\d+$/.test(s)?v:NaN}
+/* ---------- Daten ---------- */
+var DS=[
+ {id:'pruef',name:'Bearbeitungszeit (Buch S. 73, Nr. 18)',unit:'min',w:1,xs:[4,5,6,7,8,9,10,11],cnt:[5,9,18,27,21,11,6,3],xr:[1,14],mu:[3,12,.1],sg:[.5,4,.1],m0:5,s0:3,yr:[0,.36],yt:.05,thr:.12,cap:'Zeitbedarf in Minuten, 100 Prüflinge. Höhe der Säulen = relative Häufigkeit (Breite 1).'},
+ {id:'frauen',name:'Körpergröße erwachsener Frauen (Buch S. 68)',unit:'cm',w:5,xs:[147.5,152.5,157.5,162.5,167.5,172.5,177.5,182.5,187.5],cnt:[.6,4,12.7,27,29.1,17.6,6.9,1.8,.2],xr:[140,195],mu:[155,180,.5],sg:[2,12,.1],m0:160,s0:9,yr:[0,.07],yt:.01,thr:.10,cap:'Körpergröße in cm. Höhe der Säulen = relative Häufigkeit : Breite (hier Breite 5).'}
+];
+DS.forEach(function(d){var n=0,s=0,q=0;d.cnt.forEach(function(c,i){n+=c;s+=c*d.xs[i];q+=c*d.xs[i]*d.xs[i]});d.n=n;d.mean=s/n;d.sd=Math.sqrt(q/n-d.mean*d.mean);d.h=d.cnt.map(function(c){return c/n/d.w})});
+/* ---------- Zustand ---------- */
+function fresh(){return{tab:1,mu:0,sg:1,a:-1,b:1,ai:false,bi:false,ds:0,m3:5,s3:3,sh:{ax:true,hp:true,wp:true},T:{}}}
+var S=fresh();
+/* ---------- Aufgaben ---------- */
+var TASKS={
+1:[
+ {id:'t1a',t:'mc',q:'Bewege nur den Regler μ. Was passiert mit dem Graphen?',o:['Er wird verschoben, seine Form bleibt gleich.','Er wird breiter oder schmaler.','Er wird höher oder niedriger.'],ok:0,h:['Achte auf die Höhe des Hochpunkts und auf die Breite der Glocke, getrennt voneinander.','Bei jedem μ ist die Glocke gleich hoch und gleich breit.'],sol:'Nur die Lage ändert sich: Der Hochpunkt liegt immer bei x = μ.'},
+ {id:'t1b',t:'num',q:'Stelle σ = 1 ein und lies die Höhe des Hochpunkts ab. Dann σ = 2.',pre:'sg=1',f:[{l:'σ = 1: y ≈',a:.399,tol:.012},{l:'σ = 2: y ≈',a:.199,tol:.012}],h:['Die Höhe steht beim Hochpunkt H im Graphen.','Zwei Nachkommastellen genügen, zum Beispiel 0,40.'],sol:'σ = 1: etwa 0,40; σ = 2: etwa 0,20 (Formel: 1 : (σ·√(2π))).'},
+ {id:'t1c',t:'mc',q:'Der Wert von σ wird verdoppelt. Was passiert mit der Höhe des Hochpunkts?',o:['Sie wird halbiert.','Sie wird verdoppelt.','Sie bleibt gleich.'],ok:0,h:['Vergleiche deine beiden Ergebnisse von oben.','Die Fläche unter dem Graphen muss gleich bleiben. Eine breitere Glocke muss deshalb niedriger sein.'],sol:'Die Höhe 1 : (σ·√(2π)) ist umgekehrt proportional zu σ.'},
+ {id:'t1d',t:'num',q:'Stelle μ = 2 und σ = 1,5 ein. Wo liegen die Wendestellen?',pre:'mu=2,sg=1.5',f:[{l:'x₁ =',a:.5,tol:.06},{l:'x₂ =',a:3.5,tol:.06}],h:['Die grünen Punkte sind die Wendepunkte. Lies ihre x-Koordinaten ab.','Vergleiche den Abstand der Wendestellen von μ mit σ.'],sol:'Die Wendestellen liegen bei μ − σ = 0,5 und μ + σ = 3,5.'},
+ {id:'t1e',t:'mc',q:'Wie groß ist die Fläche zwischen dem Graphen und der x-Achse insgesamt?',o:['Immer 1.','Sie wird mit größerem σ größer.','Sie hängt von μ ab.'],ok:0,h:['Probiere mehrere Werte für μ und σ. Die Fläche ändert sich nicht.','Denke daran, dass die Glockenfunktion eine Dichtefunktion ist.'],sol:'Jede Gauß’sche Glockenfunktion ist eine Dichtefunktion, deshalb ist die Gesamtfläche immer 1.'},
+ {id:'t1f',t:'num',q:'Die Glockenfunktion φ(x) = 1 : √(2π) · e^(−x²/2) ist ein Spezialfall der Schar. Welche Werte haben μ und σ?',pre:'mu=0,sg=1',f:[{l:'μ =',a:0,tol:.01},{l:'σ =',a:1,tol:.01}],h:['In der Schar steht im Exponenten −(x − μ)² : (2σ²). Vergleiche.','Stelle die Regler so ein, dass der Hochpunkt bei x = 0 liegt und etwa 0,40 hoch ist.'],sol:'μ = 0 und σ = 1 (Standard-Glockenfunktion).'}
+],
+2:[
+ {id:'t2a',t:'num',q:'Wie groß ist P(X ≤ μ)? Stelle μ = 0, σ = 1, a = −∞ und b = 0 ein.',pre:'mu=0,sg=1,ai=1,b=0,bi=0',f:[{l:'P(X ≤ 0) =',a:.5,tol:.01}],h:['Die Glocke ist symmetrisch zur Geraden x = μ.','Die Fläche links von μ ist genauso groß wie die rechts davon. Zusammen sind es 1.'],sol:'P(X ≤ μ) = 0,5.'},
+ {id:'t2b',t:'num',q:'Stelle a = 0 und b = 1 ein (μ = 0, σ = 1). Dann a = −∞ und b = 1.',pre:'mu=0,sg=1,ai=0,a=0,b=1,bi=0',f:[{l:'P(0 ≤ X ≤ 1) ≈',a:.341,tol:.006},{l:'P(X ≤ 1) ≈',a:.841,tol:.006}],h:['Lies P unter dem Graphen ab. Beim zweiten Wert schaltest du a = −∞ ein.','Zusammenhang: P(X ≤ 1) = 0,5 + P(0 ≤ X ≤ 1).'],sol:'P(0 ≤ X ≤ 1) ≈ 0,341 und P(X ≤ 1) = Φ(1) ≈ 0,841.'},
+ {id:'t2c',t:'mc',q:'Der Graph der kumulativen Verteilungsfunktion Φ ist punktsymmetrisch. Zu welchem Punkt?',o:['P(μ | 0,5)','P(0 | 0,5)','P(μ | 0)'],ok:0,h:['Bei x = μ ist die Hälfte der Fläche links erreicht.','Verschiebe μ und beobachte den hohlen Punkt im unteren Graphen.'],sol:'Φ(μ) = 0,5. Der Graph ist punktsymmetrisch zu P(μ | 0,5).'},
+ {id:'t2d',t:'num',q:'Stelle μ = 0, σ = 1 ein. Verschiebe b: Wo steigt Φ am stärksten, und wie groß ist die Steigung dort?',pre:'mu=0,sg=1,ai=1,bi=0,b=1',f:[{l:'bei x =',a:0,tol:.25},{l:'Steigung ≈',a:.399,tol:.012}],h:['Die grüne Tangente im unteren Graphen zeigt die Steigung von Φ an der Stelle b.','Die Steigung von Φ an der Stelle x ist φ(x). Wo ist φ am größten?'],sol:'Φ′(x) = φ(x), also ist die Steigung bei x = μ am größten: φ(0) ≈ 0,40.'}
+],
+3:[
+ {id:'t3a',t:'num',q:'Passe die Glockenkurve an die Säulen an und trage deine Werte ein. Wähle dazu einen Datensatz.',f:[{l:'μ ≈',fit:'mean'},{l:'σ ≈',fit:'sd'}],h:['Der Hochpunkt der Glocke soll über der höchsten Säule liegen.','Wenn die Glocke zu hoch und zu schmal ist, wird σ größer.'],sol:'Passende Werte: μ ≈ Mittelwert, σ ≈ Standardabweichung der Daten.'}
+]};
+var TAB=[null,{n:'1 Glocke'},{n:'2 Fläche'},{n:'3 Daten'}];
+/* ---------- Layout und Zeichnen ---------- */
+var W=0,H=0;
+function box(x0,y0,w,h,xr,yr){return{x0:x0,y0:y0,w:w,h:h,xr:xr,yr:yr,X:function(x){return x0+(x-xr[0])/(xr[1]-xr[0])*w},Y:function(y){return y0+h-(y-yr[0])/(yr[1]-yr[0])*h}}}
+function axes(P,xt,yt,lab,xlab){var o='',i,v;
+ for(v=Math.ceil(P.xr[0]/xt-1e-9)*xt;v<=P.xr[1]+1e-9;v+=xt){o+='<line class="g1" x1="'+P.X(v)+'" y1="'+P.Y(P.yr[0])+'" x2="'+P.X(v)+'" y2="'+P.Y(P.yr[1])+'"/>';if(xlab!==false)o+='<text class="t" text-anchor="middle" x="'+P.X(v)+'" y="'+(P.Y(P.yr[0])+17)+'">'+fm(v,Math.abs(xt)<1?1:0)+'</text>'}
+ for(v=P.yr[0];v<=P.yr[1]+1e-9;v+=yt){o+='<line class="g1" x1="'+P.X(P.xr[0])+'" y1="'+P.Y(v)+'" x2="'+P.X(P.xr[1])+'" y2="'+P.Y(v)+'"/>';o+='<text class="t" text-anchor="end" x="'+(P.X(P.xr[0])-6)+'" y="'+(P.Y(v)+4)+'">'+fm(v,2)+'</text>'}
+ o+='<line class="ax" x1="'+P.X(P.xr[0])+'" y1="'+P.Y(P.yr[0])+'" x2="'+P.X(P.xr[1])+'" y2="'+P.Y(P.yr[0])+'"/>';
+ var ax0=Math.max(P.xr[0],Math.min(P.xr[1],0));o+='<line class="ax" x1="'+P.X(P.xr[0])+'" y1="'+P.Y(P.yr[0])+'" x2="'+P.X(P.xr[0])+'" y2="'+P.Y(P.yr[1])+'"/>';
+ if(lab)o+='<text class="tl" x="'+(P.X(P.xr[1])-6)+'" y="'+(P.Y(P.yr[1])+16)+'" text-anchor="end" fill="'+lab[1]+'" style="fill:'+lab[1]+';font-style:italic;font-size:18px">'+lab[0]+'</text>';
+ return o}
+function path(P,fn,a,b,n){var d='',k,x;n=n||240;for(k=0;k<=n;k++){x=a+(b-a)*k/n;d+=(k?'L':'M')+P.X(x).toFixed(1)+' '+P.Y(fn(x)).toFixed(1)}return d}
+function area(P,fn,a,b){var d=path(P,fn,a,b,200);return d+'L'+P.X(b).toFixed(1)+' '+P.Y(0).toFixed(1)+'L'+P.X(a).toFixed(1)+' '+P.Y(0).toFixed(1)+'Z'}
+function txt(x,y,s,cls,anch){return '<text class="'+(cls||'tl')+' halo" x="'+x+'" y="'+y+'" text-anchor="'+(anch||'start')+'">'+s+'</text>'}
+function dot(P,x,y,c,r){return '<circle class="'+c+'" cx="'+P.X(x)+'" cy="'+P.Y(y)+'" r="'+(r||7)+'"/>'}
+function draw(){
+ var g=$('gv'),o='';W=g.clientWidth||800;H=g.clientHeight||560;
+ var ml=54,mr=18,mt=14,mb=34,m=S.mu,s=S.sg,f=function(x){return phi(x,m,s)};
+ if(S.tab===1){
+  var P=box(ml,mt,W-ml-mr,H-mt-mb,[-7,7],[0,1.05]);
+  o+=axes(P,1,.2,['φ',var_f()]);
+  o+='<path class="ar" d="'+area(P,f,-7,7)+'"/>';
+  o+='<path class="cf" d="'+path(P,f,-7,7,400)+'"/>';
+  if(S.sh.ax)o+='<line class="vl" x1="'+P.X(m)+'" y1="'+P.Y(0)+'" x2="'+P.X(m)+'" y2="'+P.Y(1.05)+'"/>'+txt(P.X(m)+6,P.Y(1.05)+14,'x = μ','t','start');
+  var yh=f(m),yw=f(m+s);
+  if(S.sh.hp){o+=dot(P,m,yh,'dh');o+=txt(P.X(m)+(yh>.8?12:10),P.Y(yh)+(yh>.8?18:-12),'H('+fm(m)+' | '+fm(yh,2)+')','tl','start')}
+  if(S.sh.wp){o+=dot(P,m-s,yw,'dw')+dot(P,m+s,yw,'dw');
+   o+=txt(P.X(m-s)-9,P.Y(yw)-10,'W₁('+fm(m-s)+' | '+fm(yw,2)+')','tl','end')+txt(P.X(m+s)+9,P.Y(yw)-10,'W₂('+fm(m+s)+' | '+fm(yw,2)+')','tl','start')}
+ }else if(S.tab===2){
+  var hh=H-mt-mb-34,h1=Math.round(hh*.52),h2=hh-h1,
+   P1=box(ml,mt,W-ml-mr,h1,[-7,7],[0,1.05]),P2=box(ml,mt+h1+34,W-ml-mr,h2,[-7,7],[0,1.05]);
+  var a=S.ai?-7:S.a,b=S.bi?7:S.b;if(b<a){var tt=a;a=b;b=tt}
+  var Pr=Phi(S.bi?9999:b,m,s)-Phi(S.ai?-9999:a,m,s);
+  o+=axes(P1,1,.2,['φ',var_f()],false);
+  o+='<path class="ar2" d="'+area(P1,f,a,b)+'"/>';
+  o+='<path class="cf" d="'+path(P1,f,-7,7,400)+'"/>';
+  if(!S.ai)o+='<line class="vl2" x1="'+P1.X(a)+'" y1="'+P1.Y(0)+'" x2="'+P1.X(a)+'" y2="'+P1.Y(f(a))+'"/>';
+  if(!S.bi)o+='<line class="vl2" x1="'+P1.X(b)+'" y1="'+P1.Y(0)+'" x2="'+P1.X(b)+'" y2="'+P1.Y(f(b))+'"/>';
+  if(Pr>.02)o+=txt(P1.X((a+b)/2),P1.Y(Math.max(.1,Math.min(.5,f((a+b)/2)/2))),'P = '+fm(Pr,3),'tl','middle');
+  var F=function(x){return Phi(x,m,s)};
+  o+=axes(P2,1,.25,['Φ',var_F()]);
+  o+='<path class="cF" d="'+path(P2,F,-7,7,300)+'"/>';
+  o+='<circle class="do" cx="'+P2.X(m)+'" cy="'+P2.Y(.5)+'" r="6"/>';
+  if(!S.ai){o+='<line class="vl2" x1="'+P2.X(a)+'" y1="'+P2.Y(0)+'" x2="'+P2.X(a)+'" y2="'+P2.Y(F(a))+'"/><line class="vl2" x1="'+P2.X(-7)+'" y1="'+P2.Y(F(a))+'" x2="'+P2.X(a)+'" y2="'+P2.Y(F(a))+'"/>'+dot(P2,a,F(a),'dp')}
+  if(!S.bi){o+='<line class="vl2" x1="'+P2.X(b)+'" y1="'+P2.Y(0)+'" x2="'+P2.X(b)+'" y2="'+P2.Y(F(b))+'"/><line class="vl2" x1="'+P2.X(-7)+'" y1="'+P2.Y(F(b))+'" x2="'+P2.X(b)+'" y2="'+P2.Y(F(b))+'"/>'+dot(P2,b,F(b),'dp');
+   var k=f(b),dx=1.1;o+='<line class="tn" x1="'+P2.X(b-dx)+'" y1="'+P2.Y(F(b)-dx*k)+'" x2="'+P2.X(b+dx)+'" y2="'+P2.Y(F(b)+dx*k)+'"/>';
+   o+=txt(P2.X(b)+12,P2.Y(F(b))+(F(b)>.8?22:-4)+(F(b)>.8?0:20),'Steigung ≈ '+fm(k,2),'tl','start')}
+  o+=txt(P2.X(-7)+8,P2.Y(F(b)>.5?F(b):.5)-8,S.bi?'':'Φ(b) = '+fm(F(b),3),'t','start');
+  S._P=Pr;
+ }else{
+  var d=DS[S.ds],P3=box(ml+6,mt,W-ml-mr-6,H-mt-mb,d.xr,d.yr),fd=function(x){return phi(x,S.m3,S.s3)};
+  o+=axes(P3,d.w==1?1:5,d.yt,['φ',var_f()]);
+  d.xs.forEach(function(x,i){var hx=d.h[i];o+='<rect class="bar" x="'+P3.X(x-d.w/2)+'" y="'+P3.Y(hx)+'" width="'+(P3.X(x+d.w/2)-P3.X(x-d.w/2))+'" height="'+(P3.Y(0)-P3.Y(hx))+'"/>'});
+  o+='<path class="cf" d="'+path(P3,fd,d.xr[0],d.xr[1],400)+'"/>';
+  o+=dot(P3,S.m3,fd(S.m3),'dh');
+  var sol=S.T.showFit;
+  if(sol){o+='<path d="'+path(P3,function(x){return phi(x,d.mean,d.sd)},d.xr[0],d.xr[1],300)+'" fill="none" stroke="#6b4fd8" stroke-width="2.5" stroke-dasharray="7 5"/>'}
+ }
+ $('sg').setAttribute('viewBox','0 0 '+W+' '+H);$('sg').innerHTML=o}
+function var_f(){return '#1f6feb'}function var_F(){return '#d6336c'}
+/* ---------- Passgenauigkeit (Tab 3) ---------- */
+function fitQ(){var d=DS[S.ds],e=0,mx=0;d.xs.forEach(function(x,i){e=Math.max(e,Math.abs(d.h[i]-phi(x,S.m3,S.s3)));mx=Math.max(mx,d.h[i])});return e/mx}
+/* ---------- Bedienfeld ---------- */
+function sl(id,lab,min,max,step,val){return '<div class="row"><label for="r_'+id+'"><i>'+lab+'</i> = <span id="o_'+id+'"></span></label><input type="range" id="r_'+id+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"></div>'}
+function buildCtl(){var o='';
+ if(S.tab===1){o=sl('mu','μ',-3,3,.1,S.mu)+sl('sg','σ',.4,2.5,.1,S.sg)+'<div class="tg"><label><input type="checkbox" data-sh="ax"'+(S.sh.ax?' checked':'')+'>Symmetrieachse</label><label><input type="checkbox" data-sh="hp"'+(S.sh.hp?' checked':'')+'>Hochpunkt</label><label><input type="checkbox" data-sh="wp"'+(S.sh.wp?' checked':'')+'>Wendepunkte</label></div><div class="read">Fläche unter dem Graphen (ganz ℝ): <b>1</b></div>'}
+ else if(S.tab===2){o=sl('mu','μ',-3,3,.1,S.mu)+sl('sg','σ',.4,2.5,.1,S.sg)+sl('a','a',-6,6,.1,S.a)+'<div class="tg"><label><input type="checkbox" data-in="ai"'+(S.ai?' checked':'')+'>a = −∞</label></div>'+sl('b','b',-6,6,.1,S.b)+'<div class="tg"><label><input type="checkbox" data-in="bi"'+(S.bi?' checked':'')+'>b = +∞</label></div><div class="read" id="rd2"></div>'}
+ else{var d=DS[S.ds];o='<div class="ba">'+DS.map(function(q,i){return '<button class="'+(i===S.ds?'on':'')+'" data-ds="'+i+'" style="flex:1;font-size:14px;padding:0 8px">'+(i?'Körpergröße':'Bearbeitungszeit')+'</button>'}).join('')+'</div><div class="read">'+d.cap+'</div>'+sl('mu','μ',d.mu[0],d.mu[1],d.mu[2],S.m3)+sl('sg','σ',d.sg[0],d.sg[1],d.sg[2],S.s3)+'<div class="read" id="rd3"></div>'}
+ $('ctl').className='ctl';$('ctl').innerHTML=o;upd()}
+function upd(){
+ var m=S.tab===3?S.m3:S.mu,s=S.tab===3?S.s3:S.sg;
+ if($('o_mu'))$('o_mu').textContent=fm(m,S.tab===3&&DS[S.ds].mu[2]>=.5?1:1);
+ if($('o_sg'))$('o_sg').textContent=fm(s,1);
+ if($('o_a'))$('o_a').textContent=S.ai?'−∞':fm(S.a,1);
+ if($('o_b'))$('o_b').textContent=S.bi?'+∞':fm(S.b,1);
+ if($('r_a'))$('r_a').disabled=S.ai;if($('r_b'))$('r_b').disabled=S.bi;
+ draw();
+ if($('rd2')){var a=S.ai?-9999:S.a,b=S.bi?9999:S.b;if(b<a){var t=a;a=b;b=t}var p=Phi(b,S.mu,S.sg)-Phi(a,S.mu,S.sg);$('rd2').innerHTML='P(a ≤ X ≤ b) = <b>'+fm(p,3)+'</b>'}
+ if($('rd3')){var q=fitQ(),d=DS[S.ds];$('rd3').innerHTML=q<d.thr?'<b style="color:var(--ok)">Das passt gut.</b>':q<2*d.thr?'<b style="color:#8a6a00">Schon nah dran.</b>':'<b style="color:var(--mut)">Noch nicht.</b>'}}
+/* ---------- Aufgabenkarten ---------- */
+function st(id){return S.T[id]||(S.T[id]={tries:0,done:false,vals:[],sel:[]})}
+function renderTasks(){var L=TASKS[S.tab],o='';
+ L.forEach(function(t,i){var s=st(t.id),h='<div class="task'+(s.done?' done':'')+'" data-id="'+t.id+'"><span class="nr">AUFGABE '+(i+1)+'</span><p>'+t.q+'</p>';
+  if(t.pre)h+='<div class="ba"><button class="pre" data-pre="'+t.pre+'">Einstellung setzen</button></div>';
+  if(t.t==='num'){h+='<div class="flds">'+t.f.map(function(f,k){var v=s.vals[k]||'',c=s.done?' good':(s.bad&&s.bad[k]?' bad':'');return '<span class="fld">'+f.l+' <input type="text" inputmode="decimal" autocomplete="off" data-k="'+k+'" value="'+v+'" class="'+c.trim()+'"'+(s.done?' disabled':'')+'></span>'}).join('')+'</div>';
+   if(!s.done)h+='<div class="ba"><button class="pri" data-chk="'+t.id+'">Prüfen</button></div>'}
+  else{h+='<div class="opts">'+t.o.map(function(x,k){var c=s.sel.indexOf(k)>=0?(k===t.ok?' good':' bad'):'';return '<button class="opt'+c+'" data-opt="'+k+'"'+(s.sel.indexOf(k)>=0&&k!==t.ok||s.done?' disabled':'')+'>'+x+'</button>'}).join('')+'</div>'}
+  h+='<div class="fb '+(s.done?'ok':s.tries?'no':'')+'" id="fb_'+t.id+'">'+(s.done?'Richtig.':(s.tries?(s.msg||'Noch nicht.'):''))+'</div>';
+  if(TEACHER)h+='<div class="ba"><button data-sol="'+t.id+'" style="min-height:40px;font-size:14px">Lösung anzeigen</button></div>'+(s.sol?'<div class="sol">'+t.sol+'</div>':'');
+  o+=h+'</div>'});
+ $('tasks').innerHTML=o}
+function hintFor(t,tries){var hs=t.h;return hs[Math.min(tries-1,hs.length-1)]}
+function checkNum(t){var s=st(t.id),d=DS[S.ds],good=[],allok=true,inputs=document.querySelectorAll('[data-id="'+t.id+'"] input[type=text]');
+ inputs.forEach(function(inp,k){s.vals[k]=inp.value});
+ t.f.forEach(function(f,k){var v=pn(s.vals[k]),a=f.a,tol=f.tol;if(f.fit){a=d[f.fit];tol=f.fit==='mean'?(d.w==1?.35:1.2):(d.w==1?.35:1.0)}var ok=!isNaN(v)&&Math.abs(v-a)<=tol;good[k]=ok;if(!ok)allok=false});
+ if(allok){s.done=true;s.bad=null;s.msg=''}else{s.tries++;s.bad=good.map(function(g){return !g});s.msg='Noch nicht. '+hintFor(t,s.tries)}
+ renderTasks()}
+function applyPre(str){str.split(',').forEach(function(p){var kv=p.split('='),k=kv[0],v=parseFloat(kv[1]);
+ if(k==='mu')S.mu=v;else if(k==='sg')S.sg=v;else if(k==='a')S.a=v;else if(k==='b')S.b=v;else if(k==='ai')S.ai=!!v;else if(k==='bi')S.bi=!!v});buildCtl()}
+/* ---------- Ereignisse ---------- */
+$('side').addEventListener('input',function(e){var t=e.target;if(t.type==='range'){var v=parseFloat(t.value),k=t.id.slice(2);
+ if(S.tab===3){if(k==='mu')S.m3=v;else S.s3=v}else{if(k==='mu')S.mu=v;else if(k==='sg')S.sg=v;else if(k==='a')S.a=v;else if(k==='b')S.b=v}upd()}});
+$('side').addEventListener('change',function(e){var t=e.target;if(t.dataset.sh){S.sh[t.dataset.sh]=t.checked;upd()}else if(t.dataset.in){S[t.dataset.in]=t.checked;buildCtl()}});
+$('side').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+ if(t.dataset.tab){S.tab=+t.dataset.tab;go()}
+ else if(t.dataset.pre){applyPre(t.dataset.pre)}
+ else if(t.dataset.chk){var T=TASKS[S.tab].filter(function(q){return q.id===t.dataset.chk})[0];checkNum(T)}
+ else if(t.dataset.opt!=null){var card=t.closest('.task'),T2=TASKS[S.tab].filter(function(q){return q.id===card.dataset.id})[0],s=st(T2.id),k=+t.dataset.opt;
+  if(s.sel.indexOf(k)<0)s.sel.push(k);if(k===T2.ok){s.done=true;s.msg=''}else{s.tries++;s.msg='Noch nicht. '+hintFor(T2,s.tries)}renderTasks()}
+ else if(t.dataset.sol){var s3=st(t.dataset.sol);s3.sol=!s3.sol;
+  var T3=TASKS[S.tab].filter(function(q){return q.id===t.dataset.sol})[0];if(T3.id==='t3a')S.T.showFit=s3.sol;renderTasks();upd()}
+ else if(t.dataset.ds!=null){S.ds=+t.dataset.ds;var d=DS[S.ds];S.m3=d.m0;S.s3=d.s0;S.T.showFit=false;st('t3a').vals=[];st('t3a').done=false;st('t3a').tries=0;st('t3a').bad=null;st('t3a').msg='';st('t3a').sol=false;go()}
+ else if(t.id==='rs'){var tab=S.tab;S=fresh();S.tab=tab;go()}});
+$('rs').addEventListener('click',function(){var tab=S.tab;S=fresh();S.tab=tab;go()});
+function go(){
+ $('tabs').innerHTML=[1,2,3].map(function(i){return '<button data-tab="'+i+'" class="'+(i===S.tab?'on':'')+'">'+TAB[i].n+'</button>'}).join('');
+ buildCtl();renderTasks();$('side').scrollTop=0}
+window.addEventListener('resize',draw);
+if(window.ResizeObserver)new ResizeObserver(function(){draw()}).observe($('gv'));
+['selectstart','dragstart','contextmenu'].forEach(function(t){document.addEventListener(t,function(e){if(e.target.tagName!=='INPUT')e.preventDefault()})});
+go();
+})();
+</script>
+</body>
+</html>

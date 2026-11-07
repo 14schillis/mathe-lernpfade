@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12233f">
+<title>II Normalverteilung – Übungshalle</title>
+<style>
+/* =========================================================
+   Übungshalle zu II Normalverteilung
+   Eine Datei, offline lauffähig, ohne externe Ressourcen.
+   Schrift: Systemschriften (auf dem iPad: SF Pro und New York).
+   ========================================================= */
+:root{
+  --ink:#12233f;          /* Tinte */
+  --ink-2:#2a4066;
+  --ink-soft:#4b5b73;
+  --paper:#f2f5fa;
+  --card:#ffffff;
+  --grid:#e3eaf4;
+  --line:#d5deea;
+  --blue:#1f6fb2;         /* Graph, wie im Lernpfad */
+  --blue-deep:#17508a;
+  --blue-soft:#e3eefa;
+  --amber:#c9770f;        /* zweiter Graph, wie im Lernpfad */
+  --amber-soft:#fdf0dc;
+  --coral:#d1432d;        /* markierte Punkte */
+  --ok:#1e7a4d;
+  --ok-soft:#e3f4ea;
+  --warn:#8a5a00;
+  --warn-soft:#fdf3e0;
+  --g1:#1f6fb2; --g2:#d9730d; --g3:#8e4ec6; --g4:#12907a;
+  --serif:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:18px;
+  --barH:60px;
+  --dockH:0px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  margin:0;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(rgba(31,111,178,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.045) 1px,transparent 1px);
+  background-size:140px 140px,140px 140px,28px 28px,28px 28px;
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+body.hasdock{padding-bottom:var(--dockH)}
+button{font-family:inherit;font-size:1rem;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+p{margin:.5em 0}
+sub,sup{font-size:.7em}
+
+/* ---------- Mathematik-Satz ---------- */
+.m,.mf,.mblock{font-family:var(--serif);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal;white-space:nowrap}
+.mf i,.m i{font-style:italic;padding-right:.04em}
+.mf sup{padding-left:.02em}
+.nb{white-space:nowrap}
+
+/* ---------- Obere Leiste ---------- */
+.bar{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;padding-top:env(safe-area-inset-top)}
+.bar-in{
+  max-width:1180px;margin:0 auto;min-height:var(--barH);
+  padding:8px clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:10px;
+}
+.bar h1{
+  font:600 1.12rem/1.2 var(--serif);margin:0;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em;
+}
+.bar h1 small{font:500 .78rem var(--sans);color:#9fb3d1;margin-left:8px}
+.chipbtn{
+  min-height:44px;padding:0 15px;border-radius:22px;border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.chipbtn:hover{background:rgba(255,255,255,.16)}
+.chipbtn svg{width:18px;height:18px;flex:0 0 auto}
+.tmode{
+  display:none;font-size:.7rem;font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:2px 10px;white-space:nowrap;
+}
+.tmode.on{display:inline-block}
+#back{display:none}
+@media(max-width:560px){.chipbtn .lbl{display:none}.chipbtn{padding:0 12px}.bar h1 small{display:none}}
+body.intr #back{display:inline-flex}
+
+/* ---------- Halle: Kopfbereich ---------- */
+.hero{background:var(--ink);color:#fff;border-radius:0 0 30px 30px;overflow:hidden}
+.hero-in{
+  max-width:1180px;margin:0 auto;position:relative;
+  padding:clamp(20px,4vw,44px) clamp(16px,3vw,32px) clamp(24px,4vw,46px);
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(14px,3vw,36px);align-items:center;
+}
+.hero h2{font:700 clamp(2.1rem,5.6vw,3.5rem)/1.04 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
+.hero p{margin:0;color:#c3d1e8;max-width:36ch;font-size:clamp(.98rem,1.7vw,1.1rem)}
+.hero .art{min-width:0}
+.hero .art svg{width:100%;height:auto;display:block}
+@media(max-width:640px){.hero-in{grid-template-columns:1fr}.hero .art{order:-1;max-width:420px}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.7s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ---------- Halle: Kacheln ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(12px,2.4vw,24px)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:clamp(12px,2vw,20px);margin:clamp(18px,3vw,30px) 0 14px}
+.tile{
+  display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:0;cursor:pointer;overflow:hidden;color:inherit;min-height:262px;position:relative;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -24px rgba(18,35,63,.45);
+}
+.tile:active{transform:translateY(1px)}
+@media(hover:hover){.tile:hover{border-color:#9fb8cd}}
+.tile .art{background:#fbfdff;border-bottom:1px solid var(--line);aspect-ratio:300/132;display:block}
+.tile .art svg{width:100%;height:100%;display:block}
+.tile .tb{padding:13px 17px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.tile h3{font:700 1.32rem/1.15 var(--serif);margin:0;letter-spacing:-.005em}
+.tile p{margin:0;color:var(--ink-soft);font-size:.96rem;line-height:1.4}
+.pips{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+.pip{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.pip.open{background:#9fc3de}
+.pip.full{background:var(--blue)}
+.pipnote{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+.resetrow{margin:-14px 0 30px}
+.linkbtn{background:none;border:0;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;font-size:.88rem;min-height:44px;padding:0 4px;cursor:pointer}
+.confirm{background:#fff;border:1px solid var(--line);border-left:5px solid var(--coral);border-radius:14px;padding:12px 16px 8px;max-width:620px;font-size:.96rem}
+.btn.danger{background:var(--coral);border-color:var(--coral)}
+.daygoal{
+  display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap;
+  margin:clamp(18px,3vw,28px) 0 0;padding:10px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.daygoal+.tiles{margin-top:clamp(12px,2vw,18px)}
+.daygoal .tx{font-size:.96rem;color:var(--ink-soft)}
+.daygoal .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.daygoal .segs{display:flex;gap:6px;flex:1 1 150px;max-width:300px;min-width:130px}
+.seg{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.seg.on{background:var(--ok)}
+.daygoal.done{background:var(--ok-soft);border-color:#bcdfcb}
+.daygoal.done .tx{color:#14603c;font-weight:600}
+.today{
+  position:absolute;top:10px;right:10px;display:inline-flex;gap:5px;align-items:center;background:var(--ok-soft);
+  border:1px solid #bcdfcb;color:#14603c;border-radius:20px;padding:2px 11px 3px;font-size:.8rem;font-weight:700;
+}
+.rule{font-size:.9rem;color:var(--ink-soft);max-width:78ch;margin:2px 0 26px}
+
+/* ---------- Trainer-Ansicht ---------- */
+.lvlbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}
+.lvl{
+  flex:1 1 170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 14px 10px;min-height:62px;cursor:pointer;color:var(--ink);
+}
+.lvl b{font:700 1rem var(--serif)}
+.lvl small{color:var(--ink-soft);font-size:.82rem;line-height:1.3}
+.lvl .dots{display:flex;gap:7px;margin-top:5px;align-items:center}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid #9fb0c6;background:#fff}
+.dot.on{background:var(--ok);border-color:var(--ok)}
+.lvl.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,111,178,.16)}
+.lvl.lock{opacity:.5;cursor:not-allowed}
+.lvl .lk{font-size:.78rem;color:var(--ink-soft)}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(14px,2vw,22px);margin:12px 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.04),0 16px 30px -24px rgba(18,35,63,.4);
+}
+.banner{
+  background:#eaf6f0;border:1px solid #bfe0cf;border-left:5px solid var(--ok);color:#14603c;
+  border-radius:12px;padding:9px 14px;margin:12px 0 0;font-size:.95rem;
+}
+.prompt{font:600 1.2rem/1.42 var(--serif);margin:0 0 10px}
+.prompt .m,.prompt .mf{font-size:1.02em}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.work{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);align-items:start}
+.work>*{min-width:0}
+.work.one{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){.work{grid-template-columns:1fr;gap:10px}}
+@media(min-width:701px) and (max-width:1000px){.work:not(.one){grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}}
+@media(min-width:701px) and (min-height:620px){.work.stick>.viz{position:sticky;top:calc(var(--barH) + env(safe-area-inset-top) + 10px)}}
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+.boardwrap{border:1px solid var(--line);border-radius:14px;background:#fff;padding:6px 6px 2px;overflow:hidden}
+.viz>svg{border:1px solid var(--line);border-radius:14px;background:#fff}
+
+/* ---------- Rückmeldungen und Hilfen ---------- */
+.fb{border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.97rem;display:none;line-height:1.5}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.hint{background:var(--warn-soft);border-left:5px solid #d69220}
+.fb.sol{background:var(--blue-soft);border-left:5px solid var(--blue)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 2px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;
+  padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:650;min-height:48px;min-width:48px;
+}
+.btn:active{background:#0b1830}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.ghost:active{background:var(--blue-soft)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.helpbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.hbtn{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:22px;cursor:pointer;
+  border:1.5px solid #d69220;background:var(--warn-soft);color:var(--warn);font-weight:650;
+}
+.hbtn svg{width:18px;height:18px}
+.hbtn.sol{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-deep)}
+.hbtn.altbtn{border-color:var(--ink-2);background:#fff;color:var(--ink)}
+.hbtn.altbtn[aria-expanded="true"]{background:#eef2f8}
+.alt{background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--ink-2);border-radius:14px;padding:12px 14px 14px;margin-top:12px}
+.alt .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.alt h4{font:700 1.06rem/1.3 var(--serif);margin:0}
+.alt .sm{min-height:40px;padding:6px 14px;font-size:.92rem}
+.altstep{border-top:1px dashed var(--line);padding-top:9px;margin-top:10px}
+.altstep p{margin:.35em 0;font-size:.97rem}
+.altstep .sn{display:flex;gap:9px;align-items:center;font:700 1rem var(--serif);color:var(--blue-deep)}
+.altstep .sn i{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 .85rem var(--sans);font-style:normal;flex:0 0 auto}
+.eq{text-align:center;margin:7px 0;font:500 1.1rem/1.9 var(--serif)}
+.eq .mf{margin:0 .15em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;font-size:.95em;line-height:1.3}
+.frac>span:first-child{padding:0 .3em .05em;border-bottom:1.5px solid currentColor}
+.frac>span:last-child{padding:.05em .3em 0}
+.hbtn .tier{display:inline-flex;gap:3px}
+.hbtn .tier i{width:7px;height:7px;border-radius:50%;background:#e2c58f;display:block}
+.hbtn .tier i.on{background:var(--warn)}
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hintcard{background:var(--warn-soft);border:1px solid #ecd2a2;border-left:5px solid #d69220;border-radius:12px;padding:9px 14px;font-size:.96rem}
+.hintcard b{color:var(--warn)}
+.result{margin-top:14px}
+.result .fb{display:block}
+
+/* ---------- Eingabefelder und Tastenfeld ---------- */
+.term{font:500 1.4rem/1.2 var(--serif);display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0}
+.term .dotop{color:var(--ink-soft)}
+.term .ex{align-self:flex-start;margin-top:3px;margin-left:-3px;font-size:1.1rem}
+.fld{
+  display:inline-flex;align-items:center;justify-content:center;min-width:92px;height:56px;padding:0 14px;
+  border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;
+  font:600 1.35rem var(--serif);position:relative;
+}
+.fld.sm{min-width:70px;height:48px;font-size:1.15rem;padding:0 10px;border-radius:11px}
+.fld .v{white-space:pre}
+.fld .v:empty::before{content:"?";color:#a9b6c9;font-weight:500}
+.fld.act{border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,111,178,.18)}
+.fld.act .v::after{content:"";display:inline-block;width:2px;height:1.15em;background:var(--blue);margin-left:2px;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.fld.act .v:empty::before{content:""}
+@keyframes blink{50%{opacity:0}}
+.fld.ok{border-color:var(--ok);background:var(--ok-soft)}
+.fld.no{border-color:var(--coral);background:#fdecea}
+.fld:disabled{cursor:default}
+.lab{font:italic 600 1.35rem var(--serif);color:var(--ink)}
+
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--ink);display:none;
+  padding:10px clamp(8px,2vw,18px) calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px 20px 0 0;box-shadow:0 -12px 32px -14px rgba(18,35,63,.55);
+}
+body.hasdock .dock{display:block}
+.dock-in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px}
+.key{
+  flex:1 1 42px;min-width:42px;height:50px;border:0;border-radius:11px;background:#f2f5fa;color:var(--ink);
+  font:600 1.3rem var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none;
+}
+.key:active{background:#c9dbf0}
+.key.fn{background:var(--ink-2);color:#fff}
+.key.fn:active{background:#3a5584}
+.key.go{flex:2 1 112px;background:#5aa9ee;color:#0b1b33;font:700 1.05rem var(--sans)}
+.key.go:active{background:#8cc3f5}
+
+/* ---------- Kurven-Tuner ---------- */
+.stepper{display:flex;align-items:center;gap:10px;margin:8px 0}
+.stepper .lab{min-width:1.6ch}
+.sb{
+  width:58px;height:58px;border-radius:16px;border:2px solid var(--blue);background:#fff;color:var(--blue);
+  font:600 2rem/1 var(--sans);cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.sb:active{background:var(--blue-soft)}
+.sb:disabled{opacity:.35;cursor:not-allowed}
+.stepper .val{min-width:96px;text-align:center;font:600 1.7rem var(--serif);font-variant-numeric:tabular-nums}
+.livefn{font:500 1.5rem var(--serif);margin:6px 0 2px;padding:10px 14px;background:var(--blue-soft);border-radius:12px;display:inline-block}
+.goal{display:inline-block;font-size:.84rem;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:20px;padding:2px 11px;margin-bottom:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.86rem;color:var(--ink-soft);margin-top:6px;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:26px;height:0;border-top:3.5px solid var(--blue);display:inline-block}
+.sw.dash{border-top-color:var(--amber);border-top-style:dashed}
+.sw.ghost{border-top-color:var(--ok);border-top-style:dotted}
+
+/* ---------- Zuordnen ---------- */
+.slots{display:grid;gap:9px;margin:8px 0}
+.slot{
+  display:flex;align-items:center;gap:12px;border:2px dashed #b9c7da;border-radius:14px;padding:7px 12px;min-height:60px;
+  background:#fff;cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit;
+}
+.badge{width:34px;height:34px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto;font-family:var(--sans)}
+.slot .ph{color:#8a9ab1;font-size:.93rem}
+.slot .tx{font:600 1.2rem var(--serif)}
+.slot.hl{border-color:var(--blue);background:var(--blue-soft)}
+.slot.pick{border-color:var(--blue);border-style:solid}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.slot.no{animation:shake .42s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.chip{
+  min-height:54px;padding:8px 18px;border-radius:28px;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  font:600 1.22rem var(--serif);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+}
+.chip.sel{background:var(--ink);color:#fff}
+.chip.used{opacity:.3;pointer-events:none}
+.chip.lifted{opacity:.35}
+.chip.drag{position:fixed;z-index:80;pointer-events:none;transform:translate(-50%,-60%);box-shadow:0 14px 28px -10px rgba(18,35,63,.55);background:#fff;color:var(--ink);opacity:1}
+
+/* ---------- Steckbrief ---------- */
+.clues{display:grid;gap:10px;margin:10px 0}
+.clue{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-left:6px solid var(--blue);border-radius:14px;padding:11px 14px}
+.clue .t{flex:1;font:500 1.08rem/1.45 var(--serif)}
+.clue .why{display:block;font:400 .9rem var(--sans);color:#8a2b1c;margin-top:4px}
+.clue .mk{font:700 1.2rem var(--sans);width:26px;text-align:center;flex:0 0 auto}
+.clue.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.clue.ok .mk{color:var(--ok)}
+.clue.no{border-left-color:var(--coral);background:#fdf1ef}
+.clue.no .mk{color:var(--coral)}
+
+/* ---------- Tabelle ---------- */
+.tblwrap{overflow-x:auto;margin:8px 0;-webkit-overflow-scrolling:touch}
+table.tb{border-collapse:separate;border-spacing:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;min-width:100%}
+table.tb th,table.tb td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font:600 1.2rem var(--serif);min-width:78px}
+table.tb tr:last-child td,table.tb tr:last-child th{border-bottom:0}
+table.tb td:last-child,table.tb th:last-child{border-right:0}
+table.tb th.rh{background:var(--ink);color:#fff;font-style:italic;text-align:center;min-width:64px}
+table.tb tr.xr td{background:var(--blue-soft)}
+table.tb tr.arr td{border-bottom:0;padding:0 4px;background:#fff;font:600 .86rem var(--sans);color:var(--amber);height:26px}
+table.tb tr.arr th{background:var(--ink);border-bottom:0}
+
+/* ---------- Fehlerdetektiv ---------- */
+.stud{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.stud .who{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stud .av{width:36px;height:36px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-weight:800}
+.stud .ln{font:500 1.12rem/1.55 var(--serif)}
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;
+  min-height:50px;color:var(--ink);line-height:1.4;font-size:.98rem;
+}
+.opt .mk{font-weight:700;margin-right:.55em;color:var(--blue-deep)}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.chosen-no{border-color:var(--coral);background:#fdecea}
+.opt:disabled{cursor:default}
+.probe{width:100%;border-collapse:collapse;font:500 1rem var(--serif);margin:6px 0 2px}
+.probe td,.probe th{border-bottom:1px solid #ecd2a2;padding:3px 8px;text-align:center}
+.probe .bad{color:var(--coral);font-weight:700}
+
+/* ---------- Merkhilfe ---------- */
+.veil{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:70;display:none}
+.veil.on{display:block}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:71;background:#fff;border-radius:24px 24px 0 0;max-height:86vh;overflow:auto;
+  padding:18px clamp(16px,3vw,32px) calc(26px + env(safe-area-inset-bottom));display:none;
+  box-shadow:0 -16px 40px -14px rgba(10,20,40,.6);
+}
+.sheet.on{display:block}
+.sheet-in{max-width:860px;margin:0 auto}
+.sheet h2{font:700 1.5rem var(--serif);margin:0 0 4px}
+.sheet h3{font:700 1.08rem var(--serif);margin:16px 0 4px;color:var(--blue-deep)}
+.sheet .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet .box{background:var(--blue-soft);border-left:5px solid var(--blue);border-radius:12px;padding:9px 14px;margin:6px 0}
+.sheet .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+@media(max-width:620px){.sheet .duo{grid-template-columns:1fr}}
+.sheet .duo div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.sheet .duo .up{border-left:5px solid var(--blue)}
+.sheet .duo .down{border-left:5px solid var(--amber)}
+.sheet ul{margin:.3em 0;padding-left:1.2em}
+.sheet li{margin:.25em 0}
+
+.hidden{display:none !important}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .draw{animation:none;stroke-dashoffset:0}
+  .fld.act .v::after{animation:none}
+  .slot.no{animation:none}
+}
+
+/* ---------- I.4: kompakter Kopf und Kacheln ---------- */
+.hhead{
+  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px clamp(16px,3vw,32px);align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px clamp(14px,2vw,22px);margin:clamp(12px,2vw,18px) 0 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -26px rgba(18,35,63,.45);
+}
+.hhead .kap{font:600 .8rem var(--sans);color:var(--ink-soft)}
+.hhead h2{font:700 clamp(1.4rem,3.2vw,1.9rem)/1.15 var(--serif);margin:2px 0 4px;color:var(--ink);letter-spacing:-.01em}
+.hhead p{margin:0;color:var(--ink-soft);font-size:.95rem;max-width:64ch;line-height:1.45}
+.hhead .dg{display:flex;flex-direction:column;gap:8px;min-width:0}
+.hhead .dg .tx{font-size:.96rem;color:var(--ink-soft)}
+.hhead .dg .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.hhead .dg .segs{display:flex;gap:6px;max-width:300px}
+.hhead.done{background:var(--ok-soft);border-color:#bcdfcb}
+.hhead.done .dg .tx{color:#14603c;font-weight:600}
+@media(max-width:700px){.hhead{grid-template-columns:1fr}}
+.tiles{margin-top:clamp(10px,1.6vw,16px)}
+.tile{min-height:226px}
+.tile .art{aspect-ratio:300/104}
+.rule{margin-bottom:18px}
+.eq{font-size:1.7rem}
+.ln{font:500 1.12rem/1.55 var(--serif)}
+.stud .ln+.ln{border-top:1px dashed var(--line);margin-top:2px;padding-top:2px}
+.tiles{grid-template-columns:repeat(auto-fill,minmax(204px,1fr));gap:clamp(10px,1.4vw,16px)}
+.tile{min-height:0}
+.tile h3{font-size:1.14rem}
+.tile p{font-size:.9rem}
+.tile .tb{padding:11px 14px 13px}
+.tile .art{aspect-ratio:300/112}
+
+/* ---------- Zusatz (optional) ---------- */
+.zusatz{
+  display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr);width:100%;text-align:left;color:inherit;cursor:pointer;
+  background:#fbfdff;border:2px dashed #9fb8cd;border-radius:var(--r);padding:0;overflow:hidden;margin:clamp(10px,1.4vw,16px) 0 14px;
+}
+.zusatz .art{display:block;border-right:1px dashed #b9c7da;background:#fff}
+.zusatz .art svg{width:100%;height:100%;display:block}
+.zusatz .tb{display:flex;flex-direction:column;gap:3px;padding:10px 16px 12px;min-width:0}
+.zusatz h3{font:700 1.14rem/1.15 var(--serif);margin:0}
+.zusatz p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.4}
+.zusatz .pips{margin-top:4px;max-width:260px}
+@media(hover:hover){.zusatz:hover{border-color:var(--blue)}}
+.optbadge{align-self:flex-start;font-size:.78rem;font-weight:700;color:#7a4a00;background:var(--amber-soft);border:1px solid #e8c78f;border-radius:20px;padding:1px 11px 2px}
+.optnote{background:var(--amber-soft);border:1px solid #e8c78f;border-left:5px solid var(--amber);color:#7a4a00;border-radius:12px;padding:8px 14px;margin:0 0 10px;font-size:.95rem}
+@media(max-width:600px){.zusatz{grid-template-columns:1fr}.zusatz .art{border-right:0;border-bottom:1px dashed #b9c7da;aspect-ratio:300/90}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="chipbtn" id="back" type="button" aria-label="Zurück zur Übungshalle">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg>
+      <span class="lbl">Halle</span>
+    </button>
+    <h1 id="bartitle">Übungshalle<small>II Normalverteilung</small></h1>
+    <span class="tmode" id="tmode">Lehrermodus</span>
+    <button class="chipbtn" id="merk" type="button">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H16v12H5.5A1.5 1.5 0 0 0 4 16.5v-12Z"/><path d="M4 16.5A1.5 1.5 0 0 0 5.5 18H16v-3"/></svg>
+      <span class="lbl">Merkhilfe</span>
+    </button>
+  </div>
+</header>
+
+<main id="stage"></main>
+
+<div class="dock" id="dock" role="group" aria-label="Zahlen eingeben"><div class="dock-in" id="dockin"></div></div>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Merkhilfe">
+  <div class="sheet-in">
+    <div class="row"><h2>Merkhilfe</h2><button class="btn ghost" id="sheetclose" type="button">Schließen</button></div>
+    <div class="box"><span class="mf"><i>φ</i>(<i>x</i>) = <span class="frac"><span>1</span><span><i>σ</i> · √(2π)</span></span> · e<sup>−<span class="frac"><span>(<i>x</i> − <i>μ</i>)<sup>2</sup></span><span>2<i>σ</i><sup>2</sup></span></span></sup></span> &nbsp; Gauß’sche Glockenfunktion mit <span class="mf"><i>μ</i></span> und <span class="mf"><i>σ</i> &gt; 0</span></div>
+
+    <h3>Dichtefunktion</h3>
+    <ul>
+      <li><span class="mf"><i>P</i>(<i>a</i> ≤ <i>X</i> ≤ <i>b</i>) = ∫<sub><i>a</i></sub><sup><i>b</i></sup> <i>f</i>(<i>x</i>) d<i>x</i></span>. Die Gesamtfläche unter dem Graphen von <i>f</i> ist 1.</li>
+      <li>Bei einer stetigen Zufallsgröße gilt <span class="mf"><i>P</i>(<i>X</i> = <i>a</i>) = 0</span>. Deshalb sind „&lt;“ und „≤“ gleichwertig.</li>
+    </ul>
+
+    <h3>Glockenkurve lesen</h3>
+    <ul>
+      <li>Der Hochpunkt liegt bei <span class="mf"><i>x</i> = <i>μ</i></span>. Die Kurve ist symmetrisch zu dieser Geraden.</li>
+      <li>Die Wendestellen liegen bei <span class="mf"><i>μ</i> − <i>σ</i></span> und <span class="mf"><i>μ</i> + <i>σ</i></span>.</li>
+      <li>Höhe des Hochpunkts: <span class="mf"><i>φ</i>(<i>μ</i>) = 1 : (<i>σ</i> · √(2π))</span>, also <span class="mf"><i>σ</i> = 1 : (<i>h</i> · √(2π))</span> mit <span class="mf">√(2π) ≈ 2,507</span>.</li>
+      <li>Größeres <i>σ</i>: breiter und niedriger. Anderes <i>μ</i>: Verschiebung nach links oder rechts.</li>
+    </ul>
+
+    <h3>Kumulative Verteilungsfunktion</h3>
+    <ul>
+      <li><span class="mf"><i>Φ</i>(<i>x</i>) = <i>P</i>(<i>X</i> ≤ <i>x</i>)</span>. Es gilt <span class="mf"><i>P</i>(<i>a</i> ≤ <i>X</i> ≤ <i>b</i>) = <i>Φ</i>(<i>b</i>) − <i>Φ</i>(<i>a</i>)</span> und <span class="mf"><i>P</i>(<i>X</i> ≥ <i>a</i>) = 1 − <i>Φ</i>(<i>a</i>)</span>.</li>
+      <li><span class="mf"><i>Φ</i>(<i>μ</i>) = 0,5</span>. Der Graph von <i>Φ</i> ist punktsymmetrisch zu <span class="mf">(<i>μ</i> | 0,5)</span> und steigt bei <i>μ</i> am stärksten.</li>
+      <li>Mit Symmetrie: <span class="mf"><i>P</i>(<i>X</i> ≤ <i>μ</i> − <i>c</i>) = <i>P</i>(<i>X</i> ≥ <i>μ</i> + <i>c</i>)</span>.</li>
+    </ul>
+
+    <h3>Am Rechner (fx-87DE X, Anwendung Verteilungen)</h3>
+    <ul>
+      <li><b>Kumulierte Normalverteilung:</b> Untere Grenze, Obere Grenze, <i>σ</i>, <i>μ</i> (σ vor μ). Ergebnis: <span class="mf"><i>P</i>(Untere ≤ <i>X</i> ≤ Obere)</span>.</li>
+      <li><b>Inverse Normalverteilung:</b> Fläche, <i>σ</i>, <i>μ</i>. Die Fläche ist die Wahrscheinlichkeit <b>links</b> von der gesuchten Grenze. Probe: Fläche 0,5 liefert <i>μ</i>.</li>
+      <li>Bei einseitigen Wahrscheinlichkeiten ersetzt du die fehlende Grenze durch einen weit entfernten Wert, zum Beispiel <span class="mf"><i>μ</i> − 5<i>σ</i></span> oder <span class="mf"><i>μ</i> + 5<i>σ</i></span>.</li>
+      <li>Für <span class="mf"><i>z</i></span>: Inverse Normalverteilung mit <i>σ</i> = 1 und <i>μ</i> = 0. Dann gilt <span class="mf"><i>c</i> = <i>μ</i> + <i>z</i> · <i>σ</i></span>.</li>
+    </ul>
+
+    <h3>Sigma-Regeln</h3>
+    <div class="duo">
+      <div class="up"><b>Zu <span class="mf"><i>k</i></span> gehört <span class="mf"><i>P</i>(<i>μ</i> − <i>kσ</i> ≤ <i>X</i> ≤ <i>μ</i> + <i>kσ</i>)</span></b><br><span class="mf"><i>k</i> = 1</span> → 0,683<br><span class="mf"><i>k</i> = 2</span> → 0,954<br><span class="mf"><i>k</i> = 3</span> → 0,997</div>
+      <div class="down"><b>Zu <span class="mf"><i>P</i></span> gehört der Faktor <span class="mf"><i>k</i></span></b><br>0,90 → <span class="mf"><i>k</i> = 1,64</span><br>0,95 → <span class="mf"><i>k</i> = 1,96</span><br>0,99 → <span class="mf"><i>k</i> = 2,58</span></div>
+    </div>
+    <ul>
+      <li>Betragsschreibweise: <span class="mf">|<i>X</i> − <i>μ</i>| ≤ <i>kσ</i></span> bedeutet <span class="mf"><i>μ</i> − <i>kσ</i> ≤ <i>X</i> ≤ <i>μ</i> + <i>kσ</i></span>.</li>
+      <li>Die Werte gelten für <b>jede</b> Normalverteilung, egal wie groß <i>μ</i> und <i>σ</i> sind.</li>
+      <li>Halbe Intervalle und Ränder: Die Fläche zwischen <i>μ</i> und <span class="mf"><i>μ</i> + <i>kσ</i></span> ist die Hälfte. Die Fläche außerhalb ist <span class="mf">1 − <i>P</i></span>, jede Seite hat davon die Hälfte.</li>
+    </ul>
+
+    <h3>Rückwärts rechnen</h3>
+    <ul>
+      <li>Aus einem Intervall <span class="mf">[<i>a</i> ; <i>b</i>]</span> um <i>μ</i> mit bekannter Wahrscheinlichkeit: <span class="mf"><i>μ</i> = (<i>a</i> + <i>b</i>) : 2</span> und <span class="mf"><i>kσ</i> = (<i>b</i> − <i>a</i>) : 2</span>.</li>
+      <li>Bei <span class="mf"><i>P</i>(<i>X</i> ≤ <i>c</i>) = 0,95</span> liegen rechts 0,05. Das symmetrische Intervall <span class="mf"><i>μ</i> ± <i>kσ</i></span> hat dann <span class="mf">1 − 2 · 0,05 = 0,90</span>, also <span class="mf"><i>k</i> = 1,64</span>.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+const $=(id)=>document.getElementById(id);
+const TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+
+function div(cls,html){const d=document.createElement("div");if(cls)d.className=cls;if(html!==undefined)d.innerHTML=html;return d;}
+function mkbtn(cls,html,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.innerHTML=html;if(fn)b.addEventListener("click",fn);return b;}
+
+/* deutsche Zahlschreibweise */
+function num(v,dec){
+  if(dec===undefined)dec=4;
+  if(!isFinite(v))return "—";
+  if(Math.abs(v)<5e-10)v=0;
+  let s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){s=s.replace(/0+$/,"").replace(/\.$/,"");}
+  if(s==="-0")s="0";
+  return s.replace(".",",");
+}
+function mnum(v,dec){return num(v,dec).replace("-","−");}
+/* Eingabe: Komma oder Punkt, Minus als - oder −, Brüche wie 1/3 */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-");
+  if(s==="")return NaN;
+  const m=s.match(/^([-+]?)(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)$/);
+  if(m){
+    const n=parseFloat(m[2].replace(",",".")),d=parseFloat(m[3].replace(",","."));
+    return d===0?NaN:(m[1]==="-"?-1:1)*n/d;
+  }
+  s=s.replace(",",".");
+  if(!/^[-+]?\d*\.?\d+$/.test(s))return NaN;
+  return Number(s);
+}
+const close=(x,y,t)=>Math.abs(x-y)<=(t||1e-6)*Math.max(1,Math.abs(y));
+const pw=(a,x)=>Math.pow(a,x);
+const r6=(v)=>Math.round(v*1e6)/1e6;
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+const LAST={};
+function pick(pool,key){
+  let i=Math.floor(Math.random()*pool.length);
+  if(pool.length>1){let g=0;while(i===LAST[key]&&g++<30)i=Math.floor(Math.random()*pool.length);}
+  LAST[key]=i;return pool[i];
+}
+/* Wird eine Stützaufgabe gebraucht, kommt sie aus der Stufe darunter bzw. aus den leichten Aufgaben der Stufe 1. */
+function poolFor(P,lvl,stuetz){
+  if(!stuetz)return {eff:lvl,pool:P[lvl]};
+  if(lvl>1)return {eff:lvl-1,pool:P[lvl-1]};
+  const e=P[1].filter(x=>x.e);
+  return {eff:1,pool:e.length?e:P[1]};
+}
+
+/* Basis als Text: Brüche wie 1/3 werden als Bruch gezeigt */
+function baseHTML(a){
+  if(close(a,1/3))return "(1/3)";
+  if(close(a,2/3))return "(2/3)";
+  return mnum(a,4);
+}
+/* Term b · a^x als HTML. */
+function termHTML(b,a){
+  let bs;
+  if(b===1)bs="";else if(b===-1)bs="−";else bs=mnum(b,4)+" · ";
+  return '<span class="mf">'+bs+baseHTML(a)+"<sup><i>x</i></sup></span>";
+}
+function fnHTML(b,a,name){
+  return '<span class="mf"><i>'+(name||"f")+'</i>(<i>x</i>) = '+termHTML(b,a).replace('<span class="mf">',"").replace(/<\/span>$/,"")+"</span>";
+}
+const isUp=(a,b)=>(b>0&&a>1)||(b<0&&a<1);
+const ICON_BULB='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14.5h6M8 17h4M10 2.5a5 5 0 0 0-3 9c.7.6 1 1.2 1 2h4c0-.8.3-1.4 1-2a5 5 0 0 0-3-9Z"/></svg>';
+
+/* =========================================================
+   SVG-Koordinatensystem (Board-Technik aus dem Lernpfad)
+   ========================================================= */
+const NS="http://www.w3.org/2000/svg";
+let BOARDN=0;
+function el(name,attrs){const e=document.createElementNS(NS,name);for(const k in attrs){if(Object.prototype.hasOwnProperty.call(attrs,k))e.setAttribute(k,attrs[k]);}return e;}
+function clearNode(g){while(g&&g.firstChild)g.removeChild(g.firstChild);}
+const FF="ui-serif,'New York',Georgia,serif";
+
+function Board(host,o){
+  const W=o.w||560,H=o.h||380,fs=o.fs||14;
+  const pad={l:o.padL!==undefined?o.padL:46,r:o.padR!==undefined?o.padR:24,t:o.padT!==undefined?o.padT:16,b:o.padB!==undefined?o.padB:34};
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",o.label||"Koordinatensystem");
+  const X=(x)=>pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r);
+  const Y=(y)=>H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b);
+  const cid="clip"+(++BOARDN);
+  const defs=el("defs",{});const cp=el("clipPath",{id:cid});
+  cp.appendChild(el("rect",{x:X(xmin),y:Y(ymax),width:X(xmax)-X(xmin),height:Y(ymin)-Y(ymax)}));
+  defs.appendChild(cp);svg.appendChild(defs);
+  const grid=el("g",{});let i;
+  const gx=o.gridx,gy=o.gridy;
+  if(gx)for(i=Math.ceil(xmin/gx-1e-9)*gx;i<=xmax+1e-9;i+=gx)grid.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#e6edf6","stroke-width":1}));
+  if(gy)for(i=Math.ceil(ymin/gy-1e-9)*gy;i<=ymax+1e-9;i+=gy)grid.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#e6edf6","stroke-width":1}));
+  svg.appendChild(grid);
+  const curves=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(curves);
+  const axg=el("g",{});svg.appendChild(axg);
+  const dots=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(dots);
+  const lbls=el("g",{});svg.appendChild(lbls);
+  (function(){
+    const AX="#243b5e";
+    axg.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-9)+","+(Y(0)-4.5)+" "+(X(xmax)-9)+","+(Y(0)+4.5),fill:AX}));
+    axg.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-4.5)+","+(Y(ymax)+9)+" "+(X(0)+4.5)+","+(Y(ymax)+9),fill:AX}));
+    let t;
+    const tx=o.tickx,ty=o.ticky;
+    if(tx)for(i=Math.ceil(xmin/tx-1e-9)*tx;i<=xmax-0.15*(xmax-xmin)/6;i+=tx){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(i),y:Y(0)+fs+4,"text-anchor":"middle","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    if(ty)for(i=Math.ceil(ymin/ty-1e-9)*ty;i<=ymax-0.12*(ymax-ymin);i+=ty){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(0)-8,y:Y(i)+fs*0.34,"text-anchor":"end","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    const lx=el("text",{x:X(xmax)-2,y:Y(0)+2*fs+4,"text-anchor":"end","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    lx.textContent="x";axg.appendChild(lx);
+    const ly=el("text",{x:X(0)+8,y:Y(ymax)+fs*0.9,"text-anchor":"start","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    ly.textContent="y";axg.appendChild(ly);
+  })();
+  const YLO=ymin-3*(ymax-ymin),YHI=ymax+3*(ymax-ymin);
+  const api={svg,X,Y,xmin,xmax,ymin,ymax,curves,dots,lbls};
+  api.reset=()=>{clearNode(curves);clearNode(dots);clearNode(lbls);};
+  api.curve=(fn,x0,x1,op)=>{
+    op=op||{};const N=op.n||420;let d="",pen=false,x,y;
+    for(let k=0;k<=N;k++){
+      x=x0+(x1-x0)*k/N;y=fn(x);
+      if(typeof y!=="number"||!isFinite(y)){pen=false;continue;}
+      if(y<YLO)y=YLO;else if(y>YHI)y=YHI;
+      d+=(pen?"L":"M")+X(x).toFixed(2)+" "+Y(y).toFixed(2)+" ";pen=true;
+    }
+    if(d==="")return null;
+    const at={d,fill:"none",stroke:op.color||"#1f6fb2","stroke-width":op.w||3,"stroke-linejoin":"round","stroke-linecap":"round"};
+    if(op.dash)at["stroke-dasharray"]=op.dash;
+    if(op.opacity!==undefined)at.opacity=op.opacity;
+    const p=el("path",at);(op.layer||curves).appendChild(p);return p;
+  };
+  api.dot=(x,y,op)=>{
+    op=op||{};if(!isFinite(y))return null;
+    const c=el("circle",{cx:X(x),cy:Y(Math.max(YLO,Math.min(YHI,y))),r:op.r||6,fill:op.color||"#d1432d",stroke:op.ring||"#fff","stroke-width":op.rw||2});
+    (op.layer||dots).appendChild(c);return c;
+  };
+  api.seg=(x0,y0,x1,y1,op)=>{
+    op=op||{};
+    const l=el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1),stroke:op.color||"#94a3b8","stroke-width":op.w||1.5});
+    if(op.dash)l.setAttribute("stroke-dasharray",op.dash);
+    (op.layer||dots).appendChild(l);return l;
+  };
+  api.text=(x,y,s,op)=>{
+    op=op||{};
+    const t=el("text",{x:X(x)+(op.dx||0),y:Y(y)+(op.dy||0),"font-size":op.size||fs,fill:op.fill||"#243b5e","text-anchor":op.anchor||"middle","font-family":op.family||FF,"font-weight":op.weight||"600",stroke:"#fff","stroke-width":op.halo===false?0:3.6,"paint-order":"stroke","stroke-linejoin":"round"});
+    t.textContent=s;(op.layer||lbls).appendChild(t);return t;
+  };
+  host.innerHTML="";host.appendChild(svg);
+  return api;
+}
+/* Ein sinnvolles Fenster für Punkte (x|y) wählen */
+function niceStep(range,maxTicks){
+  const c=[1,2,5,10,20,50,100,200];
+  for(let i=0;i<c.length;i++){if(range/c[i]<=maxTicks)return c[i];}
+  return 500;
+}
+function viewFor(pts){
+  let xlo=0,xhi=0,ylo=0,yhi=0;
+  pts.forEach(p=>{xlo=Math.min(xlo,p[0]);xhi=Math.max(xhi,p[0]);ylo=Math.min(ylo,p[1]);yhi=Math.max(yhi,p[1]);});
+  const xmin=Math.floor(xlo-1.8),xmax=Math.ceil(xhi+1.8);
+  let yp=(yhi-ylo)||1;
+  const sy=niceStep(yp*1.5,8);
+  let ymax=yhi>0?Math.ceil((yhi+yp*0.22)/sy)*sy:Math.ceil(0.6*sy);
+  let ymin=ylo<0?Math.floor((ylo-yp*0.22)/sy)*sy:-Math.ceil(0.6*sy);
+  if(ymax<=0)ymax=sy;if(ymin>=0)ymin=-sy;
+  return {xmin,xmax,ymin,ymax,gridx:1,gridy:sy,tickx:1,ticky:sy};
+}
+
+/* =========================================================
+   Eingabefelder und Tastenfeld
+   ========================================================= */
+const Dock=(function(){
+  let fields=[],act=null,onCheck=null,visible=false;
+  const host=$("dockin");
+  const KEYS=["1","2","3","4","5","6","7","8","9","0",",","−","/","⌫"];
+  const NAMES={",":"Komma","−":"Minus","/":"Bruchstrich","⌫":"Löschen"};
+  KEYS.forEach(k=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="key"+(NAMES[k]?" fn":"");b.textContent=k;
+    b.setAttribute("aria-label",NAMES[k]||k);
+    b.addEventListener("pointerdown",(e)=>e.preventDefault());
+    b.addEventListener("click",()=>press(k));
+    host.appendChild(b);
+  });
+  const go=document.createElement("button");go.type="button";go.className="key go";go.textContent="Prüfen";
+  go.addEventListener("pointerdown",(e)=>e.preventDefault());
+  go.addEventListener("click",()=>{if(onCheck)onCheck();});
+  host.appendChild(go);
+
+  function measure(){
+    document.documentElement.style.setProperty("--dockH",visible?($("dock").offsetHeight+"px"):"0px");
+  }
+  function press(k){
+    const f=act;if(!f||f.locked)return;
+    let v=f.val;
+    const tail=v.split("/").pop();
+    if(k==="⌫")v=v.slice(0,-1);
+    else if(k==="−"){v=(v[0]==="-")?v.slice(1):"-"+v;}
+    else if(k===","){if(tail.indexOf(",")<0)v+=(tail===""||tail==="-")?"0,":",";}
+    else if(k==="/"){if(v!==""&&v!=="-"&&v.indexOf("/")<0&&!/,$/.test(v))v+="/";}
+    else if(v.length<10)v+=k;
+    f.set(v);f.state("");
+  }
+  function activate(f){
+    if(act)act.el.classList.remove("act");
+    act=f;if(f&&!f.locked)f.el.classList.add("act");
+  }
+  return {
+    use(list,check){
+      fields=list;onCheck=check;visible=true;
+      document.body.classList.add("hasdock");
+      list.forEach(f=>{f.el.addEventListener("click",()=>activate(f));});
+      const first=list.find(f=>!f.locked);activate(first||null);
+      measure();
+    },
+    off(){visible=false;onCheck=null;fields=[];if(act)act.el.classList.remove("act");act=null;document.body.classList.remove("hasdock");measure();},
+    focus:activate,
+    next(){const i=fields.indexOf(act);for(let k=1;k<=fields.length;k++){const f=fields[(i+k)%fields.length];if(!f.locked){activate(f);return;}}},
+    press,measure,
+    get visible(){return visible;},
+    check(){if(onCheck)onCheck();}
+  };
+})();
+window.addEventListener("resize",()=>Dock.measure());
+document.addEventListener("keydown",(e)=>{
+  if(!Dock.visible||e.metaKey||e.ctrlKey||e.altKey)return;
+  if($("sheet").classList.contains("on"))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){Dock.press(k);e.preventDefault();}
+  else if(k===","||k==="."){Dock.press(",");e.preventDefault();}
+  else if(k==="-"){Dock.press("−");e.preventDefault();}
+  else if(k==="/"){Dock.press("/");e.preventDefault();}
+  else if(k==="Backspace"){Dock.press("⌫");e.preventDefault();}
+  else if(k==="Tab"){Dock.next();e.preventDefault();}
+  else if(k==="Enter"&&document.activeElement&&document.activeElement.classList.contains("fld")){Dock.check();e.preventDefault();}
+});
+
+function Field(opt){
+  opt=opt||{};
+  const b=document.createElement("button");b.type="button";b.className="fld"+(opt.sm?" sm":"");
+  b.setAttribute("aria-label",opt.aria||"Eingabefeld");
+  const v=document.createElement("span");v.className="v";b.appendChild(v);
+  const f={el:b,val:"",locked:false,
+    set(s){f.val=s;v.textContent=s.replace(/-/g,"−");},
+    num(){return parseNum(f.val);},
+    state(s){b.classList.remove("ok","no");if(s)b.classList.add(s);},
+    lock(s){f.locked=true;b.classList.remove("act");if(s)f.state(s);}
+  };
+  return f;
+}
+/* f(x) = [b] · [a]^x  – zwei Felder in einer Zeile */
+function TermRow(host,opt){
+  opt=opt||{};
+  const fb=Field({aria:"Wert für b"}),fa=Field({aria:"Wert für a"});
+  const row=div("term");
+  const l=document.createElement("span");l.className="mf";l.innerHTML="<i>"+(opt.name||"f")+"</i>(<i>x</i>) =";
+  row.appendChild(l);row.appendChild(fb.el);
+  const d=document.createElement("span");d.className="dotop";d.textContent="·";row.appendChild(d);
+  row.appendChild(fa.el);
+  const s=document.createElement("span");s.className="mf ex";s.innerHTML="<i>x</i>";row.appendChild(s);
+  host.appendChild(row);
+  return {fb,fa,row};
+}
+
+/* =========================================================
+   Fortschritt
+   ========================================================= */
+/* Tagesziel: nur im Arbeitsspeicher, unabhängig von Stufen und Mastery */
+const DAY={done:{}};
+/* Eine erfolgreich gelöste Aufgabe schaltet die nächste Stufe frei */
+const NEED=1;
+const PROG={};
+const Prog={
+  get(id){return PROG[id]||(PROG[id]={unlocked:TEACHER?3:1,clean:[0,0,0],hard:0});},
+  /* Fortschritt (clean) und Stützlogik (hard) sind getrennt:
+     clean entscheidet nur über die Stufenfreischaltung,
+     hard zählt aufeinanderfolgende Durchgänge mit deutlichen Schwierigkeiten. */
+  record(id,lvl,clean,stuetz,hard){
+    const p=this.get(id);let up=false;
+    if(clean&&!stuetz)p.clean[lvl-1]=Math.min(NEED,p.clean[lvl-1]+1);
+    if(hard)p.hard++;else p.hard=0;
+    if(!stuetz&&p.clean[lvl-1]>=NEED&&p.unlocked===lvl&&lvl<3){p.unlocked=lvl+1;up=true;}
+    saveProgress();
+    return {up,mastered:p.clean[lvl-1]>=NEED,p};
+  }
+};
+
+/* Dauerhafte Speicherung (localStorage): nur unlocked und clean je Trainer.
+   Nicht gespeichert: Tagesziel (DAY), hard, laufende Aufgabe, Eingaben, Hinweise.
+   Im Lehrermodus wird weder gelesen noch geschrieben. */
+const STORE_KEY="normalverteilungHalleProgressV1";
+function saveProgress(){
+  if(TEACHER)return;
+  try{
+    const o={v:1,p:{}};
+    TR.forEach(t=>{const p=PROG[t.id];if(p)o.p[t.id]={unlocked:p.unlocked,clean:p.clean.slice()};});
+    localStorage.setItem(STORE_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function validEntry(e){
+  if(!e||typeof e!=="object"||!Number.isInteger(e.unlocked)||e.unlocked<1||e.unlocked>3)return false;
+  if(!Array.isArray(e.clean)||e.clean.length!==3)return false;
+  for(let i=0;i<3;i++){
+    const c=e.clean[i];
+    if(!Number.isInteger(c)||c<0||c>NEED)return false;
+    if(c>=NEED&&e.unlocked<Math.min(3,i+2))return false;
+    if(c>0&&e.unlocked<i+1)return false;
+  }
+  return true;
+}
+function loadProgress(){
+  if(TEACHER)return;
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw)return;
+    const o=JSON.parse(raw);
+    if(!o||typeof o!=="object"||o.v!==1||!o.p||typeof o.p!=="object")return;
+    TR.forEach(t=>{
+      const e=o.p[t.id];
+      if(validEntry(e))PROG[t.id]={unlocked:e.unlocked,clean:e.clean.slice(),hard:0};
+    });
+  }catch(e){}
+}
+function resetProgress(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  Object.keys(PROG).forEach(k=>{delete PROG[k];});
+  DAY.done={};
+}
+
+/* =========================================================
+   Aufgaben-Rahmen: Hilfen, Rückmeldung, Ergebnis
+   ========================================================= */
+let CUR=null;
+function Task(tr,lvl,stuetz){
+  const T=this;
+  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
+  const host=$("taskhost");host.innerHTML="";Dock.off();
+  if(stuetz)host.appendChild(div("banner","<b>Stützaufgabe.</b> Diese Aufgabe ist etwas leichter, damit du wieder in Schwung kommst. Sie zählt nicht für die Stufe."));
+  const card=div("card");host.appendChild(card);
+  T.work=div("work stick"+(tr.noViz?" one":""));card.appendChild(T.work);
+  T.viz=div("viz");T.side=div("side");
+  if(!tr.noViz)T.work.appendChild(T.viz);
+  T.work.appendChild(T.side);
+  T.body=div("");T.side.appendChild(T.body);
+  T.fb=div("fb");T.side.appendChild(T.fb);
+  T.helpHost=div("");T.side.appendChild(T.helpHost);
+  T.res=div("result");T.side.appendChild(T.res);
+}
+Task.prototype.say=function(kind,html){this.fb.className="fb "+kind+" show";this.fb.innerHTML=html;};
+Task.prototype.clearSay=function(){this.fb.className="fb";this.fb.innerHTML="";};
+Task.prototype.miss=function(){
+  this.wrong++;
+  if(this.wrong>=3&&this.solBtn)this.solBtn.style.display="";
+};
+Task.prototype.setHints=function(hints,solFn){
+  const T=this;T.hints=hints;T.solFn=solFn;
+  T.helpHost.innerHTML="";
+  const bar=div("helpbar"),list=div("hints");
+  T.helpHost.appendChild(bar);T.helpHost.appendChild(list);
+  const hb=document.createElement("button");hb.type="button";hb.className="hbtn";
+  const sb=document.createElement("button");sb.type="button";sb.className="hbtn sol";sb.textContent="Lösung zeigen";
+  function lab(){hb.innerHTML=ICON_BULB+"<span>Hilfe</span><span class='tier'>"+hints.map((h,i)=>"<i class='"+(i<T.helpN?"on":"")+"'></i>").join("")+"</span>";}
+  lab();
+  hb.addEventListener("click",()=>{
+    if(T.over||T.helpN>=hints.length)return;
+    let h=hints[T.helpN];T.helpN++;
+    if(typeof h==="function")h=h();
+    const txt=(h&&h.t!==undefined)?h.t:h;
+    list.appendChild(div("hintcard","<b>Hinweis "+T.helpN+".</b> "+txt));
+    if(h&&h.fn)h.fn();
+    lab();
+    if(T.helpN>=hints.length){hb.style.display="none";sb.style.display="";}
+    Dock.measure();
+  });
+  sb.addEventListener("click",()=>{
+    if(T.over)return;
+    T.solShown=true;
+    if(solFn)solFn();
+  });
+  sb.style.display=TEACHER?"":"none";
+  bar.appendChild(hb);bar.appendChild(sb);
+  T.solBtn=sb;T.hideHelp=()=>{bar.style.display="none";};
+};
+/* Aufgabe beendet (richtig gelöst oder Lösung gezeigt) */
+Task.prototype.complete=function(extraHtml){
+  const T=this;if(T.over)return;T.over=true;
+  if(T.hideHelp)T.hideHelp();
+  Dock.off();
+  DAY.done[T.tr.id]=true;
+  const clean=!T.solShown&&T.helpN<=1&&T.wrong<=2;
+  /* deutliche Schwierigkeiten: Lösung gezeigt oder Hinweise plus Fehlversuche zusammen mindestens 2 */
+  const hard=T.solShown||(T.helpN+T.wrong)>=2;
+  const r=Prog.record(T.tr.id,T.lvl,clean,T.stuetz,hard);
+  T.res.innerHTML="";
+  let msg;
+  if(T.solShown)msg="<b>Lösung angezeigt.</b> Diese Aufgabe zählt nicht mit. Die nächste probierst du selbst.";
+  else if(!clean)msg="<b>Gelöst, aber mit Hilfe oder mehreren Anläufen.</b> Diese Aufgabe zählt noch nicht. Die nächste schaffst du selbst.";
+  else if(T.stuetz)msg="<b>Gut gelöst.</b> Du bist wieder im Fluss. Weiter geht es mit der normalen Aufgabe.";
+  else if(r.up)msg="<b>Erfolgreich gelöst. Stufe "+(T.lvl+1)+" ist freigeschaltet.</b>";
+  else if(r.mastered&&T.lvl===3)msg="<b>Erfolgreich gelöst. Alle Stufen dieses Trainers sind geschafft.</b> Du kannst weiterüben oder einen anderen Trainer wählen.";
+  else if(r.mastered)msg="<b>Erfolgreich gelöst.</b> Diese Stufe ist geschafft. Du kannst weiterüben oder zur nächsten Stufe wechseln.";
+  else msg="<b>Erfolgreich gelöst.</b>";
+  const box=div("fb "+(clean?"ok":"hint")+" show",(extraHtml?extraHtml+"<br>":"")+msg);
+  T.res.appendChild(box);
+  const row=div("btnrow");
+  row.appendChild(mkbtn("btn","Nächste Aufgabe",()=>nextTask()));
+  if(r.up)row.appendChild(mkbtn("btn blue","Zu Stufe "+(T.lvl+1),()=>{CUR.lvl=T.lvl+1;renderLevelBar();nextTask();}));
+  row.appendChild(mkbtn("btn ghost","Zur Halle",()=>showHalle()));
+  T.res.appendChild(row);
+  renderLevelBar();
+  setTimeout(()=>{try{T.res.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+};
+
+/* =========================================================
+   Illustrationen (Kopfbereich und Kacheln)
+   ========================================================= */
+function cd(fn,x0,x1,map,n){
+  n=n||90;let d="";
+  for(let i=0;i<=n;i++){
+    const x=x0+(x1-x0)*i/n;let y=fn(x);
+    if(!isFinite(y))continue;
+    y=Math.max(-40,Math.min(60,y));
+    const p=map(x,y);d+=(d?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  }
+  return d;
+}
+function artWrap(inner){
+  let g="";
+  for(let i=0;i<=15;i++)g+='<line x1="'+(i*20)+'" y1="0" x2="'+(i*20)+'" y2="132" stroke="#e8eef6"/>';
+  for(let j=0;j<=7;j++)g+='<line x1="0" y1="'+(j*20)+'" x2="300" y2="'+(j*20)+'" stroke="#e8eef6"/>';
+  return '<svg viewBox="0 0 300 132" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+g+inner+'</svg>';
+}
+function axes(ox,oy){
+  return '<path d="M8 '+oy+'H292M'+ox+' 128V6" stroke="#243b5e" stroke-width="1.6" fill="none"/>';
+}
+function artTxt(x,y,size,fill,inner,anchor){
+  return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||"middle")+'" font-family="'+FF+'" font-size="'+size+'" fill="'+fill+'">'+inner+'</text>';
+}
+const sp=(t,dy)=>'<tspan dy="-7" font-size="13" font-style="italic">'+t+'</tspan><tspan dy="7">';
+const ART=(function(){
+  const bm=(x,y)=>[150+34*x,116-190*y];
+  const bell=(c,w)=>'<path d="'+cd((x)=>phi(x,0,1),-3.6,3.6,bm,120)+'" stroke="'+(c||"#1f6fb2")+'" stroke-width="'+(w||3.6)+'" fill="none" stroke-linecap="round"/>';
+  const area=(a,b,c,op)=>{let d="M"+bm(a,0)[0].toFixed(1)+" 116";for(let i=0;i<=40;i++){const x=a+(b-a)*i/40,p=bm(x,phi(x,0,1));d+="L"+p[0].toFixed(1)+" "+p[1].toFixed(1);}return '<path d="'+d+'L'+bm(b,0)[0].toFixed(1)+' 116Z" fill="'+(c||"#1f6fb2")+'" fill-opacity="'+(op||.28)+'"/>';};
+  const base='<path d="M10 116H290" stroke="#243b5e" stroke-width="1.8" fill="none"/>';
+  return {
+    dichte(){
+      return artWrap(base+'<path d="M40 116V116L220 28V116Z" fill="#1f6fb2" fill-opacity=".14"/><path d="M40 116L220 28V116" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>'+
+        '<path d="M130 116V72L170 52V116Z" fill="#1f6fb2" fill-opacity=".38"/>'+artTxt(100,38,16,"#12233f",'<tspan font-style="italic">f</tspan>(<tspan font-style="italic">x</tspan>)')+artTxt(150,98,18,"#12233f",'<tspan font-style="italic">P</tspan>'));
+    },
+    para(){
+      const h=bm(0,phi(0,0,1)),w1=bm(-1,phi(1,0,1)),w2=bm(1,phi(1,0,1));
+      return artWrap(base+bell()+'<path d="M150 116V'+h[1]+'" stroke="#94a3b8" stroke-dasharray="4 4" fill="none"/>'+
+        '<circle cx="'+h[0]+'" cy="'+h[1]+'" r="6" fill="#d1432d" stroke="#fff" stroke-width="2"/><circle cx="'+w1[0]+'" cy="'+w1[1]+'" r="5.5" fill="#12907a" stroke="#fff" stroke-width="2"/><circle cx="'+w2[0]+'" cy="'+w2[1]+'" r="5.5" fill="#12907a" stroke="#fff" stroke-width="2"/>'+
+        artTxt(150,128,15,"#12233f",'<tspan font-style="italic">μ</tspan>')+artTxt(226,126,15,"#0e6f5e",'<tspan font-style="italic">μ</tspan> + <tspan font-style="italic">σ</tspan>')+artTxt(74,126,15,"#0e6f5e",'<tspan font-style="italic">μ</tspan> − <tspan font-style="italic">σ</tspan>'));
+    },
+    zuord(){
+      const f=(m,s,c)=>'<path d="'+cd((x)=>phi(x,m,s),-3.6,3.6,(x,y)=>[150+34*x,116-190*y*(s)*0.9],120)+'" stroke="'+c+'" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+      const g=(m,s,c)=>'<path d="'+cd((x)=>phi(x,m,s),-4,4.6,(x,y)=>[150+30*x,116-190*y],120)+'" stroke="'+c+'" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+      return artWrap(base+g(-1.6,.7,"#1f6fb2")+g(.4,1.3,"#d9730d")+g(2.2,.6,"#8e4ec6")+artTxt(98,34,17,"#1f6fb2","A")+artTxt(150,50,17,"#d9730d","B")+artTxt(214,34,17,"#8e4ec6","C"));
+    },
+    wahr(){
+      return artWrap(base+area(-.8,1.4,"#1f6fb2",.32)+bell()+artTxt(bm(-.8,0)[0],130,15,"#12233f",'<tspan font-style="italic">a</tspan>')+artTxt(bm(1.4,0)[0],130,15,"#12233f",'<tspan font-style="italic">b</tspan>')+artTxt(150,26,17,"#12233f",'<tspan font-style="italic">P</tspan>(<tspan font-style="italic">a</tspan> ≤ <tspan font-style="italic">X</tspan> ≤ <tspan font-style="italic">b</tspan>)'));
+    },
+    sigma(){
+      return artWrap(base+area(-1,1,"#1f6fb2",.36)+area(-2,-1,"#1f6fb2",.18)+area(1,2,"#1f6fb2",.18)+bell()+artTxt(150,86,17,"#12233f","0,683")+artTxt(74,128,14,"#12233f","−σ")+artTxt(226,128,14,"#12233f","+σ")+artTxt(150,128,14,"#12233f","μ"));
+    },
+    grenze(){
+      return artWrap(base+area(-3.6,.9,"#1f6fb2",.3)+bell()+'<path d="M'+bm(.9,0)[0]+' 116V'+bm(.9,phi(.9,0,1))[1]+'" stroke="#9b2c1f" stroke-width="2.4"/><circle cx="'+bm(.9,0)[0]+'" cy="116" r="5.5" fill="#d1432d" stroke="#fff" stroke-width="2"/>'+artTxt(bm(.9,0)[0]+4,130,15,"#9b2c1f",'<tspan font-style="italic">c</tspan> = ?')+artTxt(104,96,16,"#12233f","0,90"));
+    },
+    umkehr(){
+      return artWrap(base+area(-1.3,1.3,"#d9730d",.28)+bell()+'<path d="M'+bm(-1.3,0)[0]+' 100H'+bm(1.3,0)[0]+'" stroke="#9b2c1f" stroke-width="2.4"/>'+artTxt(150,92,16,"#9b2c1f","0,95")+artTxt(150,24,20,"#12233f",'<tspan font-style="italic">σ</tspan> = ?'));
+    }
+  };
+})();
+
+/* =========================================================
+   Router: Halle und Trainer
+   ========================================================= */
+const TR=[];
+const trOf=(id)=>TR.find(t=>t.id===id);
+function setBar(title,small){$("bartitle").innerHTML=title+(small?"<small>"+small+"</small>":"");}
+
+function showHalle(){
+  CUR=null;Dock.off();document.body.classList.remove("intr");
+  setBar("Übungshalle","II Normalverteilung");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap"),tiles=div("tiles");
+  const MAIN=TR.filter(t=>!t.optional),OPT=TR.filter(t=>t.optional),N=MAIN.length,nDone=MAIN.filter(t=>DAY.done[t.id]).length,all=nDone===N;
+  const head=div("hhead"+(all?" done":""));
+  head.innerHTML='<div><div class="kap">Mathematik Q13 · II</div><h2>Übungshalle Normalverteilung</h2><p>Sieben Trainer rund um Dichtefunktion, Glockenkurve, Wahrscheinlichkeiten und Sigma-Regeln. Such dir einen aus. Eine Stufe öffnet sich, sobald dir eine Aufgabe sicher gelingt. Den Taschenrechner brauchst du in den Trainern „Wahrscheinlichkeiten“ und „Grenze zur Wahrscheinlichkeit“.</p></div>'+
+    '<div class="dg"><span class="tx" aria-live="polite">'+(all?'✓ Tagesziel erreicht – alle sieben Trainer bearbeitet.':'Heute: <b>'+nDone+' von '+N+'</b> Trainern bearbeitet')+'</span><span class="segs" role="img" aria-label="'+nDone+' von '+N+' Trainern bearbeitet">'+MAIN.map(t=>'<span class="seg'+(DAY.done[t.id]?' on':'')+'"></span>').join("")+'</span></div>';
+  wrap.appendChild(head);
+  MAIN.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="tile";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    const note=done?"Alle Stufen geschafft":"Stufe "+p.unlocked+" offen";
+    b.innerHTML=(DAY.done[tr.id]?'<span class="today"><span aria-hidden="true">✓</span> heute bearbeitet</span>':'')+'<span class="art">'+ART[tr.art]()+'</span><span class="tb"><h3>'+tr.name+'</h3><p>'+tr.blurb+'</p><span class="pips">'+pips+'</span><span class="pipnote">'+note+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    tiles.appendChild(b);
+  });
+  wrap.appendChild(tiles);
+  OPT.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="zusatz";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    b.innerHTML='<span class="art">'+ART[tr.art]()+'</span><span class="tb"><span class="optbadge">Optional · für Schnelle und Interessierte</span><h3>'+tr.name+'</h3><p>'+tr.blurb+' Zählt nicht zum Tagesziel.</p><span class="pips">'+pips+'</span><span class="pipnote">'+(done?"Alle Stufen geschafft":"Stufe "+p.unlocked+" offen")+(DAY.done[tr.id]?" · heute bearbeitet":"")+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    wrap.appendChild(b);
+  });
+  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einem Hinweis, ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe schaltet die nächste Stufe frei. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Deine freigeschalteten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
+  const rr=div("resetrow");
+  const lk=mkbtn("linkbtn","Fortschritt zurücksetzen",()=>{
+    rr.innerHTML="";
+    const cf=div("confirm");
+    cf.setAttribute("role","alertdialog");cf.setAttribute("aria-label","Fortschritt zurücksetzen");
+    cf.appendChild(div("","Möchtest du wirklich deinen gesamten gespeicherten Fortschritt zurücksetzen? Alle freigeschalteten Stufen werden gelöscht."));
+    const row=div("btnrow");
+    row.appendChild(mkbtn("btn ghost","Abbrechen",()=>{rr.innerHTML="";rr.appendChild(lk);}));
+    row.appendChild(mkbtn("btn danger","Ja, zurücksetzen",()=>{resetProgress();showHalle();}));
+    cf.appendChild(row);rr.appendChild(cf);
+  });
+  rr.appendChild(lk);wrap.appendChild(rr);
+  st.appendChild(wrap);
+  window.scrollTo(0,0);
+}
+
+function openTrainer(id){
+  const tr=trOf(id),p=Prog.get(id);
+  CUR={id:id,lvl:TEACHER?1:p.unlocked};
+  document.body.classList.add("intr");
+  setBar(tr.name,"Übungshalle");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap");wrap.innerHTML='<div class="lvlbar" id="lvlbar"></div><div id="taskhost"></div>';
+  st.appendChild(wrap);
+  renderLevelBar();nextTask();
+}
+function renderLevelBar(){
+  const bar=$("lvlbar");if(!bar||!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);bar.innerHTML="";
+  tr.levels.forEach((L,i)=>{
+    const n=i+1,locked=n>p.unlocked;
+    const b=document.createElement("button");b.type="button";
+    b.className="lvl"+(n===CUR.lvl?" sel":"")+(locked?" lock":"");
+    b.innerHTML="<b>Stufe "+n+"</b><small>"+L.n+"</small>"+(locked?'<span class="lk">noch gesperrt</span>':'<span class="dots"><i class="dot'+(p.clean[i]>=NEED?" on":"")+'"></i><span class="lk">'+(p.clean[i]>=NEED?"geschafft":"noch offen")+"</span></span>");
+    b.setAttribute("aria-label","Stufe "+n+", "+L.n+(locked?", noch gesperrt":(p.clean[i]>=NEED?", geschafft":", noch offen")));
+    b.addEventListener("click",()=>{if(locked||n===CUR.lvl)return;CUR.lvl=n;renderLevelBar();nextTask();});
+    bar.appendChild(b);
+  });
+}
+function nextTask(){
+  if(!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);
+  let stuetz=false;
+  if(p.hard>=2&&!TEACHER){stuetz=true;p.hard=0;}
+  const T=new Task(tr,CUR.lvl,stuetz);
+  tr.start(T,CUR.lvl,stuetz);
+  Dock.measure();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Merkhilfe ---------- */
+function openSheet(){$("veil").classList.add("on");$("sheet").classList.add("on");$("sheetclose").focus();}
+function closeSheet(){$("veil").classList.remove("on");$("sheet").classList.remove("on");}
+$("merk").addEventListener("click",openSheet);
+$("sheetclose").addEventListener("click",closeSheet);
+$("veil").addEventListener("click",closeSheet);
+document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeSheet();});
+$("back").addEventListener("click",showHalle);
+$("tmode").classList.toggle("on",TEACHER);
+
+/* =========================================================
+   Gemeinsame Bausteine für II Normalverteilung
+   ========================================================= */
+const X='<i>x</i>',MU='<i>μ</i>',SG='<i>σ</i>';
+function frac(n,d){return '<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';}
+const M=(h)=>'<span class="mf">'+h+'</span>';
+function isDec(v){const d=Math.round(v*1000)/1000;return Math.abs(v-d)<1e-9*Math.max(1,Math.abs(v));}
+function ratP(v){for(let q=1;q<=240;q++){const p=Math.round(v*q);if(p!==0&&Math.abs(v-p/q)<1e-9*Math.max(1,Math.abs(v)))return [p,q];}return null;}
+function ratH(v){if(isDec(v))return mnum(Math.round(v*1000)/1000,3);const r=ratP(v);return r?frac(mnum(r[0],0),r[1]):mnum(v,4);}
+function niceS(range,maxTicks){const raw=range/maxTicks,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;return (f<=1?1:f<=2?2:f<=5?5:10)*p;}
+const R=(a)=>a[Math.floor(Math.random()*a.length)];
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const f3=(v)=>v.toFixed(3).replace(".",",");
+const f2=(v)=>v.toFixed(2).replace(".",",");
+const absOK=(v,y,t)=>isFinite(v)&&Math.abs(v-y)<=t;
+
+/* ---------- Normalverteilung ---------- */
+const SQ2PI=Math.sqrt(2*Math.PI);
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);return s*y;}
+const phi=(x,m,s)=>Math.exp(-0.5*Math.pow((x-m)/s,2))/(s*SQ2PI);
+const Phi=(x,m,s)=>0.5*(1+erf((x-m)/(s*Math.SQRT2)));
+const Pab=(m,s,a,b)=>Phi(b,m,s)-Phi(a,m,s);
+const KS={1:0.683,2:0.954,3:0.997};   /* Sigma-Regeln, wie im Buch */
+const KZ={0.90:1.64,0.95:1.96,0.99:2.58};
+
+/* ---------- Grafik: eigenes SVG ---------- */
+const HALO='paint-order:stroke;stroke:#fff;stroke-width:3.6px;stroke-linejoin:round';
+function plotHTML(o){
+  const W=o.w||560,H=o.h||300,ml=o.yticks?50:18,mr=18,mt=18,mb=o.xlab?50:36,ymin=o.ymin||0;
+  const Xp=(x)=>ml+(x-o.xmin)/(o.xmax-o.xmin)*(W-ml-mr),Yp=(y)=>H-mb-(y-ymin)/(o.ymax-ymin)*(H-mt-mb);
+  const pth=(fn,a,b,n)=>{let d="";n=n||200;for(let k=0;k<=n;k++){const x=a+(b-a)*k/n;d+=(k?"L":"M")+Xp(x).toFixed(1)+" "+Yp(fn(x)).toFixed(1);}return d;};
+  const ppt=(pts)=>pts.map((p,i)=>(i?"L":"M")+Xp(p[0]).toFixed(1)+" "+Yp(p[1]).toFixed(1)).join("");
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(o.label||"Graph")+'" style="width:100%;height:auto">';
+  (o.xticks||[]).forEach(t=>{s+='<line x1="'+Xp(t.x)+'" y1="'+Yp(ymin)+'" x2="'+Xp(t.x)+'" y2="'+Yp(o.ymax)+'" stroke="#e6edf6"/>';});
+  (o.yticks||[]).forEach(t=>{s+='<line x1="'+Xp(o.xmin)+'" y1="'+Yp(t.y)+'" x2="'+Xp(o.xmax)+'" y2="'+Yp(t.y)+'" stroke="#e6edf6"/>';});
+  (o.shades||[]).forEach(h=>{
+    let d;
+    if(h.pts){d=ppt(h.pts)+"Z";}
+    else{const a=Math.max(o.xmin,h.a),b=Math.min(o.xmax,h.b);d=pth(h.fn,a,b,160)+"L"+Xp(b)+" "+Yp(0)+"L"+Xp(a)+" "+Yp(0)+"Z";}
+    s+='<path d="'+d+'" fill="'+(h.color||"#1f6fb2")+'" fill-opacity="'+(h.op||.28)+'" stroke="none"/>';
+  });
+  s+='<line x1="'+Xp(o.xmin)+'" y1="'+Yp(ymin)+'" x2="'+Xp(o.xmax)+'" y2="'+Yp(ymin)+'" stroke="#243b5e" stroke-width="1.9"/>';
+  if(o.yticks)s+='<line x1="'+Xp(o.xmin)+'" y1="'+Yp(ymin)+'" x2="'+Xp(o.xmin)+'" y2="'+Yp(o.ymax)+'" stroke="#243b5e" stroke-width="1.9"/>';
+  (o.xticks||[]).forEach(t=>{s+='<line x1="'+Xp(t.x)+'" y1="'+(Yp(ymin)-4)+'" x2="'+Xp(t.x)+'" y2="'+(Yp(ymin)+4)+'" stroke="#243b5e" stroke-width="1.4"/><text x="'+Xp(t.x)+'" y="'+(Yp(ymin)+19)+'" text-anchor="middle" font-size="14" fill="#4b5b73" font-family="'+FF+'" style="'+HALO+'">'+t.l+'</text>';});
+  (o.yticks||[]).forEach(t=>{s+='<line x1="'+(Xp(o.xmin)-4)+'" y1="'+Yp(t.y)+'" x2="'+(Xp(o.xmin)+4)+'" y2="'+Yp(t.y)+'" stroke="#243b5e" stroke-width="1.4"/><text x="'+(Xp(o.xmin)-8)+'" y="'+(Yp(t.y)+5)+'" text-anchor="end" font-size="14" fill="#4b5b73" font-family="'+FF+'">'+t.l+'</text>';});
+  if(o.xlab)s+='<text x="'+(W-ml-mr)/2+'" y="'+(H-8)+'" text-anchor="middle" font-size="14" fill="#4b5b73" font-family="'+FF+'" style="font-style:italic;display:none"></text>';
+  (o.vlines||[]).forEach(v=>{s+='<line x1="'+Xp(v.x)+'" y1="'+Yp(v.y0||0)+'" x2="'+Xp(v.x)+'" y2="'+Yp(v.y1)+'" stroke="'+(v.color||"#94a3b8")+'" stroke-width="1.6" stroke-dasharray="'+(v.dash||"5 4")+'"/>';});
+  (o.curves||[]).forEach(c=>{s+='<path d="'+(c.pts?ppt(c.pts):pth(c.fn,o.xmin,o.xmax,c.n||320))+'" fill="none" stroke="'+(c.color||"#1f6fb2")+'" stroke-width="'+(c.w||3.4)+'" stroke-linejoin="round" stroke-linecap="round"'+(c.dash?' stroke-dasharray="'+c.dash+'"':"")+'/>';});
+  (o.marks||[]).forEach(m=>{
+    s+='<circle cx="'+Xp(m.x)+'" cy="'+Yp(m.y)+'" r="'+(m.r||6)+'" fill="'+(m.color||"#d1432d")+'" stroke="#fff" stroke-width="2"/>';
+    if(m.t)s+='<text x="'+(Xp(m.x)+(m.dx||0))+'" y="'+(Yp(m.y)+(m.dy===undefined?-12:m.dy))+'" text-anchor="'+(m.anchor||"middle")+'" font-size="'+(m.size||15)+'" fill="'+(m.tc||"#243b5e")+'" font-weight="600" font-family="'+FF+'" style="'+HALO+'">'+m.t+'</text>';
+  });
+  (o.texts||[]).forEach(m=>{s+='<text x="'+Xp(m.x)+'" y="'+Yp(m.y)+'" text-anchor="'+(m.anchor||"middle")+'" font-size="'+(m.size||16)+'" fill="'+(m.color||"#243b5e")+'" font-weight="600" font-family="'+FF+'" style="'+HALO+'">'+m.t+'</text>';});
+  return s+'</svg>';
+}
+function drawIn(host,o){host.innerHTML="";const w=div("boardwrap");w.innerHTML=plotHTML(o);host.appendChild(w);if(o.legend)host.appendChild(div("legend",o.legend));if(o.cap)host.appendChild(div("figcap",o.cap));}
+/* Glocke mit echten Zahlen auf der x-Achse; Markierungen bei μ + jσ */
+function bellOpts(m,s,shade,extra){
+  const xmin=m-4*s,xmax=m+4*s,ymax=phi(m,m,s)*1.18,xt=[];
+  for(let j=-3;j<=3;j++)xt.push({x:m+j*s,l:mnum(m+j*s,2)});
+  const o={xmin,xmax,ymax,xticks:xt,curves:[{fn:(x)=>phi(x,m,s)}],shades:(shade||[]).map(h=>({fn:(x)=>phi(x,m,s),a:h[0],b:h[1],color:h[2],op:h[3]})),label:"Glockenkurve mit markiertem Bereich"};
+  if(extra)Object.assign(o,extra);return o;
+}
+/* Glocke in der Standardlage mit symbolischer Beschriftung μ−c, μ, μ+c */
+function symOpts(shade,extra){
+  const o={xmin:-3.4,xmax:3.4,ymax:.46,xticks:[{x:-1.4,l:"μ − c"},{x:0,l:"μ"},{x:1.4,l:"μ + c"}],curves:[{fn:(x)=>phi(x,0,1)}],
+    shades:(shade||[]).map(h=>({fn:(x)=>phi(x,0,1),a:Math.max(-3.4,h[0]),b:Math.min(3.4,h[1]),color:h[2],op:h[3]})),
+    vlines:[{x:-1.4,y1:phi(-1.4,0,1)},{x:1.4,y1:phi(1.4,0,1)},{x:0,y1:phi(0,0,1)}],label:"Glockenkurve, symmetrisch zu μ"};
+  if(extra)Object.assign(o,extra);return o;
+}
+Task.prototype.noViz=function(){this.work.classList.add("one");this.viz.style.display="none";};
+Task.prototype.showViz=function(fn){this.work.classList.remove("one");this.viz.style.display="";fn(this.viz);};
+
+function frow(labelHtml,f){const r=div("term");const l=document.createElement("span");l.className="mf";l.innerHTML=labelHtml;r.appendChild(l);r.appendChild(f.el);return r;}
+function OptList(T,items,onPick){
+  const ord=shuffle(items.map((_,i)=>i)),box=div("opts"),els=[];
+  ord.forEach((ix,k)=>{
+    const it=items[ix],b=document.createElement("button");b.type="button";b.className="opt";
+    b.innerHTML='<span class="mk">'+"ABCD"[k]+'</span>'+it.h;
+    b.addEventListener("click",()=>{if(T.over||b.disabled)return;onPick(it,b);});
+    els.push({b,it});box.appendChild(b);
+  });
+  return {box,els,lock(){els.forEach(o=>{o.b.disabled=true;});}};
+}
+
+/* Allgemeine Aufgabe mit Zahlenfeldern.
+   o: prompt, eq, note, fields[{label,ans,tol,dec,ok}], viz(host), reveal(host), msg(vals,oks), okHtml, solHtml, hints[] */
+function numTask(T,o){
+  T.body.appendChild(div("prompt",o.prompt));
+  if(o.eq)T.body.appendChild(div("eq",o.eq));
+  if(o.viz)T.viz.innerHTML="",o.viz(T.viz);else T.noViz();
+  const fs=o.fields.map(f=>{const fd=Field({aria:f.aria||"Antwort"});T.body.appendChild(frow(f.label,fd));return fd;});
+  T.body.appendChild(div("small",o.note||"Dezimalzahlen mit Komma. Brüche gibst du mit <b>/</b> ein."));
+  const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+  Dock.use(fs,check);
+  function finish(){fs.forEach(f=>f.lock("ok"));if(o.reveal)T.showViz(o.reveal);}
+  function check(){
+    if(T.over)return;
+    const vals=fs.map(f=>f.num());
+    if(vals.some(v=>isNaN(v))){T.say("hint","Trage in jedes Feld eine Zahl ein. Dezimalzahlen schreibst du mit Komma.");return;}
+    const oks=o.fields.map((f,i)=>f.ok?f.ok(vals[i]):absOK(vals[i],f.ans,f.tol));
+    fs.forEach((f,i)=>f.state(oks[i]?"ok":"no"));
+    if(oks.every(Boolean)){finish();T.say("ok","<b>Richtig.</b> "+(o.okHtml||""));T.complete("");return;}
+    T.miss();
+    T.say("hint","<b>Noch nicht.</b> "+(o.msg?o.msg(vals,oks):"Prüfe deine Rechnung noch einmal."));
+  }
+  T.setHints(o.hints||[],()=>{
+    o.fields.forEach((f,i)=>fs[i].set(f.show!==undefined?f.show:num(f.ans,f.dec===undefined?3:f.dec)));
+    finish();T.say("sol","<b>Lösung:</b> "+(o.solHtml||o.okHtml||""));T.complete("");
+  });
+}
+
+/* Zuordnen: Kurven (Slots) und Werte (Chips). o: slots[{badge,col}], chips[html] (Chip i gehört zu Slot i), prompt, hint(i) */
+function Matcher(T,o){
+  const n=o.slots.length,assign=Array(n).fill(-1),bad=Array(n).fill(false),ord=shuffle(o.chips.map((_,i)=>i));
+  let sel=-1,done=false;
+  const slotsEl=div("slots"),chipsEl=div("chips");
+  T.body.appendChild(slotsEl);T.body.appendChild(chipsEl);
+  const brow=div("btnrow");const go=mkbtn("btn","Prüfen",check);brow.appendChild(go);T.body.appendChild(brow);
+  function render(){
+    slotsEl.innerHTML="";chipsEl.innerHTML="";
+    o.slots.forEach((s,i)=>{
+      const b=document.createElement("button");b.type="button";
+      b.className="slot"+(assign[i]>=0?" pick":"")+(bad[i]?" no":"")+(done?" ok":"");
+      b.innerHTML='<span class="badge" style="background:'+s.col+'">'+s.badge+'</span>'+(assign[i]>=0?'<span class="tx">'+o.chips[assign[i]]+'</span>':'<span class="ph">'+(sel>=0?"hier ablegen":"erst einen Wert antippen")+'</span>');
+      b.addEventListener("click",()=>{
+        if(done||T.over)return;
+        if(sel>=0){for(let k=0;k<n;k++)if(assign[k]===sel)assign[k]=-1;assign[i]=sel;sel=-1;bad[i]=false;}
+        else if(assign[i]>=0){assign[i]=-1;bad[i]=false;}
+        render();
+      });
+      slotsEl.appendChild(b);
+    });
+    ord.forEach(j=>{
+      const c=document.createElement("button");c.type="button";
+      c.className="chip"+(sel===j?" sel":"")+(assign.indexOf(j)>=0?" used":"");
+      c.innerHTML=o.chips[j];
+      c.addEventListener("click",()=>{if(done||T.over)return;sel=(sel===j?-1:j);render();});
+      chipsEl.appendChild(c);
+    });
+  }
+  function check(){
+    if(T.over)return;
+    if(assign.some(a=>a<0)){T.say("hint","Ordne zuerst jeder Kurve einen Wert zu: erst den Wert antippen, dann die Kurve.");return;}
+    let all=true;const msgs=[];
+    for(let i=0;i<n;i++){bad[i]=(assign[i]!==i);if(bad[i]){all=false;msgs.push(o.slots[i].badge);}}
+    if(all){done=true;render();T.say("ok","<b>Richtig.</b> "+(o.okHtml||""));T.complete("");return;}
+    T.miss();render();
+    T.say("hint","<b>Noch nicht.</b> Falsch zugeordnet: Kurve "+msgs.join(", ")+". "+(o.msg||"")+" Tippe eine falsche Zuordnung an, um sie zu lösen.");
+  }
+  T.setHints(o.hints,()=>{for(let i=0;i<n;i++){assign[i]=i;bad[i]=false;}done=true;render();T.say("sol","<b>Lösung:</b> "+(o.okHtml||""));T.complete("");});
+  render();
+}
+
+/* =========================================================
+   TRAINER 1 – Dichtefunktion
+   ========================================================= */
+const DT={
+  lin:{g:(b)=>(x)=>2*x/(b*b),F:(b,c,d)=>(d*d-c*c)/(b*b),k:(b)=>2/(b*b),term:(b)=>ratH(2/(b*b))+" · "+X,gH:X,hint:(b)=>"Stammfunktion von "+M(ratH(2/(b*b))+" · "+X)+": "+M(ratH(1/(b*b))+" · "+X+"<sup>2</sup>")+"."},
+  quad:{g:(b)=>(x)=>3*x*x/(b*b*b),F:(b,c,d)=>(d*d*d-c*c*c)/(b*b*b),k:(b)=>3/(b*b*b),term:(b)=>ratH(3/(b*b*b))+" · "+X+"<sup>2</sup>",hint:(b)=>"Stammfunktion von "+M(ratH(3/(b*b*b))+" · "+X+"<sup>2</sup>")+": "+M(ratH(1/(b*b*b))+" · "+X+"<sup>3</sup>")+"."}
+};
+function dtGraph(host,b,fn,c,d,ymax,yt){
+  const xt=[];const st=b>10?2:1;for(let v=0;v<=b+1;v+=st)xt.push({x:v,l:mnum(v,0)});
+  const pts=[[0,0],[0,fn(0)]];const N=80;for(let k=0;k<=N;k++){const x=b*k/N;pts.push([x,fn(x)]);}pts.push([b,0]);
+  drawIn(host,{xmin:-.6,xmax:b+1,ymax,xticks:xt,yticks:yt,shades:c!==null?[{fn:(x)=>(x>=0&&x<=b)?fn(x):0,a:c,b:d,color:"#1f6fb2",op:.3}]:[],curves:[{pts:pts.concat([[b+1,0]])},{pts:[[-.6,0],[0,0]]}],
+    label:"Dichtefunktion f mit markierter Fläche",cap:c!==null?"Die markierte Fläche zwischen <i>x</i> = "+mnum(c,0)+" und <i>x</i> = "+mnum(d,0)+" ist die gesuchte Wahrscheinlichkeit.":"Der Graph von <i>f</i> mit dem gefundenen <i>k</i>."});
+}
+const DP1=[],DP2=[];
+[2,4,5,8,10].forEach(b=>{for(let c=0;c<b;c++)for(let d=c+1;d<=b;d++){if(c===0&&d===b)continue;DP1.push({b,c,d,e:(b===2||b===4||b===5||b===10)&&(c===0||d===b)?1:0});}});
+[2,3,4,5,6,8,10].forEach(b=>{["lin","quad"].forEach(t=>{for(let c=0;c<b;c++)for(let d=c+1;d<=b;d++){if(c===0&&d===b)continue;if(b>5&&(d-c)>3&&Math.random()<.7)continue;DP2.push({b,c,d,t,e:(t==="lin"&&b<=5&&c===0)?1:0});}});});
+const DP3=[];
+[2,3,4,5,6].forEach(b=>{
+  DP3.push({t:"lin",b,k:2/(b*b),term:"<i>k</i> · "+X,g:X});
+  DP3.push({t:"quad",b,k:3/(b*b*b),term:"<i>k</i> · "+X+"<sup>2</sup>",g:X+"<sup>2</sup>"});
+  DP3.push({t:"tri",b,k:2/(b*b),term:"<i>k</i> · ("+b+" − "+X+")",g:"("+b+" − "+X+")"});
+  DP3.push({t:"par",b,k:6/(b*b*b),term:"<i>k</i> · "+X+" · ("+b+" − "+X+")",g:X+" · ("+b+" − "+X+")"});
+});
+function dp3Int(it){ // Integral über [0;b] ohne k
+  const b=it.b;return it.t==="lin"?b*b/2:it.t==="quad"?b*b*b/3:it.t==="tri"?b*b/2:b*b*b/6;
+}
+function dp3Fn(it){const b=it.b;return it.t==="lin"?(x)=>it.k*x:it.t==="quad"?(x)=>it.k*x*x:it.t==="tri"?(x)=>it.k*(b-x):(x)=>it.k*x*(b-x);}
+TR.push({
+  id:"dichte",name:"Dichtefunktion",art:"dichte",
+  blurb:"Wahrscheinlichkeiten als Flächen unter dem Graphen von f.",
+  levels:[{n:"Fläche aus dem Graphen"},{n:"Integral mit Term"},{n:"Parameter k bestimmen"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl,easy=stuetz&&lvl===1;
+    if(eff===1){
+      let pool=DP1;if(easy)pool=DP1.filter(x=>x.e);
+      const it=pick(pool,"d1"+(stuetz?"s":"")),h=1/it.b,P=(it.d-it.c)/it.b;
+      numTask(T,{
+        prompt:"Die Zufallsgröße <i class='m'>X</i> hat die abgebildete Dichtefunktion <i class='m'>f</i>. Berechne "+M("<i>P</i>("+it.c+" ≤ <i>X</i> ≤ "+it.d+")")+".",
+        viz:(host)=>dtGraph(host,it.b,()=>h,it.c,it.d,h*1.5,[{y:h,l:mnum(h,3)}]),
+        fields:[{label:M("<i>P</i>("+it.c+" ≤ <i>X</i> ≤ "+it.d+") ="),ans:P,tol:.0011,aria:"Wahrscheinlichkeit"}],
+        msg:(v)=>absOK(v,1-P,.0011)?"Das ist die Fläche <b>außerhalb</b> des markierten Bereichs. Gesucht ist die markierte Fläche.":absOK(v,h,.0011)?"Das ist nur die Höhe des Rechtecks. Die Fläche ist Breite mal Höhe.":"Die markierte Fläche ist ein Rechteck. Breite: "+(it.d-it.c)+", Höhe: "+mnum(h,3)+".",
+        okHtml:M("<i>P</i>("+it.c+" ≤ <i>X</i> ≤ "+it.d+") = "+(it.d-it.c)+" · "+mnum(h,3)+" = "+mnum(P,3)),
+        hints:["Die Wahrscheinlichkeit ist der Inhalt der markierten Fläche.","Die Fläche ist ein Rechteck: Breite mal Höhe.","Breite: "+M(it.d+" − "+it.c+" = "+(it.d-it.c))+". Höhe: "+M(mnum(h,3))+"."]
+      });
+    }else if(eff===2){
+      const it=pick(DP2.filter(x=>!easy||x.e),"d2"+(stuetz?"s":"")),D=DT[it.t],fn=D.g(it.b),P=D.F(it.b,it.c,it.d);
+      const fmax=fn(it.b);
+      numTask(T,{
+        prompt:"Die Zufallsgröße <i class='m'>X</i> hat die Dichtefunktion <i class='m'>f</i> mit "+M("<i>f</i>(<i>x</i>) = "+D.term(it.b))+" für "+M("0 ≤ <i>x</i> ≤ "+it.b)+" und <i class='m'>f</i>(<i class='m'>x</i>) = 0 sonst. Berechne mit dem Integral "+M("<i>P</i>("+it.c+" ≤ <i>X</i> ≤ "+it.d+")")+".",
+        viz:(host)=>dtGraph(host,it.b,fn,it.c,it.d,fmax*1.18,[{y:fmax,l:mnum(fmax,2)}]),
+        fields:[{label:M("<i>P</i>("+it.c+" ≤ <i>X</i> ≤ "+it.d+") ="),ans:P,tol:.0011,aria:"Wahrscheinlichkeit"}],
+        msg:(v)=>absOK(v,1-P,.0011)?"Das ist die Wahrscheinlichkeit des <b>Gegenereignisses</b>. Gesucht ist das Integral von "+it.c+" bis "+it.d+".":"Berechne "+M("F("+it.d+") − F("+it.c+")")+" mit einer Stammfunktion <i>F</i>. Beachte: "+(it.t==="lin"?"die Stammfunktion von <i>x</i> ist <i>x</i><sup>2</sup>/2.":"die Stammfunktion von <i>x</i><sup>2</sup> ist <i>x</i><sup>3</sup>/3."),
+        okHtml:M("<i>P</i>("+it.c+" ≤ <i>X</i> ≤ "+it.d+") = ∫<sub>"+it.c+"</sub><sup>"+it.d+"</sup> <i>f</i>(<i>x</i>) d<i>x</i> = "+mnum(P,4)),
+        hints:["Die Wahrscheinlichkeit ist das Integral von <i>f</i> über das Intervall: "+M("<i>P</i> = ∫<sub>"+it.c+"</sub><sup>"+it.d+"</sup> <i>f</i>(<i>x</i>) d<i>x</i>")+".",D.hint(it.b),"Setze die Grenzen ein: "+M("<i>F</i>("+it.d+") − <i>F</i>("+it.c+")")+"."]
+      });
+    }else{
+      const it=pick(DP3,"d3"),I=dp3Int(it);
+      numTask(T,{
+        prompt:"Die Funktion <i class='m'>f</i> mit "+M("<i>f</i>(<i>x</i>) = "+it.term)+" für "+M("0 ≤ <i>x</i> ≤ "+it.b)+" und <i class='m'>f</i>(<i class='m'>x</i>) = 0 sonst soll eine Dichtefunktion sein. Bestimme <i class='m'>k</i>.",
+        fields:[{label:M("<i>k</i> ="),ans:it.k,ok:(v)=>relOK(v,it.k,.01),aria:"Wert von k",dec:4,show:ratS(it.k)}],
+        reveal:(host)=>dtGraph(host,it.b,dp3Fn(it),null,null,it.k*(it.t==="lin"||it.t==="tri"?it.b:it.t==="quad"?it.b*it.b:it.b*it.b/4)*1.18,[]),
+        msg:(v)=>relOK(v,I,.01)?"Das ist der Wert des Integrals ohne <i>k</i>. Es muss gelten "+M("<i>k</i> · "+ratH(I)+" = 1")+".":"Die Fläche unter dem Graphen muss 1 sein: "+M("∫<sub>0</sub><sup>"+it.b+"</sup> <i>f</i>(<i>x</i>) d<i>x</i> = 1")+".",
+        okHtml:M("<i>k</i> · "+(isDec(I)?mnum(I,3):ratH(I))+" = 1 ⇒ <i>k</i> = "+ratH(it.k)),
+        hints:["Eine Dichtefunktion hat insgesamt die Fläche 1: "+M("∫<sub>0</sub><sup>"+it.b+"</sup> <i>f</i>(<i>x</i>) d<i>x</i> = 1")+".","Ziehe <i>k</i> vor das Integral: "+M("<i>k</i> · ∫<sub>0</sub><sup>"+it.b+"</sup> "+it.g+" d<i>x</i> = 1")+". Berechne zuerst das Integral.","Das Integral ohne <i>k</i> ergibt "+M(ratH(I))+". Also "+M("<i>k</i> · "+ratH(I)+" = 1")+"."],
+        note:"Brüche gibst du mit <b>/</b> ein, Dezimalzahlen mit mindestens drei Nachkommastellen."
+      });
+    }
+  }
+});
+function ratS(v){if(isDec(v))return num(Math.round(v*1000)/1000,3);const r=ratP(v);return r?(r[0]+"/"+r[1]):num(v,4);}
+function relOK(v,y,tol){return isFinite(v)&&Math.abs(v-y)<=tol*Math.abs(y);}
+
+/* =========================================================
+   TRAINER 2 – μ und σ bestimmen
+   ========================================================= */
+const P2A=[],P2B=[],P2C=[];
+[[0,1],[3,1],[-2,1],[5,2],[2,2],[-3,2],[4,3],[1,3],[6,1],[0,2],[-1,3]].forEach(a=>P2A.push({m:a[0],s:a[1],e:(a[1]===1||a[0]===0)?1:0}));
+[-2,0,1,3,4,6].forEach(m=>[.5,1,1.5,2,2.5].forEach(s=>P2B.push({m,s,e:(s===1||s===2)?1:0})));
+[-2,0,2,3,5].forEach(m=>[.5,1,1.5,2,2.5,3].forEach(s=>P2C.push({m,s})));
+function termNV(m,s){
+  const xm=m===0?X:(m>0?"("+X+" − "+m+")":"("+X+" + "+(-m)+")");
+  return M("<i>f</i>(<i>x</i>) = "+frac("1",(s===1?"":mnum(s,3)+" · ")+"√(2π)")+" · e<sup>−"+frac(xm+"<sup>2</sup>",mnum(2*s*s,3))+"</sup>");
+}
+function glockeViz(m,s,o){
+  const xmin=Math.floor(m-3.5*s-.01),xmax=Math.ceil(m+3.5*s+.01),ymax=Math.max(.5,Math.ceil(phi(m,m,s)*1.25*10)/10),xt=[];
+  const st=(xmax-xmin)>14?2:1;for(let v=Math.ceil(xmin/st)*st;v<=xmax;v+=st)xt.push({x:v,l:mnum(v,0)});
+  const ys=[];const yst=ymax>.9?.2:.1;for(let v=yst;v<=ymax+1e-9;v+=yst)ys.push({y:v,l:mnum(v,1)});
+  return Object.assign({xmin,xmax,ymax,xticks:xt,yticks:ys,curves:[{fn:(x)=>phi(x,m,s)}],label:"Glockenkurve"},o||{});
+}
+TR.push({
+  id:"parameter",name:"μ und σ bestimmen",art:"para",
+  blurb:"μ und σ aus Funktionsterm und Graph ablesen.",
+  levels:[{n:"Aus dem Funktionsterm"},{n:"Aus den Wendepunkten"},{n:"Aus dem Hochpunkt"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl,easy=stuetz&&lvl===1;
+    if(eff===1){
+      const it=pick(P2A.filter(x=>!easy||x.e),"p1"+(stuetz?"s":""));
+      numTask(T,{
+        prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit der Dichtefunktion <i class='m'>f</i>. Lies <i class='m'>μ</i> und <i class='m'>σ</i> ab.",
+        eq:termNV(it.m,it.s),
+        fields:[{label:M(MU+" ="),ans:it.m,tol:.01,aria:"Wert von μ",dec:2},{label:M(SG+" ="),ans:it.s,tol:.01,aria:"Wert von σ",dec:2}],
+        msg:(v,ok)=>(!ok[0]&&absOK(v[0],-it.m,.01)&&it.m!==0)?"Das Vorzeichen von <i>μ</i> stimmt nicht: In der Klammer steht "+M(X+" − "+MU)+". Bei "+M("("+X+" + 2)")+" ist also "+M(MU+" = −2")+".":(!ok[1]&&absOK(v[1],2*it.s*it.s,.01))?"Das ist <i>2σ²</i>, also der Nenner im Exponenten. Gesucht ist <i>σ</i> selbst.":"Vergleiche mit "+M("<i>f</i>(<i>x</i>) = "+frac("1","<i>σ</i> · √(2π)")+" · e<sup>−"+frac("("+X+" − "+MU+")<sup>2</sup>","2<i>σ</i><sup>2</sup>")+"</sup>")+".",
+        okHtml:M(MU+" = "+mnum(it.m,2)+" und "+SG+" = "+mnum(it.s,2)),
+        hints:["Vergleiche mit der allgemeinen Form "+M("<i>f</i>(<i>x</i>) = "+frac("1","<i>σ</i> · √(2π)")+" · e<sup>−"+frac("("+X+" − "+MU+")<sup>2</sup>","2<i>σ</i><sup>2</sup>")+"</sup>")+".","<i>μ</i> steht in der Klammer mit <i>x</i>. Achte auf das Vorzeichen: "+M("("+X+" − "+MU+")")+".","<i>σ</i> steht im Faktor vor dem „e“ und kommt auch im Nenner des Exponenten vor ("+M("2<i>σ</i><sup>2</sup> = "+mnum(2*it.s*it.s,3))+")."]
+      });
+    }else if(eff===2){
+      const it=pick(P2B.filter(x=>!easy||x.e),"p2"+(stuetz?"s":"")),y=phi(it.m+it.s,it.m,it.s),x1=it.m-it.s,x2=it.m+it.s;
+      numTask(T,{
+        prompt:"Der Graph zeigt die Dichtefunktion einer Normalverteilung mit den beiden Wendepunkten <i class='m'>W</i><sub>1</sub> und <i class='m'>W</i><sub>2</sub>. Bestimme <i class='m'>μ</i> und <i class='m'>σ</i>.",
+        viz:(host)=>drawIn(host,glockeViz(it.m,it.s,{marks:[{x:x1,y:y,color:"#12907a",t:"W₁("+mnum(x1,2)+" | "+f3(y)+")",anchor:"end",dx:-10,dy:-10},{x:x2,y:y,color:"#12907a",t:"W₂("+mnum(x2,2)+" | "+f3(y)+")",anchor:"start",dx:10,dy:-10}]})),
+        fields:[{label:M(MU+" ="),ans:it.m,tol:.02,aria:"Wert von μ",dec:2},{label:M(SG+" ="),ans:it.s,tol:.02,aria:"Wert von σ",dec:2}],
+        msg:(v,ok)=>(!ok[1]&&absOK(v[1],2*it.s,.02))?"Das ist der Abstand der beiden Wendestellen. <i>σ</i> ist der Abstand von <i>μ</i> zu <b>einer</b> Wendestelle.":(!ok[0]&&absOK(v[0],x2,.02))?"Das ist eine Wendestelle. <i>μ</i> liegt in der Mitte zwischen beiden.":"Die Wendestellen liegen bei "+M(MU+" − "+SG)+" und "+M(MU+" + "+SG)+".",
+        okHtml:M(MU+" = ("+mnum(x1,2)+" + "+mnum(x2,2)+") : 2 = "+mnum(it.m,2)+"; "+SG+" = ("+mnum(x2,2)+" − "+(x1<0?"("+mnum(x1,2)+")":mnum(x1,2))+") : 2 = "+mnum(it.s,2)),
+        hints:["Die Wendestellen einer Glockenkurve liegen bei "+M(MU+" − "+SG)+" und "+M(MU+" + "+SG)+".","<i>μ</i> liegt in der Mitte der beiden Wendestellen.","<i>σ</i> ist der Abstand von <i>μ</i> zu einer Wendestelle (oder die halbe Differenz der Wendestellen)."]
+      });
+    }else{
+      const it=pick(P2C,"p3"),h=Math.round(phi(it.m,it.m,it.s)*1000)/1000;
+      numTask(T,{
+        prompt:"Der Graph zeigt die Dichtefunktion einer Normalverteilung. Der Hochpunkt ist <i class='m'>H</i>. Bestimme <i class='m'>μ</i> und <i class='m'>σ</i>.",
+        viz:(host)=>drawIn(host,glockeViz(it.m,it.s,{marks:[{x:it.m,y:phi(it.m,it.m,it.s),color:"#d1432d",t:"H("+mnum(it.m,2)+" | "+f3(h)+")",dx:14,dy:-4,anchor:"start"}]})),
+        fields:[{label:M(MU+" ="),ans:it.m,tol:.02,aria:"Wert von μ",dec:2},{label:M(SG+" ≈"),ans:it.s,ok:(v)=>relOK(v,it.s,.03),aria:"Wert von σ",dec:2}],
+        note:"Runde <i>σ</i> auf eine Nachkommastelle oder genauer. Dezimalzahlen mit Komma.",
+        msg:(v,ok)=>(!ok[1]&&relOK(v[1],h,.03))?"Das ist die Höhe des Hochpunkts, nicht <i>σ</i>. Die Höhe ist "+M(frac("1","<i>σ</i> · √(2π)"))+".":(!ok[1]&&relOK(v[1],1/h,.05))?"Fast: Es fehlt der Faktor √(2π) ≈ 2,507 im Nenner.":"Die Höhe des Hochpunkts ist "+M("<i>h</i> = "+frac("1","<i>σ</i> · √(2π)"))+". Löse nach <i>σ</i> auf.",
+        okHtml:M(MU+" = "+mnum(it.m,2)+"; "+SG+" = "+frac("1","<i>h</i> · √(2π)")+" = "+frac("1",f3(h)+" · 2,507")+" ≈ "+mnum(it.s,1)),
+        hints:["Der Hochpunkt liegt bei "+M("<i>x</i> = "+MU)+". Dort liest du <i>μ</i> ab.","Die Höhe des Hochpunkts ist "+M("<i>f</i>("+MU+") = "+frac("1","<i>σ</i> · √(2π)"))+".","Löse nach <i>σ</i> auf: "+M(SG+" = "+frac("1","<i>h</i> · √(2π)"))+". Rechne mit √(2π) ≈ 2,507."]
+      });
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 3 – Graphen zuordnen
+   ========================================================= */
+const CC=["#1f6fb2","#d9730d","#8e4ec6"],BL=["A","B","C"];
+function curvesViz(list,xmin,xmax,ymax){
+  const xt=[];for(let v=xmin;v<=xmax;v+=1)xt.push({x:v,l:mnum(v,0)});
+  const ys=[];for(let v=.2;v<=ymax+1e-9;v+=.2)ys.push({y:v,l:mnum(v,1)});
+  return {xmin,xmax,ymax,xticks:xt,yticks:ys,curves:list.map((c,i)=>({fn:(x)=>phi(x,c.m,c.s),color:CC[i],w:3.6})),
+    texts:list.map((c,i)=>({x:c.m+(i===1?.35:-.35)*Math.min(1,c.s),y:phi(c.m,c.m,c.s)+.035,t:BL[i],color:CC[i],size:20,anchor:i===1?"start":"end"})),label:"Drei Glockenkurven A, B und C"};
+}
+const P3A=[],P3B=[];
+[[-3,-1,1],[-2,0,2],[-1,1,3],[-2,1,4],[-3,0,3],[0,2,4],[-3,1,2]].forEach(a=>P3A.push({kind:"mu",v:a}));
+[[.6,1,2],[.7,1.2,2],[.5,1,1.5],[.8,1.5,2.5]].forEach(a=>[-1,0,1,2].forEach(m=>P3A.push({kind:"sg",v:a,m})));
+[[[-2,.6],[1,1.4],[4,.9]],[[-3,1.2],[0,.6],[3,1.8]],[[0,.5],[1,1.5],[2,.9]],[[-2,1.5],[0,.6],[2.5,1]],[[-1,.7],[2,.5],[3,1.5]],[[-3,.7],[0,1.8],[3,.8]],[[-2,.5],[-1,1.5],[3,1]]].forEach(a=>P3B.push(a));
+TR.push({
+  id:"zuordnen",name:"Graphen zuordnen",art:"zuord",
+  blurb:"Glockenkurven, Parameter und kumulative Verteilungsfunktionen.",
+  levels:[{n:"Eine Größe ändert sich"},{n:"μ und σ ändern sich"},{n:"φ und Φ"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl;
+    if(eff===1||eff===2){
+      let list,chips,prompt;
+      if(eff===1){
+        const it=pick(P3A,"z1"+(stuetz?"s":""));
+        if(it.kind==="mu"){const sg=R([.8,1,1.5]);list=shuffle(it.v).map(m=>({m,s:sg}));prompt="Die drei Glockenkurven gehören zu normalverteilten Zufallsgrößen mit <b>gleichem</b> "+M(SG+" = "+mnum(sg,2))+". Ordne jeder Kurve ihr <i class='m'>μ</i> zu.";chips=list.map(c=>M(MU+" = "+mnum(c.m,2)));}
+        else{list=shuffle(it.v).map(s=>({m:it.m,s}));prompt="Die drei Glockenkurven gehören zu normalverteilten Zufallsgrößen mit <b>gleichem</b> "+M(MU+" = "+mnum(it.m,2))+". Ordne jeder Kurve ihr <i class='m'>σ</i> zu.";chips=list.map(c=>M(SG+" = "+mnum(c.s,2)));}
+      }else{
+        const trip=pick(P3B,"z2");list=shuffle(trip).map(a=>({m:a[0],s:a[1]}));
+        prompt="Die drei Glockenkurven gehören zu verschiedenen Normalverteilungen. Ordne jeder Kurve ihre Werte zu.";chips=list.map(c=>M(MU+" = "+mnum(c.m,2)+"; "+SG+" = "+mnum(c.s,2)));
+      }
+      T.body.appendChild(div("prompt",prompt));
+      const ms=list.map(c=>c.m),xmin=Math.floor(Math.min.apply(null,ms)-3.2*Math.max.apply(null,list.map(c=>c.s))),xmax=Math.ceil(Math.max.apply(null,ms)+3.2*Math.max.apply(null,list.map(c=>c.s)));
+      const ymax=Math.ceil(Math.max.apply(null,list.map(c=>phi(c.m,c.m,c.s)))*1.15*5)/5;
+      drawIn(T.viz,curvesViz(list,xmin,xmax,ymax));
+      Matcher(T,{slots:list.map((c,i)=>({badge:BL[i],col:CC[i]})),chips,
+        okHtml:list.map((c,i)=>BL[i]+": "+M(MU+" = "+mnum(c.m,2)+"; "+SG+" = "+mnum(c.s,2))).join(" &nbsp; "),
+        msg:eff===1?(list[0].s===list[1].s?"<i>μ</i> ist die Stelle des Hochpunkts (die Symmetrieachse).":"Je größer <i>σ</i>, desto breiter und niedriger ist die Kurve."):"Achte auf zwei Dinge: Lage des Hochpunkts (<i>μ</i>) und Breite beziehungsweise Höhe (<i>σ</i>).",
+        hints:eff===1?["Die Stelle des Hochpunkts ist "+M(MU)+". Die Breite der Glocke ist durch "+M(SG)+" bestimmt.","Bei gleichem "+M(MU)+" gilt: Je größer "+M(SG)+", desto breiter und niedriger ist die Kurve. Bei gleichem "+M(SG)+" wird die Kurve nur verschoben.","Beginne mit der Kurve, bei der du die Zuordnung am sichersten weißt."]:["Lies zuerst bei jeder Kurve die Stelle des Hochpunkts ab. Das ist "+M(MU)+".","Ordne die Breite zu: Je höher und schmaler die Kurve, desto kleiner ist "+M(SG)+".","Die schmalste und höchste Kurve hat das kleinste "+M(SG)+"."]});
+    }else{
+      T.body.appendChild(div("prompt","Das Bild zeigt die Dichtefunktion <i class='m'>φ</i> einer Normalverteilung. Welcher der drei Graphen gehört zur zugehörigen kumulativen Verteilungsfunktion <i class='m'>Φ</i>?"));
+      const m=R([-2,-1,0,1,2]),s=R([.6,1,1.5]);
+      const wrongs=shuffle([{m:m+R([-2,2]),s},{m,s:s===1?.5:s*(R([.5,2]))},{m:m+R([-1.5,1.5]),s:s*1.6}]).slice(0,2);
+      const xmin=m-6,xmax=m+6;
+      const xt=[];for(let v=Math.ceil(xmin);v<=xmax;v+=2)xt.push({x:v,l:mnum(v,0)});
+      drawIn(T.viz,{xmin,xmax,ymax:Math.max(.5,phi(m,m,s)*1.2),xticks:xt,curves:[{fn:(x)=>phi(x,m,s)}],texts:[{x:xmax-1.2,y:Math.max(.5,phi(m,m,s)*1.2)*.9,t:"φ",color:"#1f6fb2",size:22}],label:"Dichtefunktion φ"});
+      const mk=(mm,ss,ok)=>({ok,h:'<div style="max-width:300px">'+plotHTML({w:330,h:130,xmin,xmax,ymax:1.15,xticks:xt.filter((t,i)=>i%1===0),curves:[{fn:(x)=>Phi(x,mm,ss),color:"#d9730d"}],yticks:[{y:.5,l:"0,5"},{y:1,l:"1"}],label:"Graph einer kumulativen Verteilungsfunktion"})+'</div>'});
+      const items=[mk(m,s,true)].concat(wrongs.map(w=>mk(w.m,w.s,false)));
+      let found=false;
+      const list=OptList(T,items,(it,b)=>{
+        if(it.ok){found=true;list.lock();b.classList.add("chosen-ok");T.say("ok","<b>Richtig.</b> Bei "+M(MU+" = "+mnum(m,2))+" ist "+M("Φ("+mnum(m,2)+") = 0,5")+", und der Graph von <i>Φ</i> steigt dort am stärksten.");T.complete("");}
+        else{b.disabled=true;b.classList.add("chosen-no");T.miss();T.say("hint","<b>Noch nicht.</b> Prüfe, an welcher Stelle <i>Φ</i> den Wert 0,5 erreicht und wie steil der Graph dort ist.");}
+      });
+      T.body.appendChild(list.box);
+      T.setHints(["An der Stelle "+M(MU)+" (Hochpunkt von <i>φ</i>) hat <i>Φ</i> den Wert 0,5.","Dort, wo <i>φ</i> am größten ist, steigt <i>Φ</i> am stärksten.","Je schmaler die Glocke <i>φ</i>, desto steiler steigt <i>Φ</i> um "+M(MU)+"."],()=>{
+        if(!found){found=true;list.lock();list.els.forEach(o=>{if(o.it.ok)o.b.classList.add("chosen-ok");});}
+        T.say("sol","<b>Lösung:</b> Der Graph mit dem Wert 0,5 an der Stelle "+M(MU+" = "+mnum(m,2))+" und der gleichen Steilheit wie <i>φ</i> gehört zu <i>Φ</i>.");T.complete("");
+      });
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 4 – Wahrscheinlichkeiten berechnen
+   ========================================================= */
+const PAR=[[50,5],[100,15],[8,2],[170,8],[0,1],[25,4],[500,20],[12,1.5],[40,6],[7,.5],[200,25],[60,10]];
+const normTxt=(m,s)=>"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit "+M(MU+" = "+mnum(m,2))+" und "+M(SG+" = "+mnum(s,2))+".";
+const JJ=[-2,-1.5,-1,-.5,0,.5,1,1.5,2];
+TR.push({
+  id:"wahrsch",name:"Wahrscheinlichkeiten",art:"wahr",
+  blurb:"P(a ≤ X ≤ b) mit dem Taschenrechner und mit Symmetrie.",
+  levels:[{n:"Intervall P(a ≤ X ≤ b)"},{n:"Einseitig und Gegenereignis"},{n:"Mit Symmetrie ohne Rechner"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl,easy=stuetz&&lvl===1;
+    const TOL=.0011;
+    if(eff===1){
+      const pp=R(PAR),m=pp[0],s=pp[1];let ja,jb,P;
+      do{ja=R(easy?[-1,0,1]:JJ);jb=R(easy?[0,1,2]:JJ);P=Pab(m,s,m+ja*s,m+jb*s);}while(jb<=ja||P<.1||P>.95);
+      const a=m+ja*s,b=m+jb*s;
+      numTask(T,{
+        prompt:normTxt(m,s)+" Berechne "+M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+")")+" auf drei Nachkommastellen.",
+        viz:(host)=>drawIn(host,bellOpts(m,s,[[a,b,"#1f6fb2",.3]],{marks:[{x:a,y:0,r:5,color:"#1f6fb2"},{x:b,y:0,r:5,color:"#1f6fb2"}]})),
+        fields:[{label:M("<i>P</i> ≈"),ans:P,tol:TOL,aria:"Wahrscheinlichkeit",dec:3}],
+        note:"Rechne mit der kumulierten Normalverteilung deines Rechners. Dezimalzahlen mit Komma.",
+        msg:(v)=>absOK(v,Phi(b,m,s),TOL)?"Das ist nur "+M("<i>P</i>(<i>X</i> ≤ "+mnum(b,2)+")")+". Ziehe noch "+M("<i>P</i>(<i>X</i> ≤ "+mnum(a,2)+")")+" ab.":absOK(v,1-P,TOL)?"Das ist die Wahrscheinlichkeit außerhalb des Intervalls.":absOK(v,P,.003)?"Fast. Prüfe die Rundung auf drei Nachkommastellen.":"Berechne "+M("<i>P</i>(<i>X</i> ≤ "+mnum(b,2)+") − <i>P</i>(<i>X</i> ≤ "+mnum(a,2)+")")+" oder verwende die Intervallfunktion deines Taschenrechners.",
+        okHtml:M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+") ≈ "+f3(P)),
+        hints:["Am Rechner: Anwendung <b>Verteilungen</b> (MENU, 4), <b>Kumulierte Normalverteilung</b>. Eingabe: <b>Untere Grenze</b> "+M(mnum(a,2))+", <b>Obere Grenze</b> "+M(mnum(b,2))+", <b>σ</b> "+M(mnum(s,2))+" und <b>μ</b> "+M(mnum(m,2))+" (σ vor μ).","Verwendest du nur die Verteilungsfunktion <i>Φ</i> (Wahrscheinlichkeit links von einer Stelle), gilt "+M("<i>P</i>(<i>a</i> ≤ <i>X</i> ≤ <i>b</i>) = <i>Φ</i>(<i>b</i>) − <i>Φ</i>(<i>a</i>)")+".","Zur Kontrolle: Das Ergebnis liegt zwischen "+f3(Math.max(0,P-.03))+" und "+f3(Math.min(1,P+.03))+"."]
+      });
+    }else if(eff===2){
+      const pp=R(PAR),m=pp[0],s=pp[1],j=R([-2,-1.5,-1,-.5,.5,1,1.5,2]),c=m+j*s;
+      const kind=R(["le","ge","gt","lt"]),left=(kind==="le"||kind==="lt");
+      const sym=kind==="le"?"≤":kind==="lt"?"<":kind==="ge"?"≥":">";
+      const P=left?Phi(c,m,s):1-Phi(c,m,s);
+      numTask(T,{
+        prompt:normTxt(m,s)+" Berechne "+M("<i>P</i>(<i>X</i> "+sym+" "+mnum(c,2)+")")+" auf drei Nachkommastellen.",
+        viz:(host)=>drawIn(host,bellOpts(m,s,[left?[m-4*s,c,"#1f6fb2",.3]:[c,m+4*s,"#1f6fb2",.3]],{marks:[{x:c,y:0,r:5,color:"#1f6fb2"}]})),
+        fields:[{label:M("<i>P</i> ≈"),ans:P,tol:TOL,aria:"Wahrscheinlichkeit",dec:3}],
+        note:"Rechne mit dem Taschenrechner. Dezimalzahlen mit Komma.",
+        msg:(v)=>absOK(v,1-P,TOL)?"Das ist das <b>Gegenereignis</b>: Die Fläche auf der anderen Seite von "+M(mnum(c,2))+".":"Der Taschenrechner liefert meist die Fläche <b>links</b> einer Stelle. "+(left?"Hier ist genau diese Fläche gesucht.":"Gesucht ist die Fläche <b>rechts</b>: "+M("1 − <i>P</i>(<i>X</i> ≤ "+mnum(c,2)+")")+"."),
+        okHtml:M("<i>P</i>(<i>X</i> "+sym+" "+mnum(c,2)+") ≈ "+f3(P)+(left?"":" = 1 − "+f3(Phi(c,m,s)))),
+        hints:["Skizziere die Glocke und markiere die gesuchte Fläche. Liegt sie links oder rechts von "+M(mnum(c,2))+"?",left?"Gesucht ist die Fläche links von "+M(mnum(c,2))+". Am Rechner: Untere Grenze sehr weit links, zum Beispiel "+M(MU+" − 5"+SG+" = "+mnum(m-5*s,2))+", Obere Grenze "+M(mnum(c,2))+".":"Gesucht ist die Fläche rechts. Es gilt "+M("<i>P</i>(<i>X</i> "+sym+" <i>a</i>) = 1 − <i>P</i>(<i>X</i> ≤ <i>a</i>)")+" (Gegenereignis; bei stetigen Größen ist <i>P</i>(<i>X</i> = <i>a</i>) = 0).","Zur Kontrolle: Das Ergebnis liegt zwischen "+f3(Math.max(0,P-.03))+" und "+f3(Math.min(1,P+.03))+"."]
+      });
+    }else{
+      const types=["a","b","c","d"],ty=R(types);let q,txt,ans,shadeGiven,shadeAsk,hint2,sol;
+      const pr=(l)=>M("<i>P</i>("+l+")");
+      if(ty==="a"){q=R([.04,.07,.09,.12,.16,.23,.31]);txt="Es gilt "+pr("<i>X</i> ≤ "+MU+" − <i>c</i>")+" = "+mnum(q,2)+". Bestimme "+pr("<i>X</i> ≥ "+MU+" + <i>c</i>")+".";ans=q;shadeGiven=[-9,-1.4];shadeAsk=[1.4,9];hint2="Die Glocke ist symmetrisch zu "+M(MU)+". Die beiden Randflächen sind gleich groß.";sol=M("<i>P</i>(<i>X</i> ≥ "+MU+" + <i>c</i>) = <i>P</i>(<i>X</i> ≤ "+MU+" − <i>c</i>) = "+mnum(q,2));}
+      else if(ty==="b"){q=R([.77,.84,.88,.91,.93,.96]);txt="Es gilt "+pr("<i>X</i> ≤ "+MU+" + <i>c</i>")+" = "+mnum(q,2)+". Bestimme "+pr("<i>X</i> ≤ "+MU+" − <i>c</i>")+".";ans=1-q;shadeGiven=[-9,1.4];shadeAsk=[-9,-1.4];hint2="Die Fläche rechts von "+M(MU+" + <i>c</i>")+" ist "+M("1 − "+mnum(q,2))+" und genauso groß wie die Fläche links von "+M(MU+" − <i>c</i>")+".";sol=M("<i>P</i>(<i>X</i> ≤ "+MU+" − <i>c</i>) = 1 − "+mnum(q,2)+" = "+mnum(ans,2));}
+      else if(ty==="c"){q=R([.77,.84,.88,.91,.93,.96]);txt="Es gilt "+pr("<i>X</i> ≤ "+MU+" + <i>c</i>")+" = "+mnum(q,2)+". Bestimme "+pr(MU+" − <i>c</i> ≤ <i>X</i> ≤ "+MU+" + <i>c</i>")+".";ans=2*q-1;shadeGiven=[-9,1.4];shadeAsk=[-1.4,1.4];hint2="Von der Fläche links von "+M(MU+" + <i>c</i>")+" ("+mnum(q,2)+") muss die Randfläche links von "+M(MU+" − <i>c</i>")+" abgezogen werden. Sie ist "+M("1 − "+mnum(q,2));sol=M("<i>P</i>("+MU+" − <i>c</i> ≤ <i>X</i> ≤ "+MU+" + <i>c</i>) = "+mnum(q,2)+" − (1 − "+mnum(q,2)+") = "+mnum(ans,2));}
+      else{q=R([.12,.19,.26,.31,.34,.4,.45]);txt="Es gilt "+pr(MU+" ≤ <i>X</i> ≤ "+MU+" + <i>c</i>")+" = "+mnum(q,2)+". Bestimme "+pr(MU+" − <i>c</i> ≤ <i>X</i> ≤ "+MU+" + <i>c</i>")+".";ans=2*q;shadeGiven=[0,1.4];shadeAsk=[-1.4,1.4];hint2="Das Intervall von "+M(MU+" − <i>c</i>")+" bis "+M(MU+" + <i>c</i>")+" besteht aus zwei gleich großen Hälften.";sol=M("<i>P</i>("+MU+" − <i>c</i> ≤ <i>X</i> ≤ "+MU+" + <i>c</i>) = 2 · "+mnum(q,2)+" = "+mnum(ans,2));}
+      numTask(T,{
+        prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit dem Erwartungswert <i class='m'>μ</i>. "+txt+" <b>Ohne Taschenrechner</b>, nur mit Symmetrie.",
+        viz:(host)=>drawIn(host,symOpts([[shadeGiven[0],shadeGiven[1],"#1f6fb2",.32]],{cap:"Blau: gegebene Fläche."})),
+        reveal:(host)=>drawIn(host,symOpts([[shadeGiven[0],shadeGiven[1],"#1f6fb2",.28],[shadeAsk[0],shadeAsk[1],"#d9730d",.34]],{cap:"Blau: gegeben. Orange: gesucht."})),
+        fields:[{label:M("<i>P</i> ="),ans:ans,tol:.0051,aria:"Wahrscheinlichkeit",dec:2}],
+        note:"Dezimalzahlen mit Komma, zum Beispiel 0,12.",
+        msg:(v)=>absOK(v,q,.0051)&&ty!=="a"?"Das ist der Wert aus der Angabe. Gesucht ist eine andere Fläche.":absOK(v,1-ans,.0051)?"Das ist das Gegenereignis.":"Skizziere die Glocke, markiere die gegebene Fläche und überlege, wie die gesuchte Fläche zusammenhängt. Es gilt "+M("<i>P</i>(<i>X</i> ≤ "+MU+") = 0,5")+".",
+        okHtml:sol,
+        hints:["Die Glockenkurve ist symmetrisch zur Geraden "+M("<i>x</i> = "+MU)+". Links und rechts von "+M(MU)+" liegt jeweils die Fläche 0,5.",hint2,"Zeichne beide Flächen in deine Skizze ein und vergleiche."]
+      });
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 5 – Sigma-Regeln anwenden
+   ========================================================= */
+const PAR5=[[50,5],[100,15],[8,2],[170,8],[20,3],[25,4],[500,20],[12,1.5],[40,6],[200,25],[60,10],[30,2]];
+TR.push({
+  id:"sigma",name:"Sigma-Regeln anwenden",art:"sigma",
+  blurb:"Wahrscheinlichkeiten ohne Taschenrechner aus 1σ, 2σ, 3σ und 1,64σ, 1,96σ, 2,58σ.",
+  levels:[{n:"μ ± kσ"},{n:"Halbe Intervalle und Ränder"},{n:"1,64σ, 1,96σ, 2,58σ"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl,easy=stuetz&&lvl===1;
+    const pp=R(PAR5),m=pp[0],s=pp[1];
+    if(eff===1){
+      const k=R(easy?[1,2]:[1,2,3]),out=!easy&&Math.random()<.35,a=m-k*s,b=m+k*s,P=KS[k],ans=out?1-P:P;
+      numTask(T,{
+        prompt:normTxt(m,s)+" Bestimme mit den Sigma-Regeln "+(out?"die Wahrscheinlichkeit, dass <i class='m'>X</i> <b>außerhalb</b> des Intervalls ["+mnum(a,2)+" ; "+mnum(b,2)+"] liegt.":M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+")")+"."),
+        viz:(host)=>drawIn(host,bellOpts(m,s,[[a,b,out?"#9aa8bb":"#1f6fb2",out?.25:.3]],{marks:[{x:a,y:0,r:5,color:"#1f6fb2"},{x:b,y:0,r:5,color:"#1f6fb2"}]})),
+        fields:[{label:M("<i>P</i> ≈"),ans:ans,tol:.0031,aria:"Wahrscheinlichkeit",dec:3}],
+        note:"Ohne Taschenrechner. Dezimalzahlen mit Komma.",
+        msg:(v)=>{const o=[1,2,3].filter(j=>absOK(v,KS[j],.0031)&&j!==k)[0];return o?"Das gehört zu "+M("<i>μ</i> ± "+o+"<i>σ</i>")+". Prüfe, wie weit die Grenzen von "+M(MU+" = "+mnum(m,2))+" entfernt sind.":absOK(v,1-ans,.0031)?"Das ist die Wahrscheinlichkeit der anderen Seite. Prüfe, ob das Intervall gesucht ist oder sein Gegenereignis.":"Wie viele Vielfache von "+M(SG+" = "+mnum(s,2))+" liegen die Grenzen von "+M(MU)+" entfernt?";},
+        okHtml:M("["+mnum(a,2)+" ; "+mnum(b,2)+"] = ["+MU+" − "+k+SG+" ; "+MU+" + "+k+SG+"]")+" ⇒ "+M(out?"1 − "+mnum(P,3)+" = "+mnum(ans,3):"<i>P</i> ≈ "+mnum(P,3)),
+        hints:["Berechne den Abstand der oberen Grenze zu "+M(MU)+": "+M(mnum(b,2)+" − "+mnum(m,2))+".","Teile den Abstand durch "+M(SG+" = "+mnum(s,2))+". Du erhältst "+M("<i>k</i>")+" in "+M(MU+" ± <i>k</i>"+SG)+".","Sigma-Regeln: "+M("<i>k</i> = 1")+" → 0,683 · "+M("<i>k</i> = 2")+" → 0,954 · "+M("<i>k</i> = 3")+" → 0,997."]
+      });
+    }else if(eff===2){
+      const ty=R(easy?["half","tailR","leftk","halfL"]:["half","tailR","leftk","halfL","mix"]);let k=R([1,2]),c,P,txt,shade,sol;
+      if(ty==="half"){k=R([1,2,3]);c=m+k*s;P=KS[k]/2;txt=M("<i>P</i>("+mnum(m,2)+" ≤ <i>X</i> ≤ "+mnum(c,2)+")");shade=[m,c];sol=M(mnum(KS[k],3)+" : 2 = "+mnum(P,4));}
+      else if(ty==="halfL"){k=R([1,2,3]);c=m-k*s;P=KS[k]/2;txt=M("<i>P</i>("+mnum(c,2)+" ≤ <i>X</i> ≤ "+mnum(m,2)+")");shade=[c,m];sol=M(mnum(KS[k],3)+" : 2 = "+mnum(P,4));}
+      else if(ty==="tailR"){c=m+k*s;P=(1-KS[k])/2;txt=M("<i>P</i>(<i>X</i> ≥ "+mnum(c,2)+")");shade=[c,m+4*s];sol=M("(1 − "+mnum(KS[k],3)+") : 2 = "+mnum(P,4));}
+      else if(ty==="leftk"){k=R([1,2,3]);c=m+k*s;P=.5+KS[k]/2;txt=M("<i>P</i>(<i>X</i> ≤ "+mnum(c,2)+")");shade=[m-4*s,c];sol=M("0,5 + "+mnum(KS[k],3)+" : 2 = "+mnum(P,4));}
+      else{const a=m-s,b=m+2*s;P=KS[1]/2+KS[2]/2;txt=M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+")");shade=[a,b];sol=M(mnum(KS[1],3)+" : 2 + "+mnum(KS[2],3)+" : 2 = "+mnum(P,4));}
+      numTask(T,{
+        prompt:normTxt(m,s)+" Bestimme mit den Sigma-Regeln und der Symmetrie der Glockenkurve "+txt+".",
+        viz:(host)=>drawIn(host,bellOpts(m,s,[[shade[0],shade[1],"#1f6fb2",.3]])),
+        fields:[{label:M("<i>P</i> ≈"),ans:P,tol:.0041,aria:"Wahrscheinlichkeit",dec:3}],
+        note:"Ohne Taschenrechner. Dezimalzahlen mit Komma.",
+        msg:(v)=>absOK(v,KS[k]||0,.0041)&&ty!=="mix"?"Das ist die Wahrscheinlichkeit für das <b>ganze</b> symmetrische Intervall. Die Fläche in der Skizze ist ein Teil davon.":absOK(v,1-P,.0041)?"Das ist das Gegenereignis.":"Zerlege die markierte Fläche in Teile, deren Wahrscheinlichkeit du kennst: halbe Intervalle um "+M(MU)+", und links beziehungsweise rechts von "+M(MU)+" liegt jeweils 0,5.",
+        okHtml:sol,
+        hints:["Skizziere die Glocke und markiere die gesuchte Fläche. Wo liegen die Grenzen im Verhältnis zu "+M(MU)+" und "+M(SG)+"?","Die Sigma-Regeln gelten für das symmetrische Intervall "+M(MU+" ± <i>k</i>"+SG)+". Wegen der Symmetrie gehört die Hälfte davon zu jeder Seite von "+M(MU)+".","Links von "+M(MU)+" liegt die Fläche 0,5, rechts ebenso. Ein Rand ist das, was von 0,5 übrig bleibt."]
+      });
+    }else{
+      let ty=R(["in","out","abs","left","right","interval"]),pr=R([.90,.95,.99]),kk=KZ[pr];let ans,txt,fields,sol,shade;
+      if(ty==="in"){ans=pr;txt="Berechne "+M("<i>P</i>("+MU+" − "+mnum(kk,2)+SG+" ≤ <i>X</i> ≤ "+MU+" + "+mnum(kk,2)+SG+")")+".";shade=[m-kk*s,m+kk*s];sol=M("<i>P</i> ≈ "+f2(pr));}
+      else if(ty==="out"){ans=1-pr;txt="Mit welcher Wahrscheinlichkeit weicht <i class='m'>X</i> um mehr als "+M(mnum(kk,2)+SG)+" von <i class='m'>μ</i> ab? Berechne "+M("<i>P</i>(|<i>X</i> − "+MU+"| > "+mnum(kk,2)+SG+")")+".";shade=null;sol=M("1 − "+f2(pr)+" = "+mnum(ans,2));}
+      else if(ty==="abs"){ans=pr;txt="Berechne "+M("<i>P</i>(|<i>X</i> − "+MU+"| ≤ "+mnum(kk,2)+SG+")")+".";shade=[m-kk*s,m+kk*s];sol=M("<i>P</i>(|<i>X</i> − "+MU+"| ≤ "+mnum(kk,2)+SG+") ≈ "+f2(pr));}
+      else if(ty==="left"){ans=.5+pr/2;txt="Berechne "+M("<i>P</i>(<i>X</i> ≤ "+MU+" + "+mnum(kk,2)+SG+")")+".";shade=[m-4*s,m+kk*s];sol=M("0,5 + "+f2(pr)+" : 2 = "+mnum(ans,3));}
+      else if(ty==="right"){ans=(1-pr)/2;txt="Berechne "+M("<i>P</i>(<i>X</i> ≥ "+MU+" + "+mnum(kk,2)+SG+")")+".";shade=[m+kk*s,m+4*s];sol=M("(1 − "+f2(pr)+") : 2 = "+mnum(ans,3));}
+      else{ty="interval";}
+      if(ty==="interval"){
+        const lo=m-kk*s,hi=m+kk*s,tolI=.015*s+.006;
+        numTask(T,{
+          prompt:normTxt(m,s)+" In welchem Intervall um <i class='m'>μ</i> liegt <i class='m'>X</i> mit einer Wahrscheinlichkeit von etwa <b>"+Math.round(pr*100)+" %</b>? Gib die Grenzen an.",
+          reveal:(host)=>drawIn(host,bellOpts(m,s,[[lo,hi,"#1f6fb2",.3]],{marks:[{x:lo,y:0,r:5},{x:hi,y:0,r:5}]})),
+          fields:[{label:"von",ans:lo,tol:tolI,aria:"untere Grenze",dec:2},{label:"bis",ans:hi,tol:tolI,aria:"obere Grenze",dec:2}],
+          note:"Runde auf zwei Nachkommastellen. Dezimalzahlen mit Komma.",
+          msg:(v,ok)=>"Für "+Math.round(pr*100)+" % brauchst du den Faktor "+M(mnum(kk,2))+": Das Intervall ist "+M("["+MU+" − "+mnum(kk,2)+SG+" ; "+MU+" + "+mnum(kk,2)+SG+"]")+".",
+          okHtml:M("["+mnum(m,2)+" − "+mnum(kk,2)+" · "+mnum(s,2)+" ; "+mnum(m,2)+" + "+mnum(kk,2)+" · "+mnum(s,2)+"] = ["+mnum(lo,2)+" ; "+mnum(hi,2)+"]"),
+          hints:["Die Faktoren der Sigma-Regeln: 90 % → 1,64 · 95 % → 1,96 · 99 % → 2,58.","Das Intervall hat die Form "+M("["+MU+" − <i>k</i>"+SG+" ; "+MU+" + <i>k</i>"+SG+"]")+" mit dem passenden <i>k</i>.","Rechne "+M("<i>k</i> · "+SG+" = "+mnum(kk,2)+" · "+mnum(s,2)+" = "+mnum(kk*s,3))+" und ziehe das von "+M(MU)+" ab beziehungsweise addiere es."]
+        });
+      }else{
+        numTask(T,{
+          prompt:normTxt(m,s)+" "+txt+" Nutze die Sigma-Regeln, <b>ohne</b> Taschenrechner.",
+          viz:shade?(host)=>drawIn(host,bellOpts(m,s,[[shade[0],shade[1],"#1f6fb2",.3]])):null,
+          reveal:shade?null:(host)=>drawIn(host,bellOpts(m,s,[[m-4*s,m-kk*s,"#d9730d",.34],[m+kk*s,m+4*s,"#d9730d",.34]],{cap:"Orange: die beiden Randflächen."})),
+          fields:[{label:M("<i>P</i> ≈"),ans:ans,tol:.0041,aria:"Wahrscheinlichkeit",dec:3}],
+          note:"Ohne Taschenrechner. Dezimalzahlen mit Komma.",
+          msg:(v)=>absOK(v,1-ans,.0041)?"Das ist das Gegenereignis.":"Sigma-Regeln für das symmetrische Intervall: "+M(MU+" ± 1,64"+SG)+" → 0,90 · "+M(MU+" ± 1,96"+SG)+" → 0,95 · "+M(MU+" ± 2,58"+SG)+" → 0,99. Für einseitige Flächen verwendest du die Symmetrie.",
+          okHtml:sol,
+          hints:["Welcher Faktor steht vor "+M(SG)+"? Die Regeln gelten für "+M("1,64")+", "+M("1,96")+" und "+M("2,58")+".","Die Betragsschreibweise "+M("|<i>X</i> − "+MU+"| ≤ <i>c</i>")+" bedeutet "+M(MU+" − <i>c</i> ≤ <i>X</i> ≤ "+MU+" + <i>c</i>")+".","Bei einseitigen Flächen: Die Randfläche außerhalb ist "+M("1 − <i>P</i>")+", jede Seite hat die Hälfte davon."]
+        });
+      }
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 6 – Sigma-Regeln umkehren
+   ========================================================= */
+const P6S=[[20,2],[50,5],[100,10],[8,1.5],[30,4],[12,2],[500,25],[0,3],[70,6],[15,.5]];
+TR.push({
+  id:"umkehr",name:"Sigma-Regeln umkehren",art:"umkehr",
+  blurb:"Aus Intervall und Wahrscheinlichkeit auf σ und μ schließen.",
+  levels:[{n:"σ aus dem Intervall"},{n:"μ und σ aus dem Intervall"},{n:"1,64σ, 1,96σ, 2,58σ"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl,easy=stuetz&&lvl===1;
+    const pp=R(P6S),m=pp[0],s=pp[1];
+    if(eff===1){
+      const k=R(easy?[1,2]:[1,2,3]),a=m-k*s,b=m+k*s;
+      numTask(T,{
+        prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit "+M(MU+" = "+mnum(m,2))+". Es gilt "+M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+") ≈ "+mnum(KS[k],3))+". Bestimme <i class='m'>σ</i>.",
+        reveal:(host)=>drawIn(host,bellOpts(m,s,[[a,b,"#1f6fb2",.3]],{cap:"Die Glocke mit dem gefundenen σ."})),
+        fields:[{label:M(SG+" ="),ans:s,tol:Math.max(.02,.01*s),aria:"Wert von σ",dec:2}],
+        msg:(v)=>absOK(v,(b-a),.02)?"Das ist die ganze Breite des Intervalls. Das Intervall reicht von "+M(MU+" − "+k+SG)+" bis "+M(MU+" + "+k+SG)+".":(absOK(v,(b-a)/2,.02)&&k>1)?"Das ist <i>k</i>·<i>σ</i> mit <i>k</i> = "+k+". Teile noch durch "+k+".":"Die Wahrscheinlichkeit "+mnum(KS[k],3)+" gehört zu "+M(MU+" ± "+k+SG)+". Die halbe Breite des Intervalls ist "+M(k+SG)+".",
+        okHtml:M(MU+" ± "+k+SG+" = ["+mnum(a,2)+" ; "+mnum(b,2)+"] ⇒ "+k+SG+" = "+mnum(k*s,2)+" ⇒ "+SG+" = "+mnum(s,2)),
+        hints:["Die Wahrscheinlichkeit "+M(mnum(KS[k],3))+" gehört zu einer der Sigma-Regeln. Zu welchem <i>k</i> in "+M(MU+" ± <i>k</i>"+SG)+"?","Das Intervall hat die Form "+M("["+MU+" − "+k+SG+" ; "+MU+" + "+k+SG+"]")+". Die obere Grenze ist "+M(mnum(b,2)),"Es gilt "+M(MU+" + "+k+SG+" = "+mnum(b,2))+". Löse nach "+M(SG)+" auf."]
+      });
+    }else if(eff===2){
+      const k=R(easy?[1,2]:[1,2,3]),a=m-k*s,b=m+k*s;
+      numTask(T,{
+        prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt. Es gilt "+M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+") ≈ "+mnum(KS[k],3))+", und das Intervall liegt symmetrisch um <i class='m'>μ</i>. Bestimme <i class='m'>μ</i> und <i class='m'>σ</i>.",
+        reveal:(host)=>drawIn(host,bellOpts(m,s,[[a,b,"#1f6fb2",.3]],{cap:"Die Glocke mit den gefundenen Werten."})),
+        fields:[{label:M(MU+" ="),ans:m,tol:.02,aria:"Wert von μ",dec:2},{label:M(SG+" ="),ans:s,tol:Math.max(.02,.01*s),aria:"Wert von σ",dec:2}],
+        msg:(v,ok)=>(!ok[1]&&absOK(v[1],(b-a),.02))?"Das ist die ganze Breite des Intervalls. Sie ist "+M("2<i>k</i>"+SG)+".":(!ok[1]&&absOK(v[1],(b-a)/2,.02)&&k>1)?"Das ist <i>k</i>·<i>σ</i>. Teile noch durch <i>k</i> = "+k+".":"<i>μ</i> ist die Mitte des Intervalls. Die Wahrscheinlichkeit "+mnum(KS[k],3)+" gehört zu "+M(MU+" ± "+k+SG)+".",
+        okHtml:M(MU+" = ("+mnum(a,2)+" + "+mnum(b,2)+") : 2 = "+mnum(m,2)+"; "+k+SG+" = "+mnum(k*s,2)+" ⇒ "+SG+" = "+mnum(s,2)),
+        hints:["Die Wahrscheinlichkeit "+M(mnum(KS[k],3))+" gehört zu "+M(MU+" ± <i>k</i>"+SG)+". Welches <i>k</i> ist das?","<i>μ</i> liegt genau in der Mitte des Intervalls.","Die halbe Breite des Intervalls ist "+M("<i>k</i>"+SG)+". Teile durch <i>k</i>."]
+      });
+    }else{
+      const pr=R([.90,.95,.99]),kk=KZ[pr],ty=R(["sym","one"]);
+      if(ty==="sym"){
+        const c=kk*s,a=m-c,b=m+c;
+        numTask(T,{
+          prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit "+M(MU+" = "+mnum(m,2))+". Es gilt "+M("<i>P</i>("+mnum(a,2)+" ≤ <i>X</i> ≤ "+mnum(b,2)+") ≈ "+f2(pr))+". Bestimme <i class='m'>σ</i> auf zwei Nachkommastellen.",
+          reveal:(host)=>drawIn(host,bellOpts(m,s,[[a,b,"#1f6fb2",.3]],{cap:"Die Glocke mit dem gefundenen σ."})),
+          fields:[{label:M(SG+" ≈"),ans:s,ok:(v)=>relOK(v,s,.025),aria:"Wert von σ",dec:2}],
+          msg:(v)=>relOK(v,c,.03)?"Das ist <i>k</i>·<i>σ</i>, also der Abstand der Grenzen von <i>μ</i>. Teile noch durch "+M(mnum(kk,2))+".":"Zu "+Math.round(pr*100)+" % gehört der Faktor "+M(mnum(kk,2))+". Es gilt "+M(mnum(kk,2)+SG+" = "+mnum(b,2)+" − "+mnum(m,2))+".",
+          okHtml:M(mnum(kk,2)+SG+" = "+mnum(c,2)+" ⇒ "+SG+" = "+mnum(c,2)+" : "+mnum(kk,2)+" ≈ "+mnum(s,2)),
+          hints:["Die Faktoren der Sigma-Regeln: 90 % → 1,64 · 95 % → 1,96 · 99 % → 2,58.","Das Intervall ist "+M("["+MU+" − "+mnum(kk,2)+SG+" ; "+MU+" + "+mnum(kk,2)+SG+"]")+". Der Abstand von "+M(MU)+" zur oberen Grenze ist "+M(mnum(b,2)+" − "+mnum(m,2)+" = "+mnum(c,2))+".","Löse "+M(mnum(kk,2)+" · "+SG+" = "+mnum(c,2))+" nach "+M(SG)+" auf."]
+        });
+      }else{
+        const P1=R([[.95,1.64],[.975,1.96],[.995,2.58]]),c=m+P1[1]*s;
+        numTask(T,{
+          prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit "+M(MU+" = "+mnum(m,2))+". Es gilt "+M("<i>P</i>(<i>X</i> ≤ "+mnum(c,2)+") ≈ "+mnum(P1[0],3))+". Bestimme <i class='m'>σ</i> auf zwei Nachkommastellen.",
+          reveal:(host)=>drawIn(host,bellOpts(m,s,[[m-4*s,c,"#1f6fb2",.3]],{cap:"Die Glocke mit dem gefundenen σ."})),
+          fields:[{label:M(SG+" ≈"),ans:s,ok:(v)=>relOK(v,s,.025),aria:"Wert von σ",dec:2}],
+          msg:(v)=>relOK(v,c-m,.03)?"Das ist <i>k</i>·<i>σ</i>, also der Abstand von <i>μ</i> zur Grenze. Teile noch durch <i>k</i>.":"Rechts von der Grenze liegen "+M("1 − "+mnum(P1[0],3)+" = "+mnum(1-P1[0],3))+". Das sind die Hälfte der Randfläche des symmetrischen Intervalls "+M(MU+" ± <i>k</i>"+SG)+". Welche Wahrscheinlichkeit gehört dann zu diesem Intervall?",
+          okHtml:M("1 − "+mnum(P1[0],3)+" = "+mnum(1-P1[0],3))+": Randfläche außen "+M("2 · "+mnum(1-P1[0],3)+" = "+mnum(2*(1-P1[0]),2))+", also gehört "+M(MU+" ± "+mnum(P1[1],2)+SG)+" zu "+M(mnum(1-2*(1-P1[0]),2))+". "+M(mnum(P1[1],2)+SG+" = "+mnum(c-m,2)+" ⇒ "+SG+" ≈ "+mnum(s,2)),
+          hints:["Rechts von der Grenze liegt die Randfläche "+M("1 − "+mnum(P1[0],3)+" = "+mnum(1-P1[0],3))+". Links von "+M(MU+" − <i>k</i>"+SG)+" liegt ebenso viel.","Das symmetrische Intervall "+M(MU+" ± <i>k</i>"+SG)+" hat dann die Wahrscheinlichkeit "+M("1 − 2 · "+mnum(1-P1[0],3)+" = "+mnum(1-2*(1-P1[0]),2))+". Welcher Faktor <i>k</i> gehört dazu?",M("<i>k</i> = "+mnum(P1[1],2))+": Es gilt "+M(mnum(P1[1],2)+" · "+SG+" = "+mnum(c,2)+" − "+mnum(m,2)+" = "+mnum(c-m,2))+"."]
+        });
+      }
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 7 – Grenze zur Wahrscheinlichkeit (inverse Normalverteilung)
+   ========================================================= */
+function qn(p){let lo=-12,hi=12;for(let i=0;i<90;i++){const mid=(lo+hi)/2;if(Phi(mid,0,1)<p)lo=mid;else hi=mid;}return (lo+hi)/2;}
+const INV='Anwendung <b>Verteilungen</b> (MENU, 4), <b>Inverse Normalverteilung</b>. Eingabe: <b>Fläche</b>, <b>σ</b>, <b>μ</b>';
+TR.push({
+  id:"grenze",name:"Grenze zur Wahrscheinlichkeit",art:"grenze",
+  blurb:"P ist gegeben, die Grenze (oder μ oder σ) ist gesucht: inverse Normalverteilung.",
+  levels:[{n:"Linksseitige Grenze"},{n:"Rechtsseitig und Intervall"},{n:"μ oder σ gesucht"}],
+  start(T,lvl,stuetz){
+    const eff=stuetz?Math.max(1,lvl-1):lvl,easy=stuetz&&lvl===1;
+    const pp=R(PAR),m=pp[0],s=pp[1];
+    if(eff===1){
+      const p=R(easy?[.1,.9,.95,.05,.8]:[.05,.1,.2,.25,.3,.7,.75,.8,.9,.95,.975,.99]),z=qn(p),c=m+s*z;
+      numTask(T,{
+        prompt:normTxt(m,s)+" Bestimme die Grenze <i class='m'>c</i> mit "+M("<i>P</i>(<i>X</i> ≤ <i>c</i>) = "+f2(p))+". Runde auf zwei Nachkommastellen.",
+        reveal:(host)=>drawIn(host,bellOpts(m,s,[[m-4*s,c,"#1f6fb2",.3]],{marks:[{x:c,y:0,r:6,color:"#d1432d",t:"c ≈ "+mnum(c,2),dy:-14}],cap:"Links von c liegt die Fläche "+f2(p)+"."})),
+        fields:[{label:M("<i>c</i> ≈"),ans:c,tol:Math.max(.011,.004*s),aria:"Grenze c",dec:2}],
+        note:"Dezimalzahlen mit Komma, zum Beispiel 12,34.",
+        msg:(v)=>absOK(v,m,Math.max(.011,.004*s))?"Das ist <i>μ</i>. Das würde zur Fläche 0,5 gehören.":absOK(v,2*m-c,Math.max(.011,.004*s))?"Das liegt auf der anderen Seite von <i>μ</i>. Prüfe, ob "+f2(p)+" größer oder kleiner als 0,5 ist: Ist die Fläche links größer als 0,5, liegt <i>c</i> rechts von <i>μ</i>.":"Rechne mit der inversen Normalverteilung: "+INV+" = "+f2(p)+", "+mnum(s,2)+", "+mnum(m,2)+".",
+        okHtml:M("<i>P</i>(<i>X</i> ≤ <i>c</i>) = "+f2(p)+" ⇒ <i>c</i> ≈ "+mnum(c,2)),
+        hints:["Gesucht ist die Grenze, links von der die Wahrscheinlichkeit "+f2(p)+" liegt. Dafür gibt es am Rechner die <b>inverse</b> Normalverteilung.","Am Rechner: "+INV+". „Fläche“ ist die Wahrscheinlichkeit <b>links</b> von der gesuchten Grenze.","Gib ein: Fläche "+f2(p)+", σ = "+mnum(s,2)+", μ = "+mnum(m,2)+". Zur Kontrolle: Bei Fläche 0,5 muss "+mnum(m,2)+" herauskommen."]
+      });
+    }else if(eff===2){
+      const ty=easy?"right":R(["right","sym"]);
+      if(ty==="right"){
+        const p=R([.05,.1,.2,.3,.4,.6,.75,.9]),z=qn(1-p),c=m+s*z;
+        numTask(T,{
+          prompt:normTxt(m,s)+" Bestimme die Grenze <i class='m'>c</i> mit "+M("<i>P</i>(<i>X</i> ≥ <i>c</i>) = "+f2(p))+". Runde auf zwei Nachkommastellen.",
+          reveal:(host)=>drawIn(host,bellOpts(m,s,[[c,m+4*s,"#1f6fb2",.3]],{marks:[{x:c,y:0,r:6,color:"#d1432d",t:"c ≈ "+mnum(c,2),dy:-14}],cap:"Rechts von c liegt die Fläche "+f2(p)+"."})),
+          fields:[{label:M("<i>c</i> ≈"),ans:c,tol:Math.max(.011,.004*s),aria:"Grenze c",dec:2}],
+          note:"Dezimalzahlen mit Komma, zum Beispiel 12,34.",
+          msg:(v)=>absOK(v,m+s*qn(p),Math.max(.011,.004*s))?"Du hast die Fläche <b>links</b> von <i>c</i> mit "+f2(p)+" eingegeben. Gesucht ist die Fläche <b>rechts</b>: Links von <i>c</i> liegen "+f2(1-p)+".":"Der Rechner kennt nur die Fläche links von der Grenze. Rechts liegen "+f2(p)+", also links "+f2(1-p)+".",
+          okHtml:M("<i>P</i>(<i>X</i> ≥ <i>c</i>) = "+f2(p)+" ⇒ <i>P</i>(<i>X</i> ≤ <i>c</i>) = "+f2(1-p)+" ⇒ <i>c</i> ≈ "+mnum(c,2)),
+          hints:["Die inverse Normalverteilung arbeitet mit der Fläche <b>links</b> der Grenze. Rechts von <i>c</i> liegen "+f2(p)+".","Links von <i>c</i> liegen dann "+M("1 − "+f2(p)+" = "+f2(1-p))+". Das ist die Fläche für den Rechner.","Gib ein: Fläche "+f2(1-p)+", σ = "+mnum(s,2)+", μ = "+mnum(m,2)+"."]
+        });
+      }else{
+        const p=R([.5,.8,.9,.95,.99]),z=qn((1+p)/2),a=m-s*z,b=m+s*z;
+        numTask(T,{
+          prompt:normTxt(m,s)+" Das Intervall um <i class='m'>μ</i> soll mit einer Wahrscheinlichkeit von "+f2(p)+" getroffen werden. Bestimme die Grenzen <i class='m'>a</i> und <i class='m'>b</i> des Intervalls "+M("[<i>a</i> ; <i>b</i>]")+" (symmetrisch zu "+M(MU)+"). Runde auf zwei Nachkommastellen.",
+          reveal:(host)=>drawIn(host,bellOpts(m,s,[[a,b,"#1f6fb2",.3]],{marks:[{x:a,y:0,r:6,color:"#d1432d"},{x:b,y:0,r:6,color:"#d1432d"}],cap:"Die markierte Fläche ist "+f2(p)+"."})),
+          fields:[{label:M("<i>a</i> ≈"),ans:a,tol:Math.max(.011,.004*s),aria:"untere Grenze",dec:2},{label:M("<i>b</i> ≈"),ans:b,tol:Math.max(.011,.004*s),aria:"obere Grenze",dec:2}],
+          note:"Dezimalzahlen mit Komma, zum Beispiel 12,34.",
+          msg:(v,ok)=>(absOK(v[1],m+s*qn(p),Math.max(.011,.004*s))||absOK(v[0],m+s*qn(1-(1-p)/1),Math.max(.011,.004*s)))?"Die Fläche "+f2(p)+" liegt in der <b>Mitte</b>. Links und rechts bleiben zusammen "+f2(1-p)+" übrig, also je "+f2((1-p)/2)+".":"Außerhalb des Intervalls liegen "+f2(1-p)+", links und rechts je "+f2((1-p)/2)+". Links von <i>b</i> liegen also "+f2(p+(1-p)/2)+".",
+          okHtml:M("Links von <i>b</i>: "+f2(p)+" + "+f2((1-p)/2)+" = "+f2((1+p)/2)+" ⇒ <i>b</i> ≈ "+mnum(b,2)+"; <i>a</i> = 2 · "+mnum(m,2)+" − "+mnum(b,2)+" ≈ "+mnum(a,2)),
+          hints:["Außerhalb des Intervalls liegt "+M("1 − "+f2(p)+" = "+f2(1-p))+", links und rechts jeweils die Hälfte: "+f2((1-p)/2)+".","Links von <i>b</i> liegen "+M(f2(p)+" + "+f2((1-p)/2)+" = "+f2((1+p)/2))+". Das ist die Fläche für die inverse Normalverteilung: "+INV+".","Gib ein: Fläche "+f2((1+p)/2)+", σ = "+mnum(s,2)+", μ = "+mnum(m,2)+". Das ergibt <i>b</i>. Die Grenze <i>a</i> liegt symmetrisch: "+M("<i>a</i> = 2<i>μ</i> − <i>b</i>")+"."]
+        });
+      }
+    }else{
+      const ty=R(["mu","sg"]),p=R([.8,.9,.95,.975,.99,.2,.1,.05]),z=qn(p);
+      if(ty==="mu"){
+        const c=Math.round((m+s*z)*10)/10,mu=c-s*z;
+        numTask(T,{
+          prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit "+M(SG+" = "+mnum(s,2))+". Es gilt "+M("<i>P</i>(<i>X</i> ≤ "+mnum(c,1)+") = "+f2(p))+". Bestimme <i class='m'>μ</i> auf eine Nachkommastelle.",
+          reveal:(host)=>drawIn(host,bellOpts(mu,s,[[mu-4*s,c,"#1f6fb2",.3]],{marks:[{x:mu,y:phi(mu,mu,s),color:"#d1432d",t:"μ ≈ "+mnum(mu,1),dy:-12}],cap:"Links von "+mnum(c,1)+" liegt die Fläche "+f2(p)+"."})),
+          fields:[{label:M(MU+" ≈"),ans:mu,tol:Math.max(.06,.01*s),aria:"Wert von μ",dec:1}],
+          note:"Dezimalzahlen mit Komma.",
+          msg:(v)=>absOK(v,c,.06)?"Das ist die Grenze selbst, nicht <i>μ</i>. Der Abstand der Grenze zu <i>μ</i> beträgt <i>z</i> · <i>σ</i>.":"Bestimme zuerst <i>z</i> mit der inversen Normalverteilung für die Fläche "+f2(p)+" (σ = 1, μ = 0). Dann gilt "+M(mnum(c,1)+" = "+MU+" + <i>z</i> · "+SG)+".",
+          okHtml:M("<i>z</i> ≈ "+mnum(z,3)+" ⇒ "+MU+" = "+mnum(c,1)+" − "+mnum(z,3)+" · "+mnum(s,2)+" ≈ "+mnum(mu,1)),
+          hints:["Die Grenze liegt <i>z</i> Standardabweichungen von <i>μ</i> entfernt: "+M("<i>c</i> = "+MU+" + <i>z</i> · "+SG)+". Das <i>z</i> gehört nur zur Fläche "+f2(p)+".","Bestimme <i>z</i> mit der Standardnormalverteilung: "+INV+" mit Fläche "+f2(p)+", σ = 1, μ = 0.","Es ist <i>z</i> ≈ "+mnum(z,3)+". Löse "+M(mnum(c,1)+" = "+MU+" + "+mnum(z,3)+" · "+mnum(s,2))+" nach "+M(MU)+" auf."]
+        });
+      }else{
+        const c=Math.round((m+s*z)*10)/10,sg=(c-m)/z;
+        numTask(T,{
+          prompt:"Die Zufallsgröße <i class='m'>X</i> ist normalverteilt mit "+M(MU+" = "+mnum(m,2))+". Es gilt "+M("<i>P</i>(<i>X</i> ≤ "+mnum(c,1)+") = "+f2(p))+". Bestimme <i class='m'>σ</i> auf zwei Nachkommastellen.",
+          reveal:(host)=>drawIn(host,bellOpts(m,sg,[[m-4*sg,c,"#1f6fb2",.3]],{marks:[{x:c,y:0,r:6,color:"#d1432d",t:"c = "+mnum(c,1),dy:-14}],cap:"Die Glocke mit dem gefundenen σ."})),
+          fields:[{label:M(SG+" ≈"),ans:sg,ok:(v)=>relOK(v,sg,.02),aria:"Wert von σ",dec:2}],
+          note:"Dezimalzahlen mit Komma.",
+          msg:(v)=>absOK(v,Math.abs(c-m),.06*Math.max(1,Math.abs(c-m)))?"Das ist der Abstand der Grenze zu <i>μ</i>, also <i>z</i> · <i>σ</i>. Teile noch durch <i>z</i>.":"Bestimme zuerst <i>z</i> mit der inversen Normalverteilung für die Fläche "+f2(p)+" (σ = 1, μ = 0). Dann gilt "+M(mnum(c,1)+" − "+mnum(m,2)+" = <i>z</i> · "+SG)+".",
+          okHtml:M("<i>z</i> ≈ "+mnum(z,3)+" ⇒ "+SG+" = ("+mnum(c,1)+" − "+(m<0?"("+mnum(m,2)+")":mnum(m,2))+") : "+mnum(z,3)+" ≈ "+mnum(sg,2)),
+          hints:["Die Grenze liegt <i>z</i> Standardabweichungen von <i>μ</i> entfernt: "+M("<i>c</i> − "+MU+" = <i>z</i> · "+SG)+". Das <i>z</i> gehört nur zur Fläche "+f2(p)+".","Bestimme <i>z</i> mit der Standardnormalverteilung: "+INV+" mit Fläche "+f2(p)+", σ = 1, μ = 0.","Es ist <i>z</i> ≈ "+mnum(z,3)+". Löse "+M(mnum(c,1)+" − "+(m<0?"("+mnum(m,2)+")":mnum(m,2))+" = "+mnum(z,3)+" · "+SG)+" nach "+M(SG)+" auf."]
+        });
+      }
+    }
+  }
+});
+TR.splice(4,0,TR.pop());
+
+/* =========================================================
+   Start
+   ========================================================= */
+loadProgress();
+showHalle();
+</script>
+</body>
+</html>
