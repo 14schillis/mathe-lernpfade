@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Einstieg Kronkorken</title>
+<style>
+
+:root{--ac:#4f46e5;--ac2:#eceaff;--ink:#14172b;--mut:#6a7090;--ok:#0f9d6b;--okb:#e1f7ee;--no:#d9363e;--nob:#fdeced;--pos:#4f46e5;--neg:#ea7a14;--fc:#3730a3;--gc:#0d9488;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9dcec;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center}
+#st{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;background:linear-gradient(135deg,#f9faff,#eef0fb);display:grid;grid-template-rows:auto auto 1fr auto;gap:1.8cqh;padding:2.6cqh 3cqw;overflow:hidden}
+header{display:flex;align-items:center;gap:1.4cqw}
+.bd{width:4.4cqw;height:4.4cqw;border-radius:1.2cqw;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:2.2cqw;font-weight:700}
+h1{font-size:2.5cqw;font-weight:700;letter-spacing:-.02em;flex:1}
+.rt{display:flex;align-items:center;gap:1.2cqw;color:var(--mut);font-size:1.6cqw;font-weight:600}
+#pb{height:.6cqh;background:#dcdff3;border-radius:9px;overflow:hidden}
+#pf{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .5s}
+main{min-height:0;display:flex;flex-direction:column}
+.sc{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqh;animation:in .45s ease both}
+footer{display:flex;justify-content:space-between;align-items:center;gap:1.4cqw}
+.g{display:flex;gap:1.2cqw}
+.btn{font:inherit;font-size:1.7cqw;font-weight:600;min-height:7cqh;padding:0 2.4cqw;border:0;border-radius:1.4cqw;background:#fff;color:var(--ink);box-shadow:0 .2cqw .9cqw rgba(30,35,80,.12);cursor:pointer;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--ac);color:#fff;min-width:22cqw}
+.btn.d{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.ic{min-height:5cqh;padding:0 1.2cqw}
+.g .btn.ic{min-height:7cqh}
+m,.tx{font-family:var(--math)}
+m{white-space:nowrap;font-style:normal}
+m i{font-style:italic}
+sup,sub{font-size:.62em;line-height:0;font-style:normal;margin-left:.08em}
+sup{vertical-align:.7em}sub{vertical-align:-.3em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;font-size:.88em;line-height:1.15}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .06em}
+.fr>span:last-child{padding:.06em .2em 0}
+.in{display:inline-flex;align-items:center;vertical-align:-.5em;margin-right:.12em}
+.in .sg{font-size:1.9em;line-height:1;font-weight:300}
+.in .lm{display:flex;flex-direction:column;justify-content:space-between;font-size:.55em;height:2.7em;margin-left:-.3em}
+.ab{display:inline-block;font-size:1.5em;line-height:.6;vertical-align:-.12em;font-weight:300;margin:0 .04em}
+.q{font-size:2cqw;color:var(--mut);font-weight:500}
+.q m{font-size:1.15em}
+.body{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:1.8cqw}
+.gp{background:#fff;border-radius:2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);padding:1cqh 1cqw;min-width:0;min-height:0;display:flex}
+.gp svg{width:100%;height:100%}
+.pn{display:flex;flex-direction:column;gap:1.3cqh;justify-content:center;min-width:0}
+.cd{display:flex;align-items:center;gap:1.2cqw;background:#fff;border-radius:1.6cqw;padding:1.5cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);border-left:.7cqw solid var(--ac)}
+.cd.pos{border-left-color:var(--pos)}.cd.neg{border-left-color:var(--neg)}
+.cd.fin{border-left-color:var(--ok);background:var(--okb)}.cd.bad{border-left-color:var(--no);background:var(--nob)}
+.nm{flex:none;width:3.2cqw;height:3.2cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:1.7cqw}
+.cp{display:block;font-size:1.35cqw;font-weight:600;color:var(--mut);margin-bottom:.4cqh}
+.cm{font-size:2.2cqw;line-height:1.55}
+.ln{display:flex;align-items:center;gap:.9cqw}
+.dt{flex:none;width:1.1cqw;height:1.1cqw;border-radius:50%}
+.ln.pos .dt{background:var(--pos)}.ln.neg .dt{background:var(--neg)}
+.rule{background:#fff;border-left:.7cqw solid var(--ac);border-radius:1.6cqw;padding:1.3cqh 2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.1);font-size:2.6cqw;text-align:center}
+.rv{transition:opacity .5s}
+.rv:not(.on){opacity:0;visibility:hidden;pointer-events:none}
+/* Diagramm */
+.gl{stroke:#e6e9f6;stroke-width:2}
+.ax{stroke:var(--ink);stroke-width:3}
+.axh{fill:var(--ink)}
+.tick{stroke:var(--ink);stroke-width:3}
+.tx{font-size:32px;fill:var(--ink);text-anchor:middle}
+.tx.nm2{font-size:28px;fill:var(--mut)}
+.tx.end{text-anchor:end}
+.tx.lg{font-size:42px;font-weight:600}
+.tx.pos{fill:var(--pos)}.tx.neg{fill:var(--neg)}.tx.cf{fill:var(--fc)}.tx.cg{fill:var(--gc)}.tx.cc{fill:var(--mut)}
+.cv{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cv.f{stroke:var(--fc)}.cv.g{stroke:var(--gc)}
+.cv.gh{stroke:#aab0cc;stroke-dasharray:14 12;stroke-width:4}
+.ar{stroke:none}
+.ar.pos{fill:rgba(79,70,229,.28)}.ar.neg{fill:rgba(234,122,20,.34)}.ar.fin{fill:rgba(15,157,107,.42)}
+.dl{stroke:var(--mut);stroke-width:3;stroke-dasharray:9 8}
+.dot{fill:var(--ac);stroke:#fff;stroke-width:3}
+.mini .cv{stroke-width:10}.mini .ax{stroke-width:5}
+.sh{transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
+.sh.mv{transform:translateY(var(--dy))}
+/* Quiz */
+.chips{display:flex;gap:1.1cqw;align-items:center}
+.chip{font:inherit;font-size:1.6cqw;font-weight:600;flex:1;padding:1.2cqh 1.2cqw;border-radius:1.2cqw;background:#fff;border:.22cqw solid #dfe2f3;text-align:center;cursor:pointer;transition:.3s;color:var(--ink);line-height:1.25}
+.chip m{font-size:2.4cqw}
+.sel{border-color:var(--ac)!important;background:var(--ac2)!important}
+.ok{border-color:var(--ok)!important;background:var(--okb)!important}
+.no{border-color:#f0b4b8!important;background:var(--nob)!important}
+.chip.no:not(.sel){opacity:.45;background:#fff!important;border-color:#dfe2f3!important}
+.qb{background:#fff;border-radius:1.6cqw;padding:1.8cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh}
+.qt{font-size:2.3cqw}
+.ex{font-size:2cqw;color:var(--ok);font-weight:600}
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center}
+.qr{display:grid;grid-template-columns:17cqw 1fr;gap:1.6cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1cqh 1.4cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09)}
+.qr svg{width:100%;height:auto;display:block}
+.qd{font-size:1.9cqw;font-weight:600;margin-bottom:1cqh}
+.qd m{font-size:1.15em}
+/* Abschluss */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;flex:1;min-height:0}
+.card{background:#fff;border-radius:2cqw;padding:2cqh 1.6cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh;align-items:center;text-align:center;justify-content:center}
+.card svg{width:100%;height:auto;display:block}
+.card .t1{font-size:1.9cqw;font-weight:700}
+.card .eq{font-size:2.6cqw;min-height:5cqh;display:flex;align-items:center}
+.card .t2{font-size:1.5cqw;color:var(--mut)}
+.strat{display:flex;align-items:center;gap:1.2cqw}
+.st{flex:1;background:#fff;border-radius:1.6cqw;padding:1.6cqh 1.6cqw;font-size:1.8cqw;font-weight:600;display:flex;align-items:center;gap:1.2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.08)}
+.st b{flex:none;width:3.4cqw;height:3.4cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ar2{color:var(--mut);font-size:2.4cqw}
+@keyframes in{from{opacity:0;transform:translateX(2.4cqw)}}
+@keyframes pop{from{opacity:0;transform:translateY(1.4cqh)}}
+#ov{position:absolute;inset:0;background:rgba(236,239,251,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;flex-direction:column;gap:3cqh;padding:4cqh 3.4cqw;z-index:5}
+#ov.on{display:flex;animation:pop .3s}
+.oh{display:flex;justify-content:space-between;align-items:center}
+.oh h2{font-size:3cqw}
+.tiles{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:1.4cqw}
+.tile{font:inherit;border:.25cqw solid transparent;background:#fff;border-radius:1.8cqw;padding:2cqh 1.4cqw;text-align:left;display:flex;flex-direction:column;gap:1cqh;cursor:pointer;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);color:var(--ink)}
+.tile b{color:var(--ac);font-size:2cqw}
+.tile span{font-size:1.6cqw;font-weight:700}
+.tile em{font-style:normal;font-size:1.8cqw;margin-top:auto;color:var(--mut)}
+.tile.cur{border-color:var(--ac)}
+/* ---------- Kronkorken-Erweiterungen ---------- */
+:root{--L:#4f46e5;--R:#d9660a}
+.body.eq{grid-template-columns:1fr 1fr}
+.body.tr{grid-template-columns:1.95fr 1fr}
+.L{color:var(--L);font-weight:700}.R{color:var(--R);font-weight:700}
+.tup{font-family:var(--math);white-space:nowrap}
+.cm .tup{font-size:1.05em}
+.board{width:100%;height:100%}
+.bl{font-size:42px;font-weight:700;text-anchor:middle;fill:var(--ink)}
+.hb{fill:rgba(224,176,32,.75);stroke:#a67c00;stroke-width:3;transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);transition:transform .9s cubic-bezier(.3,0,.2,1)}
+.hn{font-size:34px;font-weight:700;text-anchor:middle;fill:var(--ink)}
+.pl{fill:none;stroke:rgba(79,70,229,.5);stroke-width:12;stroke-linecap:round;stroke-linejoin:round}
+.pl.f{stroke:rgba(106,112,144,.32);stroke-width:7}
+.pl.s{stroke:rgba(217,102,10,.55)}
+.dl2{font-size:22px;font-weight:700;fill:#fff;text-anchor:middle}
+.tb{background:#fff;border-radius:1.6cqw;padding:1.4cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:.8cqh}
+.tn{font-size:1.9cqw;font-weight:700;color:var(--mut)}
+.tr2{display:grid;grid-template-columns:4cqw 1fr 1fr;align-items:center;font-size:2.2cqw}
+.tr2 b{width:3.2cqw;height:3.2cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:1.7cqw}
+.tr2 span{text-align:right;font-variant-numeric:tabular-nums}
+.tr2 span:nth-child(2){font-weight:700}
+.vg{display:grid;grid-template-columns:1fr 1fr;gap:1.4cqw;flex:1;min-height:0}
+.vt{position:relative;font:inherit;background:#fff;border:.25cqw solid #dfe2f3;border-radius:2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6cqh;cursor:pointer;color:var(--ink);transition:.25s}
+.vt:active{transform:scale(.97)}
+.vt .l{font-size:5cqw;font-weight:800;color:var(--ac)}
+.vt .n{font-size:3cqw;font-weight:700;font-variant-numeric:tabular-nums}
+.vt .br{width:70%;height:1.2cqh;background:#e6e9f6;border-radius:9px;overflow:hidden}
+.vt .br i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+.vt.top{border-color:var(--ok);background:var(--okb)}
+.vt .m{position:absolute;top:.8cqh;right:.8cqw;width:3.4cqw;height:3.4cqw;border-radius:50%;border:0;background:#eef0fb;font-size:2cqw;color:var(--mut);cursor:pointer}
+.chips.v{flex-direction:column;align-items:stretch}
+.chips.v .chip{flex:none;font-size:2cqw;text-align:left;padding:1.5cqh 1.6cqw}
+.ln2{display:flex;flex-wrap:wrap;gap:.4cqh 1.1cqw;align-items:center}
+.ln2 .tup{font-size:1.85cqw}
+.row{display:flex;align-items:center;gap:1.2cqw;background:#fff;border-radius:1.6cqw;padding:1.2cqh 1.4cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);border-left:.7cqw solid var(--ac)}
+.row .nm{width:3.4cqw;height:3.4cqw;font-size:1.8cqw}
+.row .w{margin-left:auto;font-size:1.7cqw;font-weight:700;color:var(--mut);white-space:nowrap}
+.tl{font-size:26px;font-weight:700;fill:var(--mut);text-anchor:middle}
+.te{stroke:#9aa0c4;stroke-width:5;fill:none}
+.te.hl{stroke-width:11}
+.en{font-size:26px;font-weight:800;paint-order:stroke;stroke:#fff;stroke-width:6px;text-anchor:middle}
+.tn2{fill:#fff;stroke:#14172b;stroke-width:4}
+.tt{font-size:32px;font-family:var(--math)}
+.bb{fill:var(--ac)}
+.bt{font-size:30px;font-weight:800;fill:#fff;text-anchor:middle}
+.ph{font-size:2cqw;font-weight:600;color:var(--mut)}
+.slot{fill:#fff;stroke:#c9cde6;stroke-width:4;stroke-dasharray:12 9}
+.rec{transition:opacity .4s}
+.rec:not(.on){opacity:0}
+.ub{transition:opacity .4s}
+.ub.out{opacity:.18}
+.ldt{font-size:34px;font-weight:800;text-anchor:middle;fill:#fff}
+.sl{font-size:28px;font-weight:700;text-anchor:middle;fill:var(--mut)}
+.mini svg{width:100%;height:auto}
+.hint{font-size:1.9cqw;color:var(--mut);font-weight:600;text-align:center}
+
+</style>
+</head>
+<body>
+<div id="st">
+<header><div class="bd" id="bd">1</div><h1 id="ti"></h1><div class="rt"><span id="pg"></span><button class="btn ic" onclick="fs()">⛶</button></div></header>
+<div id="pb"><i id="pf"></i></div>
+<main id="mn"></main>
+<footer>
+<div class="g"><button class="btn" id="bk" onclick="nav(-1)">‹ Zurück</button><button class="btn" onclick="ov(1)">▦ Übersicht</button></div>
+<div class="g"><button class="btn ic" onclick="bk1()" title="Schritt zurück">↶</button><button class="btn p" id="sb" onclick="nx()"></button><button class="btn" onclick="go(cur)">↺ Zurücksetzen</button></div>
+<div class="g"><button class="btn d" id="fw" onclick="nav(1)">Weiter ›</button></div>
+</footer>
+<div id="ov"></div>
+</div>
+<script>
+const g=id=>document.getElementById(id);
+/* ---------- Mini-Formelsatz ---------- */
+const mt=(s,i)=>{let d=0;for(let j=i;j<s.length;j++){if(s[j]=='{')d++;else if(s[j]=='}'&&--d==0)return j}return s.length};
+function M(s){let o='',i=0;
+while(i<s.length){const c=s[i];
+if(c=='^'||c=='_'){const tg=c=='^'?'sup':'sub';i++;let t;if(s[i]=='{'){const j=mt(s,i);t=s.slice(i+1,j);i=j+1}else{t=s[i];i++}o+=`<${tg}>${M(t)}</${tg}>`}
+else if(c=='{'){const j=mt(s,i),p=s.slice(i+1,j).split('|');i=j+1;o+=`<span class="fr"><span>${M(p[0])}</span><span>${M(p[1])}</span></span>`}
+else if(c=='@'){const j=s.indexOf('@',i+1),p=s.slice(i+1,j).split(',');i=j+1;o+=`<span class="in"><span class="sg">∫</span><span class="lm"><span>${M(p[1])}</span><span>${M(p[0])}</span></span></span>`}
+else if(c=='|'){o+='<span class="ab">|</span>';i++}
+else if(/[a-z]/i.test(c)){o+='<i>'+c+'</i>';i++}
+else{o+=c=='*'?'·':c=='-'?'−':c;i++}}
+return o}
+const T=s=>s.replace(/\$([^$]+)\$/g,(_,x)=>'<m>'+M(x)+'</m>');
+const SM=s=>{let o='',sub=0;for(let i=0;i<s.length;i++){let c=s[i];
+if(c=='_'){i++;c=s[i];o+=`<tspan dy="10" font-size="66%"${/[a-z]/i.test(c)?' font-style="italic"':''}>${c}</tspan>`;sub=1;continue}
+const it=/[a-z]/i.test(c);o+=`<tspan${sub?' dy="-10"':''}${it?' font-style="italic"':''}>${c=='-'?'−':c}</tspan>`;sub=0}
+return o};
+
+const C=(s,cls,h,cap,nm)=>`<div class="cd rv ${cls||''}" data-s="${s}">${nm?`<b class="nm">${nm}</b>`:''}<div>${cap?`<span class="cp">${T(cap)}</span>`:''}<div class="cm">${T(h)}</div></div></div>`;
+const LN=(c,m)=>`<div class="ln ${c}"><i class="dt"></i>${m}</div>`;
+const BODY=(svg,cards,extra)=>`<div class="body"><div class="gp">${svg}</div><div class="pn">${cards}</div></div>${extra||''}`;
+const RULE=(s,h)=>`<div class="rule rv" data-s="${s}">${T(h)}</div>`;
+const CHP=(t,ok,h)=>`<span class="chip" data-hit="${h}" data-ok="${ok}" onclick="pk(this)">${T(t)}</span>`;
+const QB=(title,chips,ex,h)=>`<div class="qb"><div class="qt">${T(title)}</div><div class="chips">${chips}</div><div class="ex rv" data-s="${h}">${T(ex)}</div></div>`;
+const VA='Nullstellen → Beträge addieren',VB='$f-g$ bilden → ein Integral',VC='Schnittstellen → Beträge addieren';
+const QR=(th,d,opts)=>`<div class="qr"><div>${th}</div><div><div class="qd">${T(d)}</div><div class="chips">${opts.map(([t,ok])=>CHP(t,ok,1)).join('')}</div></div></div>`;
+/* ---------- Helfer Kronkorken ---------- */
+let GEN=0;
+const NB=' ';
+const LET=['A','B','C','D'];
+const rc=c=>(c>>2&1)+(c>>1&1)+(c&1);                 // Anzahl R in 3-Bit-Code
+const code=c=>[c>>2&1,c>>1&1,c&1].map(b=>b?'R':'L').join('');
+const codeNum=s=>[...s].reduce((a,x)=>a*2+(x=='R'?1:0),0);
+const TUP=s=>'<span class="tup">('+[...s].map(x=>`<span class="${x}">${x}</span>`).join(';'+NB)+')</span>';
+const pct=(c,n)=>n?(c/n*100).toFixed(1).replace('.',',')+NB+'%':'–';
+function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function genSeq(seed,p,n){const r=mul(seed),o=[];for(let i=0;i<n;i++){let c=0;for(let k=0;k<3;k++)c=c*2+(r()<p?1:0);o.push(c)}return o}
+function cnt(s,n){const a=[0,0,0,0];for(let i=0;i<n;i++)a[rc(s[i])]++;return a}
+function PTS(s){let x=350;const p=[[350,48],[350,114]],ys=[216,326,430];for(let i=0;i<3;i++){x+=s[i]=='R'?80:-80;p.push([x,ys[i]])}p.push([x,540]);return p}
+const BX=[110,270,430,590];
+/* Weg als Polylinie mit L/R-Markierungen */
+function PATH(s,cls,lab,extra){const p=PTS(s);p[0]=[350,74];let o=`<polyline class="pl ${cls||''}" ${extra||''} points="${p.map(q=>q.join(',')).join(' ')}"/>`;
+if(lab)for(let i=0;i<3;i++){const a=p[i+1],b=p[i+2],x=(a[0]+b[0])/2,y=(a[1]+b[1])/2,l=s[i];o+=`<circle cx="${x}" cy="${y}" r="17" fill="var(--${l})"/><text class="dl2" x="${x}" y="${y+8}">${l}</text>`}
+return o}
+const ALL=['LLL','LLR','LRL','LRR','RLL','RLR','RRL','RRR'];
+const BEH=[['LLL'],['RLL','LRL','LLR'],['RRL','RLR','LRR'],['RRR']];
+function board(o){o=o||{};
+let d='<rect x="30" y="8" width="640" height="594" rx="26" fill="#fff8e8" stroke="#d9c9a0" stroke-width="5"/>';
+[[350,140],[270,250],[430,250],[190,360],[350,360],[510,360]].forEach(q=>d+=`<circle cx="${q[0]}" cy="${q[1]}" r="11" fill="#3a3f5c"/>`);
+[190,350,510].forEach(x=>d+=`<line x1="${x}" y1="430" x2="${x}" y2="602" stroke="#8d7a4e" stroke-width="6" stroke-linecap="round"/>`);
+d+=`<line x1="30" y1="602" x2="670" y2="602" stroke="#8d7a4e" stroke-width="6"/>`;
+d+=`<circle cx="350" cy="48" r="24" fill="#fff" stroke="#14172b" stroke-width="4"/><text class="bl" style="font-size:30px" x="350" y="59">S</text>`;
+let g=`<g id="bg" style="transform-origin:350px 320px;transition:transform 1s ease">${d}</g>`;
+g+=LET.map((l,i)=>`<text class="bl" x="${BX[i]}" y="642">${l}</text>`).join('');
+if(o.hist)g+=BX.map((x,i)=>`<rect class="hb" id="hb${i}" x="${x-55}" y="450" width="110" height="150"/><text class="hn" id="hn${i}" x="${x}" y="440"></text>`).join('');
+return `<svg class="board" viewBox="-10 -30 720 700" preserveAspectRatio="xMidYMid meet">${g}${o.inner||''}</svg>`}
+function tbl(){return `<div class="tb"><div class="tn" id="tn">n${NB}=${NB}0</div>${LET.map((l,i)=>`<div class="tr2"><b>${l}</b><span id="tc${i}">0</span><span id="tp${i}">–</span></div>`).join('')}</div>`}
+function setHist(c){const n=c.reduce((a,b)=>a+b,0),m=Math.max(...c);
+for(let i=0;i<4;i++){const r=g('hb'+i);if(!r)return;const h=m?c[i]/m:0;r.style.transform='scaleY('+h+')';
+const t=g('hn'+i);t.textContent=c[i]||'';t.setAttribute('y',600-150*h-10);
+g('tc'+i)&&(g('tc'+i).textContent=c[i],g('tp'+i).innerHTML=pct(c[i],n))}
+g('tn')&&(g('tn').innerHTML='n'+NB+'='+NB+n)}
+/* Kronkorken fällt entlang des Weges */
+function capEl(r){return `<g class="tcap"><circle r="${r||13}" fill="#d4a62a" stroke="#8a6d0a" stroke-width="3"/><circle r="${(r||13)*.55}" fill="none" stroke="#8a6d0a" stroke-width="2"/></g>`}
+function fall(s,dur,gen,cb,persist){const svg=document.querySelector('.board');if(!svg)return;const e=document.createElementNS('http://www.w3.org/2000/svg','g');e.innerHTML=capEl();const cap=e.firstChild;cap.classList.add('tmp');svg.appendChild(cap);
+const p=PTS(s),L=[];let tot=0;for(let i=1;i<p.length;i++){const l=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);L.push(l);tot+=l}
+const t0=performance.now();
+(function f(t){if(gen!==GEN){cap.remove();return}let k=Math.min(1,(t-t0)/dur);k=k*k*.6+k*.4; // Beschleunigung
+let d=k*tot,i=0;while(i<L.length-1&&d>L[i]){d-=L[i];i++}const u=Math.min(1,d/L[i]),a=p[i],b=p[i+1];
+cap.setAttribute('transform',`translate(${a[0]+(b[0]-a[0])*u},${a[1]+(b[1]-a[1])*u})`);
+if(t-t0<dur)requestAnimationFrame(f);else{if(!persist)cap.remove();cb&&cb()}})(t0)}
+function clearTmp(){document.querySelectorAll('.tmp').forEach(e=>e.remove())}
+/* ---------- Baumdiagramm ---------- */
+function tree(o){o=o||{};const X=[70,300,530,760],ly=i=>70+i*75;
+const Y3=ALL.map((_,i)=>ly(i)),Y2=[0,1,2,3].map(i=>(Y3[2*i]+Y3[2*i+1])/2),Y1=[0,1].map(i=>(Y2[2*i]+Y2[2*i+1])/2),Y0=(Y1[0]+Y1[1])/2;
+const edge=(x1,y1,x2,y2,l,cls)=>{const mx=(x1+x2)/2,my=(y1+y2)/2+(l=='L'?-16:30);return `<line class="te ${cls||''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><text class="en" x="${mx+(l=='L'?-4:4)}" y="${my}" fill="var(--${l})">${l}</text>`};
+const node=(x,y)=>`<circle class="tn2" cx="${x}" cy="${y}" r="13"/>`;
+let s1='',s2='',s3='',s4='',hl='';
+[0,1].forEach(i=>{s1+=edge(X[0],Y0,X[1],Y1[i],i?'R':'L');s1+=node(X[1],Y1[i])});
+[0,1,2,3].forEach(i=>{const p=Math.floor(i/2);s2+=edge(X[1],Y1[p],X[2],Y2[i],i%2?'R':'L');s2+=node(X[2],Y2[i])});
+ALL.forEach((c,i)=>{const p=Math.floor(i/2);s3+=edge(X[2],Y2[p],X[3],Y3[i],c[2],'');s3+=node(X[3],Y3[i]);s3+=`<text class="tt" x="${X[3]+28}" y="${Y3[i]+11}">${[...c].map(z=>`<tspan fill="var(--${z})" font-weight="700">${z}</tspan>`).join('<tspan>; </tspan>').replace(/^/,'(')+')'}</text>`;
+s4+=`<g><circle class="bb" cx="1075" cy="${Y3[i]}" r="24"/><text class="bt" x="1075" y="${Y3[i]+10}">${LET[rc(codeNum(c))]}</text></g>`});
+// Hervorgehobener Pfad R L L
+const iR=4;hl+=`<line class="te hl" style="stroke:var(--R)" x1="${X[0]}" y1="${Y0}" x2="${X[1]}" y2="${Y1[1]}"/><line class="te hl" style="stroke:var(--L)" x1="${X[1]}" y1="${Y1[1]}" x2="${X[2]}" y2="${Y2[2]}"/><line class="te hl" style="stroke:var(--L)" x1="${X[2]}" y1="${Y2[2]}" x2="${X[3]}" y2="${Y3[iR]}"/>`;
+hl+=`<circle cx="${X[0]}" cy="${Y0}" r="13" fill="#d4a62a" stroke="#8a6d0a" stroke-width="3"/>`;
+const hd=['1. Nagel','2. Nagel','3. Nagel'].map((t,i)=>`<text class="tl rv" data-s="${i+1}" x="${X[i+1]}" y="30">${t}</text>`).join('');
+const R=(s,h)=>`<g class="rv" data-s="${s}">${h}</g>`;
+const bh=o.mini?'':`<text class="tl rv" data-s="4" x="1075" y="30">Behälter</text>`;
+return `<svg viewBox="0 0 1130 640" preserveAspectRatio="xMidYMid meet">${node(X[0],Y0)}${hd}${bh}${R(1,s1)}${R(2,s2)}${R(3,s3)}${R(4,s4)}${R(5,hl)}</svg>`}
+function treeMini(){return tree().replace(/class="rv" data-s="\d"/g,'class=""').replace(/<text class="tl[^>]*>[^<]*<\/text>/g,'')}
+/* ---------- Urne ---------- */
+function urnSvg(mini){
+return `<svg viewBox="0 0 700 650" preserveAspectRatio="xMidYMid meet">
+${mini?'':'<g>'+[0,1,2].map(i=>{const x=150+i*200;return `<rect class="slot" x="${x-75}" y="40" width="150" height="120" rx="20"/><text class="sl" x="${x}" y="196">${i+1}. Zug</text>${mini?'':`<g class="rec" id="rec${i}"><rect x="${x-75}" y="40" width="150" height="120" rx="20" fill="#fff" stroke="var(--ac)" stroke-width="5"/><text id="rt${i}" x="${x}" y="122" text-anchor="middle" font-size="76" font-weight="800"></text></g>`}`}).join('')+'</g>'}
+<path d="M190 330 L170 330 Q150 330 160 360 L200 600 Q205 625 235 625 L465 625 Q495 625 500 600 L540 360 Q550 330 530 330 L510 330" fill="#fff" stroke="#14172b" stroke-width="7" stroke-linejoin="round"/>
+<g id="urnb">
+<g id="ubL" class="ub"><circle cx="290" cy="540" r="52" fill="var(--L)"/><text class="ldt" style="font-size:56px" x="290" y="560">L</text></g>
+<g id="ubR" class="ub"><circle cx="410" cy="540" r="52" fill="var(--R)"/><text class="ldt" style="font-size:56px" x="410" y="560">R</text></g></g>
+${mini?'':'<g id="fly" style="opacity:0"><circle r="52" id="flyc" fill="var(--R)"/><text class="ldt" id="flyt" style="font-size:56px" y="20">R</text></g>'}
+</svg>`}
+function urnMini(){return urnSvg(1)}
+
+/* ---------- Szenen ---------- */
+const SEQ=genSeq(55,.5,1000),SEQ3=genSeq(8,.3,100),SEQ7=genSeq(8,.7,100);
+const DEM='RLL';
+let VOTE=[0,0,0,0];
+function leader(){const m=Math.max(...VOTE),e=g('lead');if(!e)return;
+if(!m){e.innerHTML='Noch keine Stimmen';return}
+const w=LET.filter((_,i)=>VOTE[i]==m);e.innerHTML=w.length>1?'Gleichstand: <b>'+w.join(' und ')+'</b>':'Die Klasse vermutet: <b>Behälter '+w[0]+'</b>'}
+function vote(i,d,ev){if(ev)ev.stopPropagation();VOTE[i]=Math.max(0,VOTE[i]+d);paintVote();leader()}
+function paintVote(){const m=Math.max(...VOTE);document.querySelectorAll('.vt').forEach((e,i)=>{e.querySelector('.n').textContent=VOTE[i];e.querySelector('.br i').style.width=m?VOTE[i]/m*100+'%':'0';e.classList.toggle('top',m>0&&VOTE[i]==m&&step>=1)})}
+const vtiles=()=>`<div class="vg">${LET.map((l,i)=>`<div class="vt" role="button" onclick="vote(${i},1)"><span class="l">${l}</span><span class="n">0</span><div class="br"><i></i></div><button class="m" onclick="vote(${i},-1,event)" title="Stimme zurück">−</button></div>`).join('')}</div>`;
+/* Kronkorken-Zustand Szene 3 */
+const NS=[0,1,10,100,1000];
+const HT=['Ein einzelner Kronkorken sagt noch nichts.','Mit 10 Kronkorken: noch sehr unruhig.','Mit 100 Kronkorken erkennt man ein Muster.','Mit 1000 Kronkorken: B und C landen deutlich häufiger als A und D.'];
+function dropMany(seq,from,to,gen,cb){let k=from;const stag=to-from>1?120:0;
+for(let i=from;i<to;i++)setTimeout(()=>{if(gen!==GEN)return;fall(code(seq[i]),stag?650:1100,gen,()=>{if(gen!==GEN)return;setHist(cnt(seq,i+1));if(i==to-1&&cb)cb()})},(i-from)*stag)}
+const S=[
+{t:'Das Kronkorken-Spiel',e:'Nagelbrett',q:'Ein Wirt bietet ein Spiel an: Kronkorken fallen durch ein Nagelbrett.',
+b:['Spielregel','Ein Kronkorken fällt','Das Gewinnspiel'],
+h:`<div class="body eq"><div class="gp">${board({inner:`<g id="p1" class="rv" data-s="2">${PATH(DEM,'',1)}</g><g id="capg"></g>`})}</div><div class="pn">
+${C(1,'','Einwurf bei <b>S</b>. An jedem Nagel geht es zufällig nach links <b class="L">L</b> oder rechts <b class="R">R</b>.','Spielregel')}
+${C(2,'','Weg '+TUP(DEM)+'<br>endet in Behälter <b>B</b>','Beispiel')}
+${C(3,'bad','Der Wirt: „Landet dein Kronkorken in <b>B</b>, gewinnst du!“','Das Spiel')}</div></div>`,
+init(){},on(s,a){const capg=g('capg');clearTmp();capg.innerHTML='';
+const cap=(x,y)=>{capg.innerHTML=`<g transform="translate(${x},${y})">${capEl()}</g>`};
+if(s==1)cap(350,48);
+if(s>=2){if(a&&s==2)fall(DEM,1700,GEN,()=>{if(g('capg'))cap(270,540)});else cap(270,540)}}},
+{t:'Abstimmung',e:'Vermutung',q:'Wo landen die meisten Kronkorken? Tippt auf euren Behälter.',
+b:['Vermutung der Klasse'],
+h:`<div class="body eq"><div class="gp">${board()}</div><div class="pn" style="justify-content:stretch;gap:1.4cqh">${vtiles()}<div class="cd rv fin" data-s="1"><div class="cm" id="lead"></div></div></div></div>`,
+init(){VOTE=[0,0,0,0];paintVote();leader()},on(){paintVote();leader()}},
+{t:'Ausprobieren',e:'1 – 10 – 100 – 1000',q:'Wir lassen Kronkorken fallen und zählen, wo sie landen.',
+b:['1 Kronkorken','10 Kronkorken','100 Kronkorken','1000 Kronkorken'],
+h:`<div class="body eq"><div class="gp">${board({hist:true})}</div><div class="pn">${tbl()}<div class="cd rv" data-s="1"><div class="cm" id="ht"></div></div></div></div>`,
+init(){},on(s,a){clearTmp();const prev=a?NS[s-1]:NS[s];
+g('ht')&&(g('ht').textContent=HT[Math.max(0,s-1)]);
+if(!a||s>2){setHist(cnt(SEQ,NS[s]));return}
+setHist(cnt(SEQ,NS[s-1]));dropMany(SEQ,NS[s-1],NS[s],GEN)}},
+{t:'Alle Wege',e:'1 – 3 – 3 – 1',q:'Auf welchen Wegen gelangt ein Kronkorken in welchen Behälter?',
+b:['Wege nach A','Wege nach B','Wege nach C','Wege nach D','Wege vergleichen'],
+h:(()=>{const grp=BEH.map((ws,k)=>`<g class="rv" data-s="${k+1}" data-x="${k+2}">${ws.map(w=>PATH(w,'',1)).join('')}</g>`).join('')+`<g class="rv" data-s="5">${ALL.map(w=>PATH(w,'f')).join('')}</g>`;
+const rows=BEH.map((ws,k)=>`<div class="row rv" data-s="${k+1}"><b class="nm">${LET[k]}</b><div class="ln2">${ws.map(TUP).join('')}</div><span class="w">${ws.length}${NB}${ws.length>1?'Wege':'Weg'}</span></div>`).join('');
+return `<div class="body eq"><div class="gp">${board({inner:grp})}</div><div class="pn">${rows}${C(5,'fin','Insgesamt <b>8</b> Wege: $1+3+3+1=8$','')}</div></div>`})(),
+on(){}},
+{t:'Wie groß ist die Chance?',e:'P(B) = 3/8',q:'Der Wirt behauptet: „Jeder Behälter hat die gleiche Chance, also 1 von 4.“',
+b:['Behauptung des Wirts','Alle Wege betrachten','Chance für B','Wer hat recht?'],
+h:(()=>{const ins=`<g class="rv" data-s="2" data-x="3">${ALL.map(w=>PATH(w,'f')).join('')}</g><g class="rv" data-s="3">${ALL.map(w=>PATH(w,'f')).join('')}${BEH[1].map(w=>PATH(w,'s',1)).join('')}</g>`;
+return `<div class="body eq"><div class="gp">${board({inner:ins})}</div><div class="pn">
+${C(1,'bad','Wirt: $P(B)={1|4}=25$ %','Behauptung')}
+${C(2,'','<b>8</b> gleich wahrscheinliche Wege,<br><b>3</b> davon führen nach <b>B</b>.','Wege zählen')}
+${C(3,'fin','$P(B)={3|8}=37{,}5$ %'.replace('{,}',','),'Chance für B')}
+${C(4,'bad','Der Wirt irrt: 37,5 % sind mehr als 25 %.','Vergleich')}</div></div>`})(),on(){}},
+{t:'Der Wirt kippt das Brett',e:'nicht mehr fair',q:'Das Brett steht schief: Die Wege sind nicht mehr gleich wahrscheinlich.',
+b:['Brett nach links kippen','100 Kronkorken','Brett nach rechts kippen','100 Kronkorken','Was fällt auf?'],
+h:`<div class="body eq"><div class="gp">${board({hist:true})}</div><div class="pn">${tbl()}
+${C(1,'','','Brett gekippt').replace('<div class="cm"></div>','<div class="cm" id="pp"></div>')}
+${C(5,'bad','<b>Nicht</b> mehr gleich wahrscheinlich: Wege zählen reicht nicht!','')}</div></div>`,
+on(s,a){clearTmp();g('pp').innerHTML=s>=3?T('Nach rechts: $P(L)=0,3$ und $P(R)=0,7$'):T('Nach links: $P(L)=0,7$ und $P(R)=0,3$');g('bg').style.transform='rotate('+(s>=3?4:s>=1?-4:0)+'deg)';
+setHist(s==2?cnt(SEQ3,100):s>=4?cnt(SEQ7,100):[0,0,0,0])}},
+{t:'Vom Brett zum Baumdiagramm',e:'Pfad = Ergebnis',q:'Jeder Nagel ist eine Stufe: links oder rechts.',
+b:['1. Stufe','2. Stufe','3. Stufe','Behälter','Pfad (R; L; L)'],
+h:`<div class="body tr"><div class="gp">${tree()}</div><div class="pn">
+${C(3,'','Ein <b>dreistufiges</b> Zufallsexperiment','')}
+${C(4,'','<b>8</b> Pfade = <b>8</b> Ergebnisse','')}
+${C(5,'fin','Pfad '+TUP(DEM)+' führt nach <b>B</b>','Ein Pfad ist ein Ergebnis')}</div></div>`,on(){}},
+{t:'Quiz: Welche Urne passt?',e:'Quiz',q:'Wir ersetzen das Nagelbrett durch eine Urne. Welche Urne passt?',
+b:['Auflösen'],
+h:`<div class="stack"><div class="qb"><div class="qt">Welche Urne und welches Ziehen passen zum Nagelbrett?</div><div class="chips v">
+${CHP('4 Kugeln $A$, $B$, $C$, $D$, einmal ziehen',0,1)}
+${CHP('2 Kugeln ($L$, $R$), dreimal ziehen <b>ohne</b> Zurücklegen',0,1)}
+${CHP('2 Kugeln ($L$, $R$), dreimal ziehen <b>mit</b> Zurücklegen',1,1)}
+${CHP('3 Kugeln ($L$, $L$, $R$), einmal ziehen',0,1)}</div>
+<div class="ex rv" data-s="1">${T('An jedem Nagel gibt es wieder $L$ oder $R$: dreimal ziehen, die Kugel wird zurückgelegt.')}</div></div></div>`,on(){}},
+{t:'Das Urnenmodell',e:'Ziehen mit Zurücklegen',q:'Das Nagelbrett als Urnenmodell: dreimal ziehen mit Zurücklegen.',
+b:['Urne füllen','1. Zug','Zurücklegen','2. Zug','Zurücklegen','3. Zug','Ergebnis'],
+h:`<div class="body eq"><div class="gp">${urnSvg()}</div><div class="pn">
+${C(1,'','Urne mit zwei Kugeln: <b class="L">L</b> und <b class="R">R</b>','Urne')}
+${C(3,'','Die Kugel wird <b>zurückgelegt</b>:<br>Vor jedem Zug ist die Urne wieder gleich.','Mit Zurücklegen')}
+${C(7,'fin','Ergebnis '+TUP(DEM)+'<br>Der Kronkorken landet in <b>B</b>.','Ergebnis')}</div></div>`,
+on(s,a){const D=[...DEM],pos=[[290,540],[410,540]];
+g('urnb').style.display=s>=1?'':'none';
+const fly=g('fly');fly.style.opacity=0;
+const out=s==2?0:s==4?1:s==6?2:-1; // gezogene Kugel in Slot
+const dr=s>=7?3:s>=6?3:s>=4?2:s>=2?1:0;
+g('ubL').classList.remove('out');g('ubR').classList.remove('out');
+for(let i=0;i<3;i++){const r=g('rec'+i),on=i<dr||(s>=7);{const w=i<(s>=6?3:s>=4?2:s>=2?1:0);if(a&&w&&i==(s==2?0:s==4?1:s==6?2:-1)){r.classList.remove('on');const gen=GEN;setTimeout(()=>{if(gen===GEN)r.classList.add('on')},800)}else r.classList.toggle('on',w)}const l=D[i];g('rt'+i).textContent=l;g('rt'+i).setAttribute('fill','var(--'+l+')')}
+const place=(i,x,y)=>{fly.style.opacity=1;g('flyc').setAttribute('fill','var(--'+D[i]+')');g('flyt').textContent=D[i];fly.setAttribute('transform',`translate(${x},${y})`)};
+const urnPos=l=>l=='L'?pos[0]:pos[1],slotPos=i=>[150+i*200,100];
+if(out>=0){const l=D[out];g('ub'+l).classList.add('out');const sp=slotPos(out);
+if(a){const u=urnPos(l),t0=performance.now(),gen=GEN;(function f(t){if(gen!==GEN)return;const k=Math.min(1,(t-t0)/900),e=k*k*(3-2*k);place(out,u[0]+(sp[0]-u[0])*e,u[1]+(sp[1]-u[1])*e);if(k<1)requestAnimationFrame(f)})(t0)}else place(out,sp[0],sp[1])}
+else if(a&&(s==3||s==5||s==7)){const i=s==3?0:s==5?1:2;
+const l=D[i],u=urnPos(l),sp=slotPos(i),t0=performance.now(),gen=GEN;g('ub'+l).classList.add('out');
+(function f(t){if(gen!==GEN)return;const k=Math.min(1,(t-t0)/900),e=k*k*(3-2*k);place(i,sp[0]+(u[0]-sp[0])*e,sp[1]+(u[1]-sp[1])*e);if(k<1)requestAnimationFrame(f);else{fly.style.opacity=0;g('ub'+l).classList.remove('out')}})(t0)}}},
+{t:'Zusammenfassung',e:'Brett – Baum – Urne',q:'Ein Zufallsexperiment, drei Darstellungen.',
+b:['Ausblick'],
+h:`<div class="g3">
+<div class="card mini">${board({small:1,inner:PATH(DEM,'',1)})}<div class="t1">Nagelbrett</div><div class="t2">Weg ${TUP(DEM)} → Behälter B</div></div>
+<div class="card mini">${treeMini()}<div class="t1">Baumdiagramm</div><div class="t2">Ein Pfad ist ein Ergebnis</div></div>
+<div class="card mini">${urnMini()}<div class="t1">Urnenmodell</div><div class="t2">Dreimal ziehen mit Zurücklegen</div></div></div>
+<div class="strat rv" data-s="1"><div class="st"><b>1</b>Baumdiagramm und Pfade</div><span class="ar2">→</span><div class="st"><b>2</b>Wahrscheinlichkeiten an den Ästen</div><span class="ar2">→</span><div class="st"><b>3</b>Die Pfadregel</div></div>`,on(){}}
+];
+
+/* ---------- Steuerung ---------- */
+let cur=0,step=0;
+function go(i){GEN++;cur=i;step=0;const s=S[i];
+g('bd').textContent=i+1;g('ti').textContent=s.t;g('pg').textContent=(i+1)+' / '+S.length;g('pf').style.width=(i+1)/S.length*100+'%';
+g('mn').innerHTML='<div class="sc"><div class="q">'+T(s.q)+'</div>'+s.h+'</div>';s.init&&s.init();
+g('bk').disabled=!i;g('fw').disabled=i==S.length-1;upd(false)}
+function upd(anim){GEN++;const s=S[cur],m=g('mn');
+m.querySelectorAll('[data-s]').forEach(e=>{const a=+e.dataset.s,x=e.dataset.x!=null?+e.dataset.x:99;e.classList.toggle('on',step>=a&&step<x)});
+m.querySelectorAll('[data-m]').forEach(e=>e.classList.toggle('mv',step>=+e.dataset.m));
+m.querySelectorAll('[data-hit]').forEach(e=>{const o=step>=+e.dataset.hit;e.classList.toggle('ok',o&&e.dataset.ok=='1');e.classList.toggle('no',o&&e.dataset.ok!='1')});
+const d=step>=s.b.length;g('sb').textContent=d?'✓ Alles gezeigt':s.b[step];g('sb').disabled=d;s.on&&s.on(step,!!anim)}
+function nx(){if(step<S[cur].b.length){step++;upd(true)}}
+function bk1(){if(step>0){step--;upd(false)}}
+function nav(d){const n=cur+d;if(n>=0&&n<S.length)go(n)}
+function pk(e){if(step>=+e.dataset.hit)return;[...e.parentNode.children].forEach(c=>c.classList.remove('sel'));e.classList.add('sel')}
+function ov(o){const e=g('ov');if(o){e.innerHTML='<div class="oh"><h2>Übersicht</h2><button class="btn" onclick="ov(0)">✕ Schließen</button></div><div class="tiles">'+S.map((s,i)=>`<button class="tile${i==cur?' cur':''}" onclick="ov(0);go(${i})"><b>${i+1}</b><span>${s.t}</span><em>${T(s.e)}</em></button>`).join('')+'</div>'}e.classList.toggle('on',!!o)}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('keydown',e=>{if(e.key=='ArrowRight')nav(1);else if(e.key=='ArrowLeft')nav(-1);else if(e.key==' '||e.key=='Enter'){e.preventDefault();nx()}else if(e.key=='Backspace'){e.preventDefault();bk1()}else if(e.key=='Escape')ov(0)});
+go(0);
+
+</script>
+</body>
+</html>

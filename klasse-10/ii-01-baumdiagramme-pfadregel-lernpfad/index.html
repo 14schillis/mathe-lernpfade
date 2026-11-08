@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>II.1 und II.2 Baumdiagramme und 1. Pfadregel – Lernpfad</title>
+<style>
+
+/* ============ Grundlagen (aus MASTER I.1) ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;        /* Hefteintrag-Blau */
+  --accent-soft:#eaf1f8;
+  --pos:#1f6fb2;           /* Graph von f bzw. h */
+  --pos-bg:#dceaf6;
+  --neg:#b45309;           /* zweiter Graph */
+  --neg-bg:#fbeadb;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+  --ui:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+/* overflow-x:clip statt hidden – hidden wuerde einen Scroll-Container erzeugen
+   und damit position:sticky der Visualisierungen ausser Kraft setzen. */
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+
+/* Lehrermodus-Hinweis */
+.tmode{
+  display:none;margin-left:10px;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:1px 9px 2px;vertical-align:middle;white-space:nowrap;
+  font-family:var(--ui);
+}
+.tmode.on{display:inline-block}
+.steps{display:flex;gap:6px;list-style:none;margin:-11px 0 0;padding:0 0 2px}
+.steps li{flex:1;display:flex}
+.steps button{
+  width:100%;border:0;background:transparent;padding:14px 0 19px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:23px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:4px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+.card h3.sub{margin-top:4px;color:var(--accent)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+.gap{margin-top:14px}
+
+/* ============ Arbeitsansicht ============
+   Zweispaltig bereits ab Tablet-Hochformat: Der Graph muss beim Bearbeiten
+   der rechten Spalte sichtbar bleiben. Einspaltig erst unterhalb von 700 px. */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:700px){
+  .work{grid-template-columns:1fr;gap:10px}
+  .work .viz svg{max-width:560px}
+}
+/* Tablet: Visualisierung etwas breiter als die Aufgabenspalte */
+@media(min-width:701px) and (max-width:1000px){
+  .work{grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}
+}
+/* Sticky bereits im Tabletbereich, sofern die Hoehe ausreicht */
+@media(min-width:701px) and (min-height:620px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 8px)}
+}
+
+/* ============ Mathematik-Satz ============
+   Bewusst dieselbe Schriftfamilie wie der Fliesstext: Variablen kursiv,
+   Zahlen, Rechenzeichen und Klammern aufrecht. Keine externen Fonts. */
+.m,.mf,.mblock{font-family:var(--ui);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal}
+.mf i{font-style:italic;padding-right:.04em}
+.mf b{font-weight:700}
+.mblock{
+  text-align:center;font-style:normal;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.mblock i{font-style:italic;padding-right:.04em}
+.big{font-size:clamp(1.1rem,3vw,1.34rem)}
+sub,sup{font-size:.7em}
+.mf sup,.mblock sup{padding-left:.02em}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.modebtn:focus-visible,
+.minipick:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rueckmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:120px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+.unit{font-size:.95rem;color:var(--ink-soft)}
+
+/* Sicherungs-Box */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:920px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.18em 0}
+.heft .duo{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+@media(min-width:720px){.heft .duo{grid-template-columns:1fr 1fr}}
+.duo .box{background:#fff;border:1px solid #c9dcec;border-radius:8px;padding:10px 13px}
+.duo .box.up{border-left:4px solid var(--pos)}
+.duo .box.down{border-left:4px solid var(--neg)}
+.duo .box .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.duo .box.up .t{color:var(--pos)}
+.duo .box.down .t{color:var(--neg)}
+.duo .box p{margin:.22em 0;font-size:.97rem}
+/* kompakte Vierfeldtafel zur Monotonie */
+.mono4{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
+@media(min-width:620px){.mono4{grid-template-columns:1fr 1fr}}
+.mono4 div{background:#fff;border:1px solid #c9dcec;border-radius:7px;padding:6px 11px;font-size:.94rem}
+
+/* Schieberegler */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:28px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.76rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{
+  content:"";display:block;width:1.5px;height:7px;background:#94a3b8;margin:0 auto 3px;
+}
+.scale span.mark{font-weight:700;color:var(--accent);font-size:.83rem}
+.scale span.mark::before{background:var(--accent);height:9px}
+
+/* Anzeige-Box */
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:9px 13px;background:#fff;margin:4px 0 8px;
+}
+.valbox .vlabel{font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vrow{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:2px}
+.valbox .vnum{
+  font-size:1.42rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;display:inline-block;
+}
+.valbox .vsub{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Wertekacheln */
+.vals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.val{
+  border:1px solid var(--line);border-left-width:4px;border-left-color:var(--pos);
+  border-radius:8px;padding:6px 10px;background:#fff;
+  display:flex;align-items:baseline;gap:8px;flex:1 1 120px;
+}
+.val .k{font-size:.86rem;color:var(--ink-soft)}
+.val .v{font-size:1.05rem;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto;color:#14456e}
+
+/* Forschungsauftrag */
+.forsch{
+  border:1px solid #cfe0ef;border-left:4px solid var(--pos);background:#f7fbfe;
+  border-radius:8px;padding:11px 14px;margin:10px 0;
+}
+.forsch .ft{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
+  color:var(--pos);margin-bottom:3px}
+.forsch p{margin:.2em 0}
+.forsch .btnrow{margin-top:10px}
+
+/* kompakter Erfolgsblock – ersetzt den erledigten Forschungsauftrag */
+.solved{
+  display:none;gap:9px;align-items:baseline;background:var(--ok-bg);
+  border:1px solid #bcdfcb;border-left:4px solid var(--ok);border-radius:8px;
+  padding:8px 13px;margin:8px 0;font-size:.93rem;color:#14603c;font-weight:600;line-height:1.45;
+}
+.solved.on{display:flex}
+.tick{font-weight:700;color:var(--ok);flex:0 0 auto}
+
+/* einheitlicher, wieder aufklappbarer Erfolgsblock fuer erledigte Bereiche
+   (Karten, Forschungs- und Multiple-Choice-Bloecke). Der Inhalt bleibt im DOM,
+   nur die Darstellung wechselt - der Fortschritt aendert sich dadurch nie. */
+.completed-summary{
+  display:none;align-items:center;gap:9px;background:var(--ok-bg);
+  border:1px solid #bcdfcb;border-left:4px solid var(--ok);border-radius:8px;
+  padding:3px 6px 3px 13px;margin:8px 0;font-size:.95rem;color:#14603c;font-weight:600;line-height:1.45;
+}
+.completed-summary.on{display:flex}
+.completed-summary.open{background:#f1f8f4}
+.completed-summary .cs-text{flex:1 1 9em;min-width:0}
+.completed-summary .cs-btn{
+  position:relative;flex:0 0 auto;min-height:40px;padding:4px 12px;
+  border:1px solid #9fcbb3;border-radius:8px;background:#fff;color:#14603c;
+  font-weight:600;font-size:.88rem;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+/* Treffer-Flaeche etwas groesser als die sichtbare Schaltflaeche (ca. 48 px) */
+.completed-summary .cs-btn::after{content:"";position:absolute;left:-4px;right:-4px;top:-4px;bottom:-4px}
+.completed-summary .cs-btn:hover{background:#f3fbf6}
+.completed-summary .cs-btn:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.folded{display:none !important}
+
+/* Protokoll der geprueften Faelle – bleibt nach dem Einklappen stehen */
+.prot{display:flex;flex-direction:column;gap:5px;margin:8px 0 2px}
+.prot:empty{margin:0}
+.protline{
+  font-size:.9rem;background:#fff;border:1px solid var(--line);border-left:3px solid var(--ok);
+  border-radius:7px;padding:5px 10px;font-variant-numeric:tabular-nums;
+}
+
+/* Legende */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:4px 0 2px;color:var(--ink-soft)}
+/* nur die direkten Kinder sind Flex-Zeilen – sonst wuerde der Zeichenabstand
+   innerhalb der Formeln auseinandergezogen */
+.legend>span{display:inline-flex;align-items:center;gap:7px}
+.legend>span>span{display:inline}
+.swatch{width:22px;height:0;border-top-width:3.4px;border-top-style:solid;display:inline-block;flex:0 0 auto}
+.sw-f{border-top-color:var(--pos)}
+.sw-g{border-top-color:var(--neg)}
+.sw-ref{border-top-color:#94a3b8;border-top-style:dashed}
+
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.83rem;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+
+/* Modusknoepfe */
+.modes{display:flex;flex-wrap:wrap;gap:9px;margin:4px 0 12px}
+.modebtn{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+  padding:9px 16px;cursor:pointer;font-weight:650;min-height:44px;
+  -webkit-tap-highlight-color:transparent;flex:1 1 auto;
+}
+.modebtn.sel{background:var(--accent);color:#fff}
+.modebtn .cnt{font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Vier kleine Graphen (Station 7, Modus B)
+   Querformat / breite Displays: alle vier nebeneinander, damit nicht gescrollt
+   werden muss. Tablet-Hochformat und mittlere Breiten: 2x2. Sehr schmal: 1x4. */
+.minigrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0 2px}
+@media(min-width:1000px){.minigrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}}
+@media(max-width:430px){.minigrid{grid-template-columns:1fr}}
+.minipick{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 5px 7px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;
+}
+@media(hover:hover){.minipick:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.minipick .mk{display:block;font-weight:700;font-size:.88rem;color:var(--ink-soft);margin-bottom:1px}
+/* Minigraphen bleiben klein – sonst entsteht unnoetiges Scrollen */
+.minipick svg{max-width:380px}
+@media(min-width:1000px){.minipick{padding:4px 3px 6px}.minipick .mk{font-size:.82rem}}
+.minipick.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.minipick.chosen-ok .mk{color:#14603c}
+.minipick.chosen-no{border-color:#c0392b;background:#fbeceb}
+.minipick:disabled{cursor:default}
+
+/* Schrittliste im Generator */
+.gstep{border-top:1px dashed var(--line);padding-top:10px;margin-top:10px}
+.gstep:first-child{border-top:0;padding-top:0;margin-top:0}
+.gnr{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.ptlist{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.pt{border:1px solid #a8c9e2;background:var(--pos-bg);color:#14456e;border-radius:8px;
+  padding:4px 10px;font-family:var(--ui);font-size:.95rem}
+
+/* ============ Fussnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.posline{line-height:1.3}
+.locknote{display:none;font-size:.82rem;color:var(--hint);font-weight:600}
+.locknote.show{display:inline}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{font-size:.79rem}
+  .steps{padding-bottom:0}
+}
+/* ============ Graphhoehe (iPad / Laptop) ============
+   Die SVGs skalieren weiter ueber die Breite (viewBox, preserveAspectRatio meet).
+   Zusaetzlich begrenzt max-height die Hoehe, damit Graph und aktuelle Aufgabe
+   gleichzeitig sichtbar bleiben. Das Seitenverhaeltnis bleibt erhalten, nichts
+   wird abgeschnitten oder verzerrt. */
+:root{--gH:none;--miniH:none}
+svg{max-height:var(--gH)}
+.minipick svg{max-height:var(--miniH)}
+/* iPad Hochformat (z. B. 768 x 1024): ca. 300-360 px */
+@media(min-width:701px) and (max-width:1100px) and (orientation:portrait){
+  :root{--gH:clamp(300px,35vh,360px);--miniH:200px}
+}
+/* iPad Querformat (z. B. 1024 x 768): ca. 270-310 px */
+@media(min-width:701px) and (max-width:1100px) and (orientation:landscape){
+  :root{--gH:clamp(270px,42vh,310px)}
+}
+/* Laptop und groessere Displays (z. B. 1366 x 768): darf wieder wachsen */
+@media(min-width:1101px){
+  :root{--gH:clamp(270px,47vh,460px)}
+}
+
+/* ============ Kopf und Fuss: kompakter ab Tablet-Breite ============ */
+@media(min-width:701px){
+  .steps{padding-bottom:0}
+  .stepsbar{padding-bottom:2px}
+  .nav-inner{padding-top:5px;padding-bottom:5px}  /* Buttons bleiben min. 44 px hoch */
+  .bar{margin-top:3px}
+  .wrap{padding-bottom:calc(var(--footH) + 14px)}
+}
+/* Touch-Geraete: Stationsleiste mit ca. 44 px hoher Treffer-Flaeche */
+@media(min-width:701px) and (pointer:coarse){
+  .steps{margin-top:-13px}
+  .steps button{padding:16px 0 20px}
+  .steps button::after{top:25px}
+}
+/* Kapitelzeile und Titel nebeneinander (nur bei ausreichender Hoehe;
+   bei niedrigen Fenstern bleibt die Kapitelzeile wie bisher ausgeblendet) */
+@media(min-width:701px) and (min-height:701px){
+  .top-inner{padding-top:6px}
+  .kapitel,.titel{display:inline-block;vertical-align:baseline}
+  .kapitel{margin-right:12px}
+  .titel{margin:0 0 6px}
+}
+
+/* ============ iPad (701-1100 px): kompaktere Abstaende ============
+   Fliesstext bleibt bei 16 px, Touch-Ziele bei mindestens 44 px. */
+@media(min-width:701px) and (max-width:1100px){
+  body{font-size:16px}
+  .station h2{font-size:1.3rem;margin:10px 0 1px}
+  .station .meta{margin-bottom:6px}
+  .card{padding:10px 14px;margin:8px 0}
+  .card h3{margin-bottom:5px;font-size:1.02rem}
+  p{margin:.38em 0}
+  .lead{font-size:1rem}
+  .mblock{margin:7px 0}
+  .small{font-size:.94rem}
+  .gap{margin-top:8px}
+  .btnrow{gap:8px;margin:6px 0 0}
+  .opts{gap:6px;margin:6px 0 2px}
+  .opt{padding:8px 12px}
+  .solmc{margin-top:6px}
+  .answer{margin:6px 0}
+  .fb{padding:7px 12px;margin-top:7px;font-size:.96rem}
+  .heft{padding:10px 14px;margin:10px 0 4px}
+  .heft .duo{gap:8px;margin-top:6px}
+  .mono4{gap:5px;margin-top:6px}
+  .sliderbox{margin:0 0 6px}
+  .scale{height:26px;margin-top:-6px}
+  .scale span{line-height:1.25}
+  .valbox{padding:6px 12px;margin:2px 0 6px}
+  .valbox .vnum{font-size:1.32rem}
+  .vals{gap:6px;margin:4px 0 0}
+  .forsch{padding:8px 12px;margin:7px 0}
+  .solved{padding:6px 12px;margin:6px 0;font-size:.95rem}
+  .completed-summary{margin:6px 0}
+  .prot{gap:4px;margin:6px 0 0}
+  .protline{padding:3px 9px;font-size:.93rem}
+  .legend{margin:3px 0 0;gap:12px}
+  .figcap{margin-top:2px;font-size:.88rem}
+  .gstep{padding-top:7px;margin-top:7px}
+  .minigrid{gap:7px;margin:7px 0 0}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .bar i{transition:none}
+}
+@media print{footer.nav,header.top{position:static}}
+
+/* ============ Ergaenzungen fuer II.1/II.2 ============ */
+:root{--footH:0px}
+.wrap{padding-bottom:40px}
+.hidden{display:none !important}
+.fr{display:inline-block;vertical-align:middle;text-align:center;line-height:1.18;margin:0 .14em}
+.fr>span{display:block;padding:0 .22em}
+.fr>.n{border-bottom:1.5px solid currentColor}
+.fr>.d{padding-top:1px}
+.balls,.urn{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.ball{
+  display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  border-radius:50%;border:2px solid;font-weight:700;font-size:.95rem;line-height:1;flex:0 0 auto;
+}
+.ball.g{background:#f4c542;border-color:#9a7400;color:#4d3a00}
+.ball.b{background:#7fb2e0;border-color:#1f5f94;color:#0d2f4d}
+.ball.r{background:#ef8a80;border-color:#a8362b;color:#5a1510}
+.ball.sm{width:26px;height:26px;font-size:.8rem}
+.urn{
+  border:2px solid #9fb8cd;border-top-color:#cfdbe6;border-radius:6px 6px 30px 30px;
+  padding:10px 12px 12px;min-height:58px;background:#f4f9fd;max-width:250px;margin:4px auto 6px;
+}
+.urn .leer{color:var(--ink-soft);font-size:.9rem;align-self:center}
+.urncap{text-align:center;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:650}
+.tray{display:flex;align-items:center;justify-content:center;gap:8px;min-height:38px;margin:2px 0 6px}
+.tray .small{margin:0}
+.nextrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px}
+.locknote{font-size:.88rem;color:var(--hint);font-weight:600;display:none}
+.locknote.show{display:inline}
+.keys{display:flex;gap:6px;margin:0 0 6px}
+.keys button{min-width:46px;min-height:42px;border:1.5px solid var(--line);background:#fff;border-radius:8px;
+  font-size:1.05rem;font-weight:600;color:var(--accent);cursor:pointer}
+.keys button:active{background:var(--accent-soft)}
+input[type=text].wide{width:150px}
+.treebox svg{max-height:var(--gH)}
+.tnode{cursor:pointer}
+.tnode:focus-visible{outline:none}
+.tnode:focus-visible .nring{stroke:#1f4e79;stroke-width:3}
+.treetools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 6px}
+.teacher{margin:22px 0 0;font-size:.9rem;color:var(--ink-soft)}
+.teacher summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.teacher p{max-width:74ch}
+.drawlog{min-height:1.5em}
+.nodeurn{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;background:#fff;padding:7px 12px;margin:6px 0}
+.nodeurn .t{font-size:.85rem;color:var(--ink-soft);margin-bottom:4px}
+.nodeurn .urn{margin:2px 0;max-width:none;justify-content:flex-start;border:0;background:transparent;padding:0;min-height:0}
+.simline{font-size:.93rem;margin:6px 0}
+.endbox{display:none}
+.endbox.on{display:block}
+.mini{max-width:420px;margin:6px auto}
+.pair{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pair>*{min-width:0}
+
+.task>div{margin-top:10px}
+.task>div:first-child{margin-top:0}
+
+/* ============ iPad-Optimierung ============ */
+html{touch-action:manipulation;-webkit-touch-callout:none}
+button,.opt,.modebtn,.keys button,svg,.tnode{
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap,.top-inner{
+  padding-left:max(clamp(12px,2vw,20px),env(safe-area-inset-left));
+  padding-right:max(clamp(12px,2vw,20px),env(safe-area-inset-right));
+}
+body.kb .wrap{padding-bottom:55vh}
+.modebtn{min-height:48px}
+.keys button{min-height:46px;min-width:50px}
+.opt{min-height:50px}
+
+/* ============ Simulationsfeld Station 5 ============ */
+.simbox{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px;margin-top:10px}
+.simtop{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.simcount{font-size:.95rem;display:flex;align-items:center;gap:10px;min-height:36px;font-variant-numeric:tabular-nums}
+.simcount .balls{gap:4px;min-width:62px}
+.simcount .ball{width:28px;height:28px;font-size:.85rem}
+.simmain{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:8px}
+.simgrid{display:grid;grid-template-columns:repeat(10,13px);gap:3px}
+.dot{width:13px;height:13px;border-radius:50%;background:#e5eaf0;display:block}
+.dot.on{animation:dotpop .22s ease-out}
+.simtally{display:flex;flex-direction:column;gap:3px;font-size:.95rem;min-width:110px}
+.trow{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.trow .sw{width:13px;height:13px;border-radius:3px;flex:0 0 auto}
+.trow .tl{min-width:52px}
+.trow .tn{font-weight:700;min-width:2ch;text-align:right}
+.trow.key .tl,.trow.key .tn{color:#9a3412}
+.simline{font-size:.92rem;margin-top:8px;min-height:1.2em}
+.balls .ball{animation:dotpop .15s ease-out}
+@keyframes dotpop{from{transform:scale(.3);opacity:.2}to{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.dot.on,.balls .ball{animation:none}}
+
+.simside{display:flex;flex-direction:column;gap:6px;flex:1 1 170px;min-width:0}
+.simmain{align-items:flex-start}
+.simline{margin-top:0}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">II. Zusammengesetzte Zufallsexperimente und stochastische Simulationen</div>
+    <div class="titel">II.1 und II.2 Baumdiagramme und die 1. Pfadregel<span class="tmode" id="tmode">Lehrermodus</span></div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Vom Ziehen zum Baumdiagramm</h2>
+  <div class="meta">Station 1 von 8 · etwa 5 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urne</div>
+        <div class="urn" id="urn1" aria-label="Urne mit Kugeln"></div>
+        <div class="tray"><span class="small">Gezogen:</span><span class="balls" id="tray1"></span></div>
+        <div class="treebox" id="tree1"></div>
+        <div class="figcap">Rot: der Weg deiner Ziehung im Baumdiagramm</div>
+      </div>
+      <div class="task">
+        <p class="lead">In einer Urne liegen <strong>3 gelbe</strong> (g) und <strong>2 blaue</strong> (b) Kugeln.
+          Du ziehst nacheinander zwei Kugeln, <strong>ohne</strong> eine zurückzulegen.</p>
+        <p>Ziehe zweimal und beobachte, wie der Weg im Baum entsteht. Führe das Experiment dreimal durch.</p>
+        <div class="btnrow"><button class="btn" type="button" id="draw1">1. Kugel ziehen</button></div>
+        <div class="small drawlog" id="log1"></div>
+
+        <div id="s1b" class="stage">
+          <div class="heft">
+            <div class="h">MERKE</div>
+            <p>Besteht ein Zufallsexperiment aus mehreren Teilexperimenten, heißt es <strong>mehrstufiges Zufallsexperiment</strong>.
+              Jeder Zug ist eine <strong>Stufe</strong>.</p>
+            <p>Ein Weg vom Start bis zu einem Endpunkt heißt <strong>Pfad</strong>. Jeder Pfad gehört zu genau einem
+              <strong>Ergebnis</strong>, zum Beispiel <span class="mf">(g;&nbsp;b)</span>.</p>
+          </div>
+          <div class="mini treebox" id="tree1b"></div>
+          <div id="mc1"></div>
+          <div id="s1c" class="stage"><div id="nt1"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="0">Weiter zu Station 2</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Wie viele Pfade hat der Baum?</h2>
+  <div class="meta">Station 2 von 8 · etwa 5 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="modes" id="modes2">
+          <button class="modebtn sel" type="button" data-m="mit">Mit Zurücklegen</button>
+          <button class="modebtn" type="button" data-m="ohne">Ohne Zurücklegen</button>
+        </div>
+        <div class="treebox" id="tree2"></div>
+        <div class="figcap">Urne mit 3 gelben und 2 blauen Kugeln, dreimal gezogen</div>
+      </div>
+      <div class="task">
+        <p class="lead">Aus derselben Urne (3 gelbe, 2 blaue Kugeln) wird jetzt <strong>dreimal</strong> nacheinander gezogen.
+          Der Baum hat also drei Stufen.</p>
+        <p class="small">Mit den Knöpfen links wechselst du zwischen Ziehen mit und ohne Zurücklegen.</p>
+        <div id="nt2a"></div>
+        <div id="s2b" class="stage"><div id="nt2b"></div></div>
+        <div id="s2c" class="stage"><div id="mc2"></div></div>
+        <div id="s2d" class="stage">
+          <div class="heft">
+            <div class="h">MERKE</div>
+            <p>Beim Ziehen <strong>mit</strong> Zurücklegen ist vor jedem Zug die gleiche Urne vorhanden.
+              Beim Ziehen <strong>ohne</strong> Zurücklegen wird die Urne von Zug zu Zug kleiner. Dadurch können
+              Pfade wegfallen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="1">Weiter zu Station 3</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Wahrscheinlichkeiten an den Ästen</h2>
+  <div class="meta">Station 3 von 8 · etwa 6 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="modes" id="modes3">
+          <button class="modebtn sel" type="button" data-m="mit">Mit Zurücklegen</button>
+          <button class="modebtn" type="button" data-m="ohne">Ohne Zurücklegen</button>
+        </div>
+        <div class="treebox" id="tree3"></div>
+        <div class="nodeurn" id="nodeurn3"></div>
+      </div>
+      <div class="task">
+        <p class="lead">An jedem Ast steht die Wahrscheinlichkeit für diesen Teilschritt.
+          Wie sie sich bestimmen lässt, hängt von der Urne an dem jeweiligen Knoten ab.</p>
+        <p class="small">Tippe im Baum auf einen Knoten. Dann siehst du, welche Kugeln dort noch in der Urne liegen.
+          Brüche kannst du mit Schrägstrich schreiben, zum Beispiel 3/5, oder als Dezimalzahl.</p>
+        <div id="nt3a"></div>
+        <div id="s3b" class="stage"><div id="nt3b"></div></div>
+        <div id="s3c" class="stage"><div id="mc3"></div></div>
+        <div id="s3d" class="stage">
+          <div class="heft">
+            <div class="h">MERKE</div>
+            <p><strong>Mit Zurücklegen:</strong> Die Zahlen an den Ästen sind in jeder Stufe gleich.</p>
+            <p><strong>Ohne Zurücklegen:</strong> Die Zahlen an den Ästen hängen davon ab, was schon gezogen wurde.
+              Nach jedem Zug liegt eine Kugel weniger in der Urne.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="2">Weiter zu Station 4</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Die Knotenregel</h2>
+  <div class="meta">Station 4 von 8 · etwa 4 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="treebox mini" id="knot4"></div>
+        <div class="figcap" id="knotcap4"></div>
+      </div>
+      <div class="task">
+        <p class="lead">Von einem Knoten gehen mehrere Äste aus. Was lässt sich über die Zahlen an diesen Ästen sagen?</p>
+        <div id="nt4a"></div>
+        <div id="s4b" class="stage"><div id="nt4b"></div></div>
+        <div id="s4c" class="stage">
+          <div class="heft">
+            <div class="h">MERKE: KNOTENREGEL</div>
+            <p>Die Wahrscheinlichkeiten an den Ästen, die von <strong>einem</strong> Knoten ausgehen,
+              haben zusammen die Summe <span class="mf">1</span>.</p>
+          </div>
+          <div id="mc4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="3">Weiter zu Station 5</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2>Warum multipliziert man entlang eines Pfades?</h2>
+  <div class="meta">Station 5 von 8 · etwa 7 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="treebox" id="tree5"></div>
+        <div class="figcap">Erwartete Anzahlen bei 100 Durchführungen (3 gelbe, 2 blaue Kugeln, zweimal ohne Zurücklegen)</div>
+        <div class="simbox" id="simbox5">
+          <div class="simtop">
+            <button class="btn ghost" type="button" id="sim5">100 Durchführungen simulieren</button>
+            <div class="simcount" aria-live="off">Durchführung <strong id="simn5">0</strong> von 100
+              <span class="balls" id="simballs5" aria-hidden="true"></span></div>
+          </div>
+          <div class="simmain">
+            <div class="simgrid" id="simgrid5" aria-hidden="true"></div>
+            <div class="simside">
+              <div class="simtally" id="simtally5"></div>
+              <div class="simline" id="simline5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="task">
+        <p class="lead">Wir führen das Experiment gedanklich <strong>100-mal</strong> durch und fragen:
+          Bei wie vielen Durchführungen entsteht ungefähr das Ergebnis <span class="mf">(g;&nbsp;b)</span>,
+          also erst gelb, dann blau?</p>
+        <div id="nt5a"></div>
+        <div id="s5b" class="stage"><div id="nt5b"></div></div>
+        <div id="s5c" class="stage"><div id="nt5c"></div></div>
+        <div id="s5d" class="stage"><div id="mc5"></div></div>
+        <div id="s5e" class="stage">
+          <div class="heft">
+            <div class="h">MERKE: 1. PFADREGEL (PRODUKTREGEL)</div>
+            <p>Die Wahrscheinlichkeit eines Ergebnisses erhält man, indem man die Wahrscheinlichkeiten
+              <strong>entlang des zugehörigen Pfades multipliziert</strong>.</p>
+            <p class="mblock mf"><i>P</i>(g;&nbsp;b) = <span class="fr"><span class="n">3</span><span class="d">5</span></span> ·
+              <span class="fr"><span class="n">2</span><span class="d">4</span></span> =
+              <span class="fr"><span class="n">3</span><span class="d">10</span></span> = 30 %</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="4">Weiter zu Station 6</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>Die 1. Pfadregel anwenden</h2>
+  <div class="meta">Station 6 von 8 · etwa 6 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="treebox" id="tree6"></div>
+        <div id="chain6wrap" class="hidden">
+          <div class="urncap">Urne vor dem 1. Zug</div>
+          <div class="urn" id="urn6"></div>
+          <div class="treebox mini" id="chain6"></div>
+        </div>
+        <div class="figcap" id="cap6"></div>
+      </div>
+      <div class="task">
+        <p class="lead">Berechne die Wahrscheinlichkeiten für die markierten Ergebnisse.
+          Du kannst als Bruch, als Dezimalzahl oder in Prozent antworten.</p>
+        <div id="nt6a"></div>
+        <div id="s6b" class="stage"><div id="nt6b"></div></div>
+        <div id="s6c" class="stage"><div id="nt6c"></div></div>
+        <div id="s6d" class="stage"><div id="mc6"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="5">Weiter zu Station 7</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 7 ================= -->
+<section class="station" data-nr="7">
+  <h2>Glücksrad: Es zählt nur der Pfad</h2>
+  <div class="meta">Station 7 von 8 · etwa 6 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="treebox mini" id="wheel7"></div>
+        <div class="figcap">Glücksrad mit drei Feldern</div>
+        <div class="treebox mini hidden" id="chain7"></div>
+      </div>
+      <div class="task">
+        <p class="lead">Das Glücksrad wird mehrmals gedreht, die Zahlen werden nacheinander notiert.</p>
+        <div id="mc7"></div>
+        <div id="s7b" class="stage">
+          <p>Das Rad wird <strong>dreimal</strong> gedreht. Gesucht ist die Wahrscheinlichkeit für das Ergebnis
+            <span class="mf">(1;&nbsp;2;&nbsp;3)</span>. Dafür brauchst du nicht den ganzen Baum, ein einziger Pfad genügt.</p>
+          <div id="nt7a"></div>
+        </div>
+        <div id="s7c" class="stage">
+          <p class="small">Jetzt zwei Aufgaben zum Üben. Bei Dezimalzahlen reicht eine Rundung auf drei Stellen nach dem Komma.</p>
+          <div id="gen7"></div>
+          <div class="btnrow"><button class="btn ghost hidden" type="button" id="gennext7">Nächste Aufgabe</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="6">Weiter zu Station 8</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+
+<!-- ================= STATION 8 ================= -->
+<section class="station" data-nr="8">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 8 von 8 · etwa 5 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urne für die Aufgaben 1 und 2</div>
+        <div class="urn" id="urn8"></div>
+        <div class="figcap">2 rote und 3 blaue Kugeln</div>
+      </div>
+      <div class="task">
+        <p class="lead">Zeige, was du in diesem Lernpfad gelernt hast.</p>
+        <div id="nt8a"></div>
+        <div id="s8b" class="stage"><div id="nt8b"></div></div>
+        <div id="s8c" class="stage"><div id="mc8"></div></div>
+        <div id="s8d" class="stage"><div id="nt8c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="endbox" id="end8">
+    <div class="heft">
+      <div class="h">DAS HAST DU GELERNT</div>
+      <p>Mehrstufige Zufallsexperimente lassen sich mit einem <strong>Baumdiagramm</strong> darstellen.
+        Jeder <strong>Pfad</strong> gehört zu einem Ergebnis.</p>
+      <p><strong>Knotenregel:</strong> Die Wahrscheinlichkeiten an den Ästen eines Knotens haben die Summe 1.</p>
+      <p><strong>1. Pfadregel:</strong> Die Wahrscheinlichkeit eines Ergebnisses ist das Produkt der Wahrscheinlichkeiten
+        entlang des Pfades.</p>
+      <p>Wie man die Wahrscheinlichkeit eines Ereignisses berechnet, das aus <em>mehreren</em> Pfaden besteht,
+        kommt im nächsten Lernpfad.</p>
+    </div>
+    <div class="btnrow"><button class="btn ghost" type="button" id="restart">Lernpfad neu starten</button></div>
+  </div>
+
+  <details class="teacher">
+    <summary>Für Lehrkräfte</summary>
+    <p>Der Lernpfad deckt die Schulbuchkapitel II.1 (Mehrstufige Zufallsexperimente) und II.2 (1. Pfadregel) ab,
+      Arbeitszeit etwa 40 bis 45 Minuten. Die Summenregel (2. Pfadregel) folgt im nächsten Lernpfad.
+      Es wird nichts gespeichert.</p>
+    <p>Lehrermodus: Die Adresse um <code>?teacher=1</code> ergänzen. Dann sind alle Stationen und Aufgaben
+      sofort sichtbar, die Aufgaben bleiben ungelöst, „Lösung anzeigen“ steht sofort zur Verfügung.
+      „Lernpfad neu starten“ lädt die Seite neu und bleibt im Lehrermodus.</p>
+  </details>
+</section>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   Grundlagen
+   ========================================================= */
+var TEACHER=/(^|[?&])teacher=1(&|$)/.test(window.location.search);
+if(TEACHER){ var tm0=document.getElementById("tmode"); if(tm0) tm0.classList.add("on"); }
+var NS="http://www.w3.org/2000/svg";
+function $(id){return document.getElementById(id);}
+function el(name,attrs,parent){
+  var e=document.createElementNS(NS,name);
+  for(var k in attrs){ if(attrs.hasOwnProperty(k)) e.setAttribute(k,attrs[k]); }
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent,s,attrs){ var t=el("text",attrs,parent); t.textContent=s; return t; }
+function cp(o){ var r={}; for(var k in o){ if(o.hasOwnProperty(k)) r[k]=o[k]; } return r; }
+function num(v,dec){
+  if(dec===undefined) dec=4;
+  if(!isFinite(v)) return "—";
+  var s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){ s=s.replace(/0+$/,""); s=s.replace(/\.$/,""); }
+  return s.replace(".",",");
+}
+function F(n,d){ return '<span class="fr"><span class="n">'+n+'</span><span class="d">'+d+'</span></span>'; }
+function nb(s){ return String(s).replace(/; /g,";\u00A0"); }
+function P(s){ return '<i>P</i>('+nb(s)+')'; }
+function parseVal(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-").replace(/,/g,".");
+  if(!s) return {v:NaN};
+  var pct=false;
+  if(/%$/.test(s)){ pct=true; s=s.slice(0,-1); }
+  var re=/^[0-9]*\.?[0-9]+$/;
+  if(s.indexOf("/")>=0){
+    var p=s.split("/");
+    if(p.length!==2 || !re.test(p[0]) || !re.test(p[1]) || Number(p[1])===0) return {v:NaN};
+    return {v:(Number(p[0])/Number(p[1]))/(pct?100:1), frac:true};
+  }
+  if(!re.test(s)) return {v:NaN};
+  var v=Number(s); if(pct) v=v/100;
+  return {v:v};
+}
+function measureChrome(){
+  var h=document.querySelector("header.top");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+}
+function smooth(e){
+  try{
+    var rm=window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    e.scrollIntoView({block:"nearest",behavior:rm?"auto":"smooth"});
+  }catch(x){}
+}
+
+/* Freischaltung innerhalb einer Station (im Lehrermodus ist alles sichtbar) */
+function lock(id){ if(!TEACHER) $(id).classList.add("hidden"); }
+function open(id){ var e=$(id); e.classList.remove("hidden"); measureChrome(); }
+
+/* =========================================================
+   Stationsnavigation
+   ========================================================= */
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var need=[3,3,3,3,4,4,4,4], got=[], done=[], cur=0, maxReached=0;
+for(var _i=0;_i<TOTAL;_i++){ got.push(0); done.push(false); }
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.type="button";
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(TEACHER || i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", !TEACHER && done[j] && j!==cur);
+    btns[j].disabled = !TEACHER && j>maxReached;
+    btns[j].style.cursor = (!TEACHER && j>maxReached) ? "default" : "pointer";
+  }
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+  redrawTrees();
+}
+function redrawTrees(){
+  var L=TREES[cur]||[];
+  for(var i=0;i<L.length;i++) L[i].draw();
+}
+var TREES=[[],[],[],[],[],[],[],[]];
+function updateNext(){
+  var nb=document.querySelectorAll(".nextbtn");
+  for(var i=0;i<nb.length;i++){
+    var st=Number(nb[i].getAttribute("data-st"));
+    var free=TEACHER || done[st];
+    nb[i].disabled=!free;
+    var ln=nb[i].parentNode.querySelector(".locknote");
+    if(ln) ln.classList.toggle("show", !free);
+  }
+}
+function setDone(i){
+  done[i]=true;
+  updateNext();
+  var btns=$("steps").querySelectorAll("button");
+  if(btns[i]) btns[i].classList.toggle("done", !TEACHER && i!==cur);
+  if(i===TOTAL-1){ $("end8").classList.add("on"); smooth($("end8")); }
+}
+function ok(i){ got[i]++; if(got[i]>=need[i] && !done[i]) setDone(i); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i;
+  if(!TEACHER && cur>maxReached) maxReached=cur;
+  render();
+}
+(function(){
+  var nb=document.querySelectorAll(".nextbtn");
+  for(var i=0;i<nb.length;i++){
+    (function(b){
+      b.onclick=function(){
+        var st=Number(b.getAttribute("data-st"));
+        if(TEACHER || done[st]) go(st+1);
+      };
+    })(nb[i]);
+  }
+  $("restart").onclick=function(){ window.location.reload(); };
+})();
+
+/* =========================================================
+   Multiple Choice (gestufte Hilfen)
+   ========================================================= */
+/* Die richtige Antwort steht nicht immer an derselben Stelle: Die Reihenfolge wird
+   bei jedem Laden gemischt. Zwei Aufgaben hintereinander haben die richtige Antwort
+   nie an gleicher Stelle, und Position A ist höchstens zweimal richtig. */
+var MCSTATE={last:-1,zero:0};
+function mc(hostId,question,opts0,correct0,hint2,onSolved){
+  var n=opts0.length, ord, pos, tries=0;
+  do{
+    ord=[]; for(var i=0;i<n;i++) ord.push(i);
+    for(var j=n-1;j>0;j--){ var r=Math.floor(Math.random()*(j+1)); var t=ord[j]; ord[j]=ord[r]; ord[r]=t; }
+    pos=ord.indexOf(correct0); tries++;
+  } while(((pos===MCSTATE.last)||(pos===0&&MCSTATE.zero>=2)) && tries<80);
+  MCSTATE.last=pos; if(pos===0) MCSTATE.zero++;
+  var shown=ord.map(function(k){ return opts0[k]; });
+  mcRaw(hostId,question,shown,pos,hint2,onSolved);
+}
+function mcRaw(hostId,question,options,correctIdx,hint2,onSolved){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(question){ var qp=document.createElement("p"); qp.className="q"; qp.innerHTML=question; host.appendChild(qp); }
+  var wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display=TEACHER?"inline-block":"none";
+  host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+  var solved=false, wrongCount=0;
+  function lockAll(){ var all=wrap.querySelectorAll(".opt"); for(var k=0;k<all.length;k++) all[k].disabled=true; }
+  function finish(selbst){ solved=true; solBtn.style.display="none"; lockAll(); if(onSolved) onSolved(!!selbst); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+(options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish(false); measureChrome();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish(true);
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        if(wrongCount===1){
+          fb.innerHTML="<strong>Noch nicht.</strong> "+(o.no||"Überlege noch einmal.");
+        } else {
+          fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hint2||o.no||"Überlege noch einmal.");
+          solBtn.style.display="inline-block";
+        }
+      }
+      measureChrome();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* =========================================================
+   Eingabeaufgabe (Zahl, Bruch oder Prozent) mit gestuften Hilfen
+   cfg: question, pre, correct, tol, hints[2], ok, solution, keys, onSolved
+   ========================================================= */
+function numTask(hostId,cfg){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(cfg.pre){ var pp=document.createElement("div"); pp.innerHTML=cfg.pre; host.appendChild(pp); }
+  if(cfg.question){ var qp=document.createElement("p"); qp.className="q"; qp.innerHTML=cfg.question; host.appendChild(qp); }
+  var row=document.createElement("div"); row.className="answer";
+  if(cfg.lead){ var lw=document.createElement("span"); lw.className="mf"; lw.style.fontSize="1.1rem"; lw.innerHTML=cfg.lead; row.appendChild(lw); }
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("inputmode",cfg.keys?"text":"numeric");
+  inp.setAttribute("autocomplete","off"); inp.setAttribute("autocapitalize","off"); inp.setAttribute("autocorrect","off");
+  inp.setAttribute("spellcheck","false"); inp.setAttribute("enterkeyhint","done");
+  inp.setAttribute("aria-label",cfg.aria||"Antwort eingeben");
+  if(cfg.keys) inp.className="wide";
+  row.appendChild(inp);
+  var btn=document.createElement("button"); btn.className="btn"; btn.type="button"; btn.textContent="Prüfen";
+  row.appendChild(btn);
+  host.appendChild(row);
+  if(cfg.keys){
+    var kr=document.createElement("div"); kr.className="keys";
+    ["/",",","%"].forEach(function(ch){
+      var kb=document.createElement("button"); kb.type="button"; kb.textContent=ch;
+      kb.setAttribute("aria-label",ch==="/"?"Bruchstrich":(ch===","?"Komma":"Prozentzeichen"));
+      kb.addEventListener("mousedown",function(e){ e.preventDefault(); });
+      kb.onclick=function(){
+        if(inp.disabled) return;
+        var a=inp.selectionStart, b2=inp.selectionEnd;
+        if(typeof a!=="number"){ inp.value+=ch; }
+        else { inp.value=inp.value.slice(0,a)+ch+inp.value.slice(b2); inp.selectionStart=inp.selectionEnd=a+1; }
+        try{ inp.focus(); }catch(e){}
+      };
+      kr.appendChild(kb);
+    });
+    host.appendChild(kr);
+  }
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display=TEACHER?"inline-block":"none"; host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+  var solved=false, wrong=0, hints=cfg.hints||[];
+  function istRichtig(r){
+    var tol=r.frac?1e-9:(cfg.tol!==undefined?cfg.tol:1e-9);
+    return Math.abs(r.v-cfg.correct)<=tol && !(cfg.correct>0 && r.v<=0);
+  }
+  function finish(selbst){
+    solved=true; try{ inp.blur(); }catch(e){} inp.disabled=true; btn.disabled=true; solBtn.style.display="none";
+    inp.classList.remove("no"); inp.classList.add("ok");
+    if(cfg.onSolved) cfg.onSolved(!!selbst);
+    measureChrome();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+(cfg.solution||num(cfg.correct,4));
+    finish(false);
+  };
+  function check(){
+    if(solved) return;
+    var r=parseVal(inp.value);
+    if(isNaN(r.v)){
+      fb.className="fb hint show";
+      fb.innerHTML="Gib eine Zahl ein, zum Beispiel <strong>3/5</strong>, <strong>0,6</strong> oder <strong>60 %</strong>.";
+      measureChrome(); return;
+    }
+    if(istRichtig(r)){
+      fb.className="fb ok show";
+      fb.innerHTML="<strong>Richtig.</strong> "+(cfg.ok||"");
+      finish(true);
+    } else {
+      wrong++; inp.classList.add("no");
+      fb.className="fb hint show";
+      if(wrong===1) fb.innerHTML="<strong>Noch nicht.</strong> "+(hints[0]||"Prüfe deine Überlegung noch einmal.");
+      else { fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hints[1]||hints[0]||"Prüfe deine Überlegung noch einmal."); solBtn.style.display="inline-block"; }
+      measureChrome();
+    }
+  }
+  btn.onclick=check;
+  inp.addEventListener("input",function(){ inp.classList.remove("no"); });
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+}
+
+/* =========================================================
+   Kugeln und Urnen (HTML)
+   ========================================================= */
+function ball(c,small){
+  var s=document.createElement("span");
+  s.className="ball "+c+(small?" sm":"");
+  s.textContent=c; s.setAttribute("aria-hidden","true");
+  return s;
+}
+function fillBalls(host,counts,order,small){
+  host.innerHTML="";
+  var n=0;
+  order.forEach(function(c){ for(var i=0;i<(counts[c]||0);i++){ host.appendChild(ball(c,small)); n++; } });
+  if(!n){ var l=document.createElement("span"); l.className="leer"; l.textContent="leer"; host.appendChild(l); }
+}
+var NAMES={g:"gelb",b:"blau",r:"rot"};
+
+/* =========================================================
+   SVG-Bausteine: Bruchbeschriftung
+   ========================================================= */
+function fracLabel(g,x,y,n,d,fill){
+  var H={"stroke":"#fff","stroke-width":"4.5","stroke-linejoin":"round","paint-order":"stroke"};
+  var bw=Math.max(String(n).length,String(d).length)*4.4+5;
+  el("line",{x1:x-bw,x2:x+bw,y1:y-4,y2:y-4,stroke:"#fff","stroke-width":"4"},g);
+  var a={"text-anchor":"middle","font-size":"13","font-weight":"600",fill:fill||"#1b2430"};
+  var t1=txt(g,String(n),a); t1.setAttribute("x",x); t1.setAttribute("y",y-7);
+  var t2=txt(g,String(d),a); t2.setAttribute("x",x); t2.setAttribute("y",y+10);
+  [t1,t2].forEach(function(t){ for(var k in H) t.setAttribute(k,H[k]); });
+  el("line",{x1:x-bw+1,x2:x+bw-1,y1:y-4,y2:y-4,stroke:fill||"#1b2430","stroke-width":"1.3"},g);
+}
+function edgeLabel(g,x,y,v,hl){
+  var col=hl?"#9a3412":"#1b2430";
+  if(v===null||v===undefined||v==="") return;
+  if(typeof v==="object") fracLabel(g,x,y,v.n,v.d,col);
+  else if(v==="?"){
+    var t=txt(g,"?",{x:x,y:y+5,"text-anchor":"middle","font-size":"16","font-weight":"700",fill:"#b45309",
+      stroke:"#fff","stroke-width":"4.5","paint-order":"stroke","stroke-linejoin":"round"});
+  } else {
+    txt(g,String(v),{x:x,y:y+5,"text-anchor":"middle","font-size":"13","font-weight":"600",fill:col,
+      stroke:"#fff","stroke-width":"4.5","paint-order":"stroke","stroke-linejoin":"round"});
+  }
+}
+var CFILL={g:"#f4c542",b:"#7fb2e0",r:"#ef8a80"};
+var CSTRK={g:"#9a7400",b:"#1f5f94",r:"#a8362b"};
+var CTXT={g:"#4d3a00",b:"#0d2f4d",r:"#5a1510"};
+
+/* =========================================================
+   Baumdiagramm (waagerecht, Urnenexperiment)
+   cfg: urn, order, stages, replace, edge(kid,parent), hl, leafText,
+        onNode(node), sel, nodeText(path), W, rowH, label
+   ========================================================= */
+function Tree(host,cfg){
+  var self={cfg:cfg};
+  function build(urn,depth,path){
+    var node={path:path,urn:cp(urn),kids:[],depth:depth};
+    if(depth>=cfg.stages) return node;
+    var tot=0,k; for(k in urn) if(urn.hasOwnProperty(k)) tot+=urn[k];
+    for(var i=0;i<cfg.order.length;i++){
+      var c=cfg.order[i]; if(!urn[c]) continue;
+      var u=cp(urn); if(!cfg.replace) u[c]--;
+      var kid=build(u,depth+1,path+c);
+      kid.color=c; kid.edge={n:urn[c],d:tot};
+      node.kids.push(kid);
+    }
+    return node;
+  }
+  self.draw=function(){
+    host.innerHTML="";
+    var root=build(cfg.urn,0,"");
+    var leaves=[];
+    (function coll(n){ if(!n.kids.length) leaves.push(n); else n.kids.forEach(coll); })(root);
+    var big=cfg.stages>=3;
+    var rowH=cfg.rowH||(big?36:72), top=24;
+    var W=cfg.W||(host.clientWidth>0?Math.max(340,Math.min(540,Math.round(host.clientWidth))):540);
+    var H=top*2+(leaves.length-1)*rowH;
+    var x0=24, leafW=cfg.leafText?(cfg.stages>=3?78:56):(cfg.nodeText?20:18);
+    var dx=(W-x0-leafW-16)/cfg.stages;
+    var idx=0;
+    (function lay(n){
+      n.x=x0+n.depth*dx;
+      if(!n.kids.length){ n.y=top+idx*rowH; idx++; }
+      else { n.kids.forEach(lay); n.y=(n.kids[0].y+n.kids[n.kids.length-1].y)/2; }
+    })(root);
+    var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":cfg.label||"Baumdiagramm",
+      preserveAspectRatio:"xMidYMid meet"});
+    var gE=el("g",{},svg), gL=el("g",{},svg), gN=el("g",{},svg);
+    var hl=cfg.hl||"";
+    function onHl(path){ return path.length>0 && hl.indexOf(path)===0; }
+    function edges(n){
+      n.kids.forEach(function(k){
+        var h=onHl(k.path);
+        el("line",{x1:n.x,y1:n.y,x2:k.x,y2:k.y,stroke:h?"#c2410c":"#64748b","stroke-width":h?3.6:1.6,
+          "stroke-linecap":"round"},gE);
+        if(cfg.edge){
+          var v=cfg.edge(k,n);
+          if(v!==null && v!==undefined){
+            var t=(k.depth>=2&&!big)?0.6:0.5, ex=n.x+(k.x-n.x)*t, ey=n.y+(k.y-n.y)*t;
+            edgeLabel(gL,ex,ey,v,h);
+          }
+        }
+        edges(k);
+      });
+    }
+    edges(root);
+    function nodes(n){
+      var isRoot=!n.path.length, h=onHl(n.path);
+      var g=el("g",{"class":"tnode","data-path":n.path},gN);
+      if(isRoot){
+        var rt=cfg.nodeText?cfg.nodeText(""):null;
+        if(rt){
+          var rw=Math.max(30,rt.length*8+14);
+          el("rect",{x:n.x-rw/2,y:n.y-13,width:rw,height:26,rx:13,fill:"#fff",stroke:"#334155","stroke-width":1.6,"class":"nring"},g);
+          txt(g,rt,{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:"#1b2430"});
+        } else {
+          el("circle",{cx:n.x,cy:n.y,r:6,fill:"#334155","class":"nring"},g);
+        }
+      } else {
+        var s=cfg.nodeText?cfg.nodeText(n.path):null;
+        if(s){
+          var w=Math.max(30,s.length*7.6+16);
+          el("rect",{x:n.x-w/2,y:n.y-13,width:w,height:26,rx:13,fill:CFILL[n.color],stroke:h?"#c2410c":CSTRK[n.color],
+            "stroke-width":h?3:1.6,"class":"nring"},g);
+          txt(g,s,{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":"13","font-weight":"700",fill:CTXT[n.color]});
+        } else {
+          el("circle",{cx:n.x,cy:n.y,r:13,fill:CFILL[n.color],stroke:h?"#c2410c":CSTRK[n.color],
+            "stroke-width":h?3.4:1.6,"class":"nring"},g);
+          txt(g,n.color,{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:CTXT[n.color]});
+        }
+      }
+      if(cfg.sel===n.path && cfg.onNode){
+        el("circle",{cx:n.x,cy:n.y,r:19,fill:"none",stroke:"#1f4e79","stroke-width":2.4,"stroke-dasharray":"4 3"},g);
+      }
+      if(!n.kids.length && cfg.leafText){
+        var tup="("+n.path.split("").join("; ")+")";
+        txt(g,tup,{x:n.x+(cfg.nodeText?26:19),y:n.y+5,"font-size":"13.5",fill:h?"#9a3412":"#1b2430","font-weight":h?"700":"500"});
+      }
+      if(cfg.onNode){
+        g.setAttribute("tabindex","0"); g.setAttribute("role","button");
+        g.setAttribute("aria-label","Knoten "+(n.path||"Start"));
+        el("circle",{cx:n.x,cy:n.y,r:24,fill:"transparent"},g);
+        g.addEventListener("click",function(){ cfg.onNode(n); });
+        g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cfg.onNode(n); } });
+      }
+      n.kids.forEach(nodes);
+    }
+    nodes(root);
+    host.appendChild(svg);
+    self.root=root;
+  };
+  self.set=function(o){ for(var k in o){ if(o.hasOwnProperty(k)) cfg[k]=o[k]; } self.draw(); };
+  self.find=function(path){
+    var n=self.root; if(!path) return n;
+    for(var i=0;i<path.length;i++){
+      var c=path.charAt(i), nx=null;
+      for(var j=0;j<n.kids.length;j++){ if(n.kids[j].color===c) nx=n.kids[j]; }
+      if(!nx) return null; n=nx;
+    }
+    return n;
+  };
+  self.draw();
+  return self;
+}
+
+/* Kette: ein einzelner Pfad (Teilbaum) */
+function chainSVG(host,steps,opt){
+  host.innerHTML="";
+  opt=opt||{};
+  var W=opt.W||420, H=opt.H||120, x0=26, dx=(W-x0-40)/steps.length;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":opt.label||"Pfad im Baumdiagramm"});
+  var y=H/2-6;
+  for(var i=0;i<=steps.length;i++){
+    var x=x0+i*dx;
+    if(i<steps.length){
+      var x2=x+dx;
+      el("line",{x1:x,y1:y,x2:x2,y2:y,stroke:"#c2410c","stroke-width":3.4,"stroke-linecap":"round"},svg);
+      el("line",{x1:x,y1:y,x2:x+dx*0.5,y2:y+38,stroke:"#94a3b8","stroke-width":1.3,"stroke-dasharray":"4 4"},svg);
+      el("line",{x1:x,y1:y,x2:x+dx*0.5,y2:y-38,stroke:"#94a3b8","stroke-width":1.3,"stroke-dasharray":"4 4"},svg);
+    }
+  }
+  for(var j=0;j<steps.length;j++){
+    var xm=x0+j*dx+dx/2;
+    edgeLabel(svg,xm,y-15,steps[j].p,true);
+  }
+  for(var m=0;m<=steps.length;m++){
+    var xx=x0+m*dx;
+    if(m===0){ el("circle",{cx:xx,cy:y,r:6,fill:"#334155"},svg); continue; }
+    var c=steps[m-1].c;
+    if(CFILL[c]){
+      el("circle",{cx:xx,cy:y,r:13,fill:CFILL[c],stroke:"#c2410c","stroke-width":3},svg);
+      txt(svg,c,{x:xx,y:y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:CTXT[c]});
+    } else {
+      el("circle",{cx:xx,cy:y,r:13,fill:"#fff7ed",stroke:"#c2410c","stroke-width":3},svg);
+      txt(svg,c,{x:xx,y:y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:"#7c2d12"});
+    }
+  }
+  if(opt.cap){ txt(svg,opt.cap,{x:W/2,y:H-8,"text-anchor":"middle","font-size":"13.5",fill:"#4a5566"}); }
+  host.appendChild(svg);
+}
+
+/* Knoten mit k Aesten */
+function knotSVG(host,labels){
+  host.innerHTML="";
+  var k=labels.length, W=300, H=k===2?130:170;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Knoten mit "+k+" Ästen"});
+  var x0=40, y0=H/2, x1=W-52;
+  for(var i=0;i<k;i++){
+    var yy=24+i*((H-48)/(k-1));
+    el("line",{x1:x0,y1:y0,x2:x1,y2:yy,stroke:"#64748b","stroke-width":1.8,"stroke-linecap":"round"},svg);
+    el("circle",{cx:x1,cy:yy,r:9,fill:"#eaf1f8",stroke:"#1f4e79","stroke-width":1.6},svg);
+    var lx=x0+(x1-x0)*0.68, ly=y0+(yy-y0)*0.68;
+    edgeLabel(svg,lx,ly,labels[i],false);
+  }
+  el("circle",{cx:x0,cy:y0,r:8,fill:"#334155"},svg);
+  host.appendChild(svg);
+}
+
+/* Gluecksrad */
+function wheelSVG(host,sectors){
+  host.innerHTML="";
+  var S=260, cx=S/2, cy=S/2+10, R=100;
+  var svg=el("svg",{viewBox:"0 0 "+S+" "+(S+18),role:"img","aria-label":"Glücksrad mit den Feldern 1, 2 und 3"});
+  var ang=-Math.PI/2;
+  sectors.forEach(function(s){
+    var a2=ang+s.p*Math.PI*2;
+    var x1=cx+R*Math.cos(ang), y1=cy+R*Math.sin(ang), x2=cx+R*Math.cos(a2), y2=cy+R*Math.sin(a2);
+    var large=s.p>0.5?1:0;
+    el("path",{d:"M"+cx+","+cy+" L"+x1+","+y1+" A"+R+","+R+" 0 "+large+" 1 "+x2+","+y2+" Z",fill:s.fill,stroke:"#fff","stroke-width":3},svg);
+    var am=(ang+a2)/2;
+    txt(svg,String(s.label),{x:cx+R*0.62*Math.cos(am),y:cy+R*0.62*Math.sin(am)+8,"text-anchor":"middle","font-size":"26","font-weight":"700",fill:"#1b2430"});
+    ang=a2;
+  });
+  el("circle",{cx:cx,cy:cy,r:8,fill:"#fff",stroke:"#64748b","stroke-width":2},svg);
+  el("path",{d:"M"+(cx-9)+","+(cy-R-14)+" L"+(cx+9)+","+(cy-R-14)+" L"+cx+","+(cy-R+6)+" Z",fill:"#334155"},svg);
+  host.appendChild(svg);
+}
+
+/* =========================================================
+   STATION 1: Ziehen und Pfade
+   ========================================================= */
+var S1={urn:{g:3,b:2},drawn:"",runs:[]};
+var tree1=Tree($("tree1"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:false,leafText:true,hl:"",label:"Baumdiagramm: zweimal ziehen ohne Zurücklegen"});
+function paint1(){
+  fillBalls($("urn1"),S1.urn,["g","b"]);
+  var tr=$("tray1"); tr.innerHTML="";
+  for(var i=0;i<S1.drawn.length;i++) tr.appendChild(ball(S1.drawn.charAt(i)));
+  tree1.set({hl:S1.drawn});
+  var b=$("draw1");
+  b.textContent=S1.drawn.length===0?"1. Kugel ziehen":(S1.drawn.length===1?"2. Kugel ziehen":"Neuer Durchgang");
+  var lg="";
+  for(var j=0;j<S1.runs.length;j++) lg+=(j?" · ":"")+"Durchgang "+(j+1)+": ("+S1.runs[j].split("").join("; ")+")";
+  $("log1").textContent=lg;
+}
+$("draw1").onclick=function(){
+  if(S1.drawn.length>=2){ S1.urn={g:3,b:2}; S1.drawn=""; paint1(); return; }
+  var u=S1.urn, tot=u.g+u.b, c=(Math.random()*tot<u.g)?"g":"b";
+  u[c]--; S1.drawn+=c;
+  if(S1.drawn.length===2){
+    S1.runs.push(S1.drawn);
+    if(S1.runs.length===3){ open("s1b"); ok(0); smooth($("s1b")); }
+  }
+  paint1();
+};
+paint1();
+lock("s1b"); lock("s1c");
+var tree1b=Tree($("tree1b"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:false,leafText:true,hl:"bg",rowH:46,W:420,label:"Baumdiagramm mit markiertem Pfad"});
+mc("mc1",'Im Baum ist ein Pfad rot markiert. Zu welchem <strong>Ergebnis</strong> gehört er?',[
+  {t:"(g;\u00A0b)",no:"Lies den Pfad von links nach rechts: Welche Farbe kommt zuerst?"},
+  {t:"(b;\u00A0g)",ok:"Der Pfad führt erst über b, dann über g."},
+  {t:"(b;\u00A0b)",no:"Im zweiten Zug endet der Pfad nicht bei b."},
+  {t:"(g;\u00A0g)",no:"Im ersten Zug führt der Pfad nicht über g."}
+],1,"Das erste Zeichen im Ergebnis ist die Farbe der ersten Kugel, das zweite die der zweiten Kugel.",function(){ open("s1c"); smooth($("s1c")); ok(0); });
+numTask("nt1",{question:"Wie viele <strong>Pfade</strong> hat dieser Baum insgesamt?",correct:4,
+  hints:["Zähle die Endpunkte ganz rechts.","Der Baum hat zwei Äste im ersten Zug. Von jedem der beiden Knoten gehen wieder zwei Äste aus."],
+  ok:"Es gibt vier Pfade, also vier mögliche Ergebnisse: (g;\u00A0g), (g;\u00A0b), (b;\u00A0g) und (b;\u00A0b).",
+  solution:"4 Pfade: (g;\u00A0g), (g;\u00A0b), (b;\u00A0g), (b;\u00A0b).",onSolved:function(){ ok(0); }});
+
+/* =========================================================
+   STATION 2: Wie viele Pfade?
+   ========================================================= */
+var S2={mode:"mit"};
+var tree2=Tree($("tree2"),{urn:{g:3,b:2},order:["g","b"],stages:3,replace:true,leafText:true,label:"Baumdiagramm mit drei Stufen"});
+function setMode2(m){
+  S2.mode=m;
+  var b=$("modes2").querySelectorAll(".modebtn");
+  for(var i=0;i<b.length;i++) b[i].classList.toggle("sel",b[i].getAttribute("data-m")===m);
+  tree2.set({replace:m==="mit"});
+}
+(function(){
+  var b=$("modes2").querySelectorAll(".modebtn");
+  for(var i=0;i<b.length;i++){ (function(x){ x.onclick=function(){ setMode2(x.getAttribute("data-m")); }; })(b[i]); }
+})();
+lock("s2b"); lock("s2c"); lock("s2d");
+numTask("nt2a",{question:"Stelle <strong>Mit Zurücklegen</strong> ein. Wie viele Pfade hat der Baum?",correct:8,
+  hints:["Zähle die Endpunkte ganz rechts. Oder überlege: Wie oft verzweigt sich der Baum jeweils?","Es gibt in jeder der drei Stufen zwei Möglichkeiten: 2 · 2 · 2."],
+  ok:"Mit Zurücklegen hat jede Stufe zwei Möglichkeiten, also 2 · 2 · 2 = 8 Pfade.",solution:"8 Pfade (2 · 2 · 2).",
+  onSolved:function(){ setMode2("ohne"); open("s2b"); smooth($("s2b")); ok(1); }});
+numTask("nt2b",{question:"Jetzt steht der Baum auf <strong>Ohne Zurücklegen</strong>. Wie viele Pfade hat er?",correct:7,
+  hints:["Zähle die Endpunkte ganz rechts und vergleiche mit dem Baum für das Ziehen mit Zurücklegen.","Ein Pfad aus dem ersten Baum gibt es jetzt nicht mehr."],
+  ok:"Ohne Zurücklegen gibt es nur 7 Pfade.",solution:"7 Pfade.",
+  onSolved:function(){ open("s2c"); smooth($("s2c")); ok(1); }});
+mc("mc2","Welcher Pfad aus dem Baum <em>mit</em> Zurücklegen fehlt im Baum <em>ohne</em> Zurücklegen?",[
+  {t:"(g;\u00A0g;\u00A0g)",no:"In der Urne liegen drei gelbe Kugeln. Dreimal gelb ist also auch ohne Zurücklegen möglich."},
+  {t:"(b;\u00A0b;\u00A0b)",ok:"In der Urne liegen nur zwei blaue Kugeln. Ohne Zurücklegen kann man nicht dreimal blau ziehen."},
+  {t:"(g;\u00A0b;\u00A0g)",no:"Für diesen Pfad braucht man zwei gelbe und eine blaue Kugel. Die sind vorhanden."},
+  {t:"(b;\u00A0g;\u00A0b)",no:"Für diesen Pfad braucht man eine gelbe und zwei blaue Kugeln. Die sind vorhanden."}
+],1,"Überlege, welche Farbe in der Urne zu selten vorkommt, um dreimal gezogen zu werden.",function(){ open("s2d"); smooth($("s2d")); ok(1); });
+
+/* =========================================================
+   STATION 3: Wahrscheinlichkeiten an den Aesten
+   ========================================================= */
+var S3={mode:"mit",rev:{mit:false,ohne:false},sel:""};
+var tree3=Tree($("tree3"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:true,label:"Baumdiagramm mit Wahrscheinlichkeiten",
+  edge:function(k){
+    if(k.depth===1) return k.edge;
+    return S3.rev[S3.mode]?k.edge:"?";
+  },
+  onNode:function(n){ S3.sel=n.path; showNodeUrn(n); tree3.set({sel:S3.sel}); }});
+function showNodeUrn(n){
+  var box=$("nodeurn3"); box.innerHTML="";
+  var u=n.urn, tot=u.g+u.b;
+  var t=document.createElement("div"); t.className="t";
+  var who=n.path?("nach „"+n.path.split("").join("; ")+"“"):"am Start";
+  t.textContent="Urne "+who+": "+tot+" Kugeln";
+  box.appendChild(t);
+  var b=document.createElement("div"); b.className="urn"; box.appendChild(b);
+  fillBalls(b,u,["g","b"],true);
+  measureChrome();
+}
+function setMode3(m){
+  S3.mode=m;
+  var b=$("modes3").querySelectorAll(".modebtn");
+  for(var i=0;i<b.length;i++) b[i].classList.toggle("sel",b[i].getAttribute("data-m")===m);
+  tree3.set({replace:m==="mit"});
+  var n=tree3.find(S3.sel); if(n) showNodeUrn(n);
+}
+(function(){
+  var b=$("modes3").querySelectorAll(".modebtn");
+  for(var i=0;i<b.length;i++){ (function(x){ x.onclick=function(){ setMode3(x.getAttribute("data-m")); }; })(b[i]); }
+  showNodeUrn(tree3.find(""));
+})();
+lock("s3b"); lock("s3c"); lock("s3d");
+numTask("nt3a",{keys:true,
+  question:"<strong>Mit Zurücklegen:</strong> Die erste Kugel ist blau und wird zurückgelegt. Wie groß ist die Wahrscheinlichkeit, dass die zweite Kugel gelb ist?",
+  correct:0.6,hints:["Tippe im Baum auf den Knoten „b“ und sieh nach, welche Kugeln danach in der Urne liegen.","Die Urne ist wieder vollständig: 3 der 5 Kugeln sind gelb."],
+  ok:"Die Urne ist wieder wie am Anfang. Es gilt "+F(3,5)+" = 0,6 = 60 %.",solution:"3/5 (= 0,6 = 60 %)",
+  onSolved:function(){ S3.rev.mit=true; tree3.draw(); setMode3("ohne"); open("s3b"); smooth($("s3b")); ok(2); }});
+numTask("nt3b",{keys:true,
+  question:"<strong>Ohne Zurücklegen:</strong> Die erste Kugel ist blau und bleibt draußen. Wie groß ist die Wahrscheinlichkeit, dass die zweite Kugel gelb ist?",
+  correct:0.75,hints:["Tippe auf den Knoten „b“. Wie viele Kugeln liegen dort noch in der Urne, und wie viele davon sind gelb?","Es liegen noch 4 Kugeln in der Urne, davon 3 gelbe."],
+  ok:"Es liegen noch 3 gelbe und 1 blaue Kugel in der Urne: "+F(3,4)+" = 0,75 = 75 %.",solution:"3/4 (= 0,75 = 75 %)",
+  onSolved:function(){ S3.rev.ohne=true; tree3.draw(); open("s3c"); smooth($("s3c")); ok(2); }});
+mc("mc3","Warum stehen beim Ziehen <em>ohne</em> Zurücklegen im 2. Zug andere Zahlen an den Ästen als im 1. Zug?",[
+  {t:"Weil nach dem 1. Zug weniger Kugeln in der Urne liegen und sich die Anzahl der Kugeln einer Farbe verändert haben kann.",
+    ok:"Die Urne ändert sich mit jedem Zug, deshalb ändern sich die Wahrscheinlichkeiten."},
+  {t:"Weil beim Ziehen ohne Zurücklegen alle Wahrscheinlichkeiten halb so groß sind.",no:"Vergleiche die Zahlen im Baum: Sind sie wirklich überall halb so groß?"},
+  {t:"Weil die zweite Stufe immer mehr Äste hat als die erste.",no:"Zähle die Äste in beiden Stufen nach."},
+  {t:"Weil die Wahrscheinlichkeiten nur nach dem Ziehen einer gelben Kugel anders sind.",no:"Auch nach einer blauen Kugel stehen im Baum andere Zahlen als am Start."}
+],0,"Tippe nacheinander auf die Knoten „g“ und „b“ und vergleiche die Urnen mit der Urne am Start.",function(){ open("s3d"); smooth($("s3d")); ok(2); });
+
+/* =========================================================
+   STATION 4: Knotenregel
+   ========================================================= */
+function knot4(labels,cap){ knotSVG($("knot4"),labels); $("knotcap4").textContent=cap||""; }
+knot4(["0,35","?"],"Ein Knoten mit zwei Ästen");
+lock("s4b"); lock("s4c");
+numTask("nt4a",{keys:true,
+  question:"Von diesem Knoten gehen zwei Äste aus. Auf dem einen steht <strong>0,35</strong>. Welche Zahl muss auf dem anderen Ast stehen?",
+  correct:0.65,hints:["Von dem Knoten aus muss man irgendeinen der beiden Äste nehmen. Wie groß ist die Wahrscheinlichkeit dafür zusammen?","Die beiden Zahlen müssen zusammen 1 ergeben: 0,35 + ? = 1."],
+  ok:"0,35 + 0,65 = 1.",solution:"0,65",
+  onSolved:function(){ knot4([{n:1,d:2},{n:1,d:3},"?"],"Ein Knoten mit drei Ästen"); open("s4b"); smooth($("s4b")); ok(3); }});
+numTask("nt4b",{keys:true,
+  question:"Jetzt gehen <strong>drei</strong> Äste von einem Knoten aus. Auf zweien stehen "+F(1,2)+" und "+F(1,3)+". Welche Zahl steht auf dem dritten Ast?",
+  correct:1/6,tol:0.0035,hints:["Auch hier müssen alle Zahlen an den Ästen des Knotens zusammen 1 ergeben.","Rechne "+F(1,2)+" + "+F(1,3)+" = "+F(5,6)+" und ergänze auf 1."],
+  ok:F(1,2)+" + "+F(1,3)+" + "+F(1,6)+" = 1.",solution:"1/6",
+  onSolved:function(){ open("s4c"); smooth($("s4c")); ok(3); }});
+mc("mc4","Zu welchem Knoten gehören Zahlen, die <em>nicht</em> stimmen können?",[
+  {t:"zwei Äste mit 0,3 und 0,7",no:"Die Summe ist 1. Das passt zur Knotenregel."},
+  {t:"zwei Äste mit "+F(1,4)+" und "+F(3,4),no:"Die Summe ist 1. Das passt zur Knotenregel."},
+  {t:"zwei Äste mit "+F(2,5)+" und "+F(2,5),ok:"Die Summe ist "+F(4,5)+", nicht 1. Bei einem Knoten fehlt noch ein Anteil."},
+  {t:"drei Äste mit "+F(1,2)+", "+F(1,4)+" und "+F(1,4),no:"Die Summe ist 1. Das passt zur Knotenregel."}
+],2,"Rechne bei jedem Knoten die Zahlen an den Ästen zusammen.",function(){ ok(3); });
+
+/* =========================================================
+   STATION 5: Warum multipliziert man?
+   ========================================================= */
+var S5={rev:{}};
+var CNT={g:60,b:40,gg:30,gb:30,bg:30,bb:10};
+var tree5=Tree($("tree5"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:false,leafText:false,rowH:58,label:"Baumdiagramm mit erwarteten Anzahlen",
+  edge:function(k){ return k.edge; },
+  nodeText:function(path){
+    if(path==="") return "100";
+    if(!S5.rev[path]) return path+" · ?";
+    return path+" · "+CNT[path];
+  }});
+var SIMKEYS=["gg","gb","bg","bb"];
+var SIMCOL={gg:"#f4c542",gb:"#c2410c",bg:"#9ec9ea",bb:"#1f5f94"};
+var simTimer=null;
+(function(){
+  var grid=$("simgrid5");
+  for(var i=0;i<100;i++){ var d=document.createElement("span"); d.className="dot"; grid.appendChild(d); }
+})();
+function renderTally(c){
+  var h="";
+  SIMKEYS.forEach(function(k){
+    h+='<div class="trow'+(k==="gb"?" key":"")+'"><span class="sw" style="background:'+SIMCOL[k]+'"></span>'+
+       '<span class="tl">('+k.charAt(0)+'; '+k.charAt(1)+')</span><span class="tn">'+c[k]+'</span></div>';
+  });
+  $("simtally5").innerHTML=h;
+}
+renderTally({gg:0,gb:0,bg:0,bb:0});
+$("sim5").onclick=function(){
+  if(simTimer) return;
+  var btn=$("sim5"), dots=$("simgrid5").children;
+  btn.disabled=true; btn.textContent="Simulation läuft …";
+  $("simline5").textContent="";
+  for(var i=0;i<dots.length;i++){ dots[i].className="dot"; dots[i].style.background=""; }
+  var c={gg:0,gb:0,bg:0,bb:0}, n=0;
+  var reduce=false;
+  try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+  function step(){
+    var first=Math.random()<3/5?"g":"b";
+    var second=(first==="g")?(Math.random()<2/4?"g":"b"):(Math.random()<3/4?"g":"b");
+    var key=first+second;
+    c[key]++;
+    dots[n].style.background=SIMCOL[key]; dots[n].className="dot on";
+    n++;
+    $("simn5").textContent=n;
+    var sb=$("simballs5"); sb.innerHTML=""; sb.appendChild(ball(first)); sb.appendChild(ball(second));
+    renderTally(c);
+    if(!reduce) tree5.set({hl:key});
+  }
+  function finish(){
+    if(simTimer){ clearInterval(simTimer); simTimer=null; }
+    tree5.set({hl:""});
+    btn.disabled=false; btn.textContent="Noch einmal simulieren";
+    $("simline5").innerHTML="Fertig: Das Ergebnis (g; b) trat <strong>"+c.gb+"</strong>-mal auf. Das ist nur ein ungefährer Wert, bei jeder Simulation kommt etwas anderes heraus.";
+  }
+  if(reduce){ for(var k=0;k<100;k++) step(); finish(); }
+  else { simTimer=setInterval(function(){ step(); if(n>=100) finish(); },48); }
+};
+lock("s5b"); lock("s5c"); lock("s5d"); lock("s5e");
+numTask("nt5a",{question:"Bei ungefähr wie vielen der 100 Durchführungen ist die <strong>erste</strong> Kugel gelb? Im Baum steht am Ast die Wahrscheinlichkeit "+F(3,5)+".",
+  correct:60,hints:["3 von 5 Kugeln sind gelb. Wie viel sind "+F(3,5)+" von 100?","100 : 5 = 20, und davon dreimal 20."],
+  ok:"Etwa 60 der 100 Durchführungen beginnen mit gelb.",solution:"60",
+  onSolved:function(){ S5.rev.g=true; tree5.draw(); open("s5b"); smooth($("s5b")); ok(4); }});
+numTask("nt5b",{question:"Von diesen ungefähr 60 Durchführungen: Bei wie vielen ist die <strong>zweite</strong> Kugel blau? Auf dem Ast von g nach b steht "+F(2,4)+".",
+  correct:30,hints:["Du suchst "+F(2,4)+" von 60.","Die Hälfte von 60."],
+  ok:"Etwa 30 Durchführungen haben den Pfad g, dann b.",solution:"30",
+  onSolved:function(){ S5.rev.gb=true; tree5.draw(); open("s5c"); smooth($("s5c")); ok(4); }});
+numTask("nt5c",{keys:true,question:"Welcher <strong>Anteil</strong> aller 100 Durchführungen führt über den Pfad g, dann b? Gib den Anteil als Bruch, Dezimalzahl oder Prozentwert an.",
+  correct:0.3,hints:["30 von 100 Durchführungen führen über diesen Pfad.","Schreibe 30 von 100 als Bruch, Dezimalzahl oder in Prozent."],
+  ok:"Es sind etwa 30 von 100, also "+F(3,10)+" = 0,3 = 30 %. Das ist die Wahrscheinlichkeit des Ergebnisses (g;\u00A0b).",solution:"3/10 (= 0,3 = 30 %)",
+  onSolved:function(){ open("s5d"); smooth($("s5d")); ok(4); }});
+mc("mc5","Wie erhält man den Anteil 0,3 direkt aus den Zahlen am Pfad, ohne die 100 Durchführungen?",[
+  {t:F(3,5)+" + "+F(2,4),no:"Prüfe die Summe: Sie ist größer als 1. Eine Wahrscheinlichkeit kann aber nicht größer als 1 sein."},
+  {t:F(3,5)+" · "+F(2,4),ok:"Von den "+F(3,5)+" aller Durchführungen, die mit gelb beginnen, hat nur der Anteil "+F(2,4)+" danach blau. Es ist also ein Anteil von einem Anteil, und der wird multipliziert: "+F(3,5)+" · "+F(2,4)+" = "+F(6,20)+" = "+F(3,10)+"."},
+  {t:F(3,5)+" − "+F(2,4),no:"Rechne die Differenz aus. Ergibt sie 0,3?"},
+  {t:F(3,5)+" : "+F(2,4),no:"Rechne den Quotienten aus. Ergibt er 0,3?"}
+],1,"Du suchst einen Anteil von einem Anteil: erst "+F(3,5)+" aller Fälle, davon dann "+F(2,4)+".",function(){ open("s5e"); smooth($("s5e")); ok(4); });
+
+/* =========================================================
+   STATION 6: 1. Pfadregel anwenden
+   ========================================================= */
+var tree6=Tree($("tree6"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:true,leafText:true,hl:"gb",label:"Baumdiagramm mit markiertem Pfad",
+  edge:function(k){ return k.edge; }});
+$("cap6").textContent="Mit Zurücklegen: Pfad g, dann b";
+lock("s6b"); lock("s6c"); lock("s6d");
+numTask("nt6a",{keys:true,question:"Mit Zurücklegen: Wie groß ist die Wahrscheinlichkeit für das Ergebnis <strong>(g;\u00A0b)</strong>?",lead:P("g; b")+" = ",
+  correct:6/25,hints:["Multipliziere die Zahlen entlang des roten Pfades.",F(3,5)+" · "+F(2,5)+": Zähler mal Zähler, Nenner mal Nenner."],
+  ok:P("g; b")+" = "+F(3,5)+" · "+F(2,5)+" = "+F(6,25)+" = 0,24 = 24 %.",solution:"6/25 (= 0,24 = 24 %)",
+  onSolved:function(){
+    tree6.set({replace:false,hl:"bb"}); $("cap6").textContent="Ohne Zurücklegen: Pfad b, dann b";
+    open("s6b"); smooth($("s6b")); ok(5);
+  }});
+numTask("nt6b",{keys:true,question:"Jetzt <strong>ohne</strong> Zurücklegen: Wie groß ist die Wahrscheinlichkeit für das Ergebnis <strong>(b;\u00A0b)</strong>?",lead:P("b; b")+" = ",
+  correct:0.1,hints:["Lies die Zahlen am roten Pfad ab und multipliziere sie.","Am ersten Ast steht "+F(2,5)+", am zweiten "+F(1,4)+"."],
+  ok:P("b; b")+" = "+F(2,5)+" · "+F(1,4)+" = "+F(2,20)+" = "+F(1,10)+" = 10 %.",solution:"1/10 (= 0,1 = 10 %)",
+  onSolved:function(){
+    $("tree6").classList.add("hidden"); $("chain6wrap").classList.remove("hidden");
+    fillBalls($("urn6"),{g:4,b:2},["g","b"],true);
+    chainSVG($("chain6"),[{c:"g",p:"?"},{c:"g",p:"?"},{c:"b",p:"?"}],{W:420,H:120,cap:"Pfad g, g, b ohne Zurücklegen"});
+    $("cap6").textContent="Urne mit 4 gelben und 2 blauen Kugeln, dreimal ohne Zurücklegen";
+    open("s6c"); smooth($("s6c")); ok(5);
+  }});
+numTask("nt6c",{keys:true,question:"Aus der Urne (4 gelbe, 2 blaue Kugeln) wird <strong>dreimal ohne Zurücklegen</strong> gezogen. Wie groß ist die Wahrscheinlichkeit für das Ergebnis <strong>(g;\u00A0g;\u00A0b)</strong>?",lead:P("g; g; b")+" = ",
+  correct:0.2,hints:["Bestimme für jeden Zug, wie viele Kugeln in der Urne liegen und wie viele davon die gesuchte Farbe haben.","1. Zug: "+F(4,6)+". Danach liegen noch 5 Kugeln in der Urne, davon 3 gelbe."],
+  ok:P("g; g; b")+" = "+F(4,6)+" · "+F(3,5)+" · "+F(2,4)+" = "+F(24,120)+" = "+F(1,5)+" = 20 %.",solution:"1/5 (= 0,2 = 20 %)",
+  onSolved:function(){ open("s6d"); smooth($("s6d")); ok(5); }});
+mc("mc6","Anna rechnet für „Mit Zurücklegen, Ergebnis (g;\u00A0b)“ so: "+P("g; b")+" = "+F(3,5)+" + "+F(2,5)+" = 1. Was ist daran falsch?",[
+  {t:"Entlang eines Pfades muss man multiplizieren, nicht addieren. Ein Ergebnis mit der Wahrscheinlichkeit 1 wäre außerdem ein sicheres Ergebnis.",
+    ok:"Richtig: Das Ergebnis (g;\u00A0b) ist weder sicher noch unmöglich. Die richtige Rechnung ist "+F(3,5)+" · "+F(2,5)+" = "+F(6,25)+"."},
+  {t:"Beim Ziehen mit Zurücklegen muss man "+F(3,5)+" · "+F(3,5)+" rechnen.",no:"Welche Farbe wird im zweiten Zug gesucht? Die zweite Zahl muss dazu passen."},
+  {t:"Die Wahrscheinlichkeit eines Pfades kann nie kleiner als "+F(1,2)+" sein.",no:"Prüfe, ob das stimmt: Du hast in Station 6 Pfade mit kleineren Wahrscheinlichkeiten berechnet."},
+  {t:"Es müsste 5/5 herauskommen.",no:"Überlege, was die Wahrscheinlichkeit 1 bedeuten würde."}
+],0,"Denke an die Station 5: Man bildet einen Anteil von einem Anteil.",function(){ ok(5); });
+
+/* =========================================================
+   STATION 7: Gluecksrad
+   ========================================================= */
+var WH=[{label:1,p:1/3,fill:"#fde9a6"},{label:2,p:1/2,fill:"#bcd9f1"},{label:3,p:1/6,fill:"#f6c6c0"}];
+wheelSVG($("wheel7"),WH);
+lock("s7b"); lock("s7c");
+mc("mc7","Das Glücksrad wird dreimal gedreht. Welches Urnenmodell passt dazu?",[
+  {t:"Eine Urne mit 6 Kugeln (zwei mit der Zahl 1, drei mit der Zahl 2, eine mit der Zahl 3), aus der dreimal <strong>mit</strong> Zurücklegen gezogen wird.",
+    ok:"Beim Drehen ändert sich das Rad nicht, so wie beim Ziehen mit Zurücklegen. Zwei der sechs Kugeln sind mit 1 beschriftet ("+F(2,6)+" = "+F(1,3)+"), drei mit 2 ("+F(3,6)+" = "+F(1,2)+"), eine mit 3 ("+F(1,6)+")."},
+  {t:"Dieselbe Urne mit 6 Kugeln, aus der dreimal <strong>ohne</strong> Zurücklegen gezogen wird.",no:"Verändert sich das Glücksrad durch das Drehen?"},
+  {t:"Eine Urne mit 3 Kugeln (1, 2 und 3), aus der dreimal mit Zurücklegen gezogen wird.",no:"Vergleiche die Wahrscheinlichkeiten: Sind die drei Felder des Rades gleich wahrscheinlich?"},
+  {t:"Eine Urne mit 3 Kugeln (1, 2 und 3), aus der dreimal ohne Zurücklegen gezogen wird.",no:"Verändert sich das Glücksrad durch das Drehen? Und sind die drei Felder gleich wahrscheinlich?"}
+],0,"Ein Glücksrad verändert sich beim Drehen nicht. Das Feld 2 nimmt die Hälfte des Rades ein.",function(){ open("s7b"); smooth($("s7b")); ok(6); });
+numTask("nt7a",{keys:true,question:"Wie groß ist die Wahrscheinlichkeit für das Ergebnis <strong>(1;\u00A02;\u00A03)</strong>?",lead:P("1; 2; 3")+" = ",
+  correct:1/36,tol:0.0005,
+  hints:["Zeichne dir nur den Pfad 1, dann 2, dann 3 auf. Lies die Wahrscheinlichkeiten der drei Felder am Rad ab.","Das Feld 1 hat den Anteil "+F(1,3)+", das Feld 2 den Anteil "+F(1,2)+", das Feld 3 den Anteil "+F(1,6)+". Multipliziere."],
+  ok:P("1; 2; 3")+" = "+F(1,3)+" · "+F(1,2)+" · "+F(1,6)+" = "+F(1,36)+" ≈ 0,028.",solution:"1/36 (≈ 0,028)",
+  onSolved:function(){
+    chainSVG($("chain7"),[{c:"1",p:{n:1,d:3}},{c:"2",p:{n:1,d:2}},{c:"3",p:{n:1,d:6}}],{W:420,H:110,cap:"Der Pfad zum Ergebnis (1;\u00A02;\u00A03)"});
+    $("chain7").classList.remove("hidden");
+    open("s7c"); ok(6); startGen();
+  }});
+var PW={1:1/3,2:1/2,3:1/6}, PWT={1:F(1,3),2:F(1,2),3:F(1,6)};
+var genCount=0, lastGen="123";
+function startGen(){
+  if(genCount>=2) return;
+  var d, tries=0;
+  do{
+    d=""+(1+Math.floor(Math.random()*3))+(1+Math.floor(Math.random()*3))+(1+Math.floor(Math.random()*3));
+    tries++;
+  } while((d===lastGen||d==="123") && tries<50);
+  lastGen=d;
+  var p=PW[d.charAt(0)]*PW[d.charAt(1)]*PW[d.charAt(2)];
+  var tup=nb("("+d.split("").join("; ")+")");
+  numTask("gen7",{keys:true,question:"Das Glücksrad wird dreimal gedreht. Wie groß ist die Wahrscheinlichkeit für das Ergebnis <strong>"+tup+"</strong>?",
+    lead:P(d.split("").join("; "))+" = ",correct:p,tol:0.0005,
+    hints:["Lies die drei Wahrscheinlichkeiten am Glücksrad ab und multipliziere sie.","Das Feld 1 hat den Anteil "+F(1,3)+", das Feld 2 den Anteil "+F(1,2)+", das Feld 3 den Anteil "+F(1,6)+"."],
+    ok:P(d.split("").join("; "))+" = "+PWT[d.charAt(0)]+" · "+PWT[d.charAt(1)]+" · "+PWT[d.charAt(2)]+" ≈ "+num(p,3)+".",
+    solution:"Produkt der drei Wahrscheinlichkeiten ≈ "+num(p,3),
+    onSolved:function(){
+      genCount++; ok(6);
+      if(genCount<2){ $("gennext7").classList.remove("hidden"); }
+    }});
+}
+$("gennext7").onclick=function(){ $("gennext7").classList.add("hidden"); startGen(); };
+if(TEACHER){ startGen(); }
+
+/* =========================================================
+   STATION 8: Abschlusscheck
+   ========================================================= */
+fillBalls($("urn8"),{r:2,b:3},["r","b"],true);
+lock("s8b"); lock("s8c"); lock("s8d");
+numTask("nt8a",{keys:true,question:"<strong>Aufgabe 1:</strong> Aus der Urne werden zwei Kugeln <strong>ohne Zurücklegen</strong> gezogen. Wie groß ist die Wahrscheinlichkeit, dass beide Kugeln <strong>rot</strong> sind?",
+  correct:0.1,hints:["Wie groß ist die Wahrscheinlichkeit für rot im ersten Zug, und wie groß dann im zweiten Zug?","1. Zug: "+F(2,5)+". Danach liegen noch 4 Kugeln in der Urne, davon 1 rote."],
+  ok:F(2,5)+" · "+F(1,4)+" = "+F(2,20)+" = "+F(1,10)+" = 10 %.",solution:"1/10 (= 0,1 = 10 %)",
+  onSolved:function(){ open("s8b"); smooth($("s8b")); ok(7); }});
+numTask("nt8b",{keys:true,question:"<strong>Aufgabe 2:</strong> Jetzt wird zweimal <strong>mit Zurücklegen</strong> gezogen. Wie groß ist die Wahrscheinlichkeit, dass beide Kugeln <strong>blau</strong> sind?",
+  correct:0.36,hints:["Mit Zurücklegen ist vor jedem Zug die gleiche Urne vorhanden.","Rechne "+F(3,5)+" · "+F(3,5)+"."],
+  ok:F(3,5)+" · "+F(3,5)+" = "+F(9,25)+" = 0,36 = 36 %.",solution:"9/25 (= 0,36 = 36 %)",
+  onSolved:function(){ open("s8c"); smooth($("s8c")); ok(7); }});
+mc("mc8","<strong>Aufgabe 3:</strong> Welche Aussage ist <em>falsch</em>?",[
+  {t:"Die Wahrscheinlichkeiten an den Ästen eines Knotens haben zusammen die Summe 1.",no:"Das ist die Knotenregel, sie gilt immer."},
+  {t:"Die Wahrscheinlichkeit eines Ergebnisses erhält man, indem man die Wahrscheinlichkeiten entlang des Pfades multipliziert.",no:"Das ist die 1. Pfadregel, sie gilt immer."},
+  {t:"Beim Ziehen ohne Zurücklegen bleiben die Zahlen an den Ästen von Stufe zu Stufe immer gleich.",ok:"Die Urne verändert sich, deshalb ändern sich meist auch die Wahrscheinlichkeiten."},
+  {t:"Jeder Pfad gehört zu genau einem Ergebnis.",no:"Das stimmt, so ist ein Pfad definiert."}
+],2,"Denke an die Stationen 2 und 3 zurück: Was ändert sich beim Ziehen ohne Zurücklegen?",function(){ open("s8d"); smooth($("s8d")); ok(7); });
+numTask("nt8c",{keys:true,question:"<strong>Aufgabe 4:</strong> Ein Basketballspieler trifft bei einem Freiwurf mit einer Wahrscheinlichkeit von 70 %. Er wirft zweimal nacheinander. Wie groß ist die Wahrscheinlichkeit, dass er <strong>beide Male trifft</strong>?",
+  correct:0.49,hints:["Zeichne dir einen Baum mit zwei Stufen. Auf den Ästen steht 0,7 für Treffer und 0,3 für Fehlwurf.","Entlang des Pfades „Treffer, Treffer“ wird multipliziert: 0,7 · 0,7."],
+  ok:"0,7 · 0,7 = 0,49 = 49 %.",solution:"0,49 (= 49 %)",
+  onSolved:function(){ ok(7); }});
+
+/* =========================================================
+   Start
+   ========================================================= */
+/* iPad: Bildschirmtastatur verdeckt sonst die Aufgabe. Beim Antippen eines Eingabefelds
+   wird unten Platz geschaffen und das Feld in die Bildmitte gerollt. */
+document.addEventListener("focusin",function(e){
+  var t=e.target;
+  if(t && t.tagName==="INPUT"){
+    document.body.classList.add("kb");
+    setTimeout(function(){ try{ t.scrollIntoView({block:"center",behavior:"smooth"}); }catch(x){} },320);
+  }
+});
+document.addEventListener("focusout",function(){
+  setTimeout(function(){
+    var a=document.activeElement;
+    if(!a || a.tagName!=="INPUT") document.body.classList.remove("kb");
+  },250);
+});
+TREES[0]=[tree1,tree1b]; TREES[1]=[tree2]; TREES[2]=[tree3]; TREES[4]=[tree5]; TREES[5]=[tree6];
+buildSteps();
+render();
+var rzT=null;
+window.addEventListener("resize",function(){ measureChrome(); clearTimeout(rzT); rzT=setTimeout(redrawTrees,120); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(measureChrome);
+})();
+
+</script>
+</body>
+</html>

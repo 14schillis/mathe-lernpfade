@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>II.4 Stochastische Simulationen</title>
+<style>
+
+:root{--ac:#4f46e5;--ac2:#eceaff;--ink:#14172b;--mut:#6a7090;--ok:#0f9d6b;--okb:#e1f7ee;--no:#d9363e;--nob:#fdeced;--pos:#4f46e5;--neg:#ea7a14;--fc:#3730a3;--gc:#0d9488;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9dcec;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center}
+#st{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;background:linear-gradient(135deg,#f9faff,#eef0fb);display:grid;grid-template-rows:auto auto 1fr auto;gap:1.8cqh;padding:2.6cqh 3cqw;overflow:hidden}
+header{display:flex;align-items:center;gap:1.4cqw}
+.bd{width:4.4cqw;height:4.4cqw;border-radius:1.2cqw;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:2.2cqw;font-weight:700}
+h1{font-size:2.5cqw;font-weight:700;letter-spacing:-.02em;flex:1}
+.rt{display:flex;align-items:center;gap:1.2cqw;color:var(--mut);font-size:1.6cqw;font-weight:600}
+#pb{height:.6cqh;background:#dcdff3;border-radius:9px;overflow:hidden}
+#pf{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .5s}
+main{min-height:0;display:flex;flex-direction:column}
+.sc{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqh;animation:in .45s ease both}
+footer{display:flex;justify-content:space-between;align-items:center;gap:1.4cqw}
+.g{display:flex;gap:1.2cqw}
+.btn{font:inherit;font-size:1.7cqw;font-weight:600;min-height:7cqh;padding:0 2.4cqw;border:0;border-radius:1.4cqw;background:#fff;color:var(--ink);box-shadow:0 .2cqw .9cqw rgba(30,35,80,.12);cursor:pointer;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--ac);color:#fff;min-width:22cqw}
+.btn.d{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.ic{min-height:5cqh;padding:0 1.2cqw}
+.g .btn.ic{min-height:7cqh}
+m,.tx{font-family:var(--math)}
+m{white-space:nowrap;font-style:normal}
+m i{font-style:italic}
+sup,sub{font-size:.62em;line-height:0;font-style:normal;margin-left:.08em}
+sup{vertical-align:.7em}sub{vertical-align:-.3em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;font-size:.88em;line-height:1.15}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .06em}
+.fr>span:last-child{padding:.06em .2em 0}
+.in{display:inline-flex;align-items:center;vertical-align:-.5em;margin-right:.12em}
+.in .sg{font-size:1.9em;line-height:1;font-weight:300}
+.in .lm{display:flex;flex-direction:column;justify-content:space-between;font-size:.55em;height:2.7em;margin-left:-.3em}
+.ab{display:inline-block;font-size:1.5em;line-height:.6;vertical-align:-.12em;font-weight:300;margin:0 .04em}
+.q{font-size:2cqw;color:var(--mut);font-weight:500}
+.q m{font-size:1.15em}
+.body{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:1.8cqw}
+.gp{background:#fff;border-radius:2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);padding:1cqh 1cqw;min-width:0;min-height:0;display:flex}
+.gp svg{width:100%;height:100%}
+.pn{display:flex;flex-direction:column;gap:1.3cqh;justify-content:center;min-width:0}
+.cd{display:flex;align-items:center;gap:1.2cqw;background:#fff;border-radius:1.6cqw;padding:1.5cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);border-left:.7cqw solid var(--ac)}
+.cd.pos{border-left-color:var(--pos)}.cd.neg{border-left-color:var(--neg)}
+.cd.fin{border-left-color:var(--ok);background:var(--okb)}.cd.bad{border-left-color:var(--no);background:var(--nob)}
+.nm{flex:none;width:3.2cqw;height:3.2cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:1.7cqw}
+.cp{display:block;font-size:1.35cqw;font-weight:600;color:var(--mut);margin-bottom:.4cqh}
+.cm{font-size:2.2cqw;line-height:1.55}
+.ln{display:flex;align-items:center;gap:.9cqw}
+.dt{flex:none;width:1.1cqw;height:1.1cqw;border-radius:50%}
+.ln.pos .dt{background:var(--pos)}.ln.neg .dt{background:var(--neg)}
+.rule{background:#fff;border-left:.7cqw solid var(--ac);border-radius:1.6cqw;padding:1.3cqh 2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.1);font-size:2.6cqw;text-align:center}
+.rv{transition:opacity .5s}
+.rv:not(.on){opacity:0;visibility:hidden;pointer-events:none}
+/* Diagramm */
+.gl{stroke:#e6e9f6;stroke-width:2}
+.ax{stroke:var(--ink);stroke-width:3}
+.axh{fill:var(--ink)}
+.tick{stroke:var(--ink);stroke-width:3}
+.tx{font-size:32px;fill:var(--ink);text-anchor:middle}
+.tx.nm2{font-size:28px;fill:var(--mut)}
+.tx.end{text-anchor:end}
+.tx.lg{font-size:42px;font-weight:600}
+.tx.pos{fill:var(--pos)}.tx.neg{fill:var(--neg)}.tx.cf{fill:var(--fc)}.tx.cg{fill:var(--gc)}.tx.cc{fill:var(--mut)}
+.cv{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cv.f{stroke:var(--fc)}.cv.g{stroke:var(--gc)}
+.cv.gh{stroke:#aab0cc;stroke-dasharray:14 12;stroke-width:4}
+.ar{stroke:none}
+.ar.pos{fill:rgba(79,70,229,.28)}.ar.neg{fill:rgba(234,122,20,.34)}.ar.fin{fill:rgba(15,157,107,.42)}
+.dl{stroke:var(--mut);stroke-width:3;stroke-dasharray:9 8}
+.dot{fill:var(--ac);stroke:#fff;stroke-width:3}
+.mini .cv{stroke-width:10}.mini .ax{stroke-width:5}
+.sh{transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
+.sh.mv{transform:translateY(var(--dy))}
+/* Quiz */
+.chips{display:flex;gap:1.1cqw;align-items:center}
+.chip{font:inherit;font-size:1.6cqw;font-weight:600;flex:1;padding:1.2cqh 1.2cqw;border-radius:1.2cqw;background:#fff;border:.22cqw solid #dfe2f3;text-align:center;cursor:pointer;transition:.3s;color:var(--ink);line-height:1.25}
+.chip m{font-size:2.4cqw}
+.sel{border-color:var(--ac)!important;background:var(--ac2)!important}
+.ok{border-color:var(--ok)!important;background:var(--okb)!important}
+.no{border-color:#f0b4b8!important;background:var(--nob)!important}
+.chip.no:not(.sel){opacity:.45;background:#fff!important;border-color:#dfe2f3!important}
+.qb{background:#fff;border-radius:1.6cqw;padding:1.8cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh}
+.qt{font-size:2.3cqw}
+.ex{font-size:2cqw;color:var(--ok);font-weight:600}
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center}
+.qr{display:grid;grid-template-columns:17cqw 1fr;gap:1.6cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1cqh 1.4cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09)}
+.qr svg{width:100%;height:auto;display:block}
+.qd{font-size:1.9cqw;font-weight:600;margin-bottom:1cqh}
+.qd m{font-size:1.15em}
+/* Abschluss */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;flex:1;min-height:0}
+.card{background:#fff;border-radius:2cqw;padding:2cqh 1.6cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh;align-items:center;text-align:center;justify-content:center}
+.card svg{width:100%;height:auto;display:block}
+.card .t1{font-size:1.9cqw;font-weight:700}
+.card .eq{font-size:2.6cqw;min-height:5cqh;display:flex;align-items:center}
+.card .t2{font-size:1.5cqw;color:var(--mut)}
+.strat{display:flex;align-items:center;gap:1.2cqw}
+.st{flex:1;background:#fff;border-radius:1.6cqw;padding:1.6cqh 1.6cqw;font-size:1.8cqw;font-weight:600;display:flex;align-items:center;gap:1.2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.08)}
+.st b{flex:none;width:3.4cqw;height:3.4cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ar2{color:var(--mut);font-size:2.4cqw}
+@keyframes in{from{opacity:0;transform:translateX(2.4cqw)}}
+@keyframes pop{from{opacity:0;transform:translateY(1.4cqh)}}
+#ov{position:absolute;inset:0;background:rgba(236,239,251,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;flex-direction:column;gap:3cqh;padding:4cqh 3.4cqw;z-index:5}
+#ov.on{display:flex;animation:pop .3s}
+.oh{display:flex;justify-content:space-between;align-items:center}
+.oh h2{font-size:3cqw}
+.tiles{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:1.4cqw}
+.tile{font:inherit;border:.25cqw solid transparent;background:#fff;border-radius:1.8cqw;padding:2cqh 1.4cqw;text-align:left;display:flex;flex-direction:column;gap:1cqh;cursor:pointer;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);color:var(--ink)}
+.tile b{color:var(--ac);font-size:2cqw}
+.tile span{font-size:1.6cqw;font-weight:700}
+.tile em{font-style:normal;font-size:1.8cqw;margin-top:auto;color:var(--mut)}
+.tile.cur{border-color:var(--ac)}
+:root{--L:#4f46e5;--R:#d9660a}
+.body.eq{grid-template-columns:1fr 1fr}
+.body.wide{grid-template-columns:1.5fr 1fr}
+.vg{display:grid;grid-template-columns:1fr 1fr;gap:1.4cqw;flex:1;min-height:0}
+.vg.c1{grid-template-columns:1fr}
+.vt{position:relative;font:inherit;background:#fff;border:.25cqw solid #dfe2f3;border-radius:2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6cqh;cursor:pointer;color:var(--ink);transition:.25s}
+.vt:active{transform:scale(.97)}
+.vt .l{font-size:3.4cqw;font-weight:800;color:var(--ac)}
+.vt .n{font-size:3cqw;font-weight:700;font-variant-numeric:tabular-nums}
+.vt .br{width:70%;height:1.2cqh;background:#e6e9f6;border-radius:9px;overflow:hidden}
+.vt .br i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+.vt.top{border-color:var(--ok);background:var(--okb)}
+.vt .m{position:absolute;top:.8cqh;right:.8cqw;width:3.4cqw;height:3.4cqw;border-radius:50%;border:0;background:#eef0fb;font-size:2cqw;color:var(--mut);cursor:pointer}
+.tb{background:#fff;border-radius:1.6cqw;padding:1.6cqh 1.8cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1cqh}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:1cqw;font-size:2.1cqw}
+.kv span:first-child{color:var(--mut);font-weight:600}
+.kv b{font-variant-numeric:tabular-nums;font-size:2.4cqw}
+.kv b.big{font-size:3cqw;color:var(--ac)}
+.code{font-family:Consolas,"SF Mono",Menlo,monospace;font-size:1.95cqw;white-space:nowrap;font-weight:700;background:#14172b;color:#e8ebff;border-radius:1.2cqw;padding:1.3cqh 1.4cqw;display:inline-block;margin-top:.6cqh}
+.gp canvas{height:100%;width:auto;aspect-ratio:1;margin:0 auto;display:block;max-width:100%}
+.lt{transition:transform 1.2s cubic-bezier(.4,0,.2,1);transform-box:fill-box;transform-origin:center}
+.envh{stroke:var(--ok);stroke-width:9;fill:none;transition:opacity .5s}
+.envh:not(.on){opacity:0}
+.lb{font-size:26px;font-weight:700;text-anchor:middle;fill:var(--ink)}
+.lb.s{font-size:22px;fill:var(--mut);font-weight:600}
+.dsm{font-size:70px;font-weight:800;text-anchor:middle;fill:#fff}
+.dopen{transition:opacity .6s}
+.br2{display:grid;grid-template-columns:11cqw 21cqw 1fr 9cqw;gap:1.4cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1.4cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);font-size:2cqw}
+.br2 .nn{font-weight:800;font-size:2.4cqw}
+.br2 .pa{color:var(--mut);font-size:1.7cqw;font-weight:600}
+.br2 .bar{height:3cqh;background:#e6e9f6;border-radius:9px;overflow:hidden}
+.br2 .bar i{display:block;height:100%;background:var(--ac);border-radius:9px}
+.br2 .v{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.hint{font-size:1.9cqw;color:var(--mut);font-weight:600;text-align:center}
+.tiles{grid-template-columns:repeat(4,1fr)!important;grid-template-rows:repeat(3,1fr)!important}
+.tile span{font-size:1.45cqw}
+.tile em{font-size:1.6cqw}
+.sm2{font-size:1.9cqw;color:var(--mut);font-weight:600}
+.ex3{display:flex;flex-direction:column;gap:1.2cqh;justify-content:center}
+.ex3 .row2{display:grid;grid-template-columns:1fr auto;gap:1cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1.6cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);font-size:2.1cqw;font-weight:600}
+.ex3 .row2 b{font-size:2.4cqw;color:var(--ac)}
+.compact .cm{font-size:1.95cqw;line-height:1.45}.compact .cd{padding:1.1cqh 1.4cqw}
+.tl{font-size:26px;font-weight:700;fill:var(--mut);text-anchor:middle}
+.te{stroke:#9aa0c4;stroke-width:5;fill:none}
+.en{font-size:26px;font-weight:800;paint-order:stroke;stroke:#fff;stroke-width:6px;text-anchor:middle}
+.tn2{fill:#fff;stroke:#14172b;stroke-width:4}
+.br2{grid-template-columns:16cqw 26cqw 1fr 9cqw!important}
+.br2 .nn{white-space:nowrap}
+.chipw{transform-box:fill-box;transform-origin:center}
+.rv.on .chipw{animation:pop2 .7s cubic-bezier(.3,1.6,.5,1) .5s both}
+@keyframes pop2{from{opacity:0;transform:scale(.5)}}
+.dd{display:inline-flex;gap:.7cqw}.dt3{width:2.6cqw;height:2.6cqw;border-radius:50%;border:.25cqw solid #b9bfdc;background:#fff}
+.ind,.ora{display:inline-block;width:2.4cqw;height:1.6cqw;border-radius:.4cqw;vertical-align:middle;color:transparent}
+.ind{border:.35cqw solid var(--ac)}.ora{border:.35cqw dashed var(--R)}
+.body{grid-template-rows:minmax(0,1fr)}
+.gp{overflow:hidden}
+
+</style>
+</head>
+<body>
+<div id="st">
+<header><div class="bd" id="bd">1</div><h1 id="ti"></h1><div class="rt"><span id="pg"></span><button class="btn ic" onclick="fs()">⛶</button></div></header>
+<div id="pb"><i id="pf"></i></div>
+<main id="mn"></main>
+<footer>
+<div class="g"><button class="btn" id="bk" onclick="nav(-1)">‹ Zurück</button><button class="btn" onclick="ov(1)">▦ Übersicht</button></div>
+<div class="g"><button class="btn ic" onclick="bk1()" title="Schritt zurück">↶</button><button class="btn p" id="sb" onclick="nx()"></button><button class="btn" onclick="go(cur)">↺ Zurücksetzen</button></div>
+<div class="g"><button class="btn d" id="fw" onclick="nav(1)">Weiter ›</button></div>
+</footer>
+<div id="ov"></div>
+</div>
+<script>
+const g=id=>document.getElementById(id);
+/* ---------- Mini-Formelsatz ---------- */
+const mt=(s,i)=>{let d=0;for(let j=i;j<s.length;j++){if(s[j]=='{')d++;else if(s[j]=='}'&&--d==0)return j}return s.length};
+function M(s){let o='',i=0;
+while(i<s.length){const c=s[i];
+if(c=='^'||c=='_'){const tg=c=='^'?'sup':'sub';i++;let t;if(s[i]=='{'){const j=mt(s,i);t=s.slice(i+1,j);i=j+1}else{t=s[i];i++}o+=`<${tg}>${M(t)}</${tg}>`}
+else if(c=='{'&&s.startsWith('{,}',i)){o+=',';i+=3}
+else if(c=='{'){const j=mt(s,i),p=s.slice(i+1,j).split('|');i=j+1;o+=`<span class="fr"><span>${M(p[0])}</span><span>${M(p[1])}</span></span>`}
+else if(c=='@'){const j=s.indexOf('@',i+1),p=s.slice(i+1,j).split(',');i=j+1;o+=`<span class="in"><span class="sg">∫</span><span class="lm"><span>${M(p[1])}</span><span>${M(p[0])}</span></span></span>`}
+else if(c=='|'){o+='<span class="ab">|</span>';i++}
+else if(/[a-z]/i.test(c)){o+='<i>'+c+'</i>';i++}
+else{o+=c=='*'?'·':c=='-'?'−':c;i++}}
+return o}
+const T=s=>s.replace(/\$([^$]+)\$/g,(_,x)=>'<m>'+M(x)+'</m>');
+const SM=s=>{let o='',sub=0;for(let i=0;i<s.length;i++){let c=s[i];
+if(c=='_'){i++;c=s[i];o+=`<tspan dy="10" font-size="66%"${/[a-z]/i.test(c)?' font-style="italic"':''}>${c}</tspan>`;sub=1;continue}
+const it=/[a-z]/i.test(c);o+=`<tspan${sub?' dy="-10"':''}${it?' font-style="italic"':''}>${c=='-'?'−':c}</tspan>`;sub=0}
+return o};
+
+const C=(s,cls,h,cap,nm)=>`<div class="cd rv ${cls||''}" data-s="${s}">${nm?`<b class="nm">${nm}</b>`:''}<div>${cap?`<span class="cp">${T(cap)}</span>`:''}<div class="cm">${T(h)}</div></div></div>`;
+const LN=(c,m)=>`<div class="ln ${c}"><i class="dt"></i>${m}</div>`;
+const BODY=(svg,cards,extra)=>`<div class="body"><div class="gp">${svg}</div><div class="pn">${cards}</div></div>${extra||''}`;
+const RULE=(s,h)=>`<div class="rule rv" data-s="${s}">${T(h)}</div>`;
+const CHP=(t,ok,h)=>`<span class="chip" data-hit="${h}" data-ok="${ok}" onclick="pk(this)">${T(t)}</span>`;
+const QB=(title,chips,ex,h)=>`<div class="qb"><div class="qt">${T(title)}</div><div class="chips">${chips}</div><div class="ex rv" data-s="${h}">${T(ex)}</div></div>`;
+const VA='Nullstellen → Beträge addieren',VB='$f-g$ bilden → ein Integral',VC='Schnittstellen → Beträge addieren';
+const QR=(th,d,opts)=>`<div class="qr"><div>${th}</div><div><div class="qd">${T(d)}</div><div class="chips">${opts.map(([t,ok])=>CHP(t,ok,1)).join('')}</div></div></div>`;
+/* ---------- Helfer ---------- */
+let GEN=0;
+const NB=' ';
+const rnd=Math.random;
+const dz=(x,d)=>x.toFixed(d).replace('.',',');
+const pc=x=>dz(x*100,1)+NB+'%';
+const grp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,NB);
+function tween(gen,dur,fn,done){const t0=performance.now();(function f(t){if(gen!==GEN)return;const k=Math.min(1,(t-t0)/dur);fn(k);if(k<1)requestAnimationFrame(f);else done&&done()})(t0)}
+const KV=(l,id,big)=>`<div class="kv"><span>${l}</span><b${big?' class="big"':''} id="${id}">–</b></div>`;
+const set=(id,h)=>{const e=g(id);if(e)e.innerHTML=h};
+/* Abstimmung */
+let VOTE=[],VN=[];
+function leader(){const m=Math.max(0,...VOTE),e=g('lead');if(!e)return;
+if(!m){e.innerHTML='Noch keine Stimmen';return}
+const w=VN.filter((_,i)=>VOTE[i]==m);e.innerHTML=w.length>1?'Gleichstand: <b>'+w.join(' und ')+'</b>':'Die Klasse vermutet: <b>'+w[0]+'</b>'}
+function vote(i,d,ev){if(ev)ev.stopPropagation();VOTE[i]=Math.max(0,VOTE[i]+d);paintVote();leader()}
+function paintVote(){const m=Math.max(0,...VOTE);document.querySelectorAll('.vt').forEach((e,i)=>{e.querySelector('.n').textContent=VOTE[i];e.querySelector('.br i').style.width=m?VOTE[i]/m*100+'%':'0';e.classList.toggle('top',m>0&&VOTE[i]==m&&step>=1)})}
+const vtiles=(names,c1)=>`<div class="vg${c1?' c1':''}">${names.map((l,i)=>`<div class="vt" role="button" onclick="vote(${i},1)"><span class="l">${l}</span><span class="n">0</span><div class="br"><i></i></div><button class="m" onclick="vote(${i},-1,event)" title="Stimme zurück">−</button></div>`).join('')}</div>`;
+function initVote(names){VN=names;VOTE=names.map(()=>0);paintVote();leader()}
+/* Zufallsexperimente */
+function shuf(n){const a=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
+function anyFixed(n){const a=shuf(n);for(let i=0;i<n;i++)if(a[i]==i)return 1;return 0}
+/* ---------- Szene 0: Briefe ---------- */
+const PERM=[2,1,3,0];                       // Brief k steckt im Umschlag PERM[k]
+const LX=k=>100+k*170;
+function briefe(){
+let d='';
+for(let k=0;k<4;k++){
+ d+=`<g><rect x="${LX(k)-75}" y="300" width="150" height="110" rx="10" fill="#e9d9b0" stroke="#a88f4a" stroke-width="4"/><path d="M${LX(k)-75} 300L${LX(k)} 365L${LX(k)+75} 300" fill="none" stroke="#a88f4a" stroke-width="4"/><text class="lb s" x="${LX(k)}" y="446">Adresse</text><text class="lb" x="${LX(k)}" y="480" style="font-size:34px">${k+1}</text><rect class="envh${''}" id="eh${k}" x="${LX(k)-79}" y="296" width="158" height="118" rx="12"/></g>`}
+for(let k=0;k<4;k++)d+=`<g class="lt" id="lt${k}"><rect x="${LX(k)-62}" y="50" width="124" height="96" rx="8" fill="#fff" stroke="#14172b" stroke-width="4"/><line x1="${LX(k)-40}" y1="82" x2="${LX(k)+40}" y2="82" stroke="#c9cde6" stroke-width="5"/><line x1="${LX(k)-40}" y1="102" x2="${LX(k)+22}" y2="102" stroke="#c9cde6" stroke-width="5"/><text class="lb" x="${LX(k)}" y="136" style="font-size:30px">Brief ${k+1}</text></g>`;
+return `<svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet">${d}</svg>`}
+function briefState(s){
+for(let k=0;k<4;k++){const t=g('lt'+k);if(!t)return;
+ t.style.transform=s>=1?`translate(${(PERM[k]-k)*170}px,215px) scale(.62)`:'none';
+ g('eh'+k).classList.toggle('on',s>=2&&PERM[k]==k)}}
+const S=[
+{t:'Die vertauschten Briefe',e:'Problem',q:'Eine Sekretärin schreibt 4 Briefe und 4 Adressen auf Umschläge. Dann gerät alles durcheinander.',
+b:['Zufällig einstecken','Treffer prüfen'],
+h:`<div class="body eq"><div class="gp">${briefe()}</div><div class="pn">
+${C(1,'','Die Briefe werden <b>zufällig</b> eingesteckt, jeder Umschlag bekommt genau einen Brief.','Der Versuch')}
+${C(2,'','<b>Treffer</b>: Brief <i>k</i> steckt im Umschlag <i>k</i>. Hier: <b>1 Treffer</b> (Brief 2).','Treffer')}
+${C(2,'bad','Wie wahrscheinlich ist <b>mindestens ein Treffer</b>?','Die Frage')}</div></div>`,
+on(s){briefState(s)}},
+{t:'Abstimmung',e:'Vermutung',q:'Wie wahrscheinlich ist es, dass mindestens ein Brief im richtigen Umschlag steckt?',
+b:['Vermutung der Klasse'],
+h:`<div class="body eq"><div class="gp">${briefe()}</div><div class="pn" style="justify-content:stretch;gap:1.4cqh">${vtiles(['< 25 %','25–50 %','50–75 %','> 75 %'])}<div class="cd rv fin" data-s="1"><div class="cm" id="lead"></div></div></div></div>`,
+init(){initVote(['< 25 %','25–50 %','50–75 %','> 75 %'])},on(s){briefState(0);paintVote();leader()}},
+/* ---------- Szene 2: viele Mischungen ---------- */
+{t:'Wir lassen es den Rechner tausendfach durchführen',e:'Simulation',q:'Der Rechner steckt die Briefe immer wieder zufällig ein und zählt, wie oft es mindestens einen Treffer gibt.',
+b:['10 Durchgänge','100 Durchgänge','1000 Durchgänge','10 000 Durchgänge','Der exakte Wert'],
+h:(()=>{const W=1000,H=600,pl=110,pr=40,pt=70,pb=70,X=n=>pl+Math.log10(n)/4*(W-pl-pr),Y=p=>H-pb-p*(H-pt-pb);
+let s='';[0,.25,.5,.75,1].forEach(p=>s+=`<line class="gl" x1="${pl}" x2="${W-pr}" y1="${Y(p)}" y2="${Y(p)}"/><text class="tx nm2 end" x="${pl-14}" y="${Y(p)+10}">${Math.round(p*100)} %</text>`);
+[1,10,100,1000,10000].forEach(n=>s+=`<line class="tick" x1="${X(n)}" x2="${X(n)}" y1="${Y(0)}" y2="${Y(0)+10}"/><text class="tx nm2" x="${X(n)}" y="${Y(0)+44}">${grp(n)}</text>`);
+s+=`<line class="ax" x1="${pl}" x2="${W-pr}" y1="${Y(0)}" y2="${Y(0)}"/><line class="ax" x1="${pl}" x2="${pl}" y1="${Y(0)}" y2="${pt-10}"/>`;
+s+=`<text class="tx nm2" x="${W-pr}" y="${Y(0)-14}" style="text-anchor:end">Anzahl der Durchgänge</text><text class="tx nm2" x="${pl+14}" y="${pt-30}" style="text-anchor:start">relative Häufigkeit „mindestens ein Treffer“</text>`;
+s+=`<g class="rv" data-s="5"><line x1="${pl}" x2="${W-pr}" y1="${Y(.625)}" y2="${Y(.625)}" stroke="var(--ok)" stroke-width="5" stroke-dasharray="14 10"/><text class="tx" style="fill:var(--ok);font-weight:700;text-anchor:end" x="${W-pr}" y="${Y(.625)-14}">exakt 62,5 %</text></g>`;
+s+=`<path id="ln" fill="none" stroke="var(--ac)" stroke-width="6" stroke-linejoin="round" d=""/><circle id="ld" r="11" class="dot" cx="-50" cy="-50"/>`;
+window.CH={X,Y};
+return `<div class="body wide"><div class="gp"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${s}</svg></div><div class="pn"><div class="tb">${KV('Durchgänge <i>n</i>','k1')}${KV('Durchgänge mit Treffer','k2')}${KV('relative Häufigkeit','k3',1)}</div>
+${C(5,'fin','Rechnung: $P={15|24}=62{,}5$ %. Die Simulation liegt ganz nah dran.','Vergleich')}</div></div>`})(),
+init(){const n=10000,cum=new Int32Array(n+1);let c=0;for(let i=1;i<=n;i++){c+=anyFixed(4);cum[i]=c}window.CUM=cum},
+on(s,a){const gen=GEN,N=[1,10,100,1000,10000,10000],P=N[s>0?s-1:0],Q=N[s>0?s:0];
+const draw=n=>{n=Math.max(1,Math.round(n));let d='';const pts=[];for(let i=1;i<=n;i++){if(i<=40||i%Math.ceil(i/50)==0||i==n)pts.push(i)}
+pts.forEach((i,j)=>d+=(j?'L':'M')+CH.X(i).toFixed(1)+' '+CH.Y(CUM[i]/i).toFixed(1));
+g('ln').setAttribute('d',d);g('ld').setAttribute('cx',CH.X(n));g('ld').setAttribute('cy',CH.Y(CUM[n]/n));
+set('k1',grp(n));set('k2',grp(CUM[n]));set('k3',pc(CUM[n]/n))};
+if(s==0){g('ln').setAttribute('d','');g('ld').setAttribute('cx',-50);set('k1','0');set('k2','0');set('k3','–');return}
+if(a&&s<=4){const l0=Math.log10(P),l1=Math.log10(Q);tween(gen,1500,k=>draw(Math.pow(10,l0+(l1-l0)*k)))}else draw(Q)}},
+/* ---------- Szene 3: wie viele Briefe? ---------- */
+{t:'Und mit mehr Briefen?',e:'n Briefe',q:'Wie ändert sich die Wahrscheinlichkeit, wenn es mehr Briefe gibt?',
+b:['4 Briefe','10 Briefe','100 Briefe','1000 Briefe','Überraschung'],
+h:(()=>{const rows=[[4,'24 Pfade'],[10,grp(3628800)+' Pfade'],[100,'≈ 9,3·10<sup>157</sup> Pfade'],[1000,'Pfade: über 2500 Stellen']];
+return `<div class="stack"><div class="hint">Jede Zeile: 2000 Simulationen. Ohne Zurücklegen gibt es bei <i>n</i> Briefen <i>n</i>! Pfade im Baumdiagramm.</div>`+rows.map((r,i)=>`<div class="br2 rv" data-s="${i+1}"><span class="nn">${grp(r[0])}${NB}Briefe</span><span class="pa">${r[1]}</span><div class="bar"><i id="bb${i}" style="width:0"></i></div><span class="v" id="bv${i}">–</span></div>`).join('')+RULE(5,'Fast <b>unabhängig</b> von der Anzahl der Briefe: etwa <b>63 %</b>. Ein Baumdiagramm wäre hier gar nicht mehr zeichenbar.')+`</div>`})(),
+init(){[4,10,100,1000].forEach((n,i)=>{let c=0;for(let k=0;k<2000;k++)c+=anyFixed(n);const p=c/2000;g('bb'+i).style.width=p*100+'%';g('bv'+i).textContent=pc(p)})},on(){}},
+];
+
+/* ---------- Ziegenproblem ---------- */
+function goat(cx,cy){return `<g transform="translate(${cx},${cy})"><ellipse cx="0" cy="0" rx="40" ry="32" fill="#f4efe6" stroke="#6b5a3a" stroke-width="4"/><path d="M-26 -26Q-44 -62 -20 -62Q-24 -42 -14 -30" fill="#f4efe6" stroke="#6b5a3a" stroke-width="4" stroke-linejoin="round"/><path d="M26 -26Q44 -62 20 -62Q24 -42 14 -30" fill="#f4efe6" stroke="#6b5a3a" stroke-width="4" stroke-linejoin="round"/><circle cx="-14" cy="-6" r="5" fill="#14172b"/><circle cx="14" cy="-6" r="5" fill="#14172b"/><ellipse cx="0" cy="14" rx="12" ry="9" fill="#e3c9b4" stroke="#6b5a3a" stroke-width="3"/><path d="M0 40v22M-8 62h16" stroke="#6b5a3a" stroke-width="4" stroke-linecap="round"/></g>`}
+function doors(st){ // st: 0 zu, 1 Wahl, 2 Tür 3 offen, 3 Frage
+let d='';
+for(let i=0;i<3;i++){const x=40+i*230,op=(i==2&&st>=2);
+ d+=`<rect x="${x}" y="70" width="190" height="300" rx="8" fill="${op?'#cfd3ea':'#8a5a2b'}" stroke="#4a2f12" stroke-width="6"/>`;
+ if(op)d+=goat(x+95,250);
+ else d+=`<rect x="${x+16}" y="86" width="158" height="268" rx="4" fill="none" stroke="#6a4219" stroke-width="3"/><circle cx="${x+160}" cy="230" r="9" fill="#e3c26a"/><text class="dsm" x="${x+95}" y="215">${i+1}</text>`;
+ if(op)d+=`<text class="lb" x="${x+95}" y="${60}" style="font-size:28px">Ziege</text>`;
+}
+if(st>=1)d+=`<rect x="34" y="64" width="202" height="312" rx="12" fill="none" stroke="var(--ac)" stroke-width="10"/><text class="lb" x="135" y="412" style="fill:var(--ac);font-size:30px">Deine Wahl</text>`;
+if(st>=3)d+=`<path d="M150 440Q300 520 410 440" fill="none" stroke="var(--R)" stroke-width="8" stroke-linecap="round" stroke-dasharray="4 14"/><path d="M404 424l16 18-24 6z" fill="var(--R)"/><text class="lb" x="285" y="506" style="fill:var(--R);font-size:34px">Wechseln?</text>`;
+return `<svg viewBox="0 0 720 540" preserveAspectRatio="xMidYMid meet">${d}</svg>`}
+function setDoors(st){const e=g('dr');if(e)e.innerHTML=doors(st)}
+/* ---------- Ziegenproblem: drei Fälle ---------- */
+function car(cx,cy){return `<g transform="translate(${cx},${cy})"><path d="M-48 14v-22q0-8 8-8h16l14-18q4-5 10-5h20q6 0 10 5l14 18h10q8 0 8 8v22z" fill="#d9363e" stroke="#7d1a20" stroke-width="4" stroke-linejoin="round"/><path d="M-6 -26h22l12 16h-34z" fill="#bfe3ff" stroke="#7d1a20" stroke-width="3" stroke-linejoin="round"/><circle cx="-26" cy="16" r="13" fill="#14172b"/><circle cx="34" cy="16" r="13" fill="#14172b"/><circle cx="-26" cy="16" r="5" fill="#ccc"/><circle cx="34" cy="16" r="5" fill="#ccc"/></g>`}
+const CASE=[{car:0,mod:2},{car:1,mod:2},{car:2,mod:1}];   // Moderator-Tür (0-basiert); Anfangswahl: Tür 0
+const cases3=()=>{let d='';
+CASE.forEach((c,i)=>{const y0=14+i*196,win_b=c.car==0,win_w=c.car!=0;
+ let r=`<text class="lb" style="font-size:30px;text-anchor:start;fill:var(--mut)" x="6" y="${y0+96}">Fall ${i+1}</text>`;
+ for(let j=0;j<3;j++){const x=118+j*150;
+  r+=`<rect x="${x}" y="${y0+22}" width="130" height="150" rx="8" fill="#e8ebf8" stroke="#4a2f12" stroke-width="4"/>`;
+  r+=j==c.car?car(x+65,y0+110).replace('<g ','<g transform-origin="0 0" ')+'' : goat(x+65,y0+112).replace('translate(','translate(').replace(/<g transform="translate\(([^)]*)\)">/,'<g transform="translate($1) scale(.8)">');
+  r+=`<text class="lb" style="font-size:26px" x="${x+65}" y="${y0+9}">Tür ${j+1}</text>`;
+  if(j==0)r+=`<rect x="${x-5}" y="${y0+17}" width="140" height="160" rx="12" fill="none" stroke="var(--ac)" stroke-width="8"/>`;
+  if(j==c.mod)r+=`<rect x="${x-5}" y="${y0+17}" width="140" height="160" rx="12" fill="none" stroke="var(--R)" stroke-width="7" stroke-dasharray="14 9"/>`;
+ }
+ const chip=(x,l,ok)=>`<g class="chipw"><rect x="${x}" y="${y0+36}" width="150" height="54" rx="14" fill="${ok?'var(--okb)':'var(--nob)'}" stroke="${ok?'var(--ok)':'var(--no)'}" stroke-width="4"/><text class="lb" style="font-size:25px" x="${x+75}" y="${y0+70}">${l} ${ok?'✓':'✗'}</text></g>`;
+ r+=chip(588,'Bleiben',win_b)+chip(588,'Wechseln',win_w).replace(/y="(\d+)"/g,(m,v)=>`y="${+v+64}"`);
+ d+=`<g class="rv" data-s="${i+1}">${r}</g>`});
+return `<svg viewBox="0 0 760 596" preserveAspectRatio="xMidYMid meet">${d}</svg>`};
+const dots=(n,c)=>[0,1,2].map(i=>`<span class="dt3${i<n?' on':''}" style="${i<n?'background:'+c:''}"></span>`).join('');
+S.push(
+{t:'Das Ziegenproblem',e:'Ziegenproblem',q:'Eine Spielshow: Hinter einer von drei Türen steht ein Auto, hinter den anderen beiden je eine Ziege.',
+b:['Du wählst Tür 1','Der Moderator öffnet Tür 3','Die Frage'],
+h:`<div class="body eq"><div class="gp" id="dr"></div><div class="pn">
+${C(1,'','Du wählst <b>Tür 1</b>. Sie bleibt noch zu.','Schritt 1')}
+${C(2,'','Der Moderator weiß, wo das Auto steht. Er öffnet eine andere Tür mit einer <b>Ziege</b>: Tür 3.','Schritt 2')}
+${C(3,'bad','Er fragt: „Möchtest du bei Tür 1 bleiben oder zu <b>Tür 2</b> wechseln?“','Die Frage')}</div></div>`,
+init(){setDoors(0)},on(s){setDoors(s)}},
+{t:'Abstimmung',e:'Vermutung',q:'Was ist besser: bei Tür 1 bleiben oder zu Tür 2 wechseln?',
+b:['Vermutung der Klasse'],
+h:`<div class="body eq"><div class="gp" id="dr"></div><div class="pn" style="justify-content:stretch;gap:1.4cqh">${vtiles(['Bleiben ist besser','Wechseln ist besser','Beides gleich gut'],1)}<div class="cd rv fin" data-s="1"><div class="cm" id="lead"></div></div></div></div>`,
+init(){setDoors(3);initVote(['Bleiben ist besser','Wechseln ist besser','Beides gleich gut'])},on(){paintVote();leader()}},
+{t:'Ziegenproblem simulieren',e:'Bleiben oder Wechseln',q:'Der Rechner spielt die Show sehr oft und zählt, wie oft man mit jeder Strategie das Auto gewinnt.',
+b:['10 Spiele','100 Spiele','1000 Spiele','10 000 Spiele','Ergebnis'],
+h:(()=>{const Y=p=>520-p*440;let s='';[0,.25,.5,.75,1].forEach(p=>s+=`<line class="gl" x1="110" x2="680" y1="${Y(p)}" y2="${Y(p)}"/><text class="tx nm2 end" x="96" y="${Y(p)+10}">${p*100} %</text>`);
+s+=`<line class="ax" x1="110" x2="680" y1="520" y2="520"/>`;
+[[170,'st','Bleiben','var(--neg)'],[440,'sw','Wechseln','var(--ac)']].forEach(([x,id,l,c])=>s+=`<rect id="b_${id}" x="${x}" y="520" width="170" height="0" fill="${c}" rx="8"/><text class="tx" id="t_${id}" x="${x+85}" y="500" style="font-weight:800;font-size:44px">–</text><text class="tx lg" x="${x+85}" y="566">${l}</text>`);
+s+=`<g class="rv" data-s="5"><line x1="110" x2="680" y1="${Y(1/3)}" y2="${Y(1/3)}" stroke="var(--ok)" stroke-width="5" stroke-dasharray="14 10"/><line x1="110" x2="680" y1="${Y(2/3)}" y2="${Y(2/3)}" stroke="var(--ok)" stroke-width="5" stroke-dasharray="14 10"/><text class="tx" style="fill:var(--ok);font-weight:700" x="676" y="${Y(1/3)-10}" text-anchor="end">⅓</text><text class="tx" style="fill:var(--ok);font-weight:700" x="676" y="${Y(2/3)-10}" text-anchor="end">⅔</text></g>`;
+return `<div class="body eq"><div class="gp"><svg viewBox="0 0 740 600" preserveAspectRatio="xMidYMid meet">${s}</svg></div><div class="pn"><div class="tb">${KV('Spiele <i>n</i>','z1')}${KV('Bleiben: Auto gewonnen','z2')}${KV('Wechseln: Auto gewonnen','z3')}</div>
+${C(5,'fin','Wer wechselt, gewinnt etwa <b>doppelt so oft</b>. Die Simulation zeigt: Wechseln lohnt sich. Warum, klären wir gleich.','Ergebnis')}</div></div>`})(),
+init(){const n=10000,A=new Int32Array(n+1),B=new Int32Array(n+1);let a=0,b=0;
+for(let i=1;i<=n;i++){const car=Math.floor(rnd()*3),pick=Math.floor(rnd()*3);let host;do{host=Math.floor(rnd()*3)}while(host==pick||host==car);
+const alt=3-pick-host;if(pick==car)a++;if(alt==car)b++;A[i]=a;B[i]=b}window.ZS=A;window.ZW=B},
+on(s,a){const gen=GEN,N=[0,10,100,1000,10000,10000],P=Math.max(N[s-1]||1,1),Q=N[s];
+const draw=n=>{n=Math.round(n);if(n<1)n=0;const a=n?ZS[n]/n:0,b=n?ZW[n]/n:0;
+g('b_st').setAttribute('height',a*440);g('b_st').setAttribute('y',520-a*440);g('b_sw').setAttribute('height',b*440);g('b_sw').setAttribute('y',520-b*440);
+g('t_st').setAttribute('y',520-a*440-14);g('t_sw').setAttribute('y',520-b*440-14);
+g('t_st').textContent=n?pc(a):'–';g('t_sw').textContent=n?pc(b):'–';
+set('z1',grp(n));set('z2',n?grp(ZS[n]):'0');set('z3',n?grp(ZW[n]):'0')};
+if(s==0){draw(0);return}
+if(a&&s<=4){const l0=Math.log10(P),l1=Math.log10(Q);tween(gen,1500,k=>draw(Math.pow(10,l0+(l1-l0)*k)))}else draw(Q)}},
+
+{t:'Die drei Fälle',e:'Alle Möglichkeiten',q:'Du wählst Tür 1. Das Auto steht mit gleicher Wahrscheinlichkeit hinter jeder der drei Türen.',
+b:['Auto hinter Tür 1','Auto hinter Tür 2','Auto hinter Tür 3','Auswertung'],
+h:`<div class="body" style="grid-template-columns:1.6fr 1fr"><div class="gp">${cases3()}</div><div class="pn">
+<div class="cd rv" data-s="1"><div class="cm"><span class="ind">▭</span> deine Wahl &nbsp; <span class="ora">▭</span> der Moderator öffnet</div></div>
+<div class="tb rv" data-s="4"><div class="kv"><span>Bleiben gewinnt</span><span class="dd">${dots(1,'var(--ok)')}</span></div><div class="kv"><span>Wechseln gewinnt</span><span class="dd">${dots(2,'var(--ok)')}</span></div></div>
+${C(4,'fin','Wechseln gewinnt in <b>2 von 3</b> gleich wahrscheinlichen Fällen: $P={2|3}$.<br>Bleiben gewinnt nur in <b>1</b> Fall: $P={1|3}$.','')}</div></div>`,on(){}},
+/* ---------- Ziegenproblem: Baumdiagramm ---------- */
+{t:'Warum Wechseln besser ist',e:'Baumdiagramm',q:'Das Baumdiagramm erklärt, was die Simulation zeigt.',
+b:['Anfangswahl','Beide Strategien','Bleiben: nur 1/3','Wechseln: 2/3'],
+h:(()=>{const E=(x1,y1,x2,y2,l,cls,dy)=>`<line class="te ${cls||''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>${l?`<text class="en" style="font-size:36px" x="${(x1+x2)/2}" y="${(y1+y2)/2+(dy||-12)}" fill="#14172b">${l}</text>`:''}`;
+const nd=(x,y,t,c)=>`<circle class="tn2" cx="${x}" cy="${y}" r="15" style="fill:${c||'#fff'}"/>`;
+const lf=(x,y,t,ok,s)=>`<g class="rv" data-s="${s}"><rect x="${x}" y="${y-28}" width="210" height="56" rx="12" fill="${ok?'var(--okb)':'var(--nob)'}" stroke="${ok?'var(--ok)':'var(--no)'}" stroke-width="3"/><text class="lb" x="${x+105}" y="${y+11}" style="font-size:32px">${t}</text></g>`;
+let s=`${nd(235,260)}<text class="tl" style="font-size:26px;text-anchor:start" x="6" y="268">Anfangswahl</text>`;
+s+=`<g class="rv" data-s="1">${E(235,260,400,120,'1/3',0,-14)}${E(235,260,400,400,'2/3',0,28)}${nd(400,120)}${nd(400,400)}<text class="lb" style="font-size:38px" x="400" y="80">Auto</text><text class="lb" style="font-size:38px" x="400" y="458">Ziege</text></g>`;
+s+=`<g class="rv" data-s="2">${E(400,120,680,70,'')}${E(400,120,680,170,'')}${E(400,400,680,350,'')}${E(400,400,680,450,'')}
+<text class="en" style="font-size:34px" x="580" y="78" fill="var(--neg)">Bleiben</text><text class="en" style="font-size:34px" x="580" y="170" fill="var(--ac)">Wechseln</text><text class="en" style="font-size:34px" x="580" y="358" fill="var(--neg)">Bleiben</text><text class="en" style="font-size:34px" x="580" y="458" fill="var(--ac)">Wechseln</text></g>`;
+s+=lf(690,70,'gewinnt',1,2)+lf(690,170,'verliert',0,2)+lf(690,350,'verliert',0,2)+lf(690,450,'gewinnt',1,2);
+s+=`<g class="rv" data-s="3"><rect x="684" y="38" width="222" height="64" rx="14" fill="none" stroke="var(--neg)" stroke-width="7"/></g><g class="rv" data-s="4"><rect x="684" y="418" width="222" height="64" rx="14" fill="none" stroke="var(--ac)" stroke-width="7"/></g>`;
+return `<div class="body wide" style="grid-template-columns:1.25fr 1fr"><div class="gp"><svg viewBox="0 0 920 520" preserveAspectRatio="xMidYMid meet">${s}</svg></div><div class="pn">
+${C(1,'','Anfangswahl: <b>Auto</b> mit $P={1|3}$, <b>Ziege</b> mit $P={2|3}$.','Die erste Stufe')}
+${C(3,'','<b>Bleiben</b> gewinnt nur, wenn die Anfangswahl das Auto war: $P={1|3}$','Bleiben')}
+${C(4,'fin','<b>Wechseln</b> gewinnt, wenn die Anfangswahl eine Ziege war: $P={2|3}$','Wechseln')}</div></div>`})(),on(){}},
+);
+
+/* ---------- Zufallszahlen: Basketball 40 % ---------- */
+const ZR=Array.from({length:1000},()=>rnd());
+const ZC=(()=>{const c=[0];ZR.forEach((z,i)=>c.push(c[i]+(z<.4?1:0)));return c})();
+const ZX=z=>80+840*z;
+S.push(
+{t:'Zufall am Rechner',e:'Zufallszahl',q:'Ein Basketballspieler trifft mit der Wahrscheinlichkeit 0,4. Wie simuliert man einen Wurf?',
+b:['Zufallszahl z = 0,27','Zufallszahl z = 0,81','Die Formel','10 Würfe','100 Würfe','1000 Würfe'],
+h:(()=>{let s=`<rect x="${ZX(0)}" y="250" width="${ZX(.4)-ZX(0)}" height="70" fill="rgba(79,70,229,.8)"/><rect x="${ZX(.4)}" y="250" width="${ZX(1)-ZX(.4)}" height="70" fill="rgba(217,102,10,.75)"/>`;
+s+=`<text class="tx lg" x="${(ZX(0)+ZX(.4))/2}" y="296" style="fill:#fff;font-weight:700">Treffer</text><text class="tx lg" x="${(ZX(.4)+ZX(1))/2}" y="296" style="fill:#fff;font-weight:700">Fehlwurf</text>`;
+[[0,'0'],[.4,'0,4'],[1,'1']].forEach(([z,l])=>s+=`<line class="tick" x1="${ZX(z)}" x2="${ZX(z)}" y1="240" y2="330"/><text class="tx" x="${ZX(z)}" y="372">${l}</text>`);
+const pin=(z,id,s0,x,c)=>`<g class="rv" data-s="${s0}" data-x="${x}"><path d="M${ZX(z)} 244l-16-40h32z" fill="${c}"/><text class="tx lg" x="${ZX(z)}" y="186" style="font-weight:700">z${NB}=${NB}${dz(z,2)}</text></g>`;
+s+=pin(.27,'p1',1,2,'var(--ac)')+pin(.81,'p2',2,3,'var(--R)');
+s+=`<g id="zd"></g>`;
+return `<div class="body wide"><div class="gp"><svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">${s}</svg></div><div class="pn">
+<div class="cd rv" id="zc1" data-s="0" data-x="4"><div><span class="cp">Zufallszahl</span><div class="cm">Der Rechner liefert eine Zahl <i>z</i> zwischen 0 und 1, alle gleich wahrscheinlich.</div></div></div>
+<div class="cd rv" id="zc2" data-s="1" data-x="4"><div><span class="cp">Wurf</span><div class="cm" id="zz"></div></div></div>
+<div class="cd rv fin" data-s="3"><div><span class="cp">Excel-Formel für einen Wurf</span><div class="code">=WENN(ZUFALLSZAHL()&lt;0,4;1;0)</div><div class="sm2" style="margin-top:.8cqh">1 = Treffer, 0 = Fehlwurf</div></div></div>
+<div class="tb rv" id="ztb" data-s="4">${KV('Würfe <i>n</i>','w1')}${KV('Treffer','w2')}${KV('relative Häufigkeit','w3',1)}</div></div></div>`})(),
+on(s,a){const gen=GEN;
+g('zc1').style.display=g('zc2').style.display=s>=4?'none':'';g('ztb').style.display=s>=4?'':'none';
+set('zz',s==1?T('$z=0{,}27<0{,}4$: <b>Treffer</b>'.replace(/\{,\}/g,',')):s>=2?T('$z=0{,}81≥0{,}4$: <b>Fehlwurf</b>'.replace(/\{,\}/g,',')):'');
+const N=[0,0,0,0,10,100,1000][s];const draw=n=>{n=Math.round(n);let d='';
+for(let i=0;i<n;i++){const z=ZR[i],y=420+((i*97)%150);d+=`<circle cx="${ZX(z).toFixed(1)}" cy="${y}" r="${n>200?5:8}" fill="${z<.4?'#4f46e5':'#d9660a'}" fill-opacity="${n>200?.55:.9}"/>`}
+set('zd',d);set('w1',grp(n));set('w2',grp(ZC[n]));set('w3',n?pc(ZC[n]/n):'–')};
+if(s<4){set('zd','');return}
+const P=[0,0,0,0,0,10,100][s];
+if(a&&s>=5)tween(gen,1400,k=>draw(P+(N-P)*k));else draw(N)}},
+/* ---------- π Punktregen ---------- */
+(()=>{const n=10000,X=new Float32Array(n),Y=new Float32Array(n),I=new Int32Array(n+1);let c=0;
+for(let i=0;i<n;i++){X[i]=rnd();Y[i]=rnd();if(X[i]*X[i]+Y[i]*Y[i]<1)c++;I[i+1]=c}
+window.PX=X;window.PY=Y;window.PI=I;
+const CN=800,M=20,SC=CN-2*M;
+function base(ctx){ctx.fillStyle='#fff';ctx.fillRect(0,0,CN,CN);ctx.strokeStyle='#14172b';ctx.lineWidth=5;ctx.strokeRect(M,M,SC,SC);}
+function arc(ctx){ctx.strokeStyle='#14172b';ctx.lineWidth=6;ctx.beginPath();ctx.arc(M,CN-M,SC,-Math.PI/2,0);ctx.stroke()}
+function dot(ctx,i){const x=M+PX[i]*SC,y=CN-M-PY[i]*SC;ctx.fillStyle=PX[i]*PX[i]+PY[i]*PY[i]<1?'rgba(79,70,229,.75)':'rgba(217,102,10,.75)';ctx.beginPath();ctx.arc(x,y,i<1000?7:3.6,0,6.3);ctx.fill()}
+let shown=0;
+return {t:'Punktregen: π schätzen',e:'Zufallspunkte',q:'Wir werfen Zufallspunkte auf ein Quadrat mit Seitenlänge 1 und zählen, wie viele im Viertelkreis landen.',
+b:['100 Punkte','1000 Punkte','10 000 Punkte','Schätzung für π'],
+h:`<div class="body eq"><div class="gp"><canvas id="cvp" width="${CN}" height="${CN}"></canvas></div><div class="pn">
+<div class="cd"><div><span class="cp">Flächen</span><div class="cm">${T('Quadrat: $1$<br>Viertelkreis: ${π|4}≈0{,}785$'.replace('{,}',','))}</div></div></div>
+<div class="tb rv" data-s="1">${KV('Punkte <i>n</i>','p1')}${KV('davon im Viertelkreis','p2')}${KV('Anteil im Viertelkreis','p3')}</div>
+<div class="cd rv fin" data-s="4"><div><span class="cp">Schätzung</span><div class="cm" id="pe"></div></div></div></div></div>`,
+init(){shown=0;const c=g('cvp').getContext('2d');base(c);arc(c)},
+on(s,a){const gen=GEN,N=[0,100,1000,10000,10000][s],P=[0,0,100,1000,10000][s],cv=g('cvp'),c=cv.getContext('2d');
+const upd=n=>{n=Math.round(n);set('p1',grp(n));set('p2',grp(PI[n]));set('p3',n?dz(PI[n]/n,3):'–');
+set('pe',n?T('Anteil ≈ ${π|4}$, also $π≈4·'+dz(PI[n]/n,3)+'≈$ <b>'+dz(4*PI[n]/n,3)+'</b>'):'')};
+if(a&&s>=1&&s<=3){if(shown>P){base(c);arc(c);shown=0}
+tween(gen,s==3?2200:1400,k=>{const to=Math.round(P+(N-P)*k);for(;shown<to;shown++)dot(c,shown);arc(c);upd(to)},()=>{})}
+else{base(c);for(let i=0;i<N;i++)dot(c,i);arc(c);shown=N;upd(N)}}}})(),
+/* ---------- Streifenmethode ---------- */
+(()=>{const U=n=>{let s=0;for(let i=1;i<=n;i++)s+=Math.sqrt(1-(i/n)*(i/n));return 4*s/n};
+const CNV=620,ox=50,oy=620;
+function strips(n){let d=`<rect x="${ox}" y="${oy-CNV}" width="${CNV}" height="${CNV}" fill="#fff" stroke="#14172b" stroke-width="5"/>`;
+for(let i=1;i<=n;i++){const x0=(i-1)/n,x1=i/n,h=Math.sqrt(1-x1*x1);d+=`<rect x="${ox+x0*CNV}" y="${oy-h*CNV}" width="${CNV/n}" height="${h*CNV}" fill="rgba(15,157,107,.45)" stroke="#0f7a55" stroke-width="${n>30?1:2.5}"/>`}
+let a='';for(let k=0;k<=100;k++){const x=k/100,y=Math.sqrt(1-x*x);a+=(k?'L':'M')+(ox+x*CNV)+' '+(oy-y*CNV)}
+d+=`<path d="${a}" fill="none" stroke="#14172b" stroke-width="6"/>`;
+return d}
+return {t:'Streifenmethode: π schätzen',e:'Streifen',q:'Zweiter Weg: Wir legen Streifen unter den Viertelkreis und addieren ihre Flächen.',
+b:['5 Streifen','10 Streifen','50 Streifen','Vergleich: Zufall oder Streifen?'],
+h:`<div class="body eq"><div class="gp"><svg id="sv" viewBox="0 0 720 690" preserveAspectRatio="xMidYMid meet"></svg></div><div class="pn">
+<div class="cd rv" data-s="1"><div><span class="cp">Streifen</span><div class="cm" id="sc"></div></div></div>
+<div class="tb rv" data-s="4"><div class="kv"><span>Streifenmethode, 100 Streifen</span><b id="v1">–</b></div><div class="sm2">immer derselbe Wert</div><div class="kv" style="margin-top:1cqh"><span>Zufallspunkte, 100 Punkte</span><b id="v2">–</b></div><div class="sm2">beim nächsten Mal ein anderer Wert</div></div>
+<div class="cd rv fin" data-s="4"><div class="cm">Streifen: sicher, aber aufwendig.<br>Zufall: einfach, aber schwankend.</div></div></div></div>`,
+on(s){const n=[0,5,10,50,50][s];g('sv').innerHTML=n?strips(n):strips(0);
+set('sc',n?T('<b>'+n+'</b> Streifen. Streifenfläche $≈'+dz(U(n)/4,3)+'$<br>$π≈4·'+dz(U(n)/4,3)+'≈$ <b>'+dz(U(n),2)+'</b>'):'');
+if(s==4){set('v1',dz(U(100),3));set('v2',dz(4*PI[100]/100,3))}}}})(),
+/* ---------- Zusammenfassung ---------- */
+{t:'Simulation: So geht es',e:'Zusammenfassung',q:'Wenn Rechnen schwer ist oder man ein Ergebnis überprüfen will, hilft eine Simulation.',
+b:['Modell','Wiederholen','Auswerten','Näherung','Ausblick'],
+h:`<div class="body eq compact"><div class="pn" style="gap:1cqh">
+${C(1,'','Das Zufallsexperiment als <b>Modell</b> nachbauen: Urne, Würfel oder Zufallszahl.','1')}
+${C(2,'','Den Versuch <b>sehr oft</b> wiederholen, am besten vom Rechner.','2')}
+${C(3,'','Die <b>relative Häufigkeit</b> des Ereignisses bestimmen.','3')}
+${C(4,'bad','Das Ergebnis ist nur eine <b>Näherung</b>. Je mehr Wiederholungen, desto zuverlässiger.','4')}</div>
+<div class="ex3"><div class="row2"><span>Vertauschte Briefe, <i>n</i> beliebig</span><b>≈ 63 %</b></div><div class="row2"><span>Ziegenproblem, Wechseln</span><b>≈ ⅔</b></div><div class="row2"><span>Zahl π mit Zufallspunkten</span><b>≈ 3,14</b></div>${RULE(5,'Nächste Stunde: Simulation mit <b>Excel</b>, <span class="code" style="font-size:1.8cqw;margin:0">=WENN(ZUFALLSZAHL()&lt;0,4;1;0)</span>')}</div></div>`,on(){}}
+);
+
+/* ---------- Steuerung ---------- */
+let cur=0,step=0;
+function go(i){GEN++;cur=i;step=0;const s=S[i];
+g('bd').textContent=i+1;g('ti').textContent=s.t;g('pg').textContent=(i+1)+' / '+S.length;g('pf').style.width=(i+1)/S.length*100+'%';
+g('mn').innerHTML='<div class="sc"><div class="q">'+T(s.q)+'</div>'+s.h+'</div>';s.init&&s.init();
+g('bk').disabled=!i;g('fw').disabled=i==S.length-1;upd(false)}
+function upd(anim){GEN++;const s=S[cur],m=g('mn');
+m.querySelectorAll('[data-s]').forEach(e=>{const a=+e.dataset.s,x=e.dataset.x!=null?+e.dataset.x:99;e.classList.toggle('on',step>=a&&step<x)});
+m.querySelectorAll('[data-m]').forEach(e=>e.classList.toggle('mv',step>=+e.dataset.m));
+m.querySelectorAll('[data-hit]').forEach(e=>{const o=step>=+e.dataset.hit;e.classList.toggle('ok',o&&e.dataset.ok=='1');e.classList.toggle('no',o&&e.dataset.ok!='1')});
+const d=step>=s.b.length;g('sb').textContent=d?'✓ Alles gezeigt':s.b[step];g('sb').disabled=d;s.on&&s.on(step,!!anim)}
+function nx(){if(step<S[cur].b.length){step++;upd(true)}}
+function bk1(){if(step>0){step--;upd(false)}}
+function nav(d){const n=cur+d;if(n>=0&&n<S.length)go(n)}
+function pk(e){if(step>=+e.dataset.hit)return;[...e.parentNode.children].forEach(c=>c.classList.remove('sel'));e.classList.add('sel')}
+function ov(o){const e=g('ov');if(o){e.innerHTML='<div class="oh"><h2>Übersicht</h2><button class="btn" onclick="ov(0)">✕ Schließen</button></div><div class="tiles">'+S.map((s,i)=>`<button class="tile${i==cur?' cur':''}" onclick="ov(0);go(${i})"><b>${i+1}</b><span>${s.t}</span><em>${T(s.e)}</em></button>`).join('')+'</div>'}e.classList.toggle('on',!!o)}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('keydown',e=>{if(e.key=='ArrowRight')nav(1);else if(e.key=='ArrowLeft')nav(-1);else if(e.key==' '||e.key=='Enter'){e.preventDefault();nx()}else if(e.key=='Backspace'){e.preventDefault();bk1()}else if(e.key=='Escape')ov(0)});
+go(0);
+
+</script>
+</body>
+</html>

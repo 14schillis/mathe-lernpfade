@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>II.3 Die 2. Pfadregel und das Gegenereignis – Lernpfad</title>
+<style>
+
+/* ============ Grundlagen (aus MASTER I.1) ============ */
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --ink:#1b2430;
+  --ink-soft:#4a5566;
+  --line:#dde2e9;
+  --accent:#1f4e79;        /* Hefteintrag-Blau */
+  --accent-soft:#eaf1f8;
+  --pos:#1f6fb2;           /* Graph von f bzw. h */
+  --pos-bg:#dceaf6;
+  --neg:#b45309;           /* zweiter Graph */
+  --neg-bg:#fbeadb;
+  --ok:#1e7a4d;
+  --ok-bg:#e6f4ec;
+  --hint:#8a5a00;
+  --hint-bg:#fdf3e0;
+  --note-bg:#eef4fa;
+  --radius:10px;
+  --headH:104px;
+  --footH:74px;
+  --ui:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+/* overflow-x:clip statt hidden – hidden wuerde einen Scroll-Container erzeugen
+   und damit position:sticky der Visualisierungen ausser Kraft setzen. */
+html{overflow-x:clip}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{
+  max-width:1140px;margin:0 auto;
+  padding:0 clamp(12px,2vw,20px);
+  padding-bottom:calc(var(--footH) + 26px);
+}
+
+/* ============ Kopf ============ */
+header.top{
+  background:var(--card);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.top-inner{max-width:1140px;margin:0 auto;padding:7px clamp(12px,2vw,20px) 0}
+.kapitel{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.titel{font-size:clamp(1.02rem,2.1vw,1.3rem);font-weight:700;color:var(--accent);margin:1px 0 7px}
+
+/* Lehrermodus-Hinweis */
+.tmode{
+  display:none;margin-left:10px;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:1px 9px 2px;vertical-align:middle;white-space:nowrap;
+  font-family:var(--ui);
+}
+.tmode.on{display:inline-block}
+.steps{display:flex;gap:6px;list-style:none;margin:-11px 0 0;padding:0 0 2px}
+.steps li{flex:1;display:flex}
+.steps button{
+  width:100%;border:0;background:transparent;padding:14px 0 19px;cursor:pointer;
+  position:relative;-webkit-tap-highlight-color:transparent;
+}
+.steps button::before{content:"";display:block;height:7px;border-radius:4px;background:var(--line)}
+.steps button.done::before{background:#9fc3de}
+.steps button.active::before{background:var(--accent)}
+.steps button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:5px}
+.steps button::after{
+  content:attr(data-nr);position:absolute;top:23px;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--ink-soft);line-height:1;
+}
+.stepsbar{padding-bottom:4px}
+@media(max-height:700px){
+  .kapitel{display:none}
+  .titel{margin:0 0 5px}
+  .top-inner{padding-top:5px}
+}
+
+/* ============ Stationen ============ */
+.station{display:none}
+.station.active{display:block}
+.station h2{
+  font-size:clamp(1.22rem,2.4vw,1.5rem);
+  margin:clamp(12px,2.2vh,22px) 0 2px;color:var(--accent);font-weight:700;letter-spacing:-.01em;
+}
+.station .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:clamp(8px,1.4vh,14px);letter-spacing:.04em}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(13px,1.6vw,19px) clamp(14px,1.8vw,22px);
+  margin:clamp(9px,1.4vh,14px) 0;
+}
+.card h3{margin:0 0 8px;font-size:1.05rem;font-weight:650;color:var(--ink)}
+.card h3.sub{margin-top:4px;color:var(--accent)}
+p{margin:.5em 0}
+.card p:not(.mblock):not(.figcap),.heft p{max-width:74ch}
+.lead{font-size:1.02rem}
+.q{font-weight:600;margin:2px 0 10px}
+.small{font-size:.89rem;color:var(--ink-soft)}
+.narrow{max-width:880px}
+.gap{margin-top:14px}
+
+/* ============ Arbeitsansicht ============
+   Zweispaltig bereits ab Tablet-Hochformat: Der Graph muss beim Bearbeiten
+   der rechten Spalte sichtbar bleiben. Einspaltig erst unterhalb von 700 px. */
+.work{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
+  gap:clamp(14px,2vw,26px);
+  align-items:start;
+}
+.work>*{min-width:0}
+@media(max-width:700px){
+  .work{grid-template-columns:1fr;gap:10px}
+  .work .viz svg{max-width:560px}
+}
+/* Tablet: Visualisierung etwas breiter als die Aufgabenspalte */
+@media(min-width:701px) and (max-width:1000px){
+  .work{grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}
+}
+/* Sticky bereits im Tabletbereich, sofern die Hoehe ausreicht */
+@media(min-width:701px) and (min-height:620px){
+  .work.stick>.viz{position:sticky;top:calc(var(--headH) + 8px)}
+}
+
+/* ============ Mathematik-Satz ============
+   Bewusst dieselbe Schriftfamilie wie der Fliesstext: Variablen kursiv,
+   Zahlen, Rechenzeichen und Klammern aufrecht. Keine externen Fonts. */
+.m,.mf,.mblock{font-family:var(--ui);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal}
+.mf i{font-style:italic;padding-right:.04em}
+.mf b{font-weight:700}
+.mblock{
+  text-align:center;font-style:normal;
+  margin:clamp(9px,1.4vh,15px) 0;overflow-wrap:break-word;
+}
+.mblock i{font-style:italic;padding-right:.04em}
+.big{font-size:clamp(1.1rem,3vw,1.34rem)}
+sub,sup{font-size:.7em}
+.mf sup,.mblock sup{padding-left:.02em}
+
+/* ============ Buttons ============ */
+button{font-family:inherit;font-size:1rem}
+.btn{
+  display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;
+  min-height:44px;min-width:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn:hover{background:#17405f}
+.btn.ghost{background:#fff;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible,.modebtn:focus-visible,
+.minipick:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 2px}
+
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;cursor:pointer;min-height:48px;color:var(--ink);line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover){.opt:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.chosen-no{border-color:#c0392b;background:#fbeceb}
+.opt:disabled{cursor:default}
+.opt .mk{font-weight:700;margin-right:.5em}
+.solmc{margin-top:10px}
+
+/* Rueckmeldungen */
+.fb{border-radius:8px;padding:10px 13px;margin-top:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.fb.hint{background:var(--hint-bg);border-left:4px solid #d69220}
+.fb.sol{background:var(--note-bg);border-left:4px solid var(--accent)}
+
+/* Eingaben */
+.answer{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+input[type=text]{
+  font-size:1.05rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  width:120px;font-family:inherit;min-height:44px;
+}
+input[type=text].ok{border-color:var(--ok);background:var(--ok-bg)}
+input[type=text].no{border-color:#c0392b}
+.unit{font-size:.95rem;color:var(--ink-soft)}
+
+/* Sicherungs-Box */
+.heft{
+  background:var(--note-bg);border:1px solid #c9dcec;border-left:5px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin:clamp(12px,2vh,20px) 0 6px;max-width:920px;
+}
+.heft .h{font-weight:700;letter-spacing:.05em;color:var(--accent);margin-bottom:4px;font-size:.88rem}
+.heft p{margin:.18em 0}
+.heft .duo{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+@media(min-width:720px){.heft .duo{grid-template-columns:1fr 1fr}}
+.duo .box{background:#fff;border:1px solid #c9dcec;border-radius:8px;padding:10px 13px}
+.duo .box.up{border-left:4px solid var(--pos)}
+.duo .box.down{border-left:4px solid var(--neg)}
+.duo .box .t{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.duo .box.up .t{color:var(--pos)}
+.duo .box.down .t{color:var(--neg)}
+.duo .box p{margin:.22em 0;font-size:.97rem}
+/* kompakte Vierfeldtafel zur Monotonie */
+.mono4{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
+@media(min-width:620px){.mono4{grid-template-columns:1fr 1fr}}
+.mono4 div{background:#fff;border:1px solid #c9dcec;border-radius:7px;padding:6px 11px;font-size:.94rem}
+
+/* Schieberegler */
+.sliderbox{margin:2px 0 10px}
+.sliderbox .slabel{display:block;font-weight:600;margin-bottom:0}
+input[type=range]{
+  display:block;width:100%;margin:0;height:44px;accent-color:var(--accent);
+  -webkit-tap-highlight-color:transparent;
+}
+.scale{position:relative;height:28px;margin-top:-4px}
+.scale span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:.76rem;color:var(--ink-soft);text-align:center;white-space:nowrap;
+}
+.scale span::before{
+  content:"";display:block;width:1.5px;height:7px;background:#94a3b8;margin:0 auto 3px;
+}
+.scale span.mark{font-weight:700;color:var(--accent);font-size:.83rem}
+.scale span.mark::before{background:var(--accent);height:9px}
+
+/* Anzeige-Box */
+.valbox{
+  border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;
+  padding:9px 13px;background:#fff;margin:4px 0 8px;
+}
+.valbox .vlabel{font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:650}
+.valbox .vrow{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:2px}
+.valbox .vnum{
+  font-size:1.42rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;display:inline-block;
+}
+.valbox .vsub{font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Wertekacheln */
+.vals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.val{
+  border:1px solid var(--line);border-left-width:4px;border-left-color:var(--pos);
+  border-radius:8px;padding:6px 10px;background:#fff;
+  display:flex;align-items:baseline;gap:8px;flex:1 1 120px;
+}
+.val .k{font-size:.86rem;color:var(--ink-soft)}
+.val .v{font-size:1.05rem;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto;color:#14456e}
+
+/* Forschungsauftrag */
+.forsch{
+  border:1px solid #cfe0ef;border-left:4px solid var(--pos);background:#f7fbfe;
+  border-radius:8px;padding:11px 14px;margin:10px 0;
+}
+.forsch .ft{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
+  color:var(--pos);margin-bottom:3px}
+.forsch p{margin:.2em 0}
+.forsch .btnrow{margin-top:10px}
+
+/* kompakter Erfolgsblock – ersetzt den erledigten Forschungsauftrag */
+.solved{
+  display:none;gap:9px;align-items:baseline;background:var(--ok-bg);
+  border:1px solid #bcdfcb;border-left:4px solid var(--ok);border-radius:8px;
+  padding:8px 13px;margin:8px 0;font-size:.93rem;color:#14603c;font-weight:600;line-height:1.45;
+}
+.solved.on{display:flex}
+.tick{font-weight:700;color:var(--ok);flex:0 0 auto}
+
+/* einheitlicher, wieder aufklappbarer Erfolgsblock fuer erledigte Bereiche
+   (Karten, Forschungs- und Multiple-Choice-Bloecke). Der Inhalt bleibt im DOM,
+   nur die Darstellung wechselt - der Fortschritt aendert sich dadurch nie. */
+.completed-summary{
+  display:none;align-items:center;gap:9px;background:var(--ok-bg);
+  border:1px solid #bcdfcb;border-left:4px solid var(--ok);border-radius:8px;
+  padding:3px 6px 3px 13px;margin:8px 0;font-size:.95rem;color:#14603c;font-weight:600;line-height:1.45;
+}
+.completed-summary.on{display:flex}
+.completed-summary.open{background:#f1f8f4}
+.completed-summary .cs-text{flex:1 1 9em;min-width:0}
+.completed-summary .cs-btn{
+  position:relative;flex:0 0 auto;min-height:40px;padding:4px 12px;
+  border:1px solid #9fcbb3;border-radius:8px;background:#fff;color:#14603c;
+  font-weight:600;font-size:.88rem;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+/* Treffer-Flaeche etwas groesser als die sichtbare Schaltflaeche (ca. 48 px) */
+.completed-summary .cs-btn::after{content:"";position:absolute;left:-4px;right:-4px;top:-4px;bottom:-4px}
+.completed-summary .cs-btn:hover{background:#f3fbf6}
+.completed-summary .cs-btn:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+.folded{display:none !important}
+
+/* Protokoll der geprueften Faelle – bleibt nach dem Einklappen stehen */
+.prot{display:flex;flex-direction:column;gap:5px;margin:8px 0 2px}
+.prot:empty{margin:0}
+.protline{
+  font-size:.9rem;background:#fff;border:1px solid var(--line);border-left:3px solid var(--ok);
+  border-radius:7px;padding:5px 10px;font-variant-numeric:tabular-nums;
+}
+
+/* Legende */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:4px 0 2px;color:var(--ink-soft)}
+/* nur die direkten Kinder sind Flex-Zeilen – sonst wuerde der Zeichenabstand
+   innerhalb der Formeln auseinandergezogen */
+.legend>span{display:inline-flex;align-items:center;gap:7px}
+.legend>span>span{display:inline}
+.swatch{width:22px;height:0;border-top-width:3.4px;border-top-style:solid;display:inline-block;flex:0 0 auto}
+.sw-f{border-top-color:var(--pos)}
+.sw-g{border-top-color:var(--neg)}
+.sw-ref{border-top-color:#94a3b8;border-top-style:dashed}
+
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.83rem;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+
+/* Modusknoepfe */
+.modes{display:flex;flex-wrap:wrap;gap:9px;margin:4px 0 12px}
+.modebtn{
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+  padding:9px 16px;cursor:pointer;font-weight:650;min-height:44px;
+  -webkit-tap-highlight-color:transparent;flex:1 1 auto;
+}
+.modebtn.sel{background:var(--accent);color:#fff}
+.modebtn .cnt{font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Vier kleine Graphen (Station 7, Modus B)
+   Querformat / breite Displays: alle vier nebeneinander, damit nicht gescrollt
+   werden muss. Tablet-Hochformat und mittlere Breiten: 2x2. Sehr schmal: 1x4. */
+.minigrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0 2px}
+@media(min-width:1000px){.minigrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}}
+@media(max-width:430px){.minigrid{grid-template-columns:1fr}}
+.minipick{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 5px 7px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;
+}
+@media(hover:hover){.minipick:hover:not(:disabled){border-color:#9fb8cd;background:#fbfcfe}}
+.minipick .mk{display:block;font-weight:700;font-size:.88rem;color:var(--ink-soft);margin-bottom:1px}
+/* Minigraphen bleiben klein – sonst entsteht unnoetiges Scrollen */
+.minipick svg{max-width:380px}
+@media(min-width:1000px){.minipick{padding:4px 3px 6px}.minipick .mk{font-size:.82rem}}
+.minipick.chosen-ok{border-color:var(--ok);background:var(--ok-bg)}
+.minipick.chosen-ok .mk{color:#14603c}
+.minipick.chosen-no{border-color:#c0392b;background:#fbeceb}
+.minipick:disabled{cursor:default}
+
+/* Schrittliste im Generator */
+.gstep{border-top:1px dashed var(--line);padding-top:10px;margin-top:10px}
+.gstep:first-child{border-top:0;padding-top:0;margin-top:0}
+.gnr{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.ptlist{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.pt{border:1px solid #a8c9e2;background:var(--pos-bg);color:#14456e;border-radius:8px;
+  padding:4px 10px;font-family:var(--ui);font-size:.95rem}
+
+/* ============ Fussnavigation ============ */
+footer.nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);
+  z-index:30;padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner{
+  max-width:1140px;margin:0 auto;padding:8px clamp(12px,2vw,20px);
+  display:flex;align-items:center;gap:12px;
+}
+.nav-mid{flex:1;text-align:center;min-width:0}
+.nav-mid .pos{font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.posline{line-height:1.3}
+.locknote{display:none;font-size:.82rem;color:var(--hint);font-weight:600}
+.locknote.show{display:inline}
+@media(max-width:560px){
+  #prev .lbl,#next .lbl{display:none}
+  .btn{padding:10px 14px}
+}
+@media(max-height:800px){
+  .nav-inner{padding-top:6px;padding-bottom:6px}
+  .bar{margin-top:4px;height:5px}
+  .nav-mid .pos{font-size:.82rem}
+  .locknote{font-size:.79rem}
+  .steps{padding-bottom:0}
+}
+/* ============ Graphhoehe (iPad / Laptop) ============
+   Die SVGs skalieren weiter ueber die Breite (viewBox, preserveAspectRatio meet).
+   Zusaetzlich begrenzt max-height die Hoehe, damit Graph und aktuelle Aufgabe
+   gleichzeitig sichtbar bleiben. Das Seitenverhaeltnis bleibt erhalten, nichts
+   wird abgeschnitten oder verzerrt. */
+:root{--gH:none;--miniH:none}
+svg{max-height:var(--gH)}
+.minipick svg{max-height:var(--miniH)}
+/* iPad Hochformat (z. B. 768 x 1024): ca. 300-360 px */
+@media(min-width:701px) and (max-width:1100px) and (orientation:portrait){
+  :root{--gH:clamp(300px,35vh,360px);--miniH:200px}
+}
+/* iPad Querformat (z. B. 1024 x 768): ca. 270-310 px */
+@media(min-width:701px) and (max-width:1100px) and (orientation:landscape){
+  :root{--gH:clamp(270px,42vh,310px)}
+}
+/* Laptop und groessere Displays (z. B. 1366 x 768): darf wieder wachsen */
+@media(min-width:1101px){
+  :root{--gH:clamp(270px,47vh,460px)}
+}
+
+/* ============ Kopf und Fuss: kompakter ab Tablet-Breite ============ */
+@media(min-width:701px){
+  .steps{padding-bottom:0}
+  .stepsbar{padding-bottom:2px}
+  .nav-inner{padding-top:5px;padding-bottom:5px}  /* Buttons bleiben min. 44 px hoch */
+  .bar{margin-top:3px}
+  .wrap{padding-bottom:calc(var(--footH) + 14px)}
+}
+/* Touch-Geraete: Stationsleiste mit ca. 44 px hoher Treffer-Flaeche */
+@media(min-width:701px) and (pointer:coarse){
+  .steps{margin-top:-13px}
+  .steps button{padding:16px 0 20px}
+  .steps button::after{top:25px}
+}
+/* Kapitelzeile und Titel nebeneinander (nur bei ausreichender Hoehe;
+   bei niedrigen Fenstern bleibt die Kapitelzeile wie bisher ausgeblendet) */
+@media(min-width:701px) and (min-height:701px){
+  .top-inner{padding-top:6px}
+  .kapitel,.titel{display:inline-block;vertical-align:baseline}
+  .kapitel{margin-right:12px}
+  .titel{margin:0 0 6px}
+}
+
+/* ============ iPad (701-1100 px): kompaktere Abstaende ============
+   Fliesstext bleibt bei 16 px, Touch-Ziele bei mindestens 44 px. */
+@media(min-width:701px) and (max-width:1100px){
+  body{font-size:16px}
+  .station h2{font-size:1.3rem;margin:10px 0 1px}
+  .station .meta{margin-bottom:6px}
+  .card{padding:10px 14px;margin:8px 0}
+  .card h3{margin-bottom:5px;font-size:1.02rem}
+  p{margin:.38em 0}
+  .lead{font-size:1rem}
+  .mblock{margin:7px 0}
+  .small{font-size:.94rem}
+  .gap{margin-top:8px}
+  .btnrow{gap:8px;margin:6px 0 0}
+  .opts{gap:6px;margin:6px 0 2px}
+  .opt{padding:8px 12px}
+  .solmc{margin-top:6px}
+  .answer{margin:6px 0}
+  .fb{padding:7px 12px;margin-top:7px;font-size:.96rem}
+  .heft{padding:10px 14px;margin:10px 0 4px}
+  .heft .duo{gap:8px;margin-top:6px}
+  .mono4{gap:5px;margin-top:6px}
+  .sliderbox{margin:0 0 6px}
+  .scale{height:26px;margin-top:-6px}
+  .scale span{line-height:1.25}
+  .valbox{padding:6px 12px;margin:2px 0 6px}
+  .valbox .vnum{font-size:1.32rem}
+  .vals{gap:6px;margin:4px 0 0}
+  .forsch{padding:8px 12px;margin:7px 0}
+  .solved{padding:6px 12px;margin:6px 0;font-size:.95rem}
+  .completed-summary{margin:6px 0}
+  .prot{gap:4px;margin:6px 0 0}
+  .protline{padding:3px 9px;font-size:.93rem}
+  .legend{margin:3px 0 0;gap:12px}
+  .figcap{margin-top:2px;font-size:.88rem}
+  .gstep{padding-top:7px;margin-top:7px}
+  .minigrid{gap:7px;margin:7px 0 0}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .bar i{transition:none}
+}
+@media print{footer.nav,header.top{position:static}}
+
+/* ============ Ergaenzungen fuer II.1/II.2 ============ */
+:root{--footH:0px}
+.wrap{padding-bottom:40px}
+.hidden{display:none !important}
+.fr{display:inline-block;vertical-align:middle;text-align:center;line-height:1.18;margin:0 .14em}
+.fr>span{display:block;padding:0 .22em}
+.fr>.n{border-bottom:1.5px solid currentColor}
+.fr>.d{padding-top:1px}
+.balls,.urn{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.ball{
+  display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  border-radius:50%;border:2px solid;font-weight:700;font-size:.95rem;line-height:1;flex:0 0 auto;
+}
+.ball.g{background:#f4c542;border-color:#9a7400;color:#4d3a00}
+.ball.b{background:#7fb2e0;border-color:#1f5f94;color:#0d2f4d}
+.ball.r{background:#ef8a80;border-color:#a8362b;color:#5a1510}
+.ball.sm{width:26px;height:26px;font-size:.8rem}
+.urn{
+  border:2px solid #9fb8cd;border-top-color:#cfdbe6;border-radius:6px 6px 30px 30px;
+  padding:10px 12px 12px;min-height:58px;background:#f4f9fd;max-width:250px;margin:4px auto 6px;
+}
+.urn .leer{color:var(--ink-soft);font-size:.9rem;align-self:center}
+.urncap{text-align:center;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);font-weight:650}
+.tray{display:flex;align-items:center;justify-content:center;gap:8px;min-height:38px;margin:2px 0 6px}
+.tray .small{margin:0}
+.nextrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px}
+.locknote{font-size:.88rem;color:var(--hint);font-weight:600;display:none}
+.locknote.show{display:inline}
+.keys{display:flex;gap:6px;margin:0 0 6px}
+.keys button{min-width:46px;min-height:42px;border:1.5px solid var(--line);background:#fff;border-radius:8px;
+  font-size:1.05rem;font-weight:600;color:var(--accent);cursor:pointer}
+.keys button:active{background:var(--accent-soft)}
+input[type=text].wide{width:150px}
+.treebox svg{max-height:var(--gH)}
+.tnode{cursor:pointer}
+.tnode:focus-visible{outline:none}
+.tnode:focus-visible .nring{stroke:#1f4e79;stroke-width:3}
+.treetools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 6px}
+.teacher{margin:22px 0 0;font-size:.9rem;color:var(--ink-soft)}
+.teacher summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.teacher p{max-width:74ch}
+.drawlog{min-height:1.5em}
+.nodeurn{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;background:#fff;padding:7px 12px;margin:6px 0}
+.nodeurn .t{font-size:.85rem;color:var(--ink-soft);margin-bottom:4px}
+.nodeurn .urn{margin:2px 0;max-width:none;justify-content:flex-start;border:0;background:transparent;padding:0;min-height:0}
+.simline{font-size:.93rem;margin:6px 0}
+.endbox{display:none}
+.endbox.on{display:block}
+.mini{max-width:420px;margin:6px auto}
+.pair{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pair>*{min-width:0}
+
+.task>div{margin-top:10px}
+.task>div:first-child{margin-top:0}
+
+/* ============ iPad-Optimierung ============ */
+html{touch-action:manipulation;-webkit-touch-callout:none}
+button,.opt,.modebtn,.keys button,svg,.tnode{
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap,.top-inner{
+  padding-left:max(clamp(12px,2vw,20px),env(safe-area-inset-left));
+  padding-right:max(clamp(12px,2vw,20px),env(safe-area-inset-right));
+}
+body.kb .wrap{padding-bottom:55vh}
+.modebtn{min-height:48px}
+.keys button{min-height:46px;min-width:50px}
+.opt{min-height:50px}
+
+/* ============ Simulationsfeld Station 5 ============ */
+.simbox{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px;margin-top:10px}
+.simtop{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.simcount{font-size:.95rem;display:flex;align-items:center;gap:10px;min-height:36px;font-variant-numeric:tabular-nums}
+.simcount .balls{gap:4px;min-width:62px}
+.simcount .ball{width:28px;height:28px;font-size:.85rem}
+.simmain{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:8px}
+.simgrid{display:grid;grid-template-columns:repeat(10,13px);gap:3px}
+.dot{width:13px;height:13px;border-radius:50%;background:#e5eaf0;display:block}
+.dot.on{animation:dotpop .22s ease-out}
+.simtally{display:flex;flex-direction:column;gap:3px;font-size:.95rem;min-width:110px}
+.trow{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.trow .sw{width:13px;height:13px;border-radius:3px;flex:0 0 auto}
+.trow .tl{min-width:52px}
+.trow .tn{font-weight:700;min-width:2ch;text-align:right}
+.trow.key .tl,.trow.key .tn{color:#9a3412}
+.simline{font-size:.92rem;margin-top:8px;min-height:1.2em}
+.balls .ball{animation:dotpop .15s ease-out}
+@keyframes dotpop{from{transform:scale(.3);opacity:.2}to{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.dot.on,.balls .ball{animation:none}}
+
+.simside{display:flex;flex-direction:column;gap:6px;flex:1 1 170px;min-width:0}
+.simmain{align-items:flex-start}
+.simline{margin-top:0}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="kapitel">II. Zusammengesetzte Zufallsexperimente und stochastische Simulationen</div>
+    <div class="titel">II.3 Die 2. Pfadregel, das Gegenereignis und „mindestens“<span class="tmode" id="tmode">Lehrermodus</span></div>
+    <ul class="steps stepsbar" id="steps"></ul>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= STATION 1 ================= -->
+<section class="station active" data-nr="1">
+  <h2>Ein Ereignis, mehrere Pfade</h2>
+  <div class="meta">Station 1 von 7 · etwa 5 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urne</div>
+        <div class="urn" id="urn1" aria-label="Urne mit Kugeln"></div>
+        <div class="treebox" id="tree1"></div>
+        <div class="figcap">Zweimal ziehen ohne Zurücklegen</div>
+      </div>
+      <div class="task">
+        <p class="lead">In der Urne liegen <strong>3 gelbe</strong> und <strong>2 blaue</strong> Kugeln. Du ziehst zweimal
+          <strong>ohne</strong> Zurücklegen. Das <strong>Ereignis E</strong> lautet:
+          „Es wird <strong>genau eine</strong> gelbe Kugel gezogen.“</p>
+        <div id="pk1"></div>
+        <div id="s1b" class="stage">
+          <div class="heft">
+            <div class="h">MERKE</div>
+            <p>Ein <strong>Ereignis</strong> besteht aus einem oder mehreren Ergebnissen. Im Baumdiagramm gehören zu
+              einem Ereignis ein oder mehrere <strong>Pfade</strong>.</p>
+          </div>
+          <div id="nt1"></div>
+        </div>
+        <div id="s1c" class="stage"><div id="mc1"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="0">Weiter zu Station 2</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+<!-- ================= STATION 2 ================= -->
+<section class="station" data-nr="2">
+  <h2>Die 2. Pfadregel</h2>
+  <div class="meta">Station 2 von 7 · etwa 7 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="treebox" id="tree2"></div>
+        <div class="figcap">Rot: die Pfade des Ereignisses E („genau eine gelbe Kugel“)</div>
+      </div>
+      <div class="task">
+        <p class="lead">Dieselbe Urne, dasselbe Ereignis E. Zu E gehören <strong>zwei</strong> Pfade. Berechne zuerst ihre
+          Wahrscheinlichkeiten mit der 1. Pfadregel.</p>
+        <div id="nt2a"></div>
+        <div id="s2b" class="stage"><div id="nt2b"></div></div>
+        <div id="s2c" class="stage"><div id="nt2c"></div></div>
+        <div id="s2d" class="stage"><div id="mc2"></div></div>
+        <div id="s2e" class="stage">
+          <div class="heft">
+            <div class="h">MERKE: 2. PFADREGEL</div>
+            <p>Die Wahrscheinlichkeit eines Ereignisses ist die <strong>Summe</strong> der Wahrscheinlichkeiten
+              aller Pfade, die zu dem Ereignis gehören.</p>
+            <p class="mf">Entlang eines Pfades <strong>multiplizieren</strong>, bei mehreren Pfaden <strong>addieren</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="1">Weiter zu Station 3</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+<!-- ================= STATION 3 ================= -->
+<section class="station" data-nr="3">
+  <h2>Die 2. Pfadregel anwenden</h2>
+  <div class="meta">Station 3 von 7 · etwa 7 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap" id="urncap3">Urne</div>
+        <div class="urn" id="urn3" aria-label="Urne mit Kugeln"></div>
+        <div class="treebox" id="tree3"></div>
+        <div class="treebox mini hidden" id="wheel3"></div>
+        <div class="figcap" id="cap3">Zweimal ziehen mit Zurücklegen</div>
+      </div>
+      <div class="task">
+        <p class="lead">Jetzt wird <strong>mit</strong> Zurücklegen gezogen. Das Ereignis F lautet:
+          „Beide Kugeln haben <strong>dieselbe Farbe</strong>.“</p>
+        <div id="pk3"></div>
+        <div id="s3b" class="stage"><div id="nt3a"></div></div>
+        <div id="s3c" class="stage">
+          <p>Nun ein anderes Zufallsexperiment: das <strong>Glücksrad</strong> aus dem ersten Lernpfad wird <strong>zweimal</strong> gedreht.
+            Ohne Baum: Überlege dir selbst, welche Pfade zum Ereignis gehören.</p>
+          <div id="nt3b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="2">Weiter zu Station 4</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+<!-- ================= STATION 4 ================= -->
+<section class="station" data-nr="4">
+  <h2>Das Gegenereignis</h2>
+  <div class="meta">Station 4 von 7 · etwa 7 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urne</div>
+        <div class="urn" id="urn4" aria-label="Urne mit Kugeln"></div>
+        <div class="treebox" id="tree4"></div>
+        <div class="figcap" id="cap4">Zweimal ziehen mit Zurücklegen</div>
+      </div>
+      <div class="task">
+        <p class="lead">Wieder wird zweimal <strong>mit</strong> Zurücklegen gezogen. Das Ereignis E lautet:
+          „Es wird <strong>mindestens eine blaue</strong> Kugel gezogen.“ Alle Pfade von E sind rot.</p>
+        <div id="mc4a"></div>
+        <div id="s4b" class="stage"><div id="nt4a"></div></div>
+        <div id="s4c" class="stage"><div id="nt4b"></div></div>
+        <div id="s4d" class="stage">
+          <div class="heft">
+            <div class="h">MERKE: GEGENEREIGNIS</div>
+            <p>Das <strong>Gegenereignis</strong> <span class="mf"><i>Ē</i></span> besteht aus allen Pfaden, die <em>nicht</em> zu E gehören.
+              E und <i>Ē</i> zusammen ergeben alle Pfade, also die Wahrscheinlichkeit 1.</p>
+            <p class="mf"><i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>)</p>
+          </div>
+          <div id="mc4b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="3">Weiter zu Station 5</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+<!-- ================= STATION 5 ================= -->
+<section class="station" data-nr="5">
+  <h2>„Mindestens“ mit dem Gegenereignis</h2>
+  <div class="meta">Station 5 von 7 · etwa 8 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urnenmodell für einen Würfel</div>
+        <div class="urn" id="urn5" aria-label="Urne mit einer gelben und fünf blauen Kugeln"></div>
+        <div class="treebox" id="tree5"></div>
+        <div class="figcap">Dreimal würfeln: gelb steht für „6“, blau für „keine 6“</div>
+      </div>
+      <div class="task">
+        <p class="lead">Ein Würfel wird <strong>dreimal</strong> geworfen. Das Ereignis E lautet:
+          „Es fällt <strong>mindestens eine 6</strong>.“ Als Modell dient die Urne links:
+          eine gelbe Kugel für die 6, fünf blaue für die anderen Zahlen.</p>
+        <div id="nt5a"></div>
+        <div id="s5b" class="stage"><div id="nt5b"></div></div>
+        <div id="s5c" class="stage"><div id="mc5"></div></div>
+        <div id="s5d" class="stage">
+          <p class="small">Zum Üben: Hier brauchst du keinen Baum mehr, der Pfad des Gegenereignisses genügt.</p>
+          <div id="nt5c"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="4">Weiter zu Station 6</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+<!-- ================= STATION 6 ================= -->
+<section class="station" data-nr="6">
+  <h2>„Genau“, „mindestens“, „höchstens“</h2>
+  <div class="meta">Station 6 von 7 · etwa 7 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urne</div>
+        <div class="urn" id="urn6" aria-label="Urne mit Kugeln"></div>
+        <div class="treebox" id="tree6"></div>
+        <div class="figcap">Dreimal ziehen mit Zurücklegen</div>
+      </div>
+      <div class="task">
+        <p class="lead">Aus der Urne wird <strong>dreimal mit</strong> Zurücklegen gezogen. Das Ereignis G lautet:
+          „Es wird <strong>höchstens eine</strong> gelbe Kugel gezogen.“</p>
+        <div id="pk6"></div>
+        <div id="s6b" class="stage"><div id="mc6"></div></div>
+        <div id="s6c" class="stage"><div id="nt6"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="nextrow"><button class="btn nextbtn" type="button" data-st="5">Weiter zu Station 7</button>
+    <span class="locknote">Löse zuerst alle Aufgaben dieser Station.</span></div>
+</section>
+<!-- ================= STATION 7 ================= -->
+<section class="station" data-nr="7">
+  <h2>Abschlusscheck</h2>
+  <div class="meta">Station 7 von 7 · etwa 6 Minuten</div>
+  <div class="card">
+    <div class="work stick">
+      <div class="viz">
+        <div class="urncap">Urne für die Aufgaben 1 und 2</div>
+        <div class="urn" id="urn7"></div>
+        <div class="figcap">2 rote und 3 blaue Kugeln</div>
+      </div>
+      <div class="task">
+        <p class="lead">Zeige, was du in diesem Lernpfad gelernt hast.</p>
+        <div id="nt7a"></div>
+        <div id="s7b" class="stage"><div id="nt7b"></div></div>
+        <div id="s7c" class="stage"><div id="mc7"></div></div>
+        <div id="s7d" class="stage"><div id="nt7c"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="endbox" id="end7">
+    <div class="heft">
+      <div class="h">DAS HAST DU GELERNT</div>
+      <p><strong>1. Pfadregel:</strong> Entlang eines Pfades werden die Wahrscheinlichkeiten <strong>multipliziert</strong>.</p>
+      <p><strong>2. Pfadregel:</strong> Gehören zu einem Ereignis mehrere Pfade, werden deren Wahrscheinlichkeiten <strong>addiert</strong>.</p>
+      <p><strong>Gegenereignis:</strong> <span class="mf"><i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>)</span>. Besonders nützlich bei „<strong>mindestens</strong> ein …“:
+        Das Gegenereignis ist „kein …“ und hat nur einen Pfad.</p>
+    </div>
+    <div class="btnrow"><button class="btn ghost" type="button" id="restart">Lernpfad neu starten</button></div>
+  </div>
+
+  <details class="teacher">
+    <summary>Für Lehrkräfte</summary>
+    <p>Der Lernpfad deckt das Schulbuchkapitel II.3 (2. Pfadregel, Gegenereignis, „mindestens“) ab,
+      Arbeitszeit etwa 45 Minuten. Voraussetzung ist der Lernpfad II.1/II.2. Es wird nichts gespeichert.</p>
+    <p>Lehrermodus: Die Adresse um <code>?teacher=1</code> ergänzen. Dann sind alle Stationen und Aufgaben
+      sofort sichtbar, die Aufgaben bleiben ungelöst, „Lösung anzeigen“ steht sofort zur Verfügung.
+      „Lernpfad neu starten“ lädt die Seite neu und bleibt im Lehrermodus.</p>
+  </details>
+</section>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   Grundlagen
+   ========================================================= */
+var TEACHER=/(^|[?&])teacher=1(&|$)/.test(window.location.search);
+if(TEACHER){ var tm0=document.getElementById("tmode"); if(tm0) tm0.classList.add("on"); }
+var NS="http://www.w3.org/2000/svg";
+function $(id){return document.getElementById(id);}
+function el(name,attrs,parent){
+  var e=document.createElementNS(NS,name);
+  for(var k in attrs){ if(attrs.hasOwnProperty(k)) e.setAttribute(k,attrs[k]); }
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent,s,attrs){ var t=el("text",attrs,parent); t.textContent=s; return t; }
+function cp(o){ var r={}; for(var k in o){ if(o.hasOwnProperty(k)) r[k]=o[k]; } return r; }
+function num(v,dec){
+  if(dec===undefined) dec=4;
+  if(!isFinite(v)) return "—";
+  var s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){ s=s.replace(/0+$/,""); s=s.replace(/\.$/,""); }
+  return s.replace(".",",");
+}
+function F(n,d){ return '<span class="fr"><span class="n">'+n+'</span><span class="d">'+d+'</span></span>'; }
+function nb(s){ return String(s).replace(/; /g,";\u00A0"); }
+function P(s){ return '<i>P</i>('+nb(s)+')'; }
+function parseVal(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-").replace(/,/g,".");
+  if(!s) return {v:NaN};
+  var pct=false;
+  if(/%$/.test(s)){ pct=true; s=s.slice(0,-1); }
+  var re=/^[0-9]*\.?[0-9]+$/;
+  if(s.indexOf("/")>=0){
+    var p=s.split("/");
+    if(p.length!==2 || !re.test(p[0]) || !re.test(p[1]) || Number(p[1])===0) return {v:NaN};
+    return {v:(Number(p[0])/Number(p[1]))/(pct?100:1), frac:true};
+  }
+  if(!re.test(s)) return {v:NaN};
+  var v=Number(s); if(pct) v=v/100;
+  return {v:v};
+}
+function measureChrome(){
+  var h=document.querySelector("header.top");
+  if(h) document.documentElement.style.setProperty("--headH", h.offsetHeight+"px");
+}
+function smooth(e){
+  try{
+    var rm=window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    e.scrollIntoView({block:"nearest",behavior:rm?"auto":"smooth"});
+  }catch(x){}
+}
+
+/* Freischaltung innerhalb einer Station (im Lehrermodus ist alles sichtbar) */
+function lock(id){ if(!TEACHER) $(id).classList.add("hidden"); }
+function open(id){ var e=$(id); e.classList.remove("hidden"); measureChrome(); }
+
+/* =========================================================
+   Stationsnavigation
+   ========================================================= */
+var sections=document.querySelectorAll(".station");
+var TOTAL=sections.length;
+var need=[3,4,3,4,4,3,4], got=[], done=[], cur=0, maxReached=0;
+for(var _i=0;_i<TOTAL;_i++){ got.push(0); done.push(false); }
+
+function buildSteps(){
+  var ul=$("steps");
+  for(var i=0;i<TOTAL;i++){
+    (function(i){
+      var li=document.createElement("li");
+      var b=document.createElement("button");
+      b.type="button";
+      b.setAttribute("data-nr",(i+1));
+      b.setAttribute("aria-label","Station "+(i+1));
+      b.onclick=function(){ if(TEACHER || i<=maxReached) go(i); };
+      li.appendChild(b); ul.appendChild(li);
+    })(i);
+  }
+}
+function render(){
+  for(var i=0;i<TOTAL;i++) sections[i].classList.toggle("active", i===cur);
+  var btns=$("steps").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active", j===cur);
+    btns[j].classList.toggle("done", !TEACHER && done[j] && j!==cur);
+    btns[j].disabled = !TEACHER && j>maxReached;
+    btns[j].style.cursor = (!TEACHER && j>maxReached) ? "default" : "pointer";
+  }
+  updateNext(); measureChrome(); window.scrollTo(0,0);
+  redrawTrees();
+}
+function redrawTrees(){
+  var L=TREES[cur]||[];
+  for(var i=0;i<L.length;i++) L[i].draw();
+}
+var TREES=[[],[],[],[],[],[],[]];
+function updateNext(){
+  var nb=document.querySelectorAll(".nextbtn");
+  for(var i=0;i<nb.length;i++){
+    var st=Number(nb[i].getAttribute("data-st"));
+    var free=TEACHER || done[st];
+    nb[i].disabled=!free;
+    var ln=nb[i].parentNode.querySelector(".locknote");
+    if(ln) ln.classList.toggle("show", !free);
+  }
+}
+function setDone(i){
+  done[i]=true;
+  updateNext();
+  var btns=$("steps").querySelectorAll("button");
+  if(btns[i]) btns[i].classList.toggle("done", !TEACHER && i!==cur);
+  if(i===TOTAL-1){ $("end7").classList.add("on"); smooth($("end7")); }
+}
+function ok(i){ got[i]++; if(got[i]>=need[i] && !done[i]) setDone(i); }
+function go(i){
+  if(i<0||i>=TOTAL) return;
+  cur=i;
+  if(!TEACHER && cur>maxReached) maxReached=cur;
+  render();
+}
+(function(){
+  var nb=document.querySelectorAll(".nextbtn");
+  for(var i=0;i<nb.length;i++){
+    (function(b){
+      b.onclick=function(){
+        var st=Number(b.getAttribute("data-st"));
+        if(TEACHER || done[st]) go(st+1);
+      };
+    })(nb[i]);
+  }
+  $("restart").onclick=function(){ window.location.reload(); };
+})();
+
+/* =========================================================
+   Multiple Choice (gestufte Hilfen)
+   ========================================================= */
+/* Die richtige Antwort steht nicht immer an derselben Stelle: Die Reihenfolge wird
+   bei jedem Laden gemischt. Zwei Aufgaben hintereinander haben die richtige Antwort
+   nie an gleicher Stelle, und Position A ist höchstens zweimal richtig. */
+var MCSTATE={last:-1,zero:0};
+function mc(hostId,question,opts0,correct0,hint2,onSolved){
+  var n=opts0.length, ord, pos, tries=0;
+  do{
+    ord=[]; for(var i=0;i<n;i++) ord.push(i);
+    for(var j=n-1;j>0;j--){ var r=Math.floor(Math.random()*(j+1)); var t=ord[j]; ord[j]=ord[r]; ord[r]=t; }
+    pos=ord.indexOf(correct0); tries++;
+  } while(((pos===MCSTATE.last)||(pos===0&&MCSTATE.zero>=2)) && tries<80);
+  MCSTATE.last=pos; if(pos===0) MCSTATE.zero++;
+  var shown=ord.map(function(k){ return opts0[k]; });
+  mcRaw(hostId,question,shown,pos,hint2,onSolved);
+}
+function mcRaw(hostId,question,options,correctIdx,hint2,onSolved){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(question){ var qp=document.createElement("p"); qp.className="q"; qp.innerHTML=question; host.appendChild(qp); }
+  var wrap=document.createElement("div"); wrap.className="opts"; host.appendChild(wrap);
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost solmc";
+  solBtn.textContent="Lösung anzeigen"; solBtn.style.display=TEACHER?"inline-block":"none";
+  host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+  var solved=false, wrongCount=0;
+  function lockAll(){ var all=wrap.querySelectorAll(".opt"); for(var k=0;k<all.length;k++) all[k].disabled=true; }
+  function finish(selbst){ solved=true; solBtn.style.display="none"; lockAll(); if(onSolved) onSolved(!!selbst); }
+  solBtn.onclick=function(){
+    if(solved) return;
+    wrap.querySelectorAll(".opt")[correctIdx].classList.add("chosen-ok");
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+options[correctIdx].t+(options[correctIdx].ok?"<br>"+options[correctIdx].ok:"");
+    finish(false); measureChrome();
+  };
+  options.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="opt"; b.type="button";
+    b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+    b.onclick=function(){
+      if(solved) return;
+      if(i===correctIdx){
+        b.classList.add("chosen-ok");
+        fb.className="fb ok show";
+        fb.innerHTML="<strong>Richtig.</strong> "+(o.ok||"");
+        finish(true);
+      } else {
+        b.classList.add("chosen-no"); b.disabled=true; wrongCount++;
+        fb.className="fb hint show";
+        if(wrongCount===1){
+          fb.innerHTML="<strong>Noch nicht.</strong> "+(o.no||"Überlege noch einmal.");
+        } else {
+          fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hint2||o.no||"Überlege noch einmal.");
+          solBtn.style.display="inline-block";
+        }
+      }
+      measureChrome();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* =========================================================
+   Eingabeaufgabe (Zahl, Bruch oder Prozent) mit gestuften Hilfen
+   cfg: question, pre, correct, tol, hints[2], ok, solution, keys, onSolved
+   ========================================================= */
+function numTask(hostId,cfg){
+  var host=$(hostId);
+  host.innerHTML="";
+  if(cfg.pre){ var pp=document.createElement("div"); pp.innerHTML=cfg.pre; host.appendChild(pp); }
+  if(cfg.question){ var qp=document.createElement("p"); qp.className="q"; qp.innerHTML=cfg.question; host.appendChild(qp); }
+  var row=document.createElement("div"); row.className="answer";
+  if(cfg.lead){ var lw=document.createElement("span"); lw.className="mf"; lw.style.fontSize="1.1rem"; lw.innerHTML=cfg.lead; row.appendChild(lw); }
+  var inp=document.createElement("input");
+  inp.type="text"; inp.setAttribute("inputmode",cfg.keys?"text":"numeric");
+  inp.setAttribute("autocomplete","off"); inp.setAttribute("autocapitalize","off"); inp.setAttribute("autocorrect","off");
+  inp.setAttribute("spellcheck","false"); inp.setAttribute("enterkeyhint","done");
+  inp.setAttribute("aria-label",cfg.aria||"Antwort eingeben");
+  if(cfg.keys) inp.className="wide";
+  row.appendChild(inp);
+  var btn=document.createElement("button"); btn.className="btn"; btn.type="button"; btn.textContent="Prüfen";
+  row.appendChild(btn);
+  host.appendChild(row);
+  if(cfg.keys){
+    var kr=document.createElement("div"); kr.className="keys";
+    ["/",",","%"].forEach(function(ch){
+      var kb=document.createElement("button"); kb.type="button"; kb.textContent=ch;
+      kb.setAttribute("aria-label",ch==="/"?"Bruchstrich":(ch===","?"Komma":"Prozentzeichen"));
+      kb.addEventListener("mousedown",function(e){ e.preventDefault(); });
+      kb.onclick=function(){
+        if(inp.disabled) return;
+        var a=inp.selectionStart, b2=inp.selectionEnd;
+        if(typeof a!=="number"){ inp.value+=ch; }
+        else { inp.value=inp.value.slice(0,a)+ch+inp.value.slice(b2); inp.selectionStart=inp.selectionEnd=a+1; }
+        try{ inp.focus(); }catch(e){}
+      };
+      kr.appendChild(kb);
+    });
+    host.appendChild(kr);
+  }
+  var solBtn=document.createElement("button");
+  solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display=TEACHER?"inline-block":"none"; host.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+  var solved=false, wrong=0, hints=cfg.hints||[];
+  function istRichtig(r){
+    var tol=r.frac?1e-9:(cfg.tol!==undefined?cfg.tol:1e-9);
+    return Math.abs(r.v-cfg.correct)<=tol && !(cfg.correct>0 && r.v<=0);
+  }
+  function finish(selbst){
+    solved=true; try{ inp.blur(); }catch(e){} inp.disabled=true; btn.disabled=true; solBtn.style.display="none";
+    inp.classList.remove("no"); inp.classList.add("ok");
+    if(cfg.onSolved) cfg.onSolved(!!selbst);
+    measureChrome();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    fb.className="fb sol show";
+    fb.innerHTML="<strong>Lösung:</strong> "+(cfg.solution||num(cfg.correct,4));
+    finish(false);
+  };
+  function check(){
+    if(solved) return;
+    var r=parseVal(inp.value);
+    if(isNaN(r.v)){
+      fb.className="fb hint show";
+      fb.innerHTML="Gib eine Zahl ein, zum Beispiel <strong>3/5</strong>, <strong>0,6</strong> oder <strong>60 %</strong>.";
+      measureChrome(); return;
+    }
+    if(istRichtig(r)){
+      fb.className="fb ok show";
+      fb.innerHTML="<strong>Richtig.</strong> "+(cfg.ok||"");
+      finish(true);
+    } else {
+      wrong++; inp.classList.add("no");
+      fb.className="fb hint show";
+      if(wrong===1) fb.innerHTML="<strong>Noch nicht.</strong> "+(hints[0]||"Prüfe deine Überlegung noch einmal.");
+      else { fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(hints[1]||hints[0]||"Prüfe deine Überlegung noch einmal."); solBtn.style.display="inline-block"; }
+      measureChrome();
+    }
+  }
+  btn.onclick=check;
+  inp.addEventListener("input",function(){ inp.classList.remove("no"); });
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+}
+
+/* =========================================================
+   Kugeln und Urnen (HTML)
+   ========================================================= */
+function ball(c,small){
+  var s=document.createElement("span");
+  s.className="ball "+c+(small?" sm":"");
+  s.textContent=c; s.setAttribute("aria-hidden","true");
+  return s;
+}
+function fillBalls(host,counts,order,small){
+  host.innerHTML="";
+  var n=0;
+  order.forEach(function(c){ for(var i=0;i<(counts[c]||0);i++){ host.appendChild(ball(c,small)); n++; } });
+  if(!n){ var l=document.createElement("span"); l.className="leer"; l.textContent="leer"; host.appendChild(l); }
+}
+var NAMES={g:"gelb",b:"blau",r:"rot"};
+
+/* =========================================================
+   SVG-Bausteine: Bruchbeschriftung
+   ========================================================= */
+function fracLabel(g,x,y,n,d,fill){
+  var H={"stroke":"#fff","stroke-width":"4.5","stroke-linejoin":"round","paint-order":"stroke"};
+  var bw=Math.max(String(n).length,String(d).length)*4.4+5;
+  el("line",{x1:x-bw,x2:x+bw,y1:y-4,y2:y-4,stroke:"#fff","stroke-width":"4"},g);
+  var a={"text-anchor":"middle","font-size":"13","font-weight":"600",fill:fill||"#1b2430"};
+  var t1=txt(g,String(n),a); t1.setAttribute("x",x); t1.setAttribute("y",y-7);
+  var t2=txt(g,String(d),a); t2.setAttribute("x",x); t2.setAttribute("y",y+10);
+  [t1,t2].forEach(function(t){ for(var k in H) t.setAttribute(k,H[k]); });
+  el("line",{x1:x-bw+1,x2:x+bw-1,y1:y-4,y2:y-4,stroke:fill||"#1b2430","stroke-width":"1.3"},g);
+}
+function edgeLabel(g,x,y,v,hl){
+  var col=hl?"#9a3412":"#1b2430";
+  if(v===null||v===undefined||v==="") return;
+  if(typeof v==="object") fracLabel(g,x,y,v.n,v.d,col);
+  else if(v==="?"){
+    var t=txt(g,"?",{x:x,y:y+5,"text-anchor":"middle","font-size":"16","font-weight":"700",fill:"#b45309",
+      stroke:"#fff","stroke-width":"4.5","paint-order":"stroke","stroke-linejoin":"round"});
+  } else {
+    txt(g,String(v),{x:x,y:y+5,"text-anchor":"middle","font-size":"13","font-weight":"600",fill:col,
+      stroke:"#fff","stroke-width":"4.5","paint-order":"stroke","stroke-linejoin":"round"});
+  }
+}
+var CFILL={g:"#f4c542",b:"#7fb2e0",r:"#ef8a80"};
+var CSTRK={g:"#9a7400",b:"#1f5f94",r:"#a8362b"};
+var CTXT={g:"#4d3a00",b:"#0d2f4d",r:"#5a1510"};
+
+/* =========================================================
+   Baumdiagramm (waagerecht, Urnenexperiment)
+   cfg: urn, order, stages, replace, edge(kid,parent), hl, leafText,
+        onNode(node), sel, nodeText(path), W, rowH, label
+   ========================================================= */
+function Tree(host,cfg){
+  var self={cfg:cfg};
+  function build(urn,depth,path){
+    var node={path:path,urn:cp(urn),kids:[],depth:depth};
+    if(depth>=cfg.stages) return node;
+    var tot=0,k; for(k in urn) if(urn.hasOwnProperty(k)) tot+=urn[k];
+    for(var i=0;i<cfg.order.length;i++){
+      var c=cfg.order[i]; if(!urn[c]) continue;
+      var u=cp(urn); if(!cfg.replace) u[c]--;
+      var kid=build(u,depth+1,path+c);
+      kid.color=c; kid.edge={n:urn[c],d:tot};
+      node.kids.push(kid);
+    }
+    return node;
+  }
+  self.draw=function(){
+    host.innerHTML="";
+    var root=build(cfg.urn,0,"");
+    var leaves=[];
+    (function coll(n){ if(!n.kids.length) leaves.push(n); else n.kids.forEach(coll); })(root);
+    var big=cfg.stages>=3;
+    var rowH=cfg.rowH||(big?46:72), top=24;
+    var W=cfg.W||(host.clientWidth>0?Math.max(340,Math.min(540,Math.round(host.clientWidth))):540);
+    var H=top*2+(leaves.length-1)*rowH;
+    var x0=24, leafW=cfg.leafW||(cfg.leafText?(cfg.stages>=3?78:56):(cfg.nodeText?20:18));
+    var dx=(W-x0-leafW-16)/cfg.stages;
+    var idx=0;
+    (function lay(n){
+      n.x=x0+n.depth*dx;
+      if(!n.kids.length){ n.y=top+idx*rowH; idx++; }
+      else { n.kids.forEach(lay); n.y=(n.kids[0].y+n.kids[n.kids.length-1].y)/2; }
+    })(root);
+    var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":cfg.label||"Baumdiagramm",
+      preserveAspectRatio:"xMidYMid meet"});
+    var gE=el("g",{},svg), gL=el("g",{},svg), gN=el("g",{},svg);
+    var hl=cfg.hl||"";
+    var LS=cfg.leafSel||{};
+    function onHl(path){
+      if(!path.length) return false;
+      if(hl && hl.indexOf(path)===0) return true;
+      for(var q in LS){ if(LS.hasOwnProperty(q) && LS[q] && q.indexOf(path)===0) return true; }
+      return false;
+    }
+    function edges(n){
+      n.kids.forEach(function(k){
+        var h=onHl(k.path);
+        el("line",{x1:n.x,y1:n.y,x2:k.x,y2:k.y,stroke:h?"#c2410c":"#64748b","stroke-width":h?3.6:1.6,
+          "stroke-linecap":"round"},gE);
+        if(cfg.edge){
+          var v=cfg.edge(k,n);
+          if(v!==null && v!==undefined){
+            var t=(k.depth>=2&&!big)?0.6:((big&&k.depth===cfg.stages)?0.72:0.5), ex=n.x+(k.x-n.x)*t, ey=n.y+(k.y-n.y)*t;
+            edgeLabel(gL,ex,ey,v,h);
+          }
+        }
+        edges(k);
+      });
+    }
+    edges(root);
+    function nodes(n){
+      var isRoot=!n.path.length, h=onHl(n.path);
+      var g=el("g",{"class":"tnode","data-path":n.path},gN);
+      if(isRoot){
+        var rt=cfg.nodeText?cfg.nodeText(""):null;
+        if(rt){
+          var rw=Math.max(30,rt.length*8+14);
+          el("rect",{x:n.x-rw/2,y:n.y-13,width:rw,height:26,rx:13,fill:"#fff",stroke:"#334155","stroke-width":1.6,"class":"nring"},g);
+          txt(g,rt,{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:"#1b2430"});
+        } else {
+          el("circle",{cx:n.x,cy:n.y,r:6,fill:"#334155","class":"nring"},g);
+        }
+      } else {
+        var s=cfg.nodeText?cfg.nodeText(n.path):null;
+        if(s){
+          var w=Math.max(30,s.length*7.6+16);
+          el("rect",{x:n.x-w/2,y:n.y-13,width:w,height:26,rx:13,fill:CFILL[n.color],stroke:h?"#c2410c":CSTRK[n.color],
+            "stroke-width":h?3:1.6,"class":"nring"},g);
+          txt(g,s,{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":"13","font-weight":"700",fill:CTXT[n.color]});
+        } else {
+          el("circle",{cx:n.x,cy:n.y,r:13,fill:CFILL[n.color],stroke:h?"#c2410c":CSTRK[n.color],
+            "stroke-width":h?3.4:1.6,"class":"nring"},g);
+          txt(g,n.color,{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:CTXT[n.color]});
+        }
+      }
+      if(cfg.sel===n.path && cfg.onNode){
+        el("circle",{cx:n.x,cy:n.y,r:19,fill:"none",stroke:"#1f4e79","stroke-width":2.4,"stroke-dasharray":"4 3"},g);
+      }
+      if(!n.kids.length && cfg.leafText){
+        var tup=(typeof cfg.leafText==="function")?cfg.leafText(n):"("+n.path.split("").join("; ")+")";
+        txt(g,tup,{x:n.x+(cfg.nodeText?26:19),y:n.y+5,"font-size":"13.5",fill:h?"#9a3412":"#1b2430","font-weight":h?"700":"500"});
+      }
+      if(cfg.onLeaf && !n.kids.length){
+        g.setAttribute("tabindex","0"); g.setAttribute("role","button");
+        g.setAttribute("aria-label","Pfad "+n.path.split("").join(", "));
+        g.setAttribute("aria-pressed",LS[n.path]?"true":"false");
+        el("rect",{x:n.x-16,y:n.y-Math.min(rowH,44)/2,width:leafW+34,height:Math.min(rowH,44),fill:"transparent"},g);
+        g.style.cursor="pointer";
+        (function(p){
+          g.addEventListener("click",function(){ cfg.onLeaf(p); });
+          g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cfg.onLeaf(p); } });
+        })(n.path);
+      }
+      if(cfg.onNode){
+        g.setAttribute("tabindex","0"); g.setAttribute("role","button");
+        g.setAttribute("aria-label","Knoten "+(n.path||"Start"));
+        el("circle",{cx:n.x,cy:n.y,r:24,fill:"transparent"},g);
+        g.addEventListener("click",function(){ cfg.onNode(n); });
+        g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); cfg.onNode(n); } });
+      }
+      n.kids.forEach(nodes);
+    }
+    nodes(root);
+    host.appendChild(svg);
+    self.root=root;
+  };
+  self.set=function(o){ for(var k in o){ if(o.hasOwnProperty(k)) cfg[k]=o[k]; } self.draw(); };
+  self.find=function(path){
+    var n=self.root; if(!path) return n;
+    for(var i=0;i<path.length;i++){
+      var c=path.charAt(i), nx=null;
+      for(var j=0;j<n.kids.length;j++){ if(n.kids[j].color===c) nx=n.kids[j]; }
+      if(!nx) return null; n=nx;
+    }
+    return n;
+  };
+  self.draw();
+  return self;
+}
+
+/* Kette: ein einzelner Pfad (Teilbaum) */
+function chainSVG(host,steps,opt){
+  host.innerHTML="";
+  opt=opt||{};
+  var W=opt.W||420, H=opt.H||120, x0=26, dx=(W-x0-40)/steps.length;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":opt.label||"Pfad im Baumdiagramm"});
+  var y=H/2-6;
+  for(var i=0;i<=steps.length;i++){
+    var x=x0+i*dx;
+    if(i<steps.length){
+      var x2=x+dx;
+      el("line",{x1:x,y1:y,x2:x2,y2:y,stroke:"#c2410c","stroke-width":3.4,"stroke-linecap":"round"},svg);
+      el("line",{x1:x,y1:y,x2:x+dx*0.5,y2:y+38,stroke:"#94a3b8","stroke-width":1.3,"stroke-dasharray":"4 4"},svg);
+      el("line",{x1:x,y1:y,x2:x+dx*0.5,y2:y-38,stroke:"#94a3b8","stroke-width":1.3,"stroke-dasharray":"4 4"},svg);
+    }
+  }
+  for(var j=0;j<steps.length;j++){
+    var xm=x0+j*dx+dx/2;
+    edgeLabel(svg,xm,y-15,steps[j].p,true);
+  }
+  for(var m=0;m<=steps.length;m++){
+    var xx=x0+m*dx;
+    if(m===0){ el("circle",{cx:xx,cy:y,r:6,fill:"#334155"},svg); continue; }
+    var c=steps[m-1].c;
+    if(CFILL[c]){
+      el("circle",{cx:xx,cy:y,r:13,fill:CFILL[c],stroke:"#c2410c","stroke-width":3},svg);
+      txt(svg,c,{x:xx,y:y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:CTXT[c]});
+    } else {
+      el("circle",{cx:xx,cy:y,r:13,fill:"#fff7ed",stroke:"#c2410c","stroke-width":3},svg);
+      txt(svg,c,{x:xx,y:y+5,"text-anchor":"middle","font-size":"14","font-weight":"700",fill:"#7c2d12"});
+    }
+  }
+  if(opt.cap){ txt(svg,opt.cap,{x:W/2,y:H-8,"text-anchor":"middle","font-size":"13.5",fill:"#4a5566"}); }
+  host.appendChild(svg);
+}
+
+/* Knoten mit k Aesten */
+function knotSVG(host,labels){
+  host.innerHTML="";
+  var k=labels.length, W=300, H=k===2?130:170;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Knoten mit "+k+" Ästen"});
+  var x0=40, y0=H/2, x1=W-52;
+  for(var i=0;i<k;i++){
+    var yy=24+i*((H-48)/(k-1));
+    el("line",{x1:x0,y1:y0,x2:x1,y2:yy,stroke:"#64748b","stroke-width":1.8,"stroke-linecap":"round"},svg);
+    el("circle",{cx:x1,cy:yy,r:9,fill:"#eaf1f8",stroke:"#1f4e79","stroke-width":1.6},svg);
+    var lx=x0+(x1-x0)*0.68, ly=y0+(yy-y0)*0.68;
+    edgeLabel(svg,lx,ly,labels[i],false);
+  }
+  el("circle",{cx:x0,cy:y0,r:8,fill:"#334155"},svg);
+  host.appendChild(svg);
+}
+
+/* Gluecksrad */
+function wheelSVG(host,sectors){
+  host.innerHTML="";
+  var S=260, cx=S/2, cy=S/2+10, R=100;
+  var svg=el("svg",{viewBox:"0 0 "+S+" "+(S+18),role:"img","aria-label":"Glücksrad mit den Feldern 1, 2 und 3"});
+  var ang=-Math.PI/2;
+  sectors.forEach(function(s){
+    var a2=ang+s.p*Math.PI*2;
+    var x1=cx+R*Math.cos(ang), y1=cy+R*Math.sin(ang), x2=cx+R*Math.cos(a2), y2=cy+R*Math.sin(a2);
+    var large=s.p>0.5?1:0;
+    el("path",{d:"M"+cx+","+cy+" L"+x1+","+y1+" A"+R+","+R+" 0 "+large+" 1 "+x2+","+y2+" Z",fill:s.fill,stroke:"#fff","stroke-width":3},svg);
+    var am=(ang+a2)/2;
+    txt(svg,String(s.label),{x:cx+R*0.62*Math.cos(am),y:cy+R*0.62*Math.sin(am)+8,"text-anchor":"middle","font-size":"26","font-weight":"700",fill:"#1b2430"});
+    ang=a2;
+  });
+  el("circle",{cx:cx,cy:cy,r:8,fill:"#fff",stroke:"#64748b","stroke-width":2},svg);
+  el("path",{d:"M"+(cx-9)+","+(cy-R-14)+" L"+(cx+9)+","+(cy-R-14)+" L"+cx+","+(cy-R+6)+" Z",fill:"#334155"},svg);
+  host.appendChild(svg);
+}
+
+/* =========================================================
+   Pfadauswahl: Ereignis im Baum durch Antippen der Pfade markieren
+   ========================================================= */
+function pickTask(hostId,tree,cfg){
+  var host=$(hostId); host.innerHTML="";
+  var qp=document.createElement("p"); qp.className="q"; qp.innerHTML=cfg.question; host.appendChild(qp);
+  var info=document.createElement("p"); info.className="small"; info.textContent="Tippe im Baum auf die Endpunkte (oder die Ergebnisse daneben). Ein zweiter Tipp nimmt die Markierung zurück.";
+  host.appendChild(info);
+  var row=document.createElement("div"); row.className="btnrow"; host.appendChild(row);
+  var btn=document.createElement("button"); btn.type="button"; btn.className="btn"; btn.textContent="Prüfen"; row.appendChild(btn);
+  var solBtn=document.createElement("button"); solBtn.type="button"; solBtn.className="btn ghost"; solBtn.textContent="Lösung anzeigen";
+  solBtn.style.display=TEACHER?"inline-block":"none"; row.appendChild(solBtn);
+  var fb=document.createElement("div"); fb.className="fb"; host.appendChild(fb);
+  var sel=tree.cfg.leafSel={}, solved=false, wrong=0;
+  function setSel(list){ sel={}; list.forEach(function(p){ sel[p]=true; }); tree.cfg.leafSel=sel; tree.draw(); }
+  function keys(){ var a=[]; for(var k in sel) if(sel.hasOwnProperty(k)&&sel[k]) a.push(k); return a.sort(); }
+  tree.cfg.onLeaf=function(p){ if(solved) return; sel[p]=!sel[p]; tree.cfg.leafSel=sel; tree.draw(); fb.className="fb"; fb.innerHTML=""; };
+  function finish(selbst){
+    solved=true; tree.cfg.onLeaf=null; btn.disabled=true; solBtn.style.display="none"; tree.draw();
+    if(cfg.onSolved) cfg.onSolved(!!selbst); measureChrome();
+  }
+  solBtn.onclick=function(){
+    if(solved) return;
+    setSel(cfg.correct);
+    fb.className="fb sol show"; fb.innerHTML="<strong>Lösung:</strong> "+(cfg.solution||""); finish(false);
+  };
+  btn.onclick=function(){
+    if(solved) return;
+    var a=keys(), c=cfg.correct.slice().sort();
+    if(a.length===0){ fb.className="fb hint show"; fb.innerHTML="Markiere zuerst mindestens einen Pfad."; measureChrome(); return; }
+    if(a.join()===c.join()){ fb.className="fb ok show"; fb.innerHTML="<strong>Richtig.</strong> "+(cfg.ok||""); finish(true); }
+    else {
+      wrong++; fb.className="fb hint show";
+      var msg=(a.length<c.length||a.some(function(p){ return c.indexOf(p)<0; }))?"":"";
+      if(wrong===1) fb.innerHTML="<strong>Noch nicht.</strong> "+(cfg.hints[0]||"");
+      else { fb.innerHTML="<strong>Noch ein Hinweis:</strong> "+(cfg.hints[1]||cfg.hints[0]||""); solBtn.style.display="inline-block"; }
+      measureChrome();
+    }
+  };
+}
+function frT(n,d){ return n+"/"+d; }
+function tupT(p){ return "("+p.split("").join("; ")+")"; }
+
+/* =========================================================
+   STATION 1: Ein Ereignis, mehrere Pfade
+   ========================================================= */
+fillBalls($("urn1"),{g:3,b:2},["g","b"],true);
+var tree1=Tree($("tree1"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:false,leafText:true,
+  edge:function(k){ return k.edge; },label:"Baumdiagramm: zweimal ziehen ohne Zurücklegen",leafSel:{}});
+lock("s1b"); lock("s1c");
+pickTask("pk1",tree1,{question:"Welche Pfade gehören zum Ereignis E („genau eine gelbe Kugel“)? Markiere sie.",
+  correct:["gb","bg"],
+  hints:["„Genau eine gelbe“ heißt: eine Kugel ist gelb, die andere blau. Die Reihenfolge ist egal.","Beide Pfade (g; b) und (b; g) gehören dazu. Die Pfade (g; g) und (b; b) haben zwei gleiche Farben."],
+  ok:"Zu E gehören die Ergebnisse (g; b) und (b; g). Also gehören zu E <strong>zwei Pfade</strong>.",
+  solution:"(g; b) und (b; g)",
+  onSolved:function(){ open("s1b"); smooth($("s1b")); ok(0); }});
+numTask("nt1",{question:"Das Ereignis E′ lautet „<strong>mindestens eine</strong> gelbe Kugel“. Wie viele Pfade gehören zu E′?",correct:3,
+  hints:["„Mindestens eine“ heißt: eine oder zwei gelbe Kugeln. Prüfe jeden der vier Pfade.","Nur der Pfad (b; b) hat keine gelbe Kugel. Die anderen drei Pfade zählen."],
+  ok:"Zu E′ gehören (g; g), (g; b) und (b; g). Nur (b; b) fehlt.",solution:"3 Pfade: (g; g), (g; b), (b; g).",
+  onSolved:function(){ open("s1c"); smooth($("s1c")); ok(0); }});
+mc("mc1","Welche der vier Pfade gehören zu dem Ereignis „höchstens eine gelbe Kugel“?",[
+  {t:"(g; b), (b; g) und (b; b)",ok:"„Höchstens eine“ heißt: keine oder eine gelbe Kugel."},
+  {t:"nur (g; g)",no:"Im Pfad (g; g) sind zwei gelbe Kugeln. Das sind mehr als eine."},
+  {t:"nur (b; b)",no:"Dieser Pfad gehört dazu. Aber „höchstens eine“ lässt auch genau eine gelbe zu."},
+  {t:"(g; g), (g; b) und (b; g)",no:"Das sind die Pfade für „mindestens eine gelbe Kugel“."}
+],0,"„Höchstens eine“ bedeutet: nicht mehr als eine gelbe Kugel, also keine oder genau eine.",function(){ ok(0); });
+
+/* =========================================================
+   STATION 2: Die 2. Pfadregel
+   ========================================================= */
+var S2={rev:{}};
+var tree2=Tree($("tree2"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:false,leafW:112,
+  leafText:function(n){ return tupT(n.path)+(S2.rev[n.path]?" = "+S2.rev[n.path]:""); },
+  edge:function(k){ return k.edge; },label:"Baumdiagramm mit markiertem Ereignis",leafSel:{gb:true,bg:true}});
+lock("s2b"); lock("s2c"); lock("s2d"); lock("s2e");
+numTask("nt2a",{keys:true,lead:P("g; b")+" = ",question:"Berechne die Wahrscheinlichkeit des Pfades (g; b) mit der 1. Pfadregel.",correct:3/10,
+  hints:["Multipliziere die Zahlen an den Ästen des Pfades.",F(3,5)+" · "+F(2,4)+": Zähler mal Zähler, Nenner mal Nenner."],
+  ok:P("g; b")+" = "+F(3,5)+" · "+F(2,4)+" = "+F(6,20)+" = "+F(3,10)+".",solution:"3/10 (= 0,3 = 30 %)",
+  onSolved:function(){ S2.rev.gb="3/10"; tree2.draw(); open("s2b"); smooth($("s2b")); ok(1); }});
+numTask("nt2b",{keys:true,lead:P("b; g")+" = ",question:"Und die Wahrscheinlichkeit des Pfades (b; g)?",correct:3/10,
+  hints:["Wieder die Zahlen am Pfad multiplizieren. Lies sie im Baum ab.",F(2,5)+" · "+F(3,4)],
+  ok:P("b; g")+" = "+F(2,5)+" · "+F(3,4)+" = "+F(6,20)+" = "+F(3,10)+".",solution:"3/10 (= 0,3 = 30 %)",
+  onSolved:function(){ S2.rev.bg="3/10"; tree2.draw(); open("s2c"); smooth($("s2c")); ok(1); }});
+numTask("nt2c",{keys:true,lead:P("E")+" = ",question:"Wie groß ist die Wahrscheinlichkeit des Ereignisses <strong>E</strong>? Zu E gehören beide rote Pfade.",correct:3/5,
+  hints:["E tritt ein, wenn der Pfad (g; b) <em>oder</em> der Pfad (b; g) vorkommt. Was macht man mit den beiden Wahrscheinlichkeiten?","Addiere: "+F(3,10)+" + "+F(3,10)+"."],
+  ok:P("E")+" = "+F(3,10)+" + "+F(3,10)+" = "+F(6,10)+" = "+F(3,5)+" = 0,6 = 60 %.",solution:"3/5 (= 0,6 = 60 %)",
+  onSolved:function(){ open("s2d"); smooth($("s2d")); ok(1); }});
+mc("mc2","Warum addiert man hier die Wahrscheinlichkeiten der beiden Pfade?",[
+  {t:"E tritt ein, wenn der eine <em>oder</em> der andere Pfad vorkommt. Beide gleichzeitig kann es nicht geben.",ok:"Die beiden Pfade sind verschiedene Ergebnisse. Ihre Wahrscheinlichkeiten werden zusammengezählt."},
+  {t:"Weil man bei Wahrscheinlichkeiten immer addiert.",no:"Entlang eines Pfades hast du doch multipliziert. Hier geht es um verschiedene Pfade."},
+  {t:"Weil die beiden Pfade zusammen die Wahrscheinlichkeit 1 haben.",no:"Die Summe ist 0,6, nicht 1. Alle vier Pfade zusammen haben die Summe 1."},
+  {t:"Weil man sonst eine Wahrscheinlichkeit größer als 1 erhalten würde.",no:"Das Produkt wäre kleiner, nicht größer. Der Grund ist ein anderer."}
+],0,"Es genügt, dass einer der beiden Pfade vorkommt. Überlege, was „oder“ für die Wahrscheinlichkeiten bedeutet.",function(){ open("s2e"); smooth($("s2e")); ok(1); });
+
+/* =========================================================
+   STATION 3: Die 2. Pfadregel anwenden
+   ========================================================= */
+fillBalls($("urn3"),{g:3,b:2},["g","b"],true);
+var tree3=Tree($("tree3"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:true,leafText:true,
+  edge:function(k){ return k.edge; },label:"Baumdiagramm: zweimal ziehen mit Zurücklegen",leafSel:{}});
+var WH3=[{label:1,p:1/3,fill:"#fde9a6"},{label:2,p:1/2,fill:"#bcd9f1"},{label:3,p:1/6,fill:"#f6c6c0"}];
+lock("s3b"); lock("s3c");
+pickTask("pk3",tree3,{question:"Welche Pfade gehören zum Ereignis F („beide Kugeln haben dieselbe Farbe“)? Markiere sie.",
+  correct:["gg","bb"],
+  hints:["Beide Kugeln gleich: beide gelb oder beide blau.","Es sind die Pfade (g; g) und (b; b)."],
+  ok:"Zu F gehören (g; g) und (b; b).",solution:"(g; g) und (b; b)",
+  onSolved:function(){ open("s3b"); smooth($("s3b")); ok(2); }});
+numTask("nt3a",{keys:true,lead:P("F")+" = ",question:"Wie groß ist die Wahrscheinlichkeit von <strong>F</strong>?",correct:13/25,
+  hints:["Berechne beide Pfade mit der 1. Pfadregel und addiere dann die Ergebnisse (2. Pfadregel).","P(g; g) = "+F(3,5)+" · "+F(3,5)+" = "+F(9,25)+" und P(b; b) = "+F(2,5)+" · "+F(2,5)+" = "+F(4,25)+"."],
+  ok:P("F")+" = "+F(9,25)+" + "+F(4,25)+" = "+F(13,25)+" = 0,52 = 52 %.",solution:"13/25 (= 0,52 = 52 %)",
+  onSolved:function(){
+    $("urn3").classList.add("hidden"); $("urncap3").classList.add("hidden"); $("tree3").classList.add("hidden");
+    $("wheel3").classList.remove("hidden"); wheelSVG($("wheel3"),WH3); $("cap3").textContent="Glücksrad mit den Feldern 1, 2 und 3";
+    open("s3c"); smooth($("s3c")); ok(2);
+  }});
+numTask("nt3b",{keys:true,lead:P("Summe 4")+" = ",question:"Das Rad wird zweimal gedreht. Wie groß ist die Wahrscheinlichkeit, dass die <strong>Summe der beiden Zahlen 4</strong> ist? Das Feld 1 hat den Anteil "+F(1,3)+", das Feld 2 den Anteil "+F(1,2)+" und das Feld 3 den Anteil "+F(1,6)+".",
+  correct:13/36,tol:0.0006,
+  hints:["Suche zuerst alle Ergebnisse (a; b) mit der Summe 4. Es sind drei.","(1; 3), (2; 2) und (3; 1). Berechne jeden Pfad und addiere: "+F(1,3)+" · "+F(1,6)+", "+F(1,2)+" · "+F(1,2)+" und "+F(1,6)+" · "+F(1,3)+"."],
+  ok:P("Summe 4")+" = "+F(1,18)+" + "+F(1,4)+" + "+F(1,18)+" = "+F(13,36)+" ≈ 0,361.",solution:"13/36 (≈ 0,361)",
+  onSolved:function(){ ok(2); }});
+
+/* =========================================================
+   STATION 4: Das Gegenereignis
+   ========================================================= */
+fillBalls($("urn4"),{g:3,b:2},["g","b"],true);
+var tree4=Tree($("tree4"),{urn:{g:3,b:2},order:["g","b"],stages:2,replace:true,leafText:true,
+  edge:function(k){ return k.edge; },label:"Baumdiagramm mit markiertem Ereignis",leafSel:{gb:true,bg:true,bb:true}});
+lock("s4b"); lock("s4c"); lock("s4d");
+mc("mc4a","Welcher Pfad gehört <em>nicht</em> zum Ereignis E („mindestens eine blaue Kugel“)?",[
+  {t:"(g; g)",ok:"Der Pfad (g; g) enthält keine blaue Kugel. Er ist der einzige nicht markierte Pfad."},
+  {t:"(g; b)",no:"Dieser Pfad enthält eine blaue Kugel und ist rot markiert."},
+  {t:"(b; g)",no:"Dieser Pfad enthält eine blaue Kugel und ist rot markiert."},
+  {t:"(b; b)",no:"Dieser Pfad enthält zwei blaue Kugeln und ist rot markiert."}
+],0,"Suche den Pfad, bei dem im Baum keine blaue Kugel vorkommt.",function(){ open("s4b"); smooth($("s4b")); ok(3); });
+numTask("nt4a",{keys:true,lead:P("g; g")+" = ",question:"Berechne die Wahrscheinlichkeit dieses einen Pfades.",correct:9/25,
+  hints:["Mit Zurücklegen: An beiden Ästen steht "+F(3,5)+".",F(3,5)+" · "+F(3,5)],
+  ok:P("g; g")+" = "+F(3,5)+" · "+F(3,5)+" = "+F(9,25)+" = 0,36 = 36 %.",solution:"9/25 (= 0,36 = 36 %)",
+  onSolved:function(){ open("s4c"); smooth($("s4c")); ok(3); }});
+numTask("nt4b",{keys:true,lead:P("E")+" = ",question:"Wie groß ist die Wahrscheinlichkeit von <strong>E</strong>, ohne die drei roten Pfade einzeln zu berechnen?",correct:16/25,
+  hints:["Alle vier Pfade zusammen haben die Wahrscheinlichkeit 1. Der Pfad (g; g) hat "+F(9,25)+".","1 − "+F(9,25)],
+  ok:P("E")+" = 1 − "+F(9,25)+" = "+F(16,25)+" = 0,64 = 64 %.",solution:"16/25 (= 0,64 = 64 %)",
+  onSolved:function(){ open("s4d"); smooth($("s4d")); ok(3); }});
+mc("mc4b","Wann lohnt sich der Weg über das Gegenereignis besonders?",[
+  {t:"Wenn das Gegenereignis nur wenige Pfade hat, das Ereignis selbst aber viele.",ok:"Dann muss man nur wenige Pfade berechnen und rechnet dann „1 minus“."},
+  {t:"Wenn das Ereignis nur einen Pfad hat.",no:"Dann berechnet man diesen Pfad direkt. Das Gegenereignis hätte alle anderen Pfade."},
+  {t:"Immer, denn das Gegenereignis ist stets einfacher.",no:"Das stimmt nicht. Manchmal hat das Ereignis selbst weniger Pfade."},
+  {t:"Wenn der Baum nur zwei Stufen hat.",no:"Die Anzahl der Stufen entscheidet nicht allein. Wichtig ist, welche Seite weniger Pfade hat."}
+],0,"Es lohnt sich, wenn man auf dem Weg über das Gegenereignis weniger Pfade berechnen muss.",function(){ ok(3); });
+
+/* =========================================================
+   STATION 5: „Mindestens“ mit dem Gegenereignis
+   ========================================================= */
+fillBalls($("urn5"),{g:1,b:5},["g","b"],true);
+var ls5={}; ["ggg","ggb","gbg","gbb","bgg","bgb","bbg"].forEach(function(p){ ls5[p]=true; });
+var tree5=Tree($("tree5"),{urn:{g:1,b:5},order:["g","b"],stages:3,replace:true,leafText:true,leafW:78,
+  edge:function(k){ return k.edge; },label:"Baumdiagramm: dreimal würfeln, rot sind die Pfade mit mindestens einer 6",leafSel:ls5});
+lock("s5b"); lock("s5c"); lock("s5d");
+numTask("nt5a",{keys:true,lead:P("b; b; b")+" = ",question:"Rot sind die sieben Pfade von E. Nur ein Pfad ist nicht rot: (b; b; b), also „dreimal keine 6“. Berechne seine Wahrscheinlichkeit.",correct:125/216,tol:0.0006,
+  hints:["Der Pfad hat drei Äste. Auf jedem steht "+F(5,6)+".",F(5,6)+" · "+F(5,6)+" · "+F(5,6)],
+  ok:P("b; b; b")+" = "+F(5,6)+" · "+F(5,6)+" · "+F(5,6)+" = "+F(125,216)+" ≈ 0,579.",solution:"125/216 (≈ 0,579)",
+  onSolved:function(){ open("s5b"); smooth($("s5b")); ok(4); }});
+numTask("nt5b",{keys:true,lead:P("E")+" = ",question:"Wie groß ist die Wahrscheinlichkeit, dass <strong>mindestens eine 6</strong> fällt?",correct:91/216,tol:0.0006,
+  hints:["Nutze das Gegenereignis „keine 6“ aus der letzten Aufgabe.","1 − "+F(125,216)],
+  ok:P("E")+" = 1 − "+F(125,216)+" = "+F(91,216)+" ≈ 0,421. Der Weg über sieben Pfade wäre viel länger gewesen.",solution:"91/216 (≈ 0,421)",
+  onSolved:function(){ open("s5c"); smooth($("s5c")); ok(4); }});
+mc("mc5","Lena rechnet: „<i>P</i>(mindestens eine 6) = 3 · "+F(1,6)+" = "+F(1,2)+".“ Was ist daran falsch?",[
+  {t:"Die Ereignisse „6 im 1. Wurf“, „6 im 2. Wurf“ und „6 im 3. Wurf“ haben gemeinsame Pfade. Diese werden dann mehrfach gezählt.",ok:"Man darf nur die Wahrscheinlichkeiten verschiedener Pfade addieren. Richtig ist "+F(91,216)+" ≈ 0,421."},
+  {t:"Es müsste "+F(1,6)+" · "+F(1,6)+" · "+F(1,6)+" gerechnet werden.",no:"Das wäre die Wahrscheinlichkeit für dreimal die 6, nicht für mindestens eine 6."},
+  {t:"Es müsste 1 − "+F(1,6)+" gerechnet werden.",no:"Das wäre die Wahrscheinlichkeit, dass der <em>erste</em> Wurf keine 6 ist."},
+  {t:"Nichts, das Ergebnis "+F(1,2)+" stimmt.",no:"Dein Ergebnis aus der vorigen Aufgabe war ungefähr 0,421. Das passt nicht zu 0,5."}
+],0,"Überlege, ob der Pfad (g; g; b) bei „6 im 1. Wurf“ und bei „6 im 2. Wurf“ jeweils vorkommt.",function(){ open("s5d"); smooth($("s5d")); ok(4); });
+numTask("nt5c",{keys:true,lead:P("mind. ein Treffer")+" = ",question:"Ein Basketballspieler trifft bei einem Freiwurf mit einer Wahrscheinlichkeit von 70 %. Er wirft dreimal. Wie groß ist die Wahrscheinlichkeit, dass er <strong>mindestens einmal trifft</strong>?",correct:0.973,tol:0.0006,
+  hints:["Das Gegenereignis lautet „kein Treffer“, also dreimal ein Fehlwurf. Ein Fehlwurf hat die Wahrscheinlichkeit 0,3.","P(Gegenereignis) = 0,3 · 0,3 · 0,3 = 0,027. Rechne 1 − 0,027."],
+  ok:"<br>Ereignis E: mindestens ein Treffer. Gegenereignis <i>Ē</i>: kein Treffer, also dreimal ein Fehlwurf. Dieser Pfad hat die Wahrscheinlichkeit 0,3 · 0,3 · 0,3 = 0,027. Damit gilt <i>P</i>(E) = 1 − 0,027 = 0,973 = 97,3 %.",
+  solution:"<br>Der Baum hätte acht Pfade, sieben davon gehören zu „mindestens ein Treffer“. Einfacher ist das Gegenereignis „kein Treffer“ mit nur einem Pfad (Fehlwurf, Fehlwurf, Fehlwurf):<br><i>P</i>(<i>Ē</i>) = 0,3 · 0,3 · 0,3 = 0,027<br><i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>) = 1 − 0,027 = 0,973 = 97,3 %",
+  onSolved:function(){ ok(4); }});
+
+/* =========================================================
+   STATION 6: „Genau“, „mindestens“, „höchstens“
+   ========================================================= */
+fillBalls($("urn6"),{g:3,b:2},["g","b"],true);
+var tree6=Tree($("tree6"),{urn:{g:3,b:2},order:["g","b"],stages:3,replace:true,leafText:true,leafW:78,
+  edge:function(k){ return k.edge; },label:"Baumdiagramm: dreimal ziehen mit Zurücklegen",leafSel:{}});
+lock("s6b"); lock("s6c");
+pickTask("pk6",tree6,{question:"Welche Pfade gehören zu G („<strong>höchstens eine</strong> gelbe Kugel“)? Markiere sie.",
+  correct:["bbb","gbb","bgb","bbg"],
+  hints:["„Höchstens eine gelbe“ heißt: keine gelbe oder genau eine gelbe Kugel. Prüfe jeden der acht Pfade.","Es sind vier Pfade: (b; b; b) und die drei Pfade mit genau einer gelben Kugel."],
+  ok:"Zu G gehören vier Pfade: (b; b; b) und die drei Pfade mit genau einer gelben Kugel.",
+  solution:"(b; b; b), (g; b; b), (b; g; b), (b; b; g)",
+  onSolved:function(){ open("s6b"); smooth($("s6b")); ok(5); }});
+mc("mc6","Wie lautet das <strong>Gegenereignis</strong> von G („höchstens eine gelbe Kugel“)?",[
+  {t:"mindestens zwei gelbe Kugeln",ok:"Alle Pfade, die nicht zu G gehören, haben zwei oder drei gelbe Kugeln."},
+  {t:"mindestens eine gelbe Kugel",no:"Der Pfad (g; b; b) gehört zu G und hat eine gelbe Kugel. Er kann nicht im Gegenereignis liegen."},
+  {t:"genau zwei gelbe Kugeln",no:"Der Pfad (g; g; g) gehört auch nicht zu G. Er hat aber drei gelbe Kugeln."},
+  {t:"höchstens zwei gelbe Kugeln",no:"Das Gegenereignis darf keinen Pfad mit G gemeinsam haben. Der Pfad (b; b; b) liegt aber in beiden."}
+],0,"Das Gegenereignis enthält genau die Pfade, die in G fehlen. Wie viele gelbe Kugeln haben diese Pfade?",function(){ open("s6c"); smooth($("s6c")); ok(5); });
+numTask("nt6",{keys:true,lead:P("G")+" = ",question:"Berechne die Wahrscheinlichkeit von <strong>G</strong>.",correct:44/125,tol:0.0006,
+  hints:["Berechne zuerst (b; b; b) und dann einen der drei Pfade mit genau einer gelben Kugel. Diese drei Pfade haben alle dieselbe Wahrscheinlichkeit.","P(b; b; b) = "+F(8,125)+" und jeder der drei anderen Pfade hat "+F(3,5)+" · "+F(2,5)+" · "+F(2,5)+" = "+F(12,125)+"."],
+  ok:P("G")+" = "+F(8,125)+" + 3 · "+F(12,125)+" = "+F(44,125)+" = 0,352 = 35,2 %.",solution:"44/125 (= 0,352 = 35,2 %)",
+  onSolved:function(){ ok(5); }});
+
+/* =========================================================
+   STATION 7: Abschlusscheck
+   ========================================================= */
+fillBalls($("urn7"),{r:2,b:3},["r","b"],true);
+lock("s7b"); lock("s7c"); lock("s7d");
+numTask("nt7a",{keys:true,question:"<strong>Aufgabe 1:</strong> Aus der Urne werden zwei Kugeln <strong>ohne Zurücklegen</strong> gezogen. Wie groß ist die Wahrscheinlichkeit, dass <strong>genau eine</strong> Kugel rot ist?",
+  correct:3/5,hints:["Welche Pfade gehören dazu? Zeichne dir den Baum mit zwei Stufen.","(r; b): "+F(2,5)+" · "+F(3,4)+". (b; r): "+F(3,5)+" · "+F(2,4)+". Dann addieren."],
+  ok:"<br>Zu „genau eine rote“ gehören zwei Pfade: (r;\u00A0b) und (b;\u00A0r). 1. Pfadregel: <i>P</i>(r;\u00A0b) = "+F(2,5)+" · "+F(3,4)+" = "+F(6,20)+" und <i>P</i>(b;\u00A0r) = "+F(3,5)+" · "+F(2,4)+" = "+F(6,20)+". 2. Pfadregel: <i>P</i>(E) = "+F(6,20)+" + "+F(6,20)+" = "+F(12,20)+" = "+F(3,5)+" = 0,6 = 60 %.",
+  solution:"<br>Ohne Zurücklegen ändert sich die Urne. Zu „genau eine rote“ gehören die Pfade (r;\u00A0b) und (b;\u00A0r).<br>(r;\u00A0b): im 1. Zug "+F(2,5)+", dann liegen noch 4 Kugeln in der Urne, davon 3 blaue: "+F(3,4)+". Also "+F(2,5)+" · "+F(3,4)+" = "+F(6,20)+".<br>(b;\u00A0r): im 1. Zug "+F(3,5)+", dann noch 2 rote unter 4 Kugeln: "+F(2,4)+". Also "+F(3,5)+" · "+F(2,4)+" = "+F(6,20)+".<br>Die Pfade werden addiert: "+F(6,20)+" + "+F(6,20)+" = "+F(3,5)+" = 60 %.",
+  onSolved:function(){ open("s7b"); smooth($("s7b")); ok(6); }});
+numTask("nt7b",{keys:true,question:"<strong>Aufgabe 2:</strong> Jetzt wird zweimal <strong>mit Zurücklegen</strong> gezogen. Wie groß ist die Wahrscheinlichkeit, dass <strong>mindestens eine</strong> Kugel rot ist?",
+  correct:16/25,hints:["Nutze das Gegenereignis „keine Kugel ist rot“.","P(b; b) = "+F(3,5)+" · "+F(3,5)+" = "+F(9,25)+". Rechne 1 − "+F(9,25)+"."],
+  ok:"<br>Gegenereignis <i>Ē</i>: keine Kugel ist rot, also (b;\u00A0b). <i>P</i>(<i>Ē</i>) = "+F(3,5)+" · "+F(3,5)+" = "+F(9,25)+". Damit gilt <i>P</i>(E) = 1 − "+F(9,25)+" = "+F(16,25)+" = 0,64 = 64 %.",
+  solution:"<br>Direkt wären drei Pfade nötig: (r;\u00A0r), (r;\u00A0b) und (b;\u00A0r). Einfacher ist das Gegenereignis „keine rote Kugel“ mit dem einzigen Pfad (b;\u00A0b).<br>Mit Zurücklegen ist die Urne vor jedem Zug gleich: <i>P</i>(<i>Ē</i>) = "+F(3,5)+" · "+F(3,5)+" = "+F(9,25)+".<br><i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>) = 1 − "+F(9,25)+" = "+F(16,25)+" = 0,64 = 64 %.",
+  onSolved:function(){ open("s7c"); smooth($("s7c")); ok(6); }});
+mc("mc7","<strong>Aufgabe 3:</strong> Welche Aussage ist <em>falsch</em>?",[
+  {t:"Gehören zu einem Ereignis mehrere Pfade, addiert man die Wahrscheinlichkeiten dieser Pfade.",no:"Das ist die 2. Pfadregel, sie gilt immer."},
+  {t:"Das Gegenereignis von „mindestens eine rote Kugel“ lautet „keine rote Kugel“.",no:"Das stimmt, das haben wir in Station 4 und 5 gesehen."},
+  {t:"Entlang eines Pfades addiert man die Wahrscheinlichkeiten, bei mehreren Pfaden multipliziert man.",ok:"Es ist genau umgekehrt: Entlang eines Pfades multipliziert man, bei mehreren Pfaden addiert man."},
+  {t:"<i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>)",no:"Diese Formel gilt für jedes Ereignis."}
+],2,"Denke an die Merkkästen der Stationen 2 und 4: Wo wird multipliziert, wo addiert?",function(){ open("s7d"); smooth($("s7d")); ok(6); });
+numTask("nt7c",{keys:true,question:"<strong>Aufgabe 4:</strong> Ein Basketballspieler trifft bei einem Freiwurf mit einer Wahrscheinlichkeit von 80 %. Er wirft dreimal. Wie groß ist die Wahrscheinlichkeit, dass er <strong>mindestens einmal danebenwirft</strong>?",
+  correct:0.488,hints:["Das Gegenereignis lautet „kein Fehlwurf“, also dreimal getroffen.","P(Gegenereignis) = 0,8 · 0,8 · 0,8 = 0,512. Rechne 1 − 0,512."],
+  ok:"<br>Ereignis E: mindestens ein Fehlwurf. Gegenereignis <i>Ē</i>: kein Fehlwurf, also dreimal ein Treffer. <i>P</i>(<i>Ē</i>) = 0,8 · 0,8 · 0,8 = 0,512. Damit gilt <i>P</i>(E) = 1 − 0,512 = 0,488 = 48,8 %.",
+  solution:"<br>Das Gegenereignis zu „mindestens ein Fehlwurf“ ist „kein Fehlwurf“, also „dreimal getroffen“. Das ist nur ein Pfad (Treffer, Treffer, Treffer):<br><i>P</i>(<i>Ē</i>) = 0,8 · 0,8 · 0,8 = 0,512<br><i>P</i>(E) = 1 − 0,512 = 0,488 = 48,8 %",
+  onSolved:function(){ ok(6); }});
+
+/* =========================================================
+   Start
+   ========================================================= */
+document.addEventListener("focusin",function(e){
+  var t=e.target;
+  if(t && t.tagName==="INPUT"){
+    document.body.classList.add("kb");
+    setTimeout(function(){ try{ t.scrollIntoView({block:"center",behavior:"smooth"}); }catch(x){} },320);
+  }
+});
+document.addEventListener("focusout",function(){
+  setTimeout(function(){
+    var a=document.activeElement;
+    if(!a || a.tagName!=="INPUT") document.body.classList.remove("kb");
+  },250);
+});
+TREES[0]=[tree1]; TREES[1]=[tree2]; TREES[2]=[tree3]; TREES[3]=[tree4]; TREES[4]=[tree5]; TREES[5]=[tree6];
+buildSteps();
+render();
+var rzT=null;
+window.addEventListener("resize",function(){ measureChrome(); clearTimeout(rzT); rzT=setTimeout(redrawTrees,120); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(measureChrome);
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12233f">
+<title>II.1–II.3 Pfadregeln – Übungshalle</title>
+<style>
+/* =========================================================
+   Übungshalle zu II.1 bis II.3 Pfadregeln
+   Eine Datei, offline lauffähig, ohne externe Ressourcen.
+   Schrift: Systemschriften (auf dem iPad: SF Pro und New York).
+   ========================================================= */
+:root{
+  --ink:#12233f;          /* Tinte */
+  --ink-2:#2a4066;
+  --ink-soft:#4b5b73;
+  --paper:#f2f5fa;
+  --card:#ffffff;
+  --grid:#e3eaf4;
+  --line:#d5deea;
+  --blue:#1f6fb2;         /* Graph, wie im Lernpfad */
+  --blue-deep:#17508a;
+  --blue-soft:#e3eefa;
+  --amber:#c9770f;        /* zweiter Graph, wie im Lernpfad */
+  --amber-soft:#fdf0dc;
+  --coral:#d1432d;        /* markierte Punkte */
+  --ok:#1e7a4d;
+  --ok-soft:#e3f4ea;
+  --warn:#8a5a00;
+  --warn-soft:#fdf3e0;
+  --g1:#1f6fb2; --g2:#d9730d; --g3:#8e4ec6; --g4:#12907a;
+  --serif:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:18px;
+  --barH:60px;
+  --dockH:0px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  margin:0;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(rgba(31,111,178,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.045) 1px,transparent 1px);
+  background-size:140px 140px,140px 140px,28px 28px,28px 28px;
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+body.hasdock{padding-bottom:var(--dockH)}
+button{font-family:inherit;font-size:1rem;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+p{margin:.5em 0}
+sub,sup{font-size:.7em}
+
+/* ---------- Mathematik-Satz ---------- */
+.m,.mf,.mblock{font-family:var(--serif);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal;white-space:nowrap}
+.mf i,.m i{font-style:italic;padding-right:.04em}
+.mf sup{padding-left:.02em}
+.nb{white-space:nowrap}
+
+/* ---------- Obere Leiste ---------- */
+.bar{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;padding-top:env(safe-area-inset-top)}
+.bar-in{
+  max-width:1180px;margin:0 auto;min-height:var(--barH);
+  padding:8px clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:10px;
+}
+.bar h1{
+  font:600 1.12rem/1.2 var(--serif);margin:0;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em;
+}
+.bar h1 small{font:500 .78rem var(--sans);color:#9fb3d1;margin-left:8px}
+.chipbtn{
+  min-height:44px;padding:0 15px;border-radius:22px;border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.chipbtn:hover{background:rgba(255,255,255,.16)}
+.chipbtn svg{width:18px;height:18px;flex:0 0 auto}
+.tmode{
+  display:none;font-size:.7rem;font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:2px 10px;white-space:nowrap;
+}
+.tmode.on{display:inline-block}
+#back{display:none}
+@media(max-width:560px){.chipbtn .lbl{display:none}.chipbtn{padding:0 12px}.bar h1 small{display:none}}
+body.intr #back{display:inline-flex}
+
+/* ---------- Halle: Kopfbereich ---------- */
+.hero{background:var(--ink);color:#fff;border-radius:0 0 30px 30px;overflow:hidden}
+.hero-in{
+  max-width:1180px;margin:0 auto;position:relative;
+  padding:clamp(20px,4vw,44px) clamp(16px,3vw,32px) clamp(24px,4vw,46px);
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(14px,3vw,36px);align-items:center;
+}
+.hero h2{font:700 clamp(2.1rem,5.6vw,3.5rem)/1.04 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
+.hero p{margin:0;color:#c3d1e8;max-width:36ch;font-size:clamp(.98rem,1.7vw,1.1rem)}
+.hero .art{min-width:0}
+.hero .art svg{width:100%;height:auto;display:block}
+@media(max-width:640px){.hero-in{grid-template-columns:1fr}.hero .art{order:-1;max-width:420px}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.7s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ---------- Halle: Kacheln ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(12px,2.4vw,24px)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:clamp(12px,2vw,20px);margin:clamp(18px,3vw,30px) 0 14px}
+.tile{
+  display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:0;cursor:pointer;overflow:hidden;color:inherit;min-height:262px;position:relative;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -24px rgba(18,35,63,.45);
+}
+.tile:active{transform:translateY(1px)}
+@media(hover:hover){.tile:hover{border-color:#9fb8cd}}
+.tile .art{background:#fbfdff;border-bottom:1px solid var(--line);aspect-ratio:300/132;display:block}
+.tile .art svg{width:100%;height:100%;display:block}
+.tile .tb{padding:13px 17px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.tile h3{font:700 1.32rem/1.15 var(--serif);margin:0;letter-spacing:-.005em}
+.tile p{margin:0;color:var(--ink-soft);font-size:.96rem;line-height:1.4}
+.pips{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+.pip{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.pip.open{background:#9fc3de}
+.pip.full{background:var(--blue)}
+.pipnote{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+.resetrow{margin:-14px 0 30px}
+.linkbtn{background:none;border:0;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;font-size:.88rem;min-height:44px;padding:0 4px;cursor:pointer}
+.confirm{background:#fff;border:1px solid var(--line);border-left:5px solid var(--coral);border-radius:14px;padding:12px 16px 8px;max-width:620px;font-size:.96rem}
+.btn.danger{background:var(--coral);border-color:var(--coral)}
+.daygoal{
+  display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap;
+  margin:clamp(18px,3vw,28px) 0 0;padding:10px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.daygoal+.tiles{margin-top:clamp(12px,2vw,18px)}
+.daygoal .tx{font-size:.96rem;color:var(--ink-soft)}
+.daygoal .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.daygoal .segs{display:flex;gap:6px;flex:1 1 150px;max-width:300px;min-width:130px}
+.seg{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.seg.on{background:var(--ok)}
+.daygoal.done{background:var(--ok-soft);border-color:#bcdfcb}
+.daygoal.done .tx{color:#14603c;font-weight:600}
+.today{
+  position:absolute;top:10px;right:10px;display:inline-flex;gap:5px;align-items:center;background:var(--ok-soft);
+  border:1px solid #bcdfcb;color:#14603c;border-radius:20px;padding:2px 11px 3px;font-size:.8rem;font-weight:700;
+}
+.rule{font-size:.9rem;color:var(--ink-soft);max-width:78ch;margin:2px 0 26px}
+
+/* ---------- Trainer-Ansicht ---------- */
+.lvlbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}
+.lvl{
+  flex:1 1 170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 14px 10px;min-height:62px;cursor:pointer;color:var(--ink);
+}
+.lvl b{font:700 1rem var(--serif)}
+.lvl small{color:var(--ink-soft);font-size:.82rem;line-height:1.3}
+.lvl .dots{display:flex;gap:7px;margin-top:5px;align-items:center}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid #9fb0c6;background:#fff}
+.dot.on{background:var(--ok);border-color:var(--ok)}
+.lvl.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,111,178,.16)}
+.lvl.lock{opacity:.5;cursor:not-allowed}
+.lvl .lk{font-size:.78rem;color:var(--ink-soft)}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(14px,2vw,22px);margin:12px 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.04),0 16px 30px -24px rgba(18,35,63,.4);
+}
+.banner{
+  background:#eaf6f0;border:1px solid #bfe0cf;border-left:5px solid var(--ok);color:#14603c;
+  border-radius:12px;padding:9px 14px;margin:12px 0 0;font-size:.95rem;
+}
+.prompt{font:600 1.2rem/1.42 var(--serif);margin:0 0 10px}
+.prompt .m,.prompt .mf{font-size:1.02em}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.work{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);align-items:start}
+.work>*{min-width:0}
+.work.one{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){.work{grid-template-columns:1fr;gap:10px}}
+@media(min-width:701px) and (max-width:1000px){.work:not(.one){grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}}
+@media(min-width:701px) and (min-height:620px){.work.stick>.viz{position:sticky;top:calc(var(--barH) + env(safe-area-inset-top) + 10px)}}
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+.boardwrap{border:1px solid var(--line);border-radius:14px;background:#fff;padding:6px 6px 2px;overflow:hidden}
+.viz>svg{border:1px solid var(--line);border-radius:14px;background:#fff}
+
+/* ---------- Rückmeldungen und Hilfen ---------- */
+.fb{border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.97rem;display:none;line-height:1.5}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.hint{background:var(--warn-soft);border-left:5px solid #d69220}
+.fb.sol{background:var(--blue-soft);border-left:5px solid var(--blue)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 2px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;
+  padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:650;min-height:48px;min-width:48px;
+}
+.btn:active{background:#0b1830}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.ghost:active{background:var(--blue-soft)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.helpbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.hbtn{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:22px;cursor:pointer;
+  border:1.5px solid #d69220;background:var(--warn-soft);color:var(--warn);font-weight:650;
+}
+.hbtn svg{width:18px;height:18px}
+.hbtn.sol{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-deep)}
+.hbtn.altbtn{border-color:var(--ink-2);background:#fff;color:var(--ink)}
+.hbtn.altbtn[aria-expanded="true"]{background:#eef2f8}
+.alt{background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--ink-2);border-radius:14px;padding:12px 14px 14px;margin-top:12px}
+.alt .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.alt h4{font:700 1.06rem/1.3 var(--serif);margin:0}
+.alt .sm{min-height:40px;padding:6px 14px;font-size:.92rem}
+.altstep{border-top:1px dashed var(--line);padding-top:9px;margin-top:10px}
+.altstep p{margin:.35em 0;font-size:.97rem}
+.altstep .sn{display:flex;gap:9px;align-items:center;font:700 1rem var(--serif);color:var(--blue-deep)}
+.altstep .sn i{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 .85rem var(--sans);font-style:normal;flex:0 0 auto}
+.eq{text-align:center;margin:7px 0;font:500 1.1rem/1.9 var(--serif)}
+.eq .mf{margin:0 .15em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;font-size:.95em;line-height:1.3}
+.frac>span:first-child{padding:0 .3em .05em;border-bottom:1.5px solid currentColor}
+.frac>span:last-child{padding:.05em .3em 0}
+.hbtn .tier{display:inline-flex;gap:3px}
+.hbtn .tier i{width:7px;height:7px;border-radius:50%;background:#e2c58f;display:block}
+.hbtn .tier i.on{background:var(--warn)}
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hintcard{background:var(--warn-soft);border:1px solid #ecd2a2;border-left:5px solid #d69220;border-radius:12px;padding:9px 14px;font-size:.96rem}
+.hintcard b{color:var(--warn)}
+.result{margin-top:14px}
+.result .fb{display:block}
+
+/* ---------- Eingabefelder und Tastenfeld ---------- */
+.term{font:500 1.4rem/1.2 var(--serif);display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0}
+.term .dotop{color:var(--ink-soft)}
+.term .ex{align-self:flex-start;margin-top:3px;margin-left:-3px;font-size:1.1rem}
+.fld{
+  display:inline-flex;align-items:center;justify-content:center;min-width:92px;height:56px;padding:0 14px;
+  border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;
+  font:600 1.35rem var(--serif);position:relative;
+}
+.fld.sm{min-width:70px;height:48px;font-size:1.15rem;padding:0 10px;border-radius:11px}
+.fld .v{white-space:pre}
+.fld .v:empty::before{content:"?";color:#a9b6c9;font-weight:500}
+.fld.act{border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,111,178,.18)}
+.fld.act .v::after{content:"";display:inline-block;width:2px;height:1.15em;background:var(--blue);margin-left:2px;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.fld.act .v:empty::before{content:""}
+@keyframes blink{50%{opacity:0}}
+.fld.ok{border-color:var(--ok);background:var(--ok-soft)}
+.fld.no{border-color:var(--coral);background:#fdecea}
+.fld:disabled{cursor:default}
+.lab{font:italic 600 1.35rem var(--serif);color:var(--ink)}
+
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--ink);display:none;
+  padding:10px clamp(8px,2vw,18px) calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px 20px 0 0;box-shadow:0 -12px 32px -14px rgba(18,35,63,.55);
+}
+body.hasdock .dock{display:block}
+.dock-in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px}
+.key{
+  flex:1 1 42px;min-width:42px;height:50px;border:0;border-radius:11px;background:#f2f5fa;color:var(--ink);
+  font:600 1.3rem var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none;
+}
+.key:active{background:#c9dbf0}
+.key.fn{background:var(--ink-2);color:#fff}
+.key.fn:active{background:#3a5584}
+.key.go{flex:2 1 112px;background:#5aa9ee;color:#0b1b33;font:700 1.05rem var(--sans)}
+.key.go:active{background:#8cc3f5}
+
+/* ---------- Kurven-Tuner ---------- */
+.stepper{display:flex;align-items:center;gap:10px;margin:8px 0}
+.stepper .lab{min-width:1.6ch}
+.sb{
+  width:58px;height:58px;border-radius:16px;border:2px solid var(--blue);background:#fff;color:var(--blue);
+  font:600 2rem/1 var(--sans);cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.sb:active{background:var(--blue-soft)}
+.sb:disabled{opacity:.35;cursor:not-allowed}
+.stepper .val{min-width:96px;text-align:center;font:600 1.7rem var(--serif);font-variant-numeric:tabular-nums}
+.livefn{font:500 1.5rem var(--serif);margin:6px 0 2px;padding:10px 14px;background:var(--blue-soft);border-radius:12px;display:inline-block}
+.goal{display:inline-block;font-size:.84rem;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:20px;padding:2px 11px;margin-bottom:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.86rem;color:var(--ink-soft);margin-top:6px;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:26px;height:0;border-top:3.5px solid var(--blue);display:inline-block}
+.sw.dash{border-top-color:var(--amber);border-top-style:dashed}
+.sw.ghost{border-top-color:var(--ok);border-top-style:dotted}
+
+/* ---------- Zuordnen ---------- */
+.slots{display:grid;gap:9px;margin:8px 0}
+.slot{
+  display:flex;align-items:center;gap:12px;border:2px dashed #b9c7da;border-radius:14px;padding:7px 12px;min-height:60px;
+  background:#fff;cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit;
+}
+.badge{width:34px;height:34px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto;font-family:var(--sans)}
+.slot .ph{color:#8a9ab1;font-size:.93rem}
+.slot .tx{font:600 1.2rem var(--serif)}
+.slot.hl{border-color:var(--blue);background:var(--blue-soft)}
+.slot.pick{border-color:var(--blue);border-style:solid}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.slot.no{animation:shake .42s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.chip{
+  min-height:54px;padding:8px 18px;border-radius:28px;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  font:600 1.22rem var(--serif);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+}
+.chip.sel{background:var(--ink);color:#fff}
+.chip.used{opacity:.3;pointer-events:none}
+.chip.lifted{opacity:.35}
+.chip.drag{position:fixed;z-index:80;pointer-events:none;transform:translate(-50%,-60%);box-shadow:0 14px 28px -10px rgba(18,35,63,.55);background:#fff;color:var(--ink);opacity:1}
+
+/* ---------- Steckbrief ---------- */
+.clues{display:grid;gap:10px;margin:10px 0}
+.clue{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-left:6px solid var(--blue);border-radius:14px;padding:11px 14px}
+.clue .t{flex:1;font:500 1.08rem/1.45 var(--serif)}
+.clue .why{display:block;font:400 .9rem var(--sans);color:#8a2b1c;margin-top:4px}
+.clue .mk{font:700 1.2rem var(--sans);width:26px;text-align:center;flex:0 0 auto}
+.clue.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.clue.ok .mk{color:var(--ok)}
+.clue.no{border-left-color:var(--coral);background:#fdf1ef}
+.clue.no .mk{color:var(--coral)}
+
+/* ---------- Tabelle ---------- */
+.tblwrap{overflow-x:auto;margin:8px 0;-webkit-overflow-scrolling:touch}
+table.tb{border-collapse:separate;border-spacing:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;min-width:100%}
+table.tb th,table.tb td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font:600 1.2rem var(--serif);min-width:78px}
+table.tb tr:last-child td,table.tb tr:last-child th{border-bottom:0}
+table.tb td:last-child,table.tb th:last-child{border-right:0}
+table.tb th.rh{background:var(--ink);color:#fff;font-style:italic;text-align:center;min-width:64px}
+table.tb tr.xr td{background:var(--blue-soft)}
+table.tb tr.arr td{border-bottom:0;padding:0 4px;background:#fff;font:600 .86rem var(--sans);color:var(--amber);height:26px}
+table.tb tr.arr th{background:var(--ink);border-bottom:0}
+
+/* ---------- Fehlerdetektiv ---------- */
+.stud{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.stud .who{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stud .av{width:36px;height:36px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-weight:800}
+.stud .ln{font:500 1.12rem/1.55 var(--serif)}
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;
+  min-height:50px;color:var(--ink);line-height:1.4;font-size:.98rem;
+}
+.opt .mk{font-weight:700;margin-right:.55em;color:var(--blue-deep)}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.chosen-no{border-color:var(--coral);background:#fdecea}
+.opt:disabled{cursor:default}
+.probe{width:100%;border-collapse:collapse;font:500 1rem var(--serif);margin:6px 0 2px}
+.probe td,.probe th{border-bottom:1px solid #ecd2a2;padding:3px 8px;text-align:center}
+.probe .bad{color:var(--coral);font-weight:700}
+
+/* ---------- Merkhilfe ---------- */
+.veil{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:70;display:none}
+.veil.on{display:block}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:71;background:#fff;border-radius:24px 24px 0 0;max-height:86vh;overflow:auto;
+  padding:18px clamp(16px,3vw,32px) calc(26px + env(safe-area-inset-bottom));display:none;
+  box-shadow:0 -16px 40px -14px rgba(10,20,40,.6);
+}
+.sheet.on{display:block}
+.sheet-in{max-width:860px;margin:0 auto}
+.sheet h2{font:700 1.5rem var(--serif);margin:0 0 4px}
+.sheet h3{font:700 1.08rem var(--serif);margin:16px 0 4px;color:var(--blue-deep)}
+.sheet .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet .box{background:var(--blue-soft);border-left:5px solid var(--blue);border-radius:12px;padding:9px 14px;margin:6px 0}
+.sheet .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+@media(max-width:620px){.sheet .duo{grid-template-columns:1fr}}
+.sheet .duo div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.sheet .duo .up{border-left:5px solid var(--blue)}
+.sheet .duo .down{border-left:5px solid var(--amber)}
+.sheet ul{margin:.3em 0;padding-left:1.2em}
+.sheet li{margin:.25em 0}
+
+.hidden{display:none !important}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .draw{animation:none;stroke-dashoffset:0}
+  .fld.act .v::after{animation:none}
+  .slot.no{animation:none}
+}
+
+/* ---------- I.4: kompakter Kopf und Kacheln ---------- */
+.hhead{
+  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px clamp(16px,3vw,32px);align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px clamp(14px,2vw,22px);margin:clamp(12px,2vw,18px) 0 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -26px rgba(18,35,63,.45);
+}
+.hhead .kap{font:600 .8rem var(--sans);color:var(--ink-soft)}
+.hhead h2{font:700 clamp(1.4rem,3.2vw,1.9rem)/1.15 var(--serif);margin:2px 0 4px;color:var(--ink);letter-spacing:-.01em}
+.hhead p{margin:0;color:var(--ink-soft);font-size:.95rem;max-width:64ch;line-height:1.45}
+.hhead .dg{display:flex;flex-direction:column;gap:8px;min-width:0}
+.hhead .dg .tx{font-size:.96rem;color:var(--ink-soft)}
+.hhead .dg .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.hhead .dg .segs{display:flex;gap:6px;max-width:300px}
+.hhead.done{background:var(--ok-soft);border-color:#bcdfcb}
+.hhead.done .dg .tx{color:#14603c;font-weight:600}
+@media(max-width:700px){.hhead{grid-template-columns:1fr}}
+.tiles{margin-top:clamp(10px,1.6vw,16px)}
+.tile{min-height:226px}
+.tile .art{aspect-ratio:300/104}
+.rule{margin-bottom:18px}
+.eq{font-size:1.7rem}
+.ln{font:500 1.12rem/1.55 var(--serif)}
+.stud .ln+.ln{border-top:1px dashed var(--line);margin-top:2px;padding-top:2px}
+.tiles{grid-template-columns:repeat(auto-fill,minmax(204px,1fr));gap:clamp(10px,1.4vw,16px)}
+.tile{min-height:0}
+.tile h3{font-size:1.14rem}
+.tile p{font-size:.9rem}
+.tile .tb{padding:11px 14px 13px}
+.tile .art{aspect-ratio:300/112}
+
+/* ---------- Zusatz (optional) ---------- */
+.zusatz{
+  display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr);width:100%;text-align:left;color:inherit;cursor:pointer;
+  background:#fbfdff;border:2px dashed #9fb8cd;border-radius:var(--r);padding:0;overflow:hidden;margin:clamp(10px,1.4vw,16px) 0 14px;
+}
+.zusatz .art{display:block;border-right:1px dashed #b9c7da;background:#fff}
+.zusatz .art svg{width:100%;height:100%;display:block}
+.zusatz .tb{display:flex;flex-direction:column;gap:3px;padding:10px 16px 12px;min-width:0}
+.zusatz h3{font:700 1.14rem/1.15 var(--serif);margin:0}
+.zusatz p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.4}
+.zusatz .pips{margin-top:4px;max-width:260px}
+@media(hover:hover){.zusatz:hover{border-color:var(--blue)}}
+.optbadge{align-self:flex-start;font-size:.78rem;font-weight:700;color:#7a4a00;background:var(--amber-soft);border:1px solid #e8c78f;border-radius:20px;padding:1px 11px 2px}
+.optnote{background:var(--amber-soft);border:1px solid #e8c78f;border-left:5px solid var(--amber);color:#7a4a00;border-radius:12px;padding:8px 14px;margin:0 0 10px;font-size:.95rem}
+@media(max-width:600px){.zusatz{grid-template-columns:1fr}.zusatz .art{border-right:0;border-bottom:1px dashed #b9c7da;aspect-ratio:300/90}}
+/* ---------- Pfadregeln: Urne und Ereigniskasten ---------- */
+.urnrow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 8px}
+.bl{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:2px solid;font:700 .86rem var(--serif)}
+.vizcard{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;text-align:center}
+.vizcard .urnrow{justify-content:center}
+.rule2{background:var(--blue-soft);border-left:5px solid var(--blue);border-radius:12px;padding:9px 14px;margin:10px 0;font-size:1.05rem}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="chipbtn" id="back" type="button" aria-label="Zurück zur Übungshalle">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg>
+      <span class="lbl">Halle</span>
+    </button>
+    <h1 id="bartitle">Übungshalle<small>II.1 bis II.3 Pfadregeln</small></h1>
+    <span class="tmode" id="tmode">Lehrermodus</span>
+    <button class="chipbtn" id="merk" type="button">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H16v12H5.5A1.5 1.5 0 0 0 4 16.5v-12Z"/><path d="M4 16.5A1.5 1.5 0 0 0 5.5 18H16v-3"/></svg>
+      <span class="lbl">Merkhilfe</span>
+    </button>
+  </div>
+</header>
+
+<main id="stage"></main>
+
+<div class="dock" id="dock" role="group" aria-label="Zahlen eingeben"><div class="dock-in" id="dockin"></div></div>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Merkhilfe">
+  <div class="sheet-in">
+    <div class="row"><h2>Merkhilfe</h2><button class="btn ghost" id="sheetclose" type="button">Schließen</button></div>
+    <div class="box"><b>1. Pfadregel:</b> Entlang eines Pfades werden die Wahrscheinlichkeiten <b>multipliziert</b>.<br><b>2. Pfadregel:</b> Gehören mehrere Pfade zu einem Ereignis, werden ihre Wahrscheinlichkeiten <b>addiert</b>.</div>
+
+    <h3>Baumdiagramm</h3>
+    <ul>
+      <li>Jede Stufe ist ein Zug. An die Äste schreibst du die Wahrscheinlichkeiten, die Summe an einem Verzweigungspunkt ist immer 1.</li>
+      <li><b>Mit Zurücklegen:</b> Die Urne ist vor jedem Zug gleich, die Zahlen an den Ästen bleiben gleich.</li>
+      <li><b>Ohne Zurücklegen:</b> Nach jedem Zug liegt eine Kugel weniger in der Urne. Zähler und Nenner ändern sich.</li>
+    </ul>
+
+    <h3>Beispiel</h3>
+    <ul>
+      <li>Urne mit 3 gelben und 2 blauen Kugeln, zweimal ziehen ohne Zurücklegen.</li>
+      <li><span class="mf"><i>P</i>(g;&nbsp;b) = <span class="frac"><span>3</span><span>5</span></span> · <span class="frac"><span>2</span><span>4</span></span> = <span class="frac"><span>3</span><span>10</span></span></span></li>
+      <li>Ereignis E: „genau eine gelbe Kugel“ gehört zu den Pfaden (g;&nbsp;b) und (b;&nbsp;g).<br><span class="mf"><i>P</i>(E) = <span class="frac"><span>3</span><span>10</span></span> + <span class="frac"><span>3</span><span>10</span></span> = <span class="frac"><span>3</span><span>5</span></span></span></li>
+    </ul>
+
+    <h3>Gegenereignis</h3>
+    <div class="duo">
+      <div class="up"><span class="mf"><i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>)</span><br>Das Gegenereignis <i>Ē</i> enthält genau die Pfade, die nicht zu E gehören.</div>
+      <div class="down"><b>„mindestens eine …“</b><br>Gegenereignis: „keine …“. Das ist oft nur ein einziger Pfad.</div>
+    </div>
+    <ul>
+      <li>Beispiel: Ein Würfel wird dreimal geworfen. Gegenereignis zu „mindestens eine 6“ ist „keine 6“:<br><span class="mf"><i>P</i>(mindestens eine 6) = 1 − <span class="frac"><span>5</span><span>6</span></span> · <span class="frac"><span>5</span><span>6</span></span> · <span class="frac"><span>5</span><span>6</span></span> = <span class="frac"><span>91</span><span>216</span></span></span></li>
+    </ul>
+
+    <h3>Oft gebrauchte Ereignisse</h3>
+    <ul>
+      <li><b>mindestens eine</b> gelbe Kugel: eine oder mehr. Gegenereignis: <b>keine</b> gelbe Kugel.</li>
+      <li><b>höchstens eine</b> gelbe Kugel: keine oder eine. Gegenereignis: <b>mindestens zwei</b> gelbe Kugeln.</li>
+      <li><b>genau eine</b> gelbe Kugel: nur Pfade mit genau einem g.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+const $=(id)=>document.getElementById(id);
+const TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+
+function div(cls,html){const d=document.createElement("div");if(cls)d.className=cls;if(html!==undefined)d.innerHTML=html;return d;}
+function mkbtn(cls,html,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.innerHTML=html;if(fn)b.addEventListener("click",fn);return b;}
+
+/* deutsche Zahlschreibweise */
+function num(v,dec){
+  if(dec===undefined)dec=4;
+  if(!isFinite(v))return "—";
+  if(Math.abs(v)<5e-10)v=0;
+  let s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){s=s.replace(/0+$/,"").replace(/\.$/,"");}
+  if(s==="-0")s="0";
+  return s.replace(".",",");
+}
+function mnum(v,dec){return num(v,dec).replace("-","−");}
+/* Eingabe: Komma oder Punkt, Minus als - oder −, Brüche wie 1/3 */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-");
+  if(s==="")return NaN;
+  const m=s.match(/^([-+]?)(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)$/);
+  if(m){
+    const n=parseFloat(m[2].replace(",",".")),d=parseFloat(m[3].replace(",","."));
+    return d===0?NaN:(m[1]==="-"?-1:1)*n/d;
+  }
+  s=s.replace(",",".");
+  if(!/^[-+]?\d*\.?\d+$/.test(s))return NaN;
+  return Number(s);
+}
+const close=(x,y,t)=>Math.abs(x-y)<=(t||1e-6)*Math.max(1,Math.abs(y));
+const pw=(a,x)=>Math.pow(a,x);
+const r6=(v)=>Math.round(v*1e6)/1e6;
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+const LAST={};
+function pick(pool,key){
+  let i=Math.floor(Math.random()*pool.length);
+  if(pool.length>1){let g=0;while(i===LAST[key]&&g++<30)i=Math.floor(Math.random()*pool.length);}
+  LAST[key]=i;return pool[i];
+}
+/* Wird eine Stützaufgabe gebraucht, kommt sie aus der Stufe darunter bzw. aus den leichten Aufgaben der Stufe 1. */
+function poolFor(P,lvl,stuetz){
+  if(!stuetz)return {eff:lvl,pool:P[lvl]};
+  if(lvl>1)return {eff:lvl-1,pool:P[lvl-1]};
+  const e=P[1].filter(x=>x.e);
+  return {eff:1,pool:e.length?e:P[1]};
+}
+
+/* Basis als Text: Brüche wie 1/3 werden als Bruch gezeigt */
+function baseHTML(a){
+  if(close(a,1/3))return "(1/3)";
+  if(close(a,2/3))return "(2/3)";
+  return mnum(a,4);
+}
+/* Term b · a^x als HTML. */
+function termHTML(b,a){
+  let bs;
+  if(b===1)bs="";else if(b===-1)bs="−";else bs=mnum(b,4)+" · ";
+  return '<span class="mf">'+bs+baseHTML(a)+"<sup><i>x</i></sup></span>";
+}
+function fnHTML(b,a,name){
+  return '<span class="mf"><i>'+(name||"f")+'</i>(<i>x</i>) = '+termHTML(b,a).replace('<span class="mf">',"").replace(/<\/span>$/,"")+"</span>";
+}
+const isUp=(a,b)=>(b>0&&a>1)||(b<0&&a<1);
+const ICON_BULB='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14.5h6M8 17h4M10 2.5a5 5 0 0 0-3 9c.7.6 1 1.2 1 2h4c0-.8.3-1.4 1-2a5 5 0 0 0-3-9Z"/></svg>';
+
+/* =========================================================
+   SVG-Koordinatensystem (Board-Technik aus dem Lernpfad)
+   ========================================================= */
+const NS="http://www.w3.org/2000/svg";
+let BOARDN=0;
+function el(name,attrs){const e=document.createElementNS(NS,name);for(const k in attrs){if(Object.prototype.hasOwnProperty.call(attrs,k))e.setAttribute(k,attrs[k]);}return e;}
+function clearNode(g){while(g&&g.firstChild)g.removeChild(g.firstChild);}
+const FF="ui-serif,'New York',Georgia,serif";
+
+function Board(host,o){
+  const W=o.w||560,H=o.h||380,fs=o.fs||14;
+  const pad={l:o.padL!==undefined?o.padL:46,r:o.padR!==undefined?o.padR:24,t:o.padT!==undefined?o.padT:16,b:o.padB!==undefined?o.padB:34};
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",o.label||"Koordinatensystem");
+  const X=(x)=>pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r);
+  const Y=(y)=>H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b);
+  const cid="clip"+(++BOARDN);
+  const defs=el("defs",{});const cp=el("clipPath",{id:cid});
+  cp.appendChild(el("rect",{x:X(xmin),y:Y(ymax),width:X(xmax)-X(xmin),height:Y(ymin)-Y(ymax)}));
+  defs.appendChild(cp);svg.appendChild(defs);
+  const grid=el("g",{});let i;
+  const gx=o.gridx,gy=o.gridy;
+  if(gx)for(i=Math.ceil(xmin/gx-1e-9)*gx;i<=xmax+1e-9;i+=gx)grid.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#e6edf6","stroke-width":1}));
+  if(gy)for(i=Math.ceil(ymin/gy-1e-9)*gy;i<=ymax+1e-9;i+=gy)grid.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#e6edf6","stroke-width":1}));
+  svg.appendChild(grid);
+  const curves=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(curves);
+  const axg=el("g",{});svg.appendChild(axg);
+  const dots=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(dots);
+  const lbls=el("g",{});svg.appendChild(lbls);
+  (function(){
+    const AX="#243b5e";
+    axg.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-9)+","+(Y(0)-4.5)+" "+(X(xmax)-9)+","+(Y(0)+4.5),fill:AX}));
+    axg.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-4.5)+","+(Y(ymax)+9)+" "+(X(0)+4.5)+","+(Y(ymax)+9),fill:AX}));
+    let t;
+    const tx=o.tickx,ty=o.ticky;
+    if(tx)for(i=Math.ceil(xmin/tx-1e-9)*tx;i<=xmax-0.15*(xmax-xmin)/6;i+=tx){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(i),y:Y(0)+fs+4,"text-anchor":"middle","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    if(ty)for(i=Math.ceil(ymin/ty-1e-9)*ty;i<=ymax-0.12*(ymax-ymin);i+=ty){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(0)-8,y:Y(i)+fs*0.34,"text-anchor":"end","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    const lx=el("text",{x:X(xmax)-2,y:Y(0)+2*fs+4,"text-anchor":"end","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    lx.textContent="x";axg.appendChild(lx);
+    const ly=el("text",{x:X(0)+8,y:Y(ymax)+fs*0.9,"text-anchor":"start","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    ly.textContent="y";axg.appendChild(ly);
+  })();
+  const YLO=ymin-3*(ymax-ymin),YHI=ymax+3*(ymax-ymin);
+  const api={svg,X,Y,xmin,xmax,ymin,ymax,curves,dots,lbls};
+  api.reset=()=>{clearNode(curves);clearNode(dots);clearNode(lbls);};
+  api.curve=(fn,x0,x1,op)=>{
+    op=op||{};const N=op.n||420;let d="",pen=false,x,y;
+    for(let k=0;k<=N;k++){
+      x=x0+(x1-x0)*k/N;y=fn(x);
+      if(typeof y!=="number"||!isFinite(y)){pen=false;continue;}
+      if(y<YLO)y=YLO;else if(y>YHI)y=YHI;
+      d+=(pen?"L":"M")+X(x).toFixed(2)+" "+Y(y).toFixed(2)+" ";pen=true;
+    }
+    if(d==="")return null;
+    const at={d,fill:"none",stroke:op.color||"#1f6fb2","stroke-width":op.w||3,"stroke-linejoin":"round","stroke-linecap":"round"};
+    if(op.dash)at["stroke-dasharray"]=op.dash;
+    if(op.opacity!==undefined)at.opacity=op.opacity;
+    const p=el("path",at);(op.layer||curves).appendChild(p);return p;
+  };
+  api.dot=(x,y,op)=>{
+    op=op||{};if(!isFinite(y))return null;
+    const c=el("circle",{cx:X(x),cy:Y(Math.max(YLO,Math.min(YHI,y))),r:op.r||6,fill:op.color||"#d1432d",stroke:op.ring||"#fff","stroke-width":op.rw||2});
+    (op.layer||dots).appendChild(c);return c;
+  };
+  api.seg=(x0,y0,x1,y1,op)=>{
+    op=op||{};
+    const l=el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1),stroke:op.color||"#94a3b8","stroke-width":op.w||1.5});
+    if(op.dash)l.setAttribute("stroke-dasharray",op.dash);
+    (op.layer||dots).appendChild(l);return l;
+  };
+  api.text=(x,y,s,op)=>{
+    op=op||{};
+    const t=el("text",{x:X(x)+(op.dx||0),y:Y(y)+(op.dy||0),"font-size":op.size||fs,fill:op.fill||"#243b5e","text-anchor":op.anchor||"middle","font-family":op.family||FF,"font-weight":op.weight||"600",stroke:"#fff","stroke-width":op.halo===false?0:3.6,"paint-order":"stroke","stroke-linejoin":"round"});
+    t.textContent=s;(op.layer||lbls).appendChild(t);return t;
+  };
+  host.innerHTML="";host.appendChild(svg);
+  return api;
+}
+/* Ein sinnvolles Fenster für Punkte (x|y) wählen */
+function niceStep(range,maxTicks){
+  const c=[1,2,5,10,20,50,100,200];
+  for(let i=0;i<c.length;i++){if(range/c[i]<=maxTicks)return c[i];}
+  return 500;
+}
+function viewFor(pts){
+  let xlo=0,xhi=0,ylo=0,yhi=0;
+  pts.forEach(p=>{xlo=Math.min(xlo,p[0]);xhi=Math.max(xhi,p[0]);ylo=Math.min(ylo,p[1]);yhi=Math.max(yhi,p[1]);});
+  const xmin=Math.floor(xlo-1.8),xmax=Math.ceil(xhi+1.8);
+  let yp=(yhi-ylo)||1;
+  const sy=niceStep(yp*1.5,8);
+  let ymax=yhi>0?Math.ceil((yhi+yp*0.22)/sy)*sy:Math.ceil(0.6*sy);
+  let ymin=ylo<0?Math.floor((ylo-yp*0.22)/sy)*sy:-Math.ceil(0.6*sy);
+  if(ymax<=0)ymax=sy;if(ymin>=0)ymin=-sy;
+  return {xmin,xmax,ymin,ymax,gridx:1,gridy:sy,tickx:1,ticky:sy};
+}
+
+/* =========================================================
+   Eingabefelder und Tastenfeld
+   ========================================================= */
+const Dock=(function(){
+  let fields=[],act=null,onCheck=null,visible=false;
+  const host=$("dockin");
+  const KEYS=["1","2","3","4","5","6","7","8","9","0",",","−","/","⌫"];
+  const NAMES={",":"Komma","−":"Minus","/":"Bruchstrich","⌫":"Löschen"};
+  KEYS.forEach(k=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="key"+(NAMES[k]?" fn":"");b.textContent=k;
+    b.setAttribute("aria-label",NAMES[k]||k);
+    b.addEventListener("pointerdown",(e)=>e.preventDefault());
+    b.addEventListener("click",()=>press(k));
+    host.appendChild(b);
+  });
+  const go=document.createElement("button");go.type="button";go.className="key go";go.textContent="Prüfen";
+  go.addEventListener("pointerdown",(e)=>e.preventDefault());
+  go.addEventListener("click",()=>{if(onCheck)onCheck();});
+  host.appendChild(go);
+
+  function measure(){
+    document.documentElement.style.setProperty("--dockH",visible?($("dock").offsetHeight+"px"):"0px");
+  }
+  function press(k){
+    const f=act;if(!f||f.locked)return;
+    let v=f.val;
+    const tail=v.split("/").pop();
+    if(k==="⌫")v=v.slice(0,-1);
+    else if(k==="−"){v=(v[0]==="-")?v.slice(1):"-"+v;}
+    else if(k===","){if(tail.indexOf(",")<0)v+=(tail===""||tail==="-")?"0,":",";}
+    else if(k==="/"){if(v!==""&&v!=="-"&&v.indexOf("/")<0&&!/,$/.test(v))v+="/";}
+    else if(v.length<10)v+=k;
+    f.set(v);f.state("");
+  }
+  function activate(f){
+    if(act)act.el.classList.remove("act");
+    act=f;if(f&&!f.locked)f.el.classList.add("act");
+  }
+  return {
+    use(list,check){
+      fields=list;onCheck=check;visible=true;
+      document.body.classList.add("hasdock");
+      list.forEach(f=>{f.el.addEventListener("click",()=>activate(f));});
+      const first=list.find(f=>!f.locked);activate(first||null);
+      measure();
+    },
+    off(){visible=false;onCheck=null;fields=[];if(act)act.el.classList.remove("act");act=null;document.body.classList.remove("hasdock");measure();},
+    focus:activate,
+    next(){const i=fields.indexOf(act);for(let k=1;k<=fields.length;k++){const f=fields[(i+k)%fields.length];if(!f.locked){activate(f);return;}}},
+    press,measure,
+    get visible(){return visible;},
+    check(){if(onCheck)onCheck();}
+  };
+})();
+window.addEventListener("resize",()=>Dock.measure());
+document.addEventListener("keydown",(e)=>{
+  if(!Dock.visible||e.metaKey||e.ctrlKey||e.altKey)return;
+  if($("sheet").classList.contains("on"))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){Dock.press(k);e.preventDefault();}
+  else if(k===","||k==="."){Dock.press(",");e.preventDefault();}
+  else if(k==="-"){Dock.press("−");e.preventDefault();}
+  else if(k==="/"){Dock.press("/");e.preventDefault();}
+  else if(k==="Backspace"){Dock.press("⌫");e.preventDefault();}
+  else if(k==="Tab"){Dock.next();e.preventDefault();}
+  else if(k==="Enter"&&document.activeElement&&document.activeElement.classList.contains("fld")){Dock.check();e.preventDefault();}
+});
+
+function Field(opt){
+  opt=opt||{};
+  const b=document.createElement("button");b.type="button";b.className="fld"+(opt.sm?" sm":"");
+  b.setAttribute("aria-label",opt.aria||"Eingabefeld");
+  const v=document.createElement("span");v.className="v";b.appendChild(v);
+  const f={el:b,val:"",locked:false,
+    set(s){f.val=s;v.textContent=s.replace(/-/g,"−");},
+    num(){return parseNum(f.val);},
+    state(s){b.classList.remove("ok","no");if(s)b.classList.add(s);},
+    lock(s){f.locked=true;b.classList.remove("act");if(s)f.state(s);}
+  };
+  return f;
+}
+/* f(x) = [b] · [a]^x  – zwei Felder in einer Zeile */
+function TermRow(host,opt){
+  opt=opt||{};
+  const fb=Field({aria:"Wert für b"}),fa=Field({aria:"Wert für a"});
+  const row=div("term");
+  const l=document.createElement("span");l.className="mf";l.innerHTML="<i>"+(opt.name||"f")+"</i>(<i>x</i>) =";
+  row.appendChild(l);row.appendChild(fb.el);
+  const d=document.createElement("span");d.className="dotop";d.textContent="·";row.appendChild(d);
+  row.appendChild(fa.el);
+  const s=document.createElement("span");s.className="mf ex";s.innerHTML="<i>x</i>";row.appendChild(s);
+  host.appendChild(row);
+  return {fb,fa,row};
+}
+
+/* =========================================================
+   Fortschritt
+   ========================================================= */
+/* Tagesziel: nur im Arbeitsspeicher, unabhängig von Stufen und Mastery */
+const DAY={done:{}};
+/* Eine erfolgreich gelöste Aufgabe schaltet die nächste Stufe frei */
+const NEED=1;
+const PROG={};
+const Prog={
+  get(id){return PROG[id]||(PROG[id]={unlocked:TEACHER?3:1,clean:[0,0,0],hard:0});},
+  /* Fortschritt (clean) und Stützlogik (hard) sind getrennt:
+     clean entscheidet nur über die Stufenfreischaltung,
+     hard zählt aufeinanderfolgende Durchgänge mit deutlichen Schwierigkeiten. */
+  record(id,lvl,clean,stuetz,hard){
+    const p=this.get(id);let up=false;
+    if(clean&&!stuetz)p.clean[lvl-1]=Math.min(NEED,p.clean[lvl-1]+1);
+    if(hard)p.hard++;else p.hard=0;
+    if(!stuetz&&p.clean[lvl-1]>=NEED&&p.unlocked===lvl&&lvl<3){p.unlocked=lvl+1;up=true;}
+    saveProgress();
+    return {up,mastered:p.clean[lvl-1]>=NEED,p};
+  }
+};
+
+/* Dauerhafte Speicherung (localStorage): nur unlocked und clean je Trainer.
+   Nicht gespeichert: Tagesziel (DAY), hard, laufende Aufgabe, Eingaben, Hinweise.
+   Im Lehrermodus wird weder gelesen noch geschrieben. */
+const STORE_KEY="pfadregelnTrainingProgressV1";
+function saveProgress(){
+  if(TEACHER)return;
+  try{
+    const o={v:1,p:{}};
+    TR.forEach(t=>{const p=PROG[t.id];if(p)o.p[t.id]={unlocked:p.unlocked,clean:p.clean.slice()};});
+    localStorage.setItem(STORE_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function validEntry(e){
+  if(!e||typeof e!=="object"||!Number.isInteger(e.unlocked)||e.unlocked<1||e.unlocked>3)return false;
+  if(!Array.isArray(e.clean)||e.clean.length!==3)return false;
+  for(let i=0;i<3;i++){
+    const c=e.clean[i];
+    if(!Number.isInteger(c)||c<0||c>NEED)return false;
+    if(c>=NEED&&e.unlocked<Math.min(3,i+2))return false;
+    if(c>0&&e.unlocked<i+1)return false;
+  }
+  return true;
+}
+function loadProgress(){
+  if(TEACHER)return;
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw)return;
+    const o=JSON.parse(raw);
+    if(!o||typeof o!=="object"||o.v!==1||!o.p||typeof o.p!=="object")return;
+    TR.forEach(t=>{
+      const e=o.p[t.id];
+      if(validEntry(e))PROG[t.id]={unlocked:e.unlocked,clean:e.clean.slice(),hard:0};
+    });
+  }catch(e){}
+}
+function resetProgress(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  Object.keys(PROG).forEach(k=>{delete PROG[k];});
+  DAY.done={};
+}
+
+/* =========================================================
+   Aufgaben-Rahmen: Hilfen, Rückmeldung, Ergebnis
+   ========================================================= */
+let CUR=null;
+function Task(tr,lvl,stuetz){
+  const T=this;
+  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
+  const host=$("taskhost");host.innerHTML="";Dock.off();
+  if(stuetz)host.appendChild(div("banner","<b>Stützaufgabe.</b> Diese Aufgabe ist etwas leichter, damit du wieder in Schwung kommst. Sie zählt nicht für die Stufe."));
+  const card=div("card");host.appendChild(card);
+  T.work=div("work stick"+(tr.noViz?" one":""));card.appendChild(T.work);
+  T.viz=div("viz");T.side=div("side");
+  if(!tr.noViz)T.work.appendChild(T.viz);
+  T.work.appendChild(T.side);
+  T.body=div("");T.side.appendChild(T.body);
+  T.fb=div("fb");T.side.appendChild(T.fb);
+  T.helpHost=div("");T.side.appendChild(T.helpHost);
+  T.res=div("result");T.side.appendChild(T.res);
+}
+Task.prototype.say=function(kind,html){this.fb.className="fb "+kind+" show";this.fb.innerHTML=html;};
+Task.prototype.clearSay=function(){this.fb.className="fb";this.fb.innerHTML="";};
+Task.prototype.miss=function(){
+  this.wrong++;
+  if(this.wrong>=3&&this.solBtn)this.solBtn.style.display="";
+};
+Task.prototype.setHints=function(hints,solFn){
+  const T=this;T.hints=hints;T.solFn=solFn;
+  T.helpHost.innerHTML="";
+  const bar=div("helpbar"),list=div("hints");
+  T.helpHost.appendChild(bar);T.helpHost.appendChild(list);
+  const hb=document.createElement("button");hb.type="button";hb.className="hbtn";
+  const sb=document.createElement("button");sb.type="button";sb.className="hbtn sol";sb.textContent="Lösung zeigen";
+  function lab(){hb.innerHTML=ICON_BULB+"<span>Hilfe</span><span class='tier'>"+hints.map((h,i)=>"<i class='"+(i<T.helpN?"on":"")+"'></i>").join("")+"</span>";}
+  lab();
+  hb.addEventListener("click",()=>{
+    if(T.over||T.helpN>=hints.length)return;
+    let h=hints[T.helpN];T.helpN++;
+    if(typeof h==="function")h=h();
+    const txt=(h&&h.t!==undefined)?h.t:h;
+    list.appendChild(div("hintcard","<b>Hinweis "+T.helpN+".</b> "+txt));
+    if(h&&h.fn)h.fn();
+    lab();
+    if(T.helpN>=hints.length){hb.style.display="none";sb.style.display="";}
+    Dock.measure();
+  });
+  sb.addEventListener("click",()=>{
+    if(T.over)return;
+    T.solShown=true;
+    if(solFn)solFn();
+  });
+  sb.style.display=TEACHER?"":"none";
+  bar.appendChild(hb);bar.appendChild(sb);
+  T.solBtn=sb;T.hideHelp=()=>{bar.style.display="none";};
+};
+/* Aufgabe beendet (richtig gelöst oder Lösung gezeigt) */
+Task.prototype.complete=function(extraHtml){
+  const T=this;if(T.over)return;T.over=true;
+  if(T.hideHelp)T.hideHelp();
+  Dock.off();
+  DAY.done[T.tr.id]=true;
+  const clean=!T.solShown&&T.helpN<=1&&T.wrong<=2;
+  /* deutliche Schwierigkeiten: Lösung gezeigt oder Hinweise plus Fehlversuche zusammen mindestens 2 */
+  const hard=T.solShown||(T.helpN+T.wrong)>=2;
+  const r=Prog.record(T.tr.id,T.lvl,clean,T.stuetz,hard);
+  T.res.innerHTML="";
+  let msg;
+  if(T.solShown)msg="<b>Lösung angezeigt.</b> Diese Aufgabe zählt nicht mit. Die nächste probierst du selbst.";
+  else if(!clean)msg="<b>Gelöst, aber mit Hilfe oder mehreren Anläufen.</b> Diese Aufgabe zählt noch nicht. Die nächste schaffst du selbst.";
+  else if(T.stuetz)msg="<b>Gut gelöst.</b> Du bist wieder im Fluss. Weiter geht es mit der normalen Aufgabe.";
+  else if(r.up)msg="<b>Erfolgreich gelöst. Stufe "+(T.lvl+1)+" ist freigeschaltet.</b>";
+  else if(r.mastered&&T.lvl===3)msg="<b>Erfolgreich gelöst. Alle Stufen dieses Trainers sind geschafft.</b> Du kannst weiterüben oder einen anderen Trainer wählen.";
+  else if(r.mastered)msg="<b>Erfolgreich gelöst.</b> Diese Stufe ist geschafft. Du kannst weiterüben oder zur nächsten Stufe wechseln.";
+  else msg="<b>Erfolgreich gelöst.</b>";
+  const box=div("fb "+(clean?"ok":"hint")+" show",(extraHtml?extraHtml+"<br>":"")+msg);
+  T.res.appendChild(box);
+  const row=div("btnrow");
+  row.appendChild(mkbtn("btn","Nächste Aufgabe",()=>nextTask()));
+  if(r.up)row.appendChild(mkbtn("btn blue","Zu Stufe "+(T.lvl+1),()=>{CUR.lvl=T.lvl+1;renderLevelBar();nextTask();}));
+  row.appendChild(mkbtn("btn ghost","Zur Halle",()=>showHalle()));
+  T.res.appendChild(row);
+  renderLevelBar();
+  setTimeout(()=>{try{T.res.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+};
+
+/* =========================================================
+   Illustrationen (Kopfbereich und Kacheln)
+   ========================================================= */
+function cd(fn,x0,x1,map,n){
+  n=n||90;let d="";
+  for(let i=0;i<=n;i++){
+    const x=x0+(x1-x0)*i/n;let y=fn(x);
+    if(!isFinite(y))continue;
+    y=Math.max(-40,Math.min(60,y));
+    const p=map(x,y);d+=(d?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  }
+  return d;
+}
+function artWrap(inner){
+  let g="";
+  for(let i=0;i<=15;i++)g+='<line x1="'+(i*20)+'" y1="0" x2="'+(i*20)+'" y2="132" stroke="#e8eef6"/>';
+  for(let j=0;j<=7;j++)g+='<line x1="0" y1="'+(j*20)+'" x2="300" y2="'+(j*20)+'" stroke="#e8eef6"/>';
+  return '<svg viewBox="0 0 300 132" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+g+inner+'</svg>';
+}
+function axes(ox,oy){
+  return '<path d="M8 '+oy+'H292M'+ox+' 128V6" stroke="#243b5e" stroke-width="1.6" fill="none"/>';
+}
+function artTxt(x,y,size,fill,inner,anchor){
+  return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||"middle")+'" font-family="'+FF+'" font-size="'+size+'" fill="'+fill+'">'+inner+'</text>';
+}
+const sp=(t,dy)=>'<tspan dy="-7" font-size="13" font-style="italic">'+t+'</tspan><tspan dy="7">';
+function miniTree(hl,labels){
+  /* 2 Stufen, Wurzel links; hl: Liste der markierten Blätter-Indizes 0..3 */
+  const R=[28,66],A=[[130,34],[130,98]],Lf=[[236,18],[236,50],[236,82],[236,114]];
+  let s="";
+  const on=(i)=>hl.indexOf(i)>=0;
+  [0,1].forEach(a=>{
+    const hotA=on(a*2)||on(a*2+1);
+    s+='<line x1="'+R[0]+'" y1="'+R[1]+'" x2="'+A[a][0]+'" y2="'+A[a][1]+'" stroke="'+(hotA?"#c2410c":"#64748b")+'" stroke-width="'+(hotA?3.6:2)+'" stroke-linecap="round"/>';
+    [0,1].forEach(b=>{const i=a*2+b,h=on(i);
+      s+='<line x1="'+A[a][0]+'" y1="'+A[a][1]+'" x2="'+Lf[i][0]+'" y2="'+Lf[i][1]+'" stroke="'+(h?"#c2410c":"#64748b")+'" stroke-width="'+(h?3.6:2)+'" stroke-linecap="round"/>';});
+  });
+  const col=(i)=>i===0?["#f4c542","#9a7400"]:["#7fb2e0","#1f5f94"];
+  [0,1].forEach(a=>{const c=col(a);s+='<circle cx="'+A[a][0]+'" cy="'+A[a][1]+'" r="10" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="2"/>';});
+  Lf.forEach((p,i)=>{const c=col(i%2),h=on(i);s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="10" fill="'+c[0]+'" stroke="'+(h?"#c2410c":c[1])+'" stroke-width="'+(h?3.4:2)+'"/>';});
+  s+='<circle cx="'+R[0]+'" cy="'+R[1]+'" r="6" fill="#334155"/>';
+  if(labels)Lf.forEach((p,i)=>{s+=artTxt(p[0]+16,p[1]+5,13,on(i)?"#9a3412":"#334155",labels[i],"start");});
+  return s;
+}
+const ART={
+  baum(){
+    return artWrap(miniTree([],["(g; g)","(g; b)","(b; g)","(b; b)"]).replace(/;/g,";"+NB));
+  },
+  prod(){
+    return artWrap('<g transform="translate(0,28) scale(1,.76)">'+miniTree([1])+'</g>'+
+      artTxt(62,66,14,"#1b2430","3/5")+artTxt(188,120,14,"#9a3412","2/4")+
+      '<rect x="154" y="3" width="142" height="26" rx="8" fill="#fff" stroke="#c2410c" stroke-width="1.6"/>'+
+      artTxt(223,21,15,"#9a3412","3/5 · 2/4 = 3/10"));
+  },
+  summe(){
+    return artWrap('<g transform="translate(0,28) scale(1,.76)">'+miniTree([1,2])+'</g>'+
+      '<rect x="154" y="3" width="142" height="26" rx="8" fill="#fff" stroke="#c2410c" stroke-width="1.6"/>'+
+      artTxt(223,21,15,"#9a3412","3/10 + 3/10"));
+  },
+  gegen(){
+    return artWrap(
+      '<rect x="22" y="22" width="120" height="50" rx="12" fill="#fff" stroke="#1f6fb2" stroke-width="2.4"/>'+
+      artTxt(82,53,22,"#12233f",'<tspan font-style="italic">E</tspan>')+
+      '<rect x="158" y="22" width="120" height="50" rx="12" fill="#fff" stroke="#c9770f" stroke-width="2.4"/>'+
+      artTxt(218,53,22,"#12233f",'<tspan font-style="italic">Ē</tspan>')+
+      artTxt(150,108,18,"#9b2c1f",'<tspan font-style="italic">P</tspan>(E) = 1 − <tspan font-style="italic">P</tspan>(<tspan font-style="italic">Ē</tspan>)'));
+  }
+};
+
+/* =========================================================
+   Router: Halle und Trainer
+   ========================================================= */
+const TR=[];
+const trOf=(id)=>TR.find(t=>t.id===id);
+function setBar(title,small){$("bartitle").innerHTML=title+(small?"<small>"+small+"</small>":"");}
+
+function showHalle(){
+  CUR=null;Dock.off();document.body.classList.remove("intr");
+  setBar("Übungshalle","II.1 bis II.3 Pfadregeln");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap"),tiles=div("tiles");
+  const MAIN=TR.filter(t=>!t.optional),OPT=TR.filter(t=>t.optional),N=MAIN.length,nDone=MAIN.filter(t=>DAY.done[t.id]).length,all=nDone===N;
+  const head=div("hhead"+(all?" done":""));
+  head.innerHTML='<div><div class="kap">Mathematik 10 · II.1 bis II.3</div><h2>Übungshalle Pfadregeln</h2><p>Vier Trainer rund um Baumdiagramme, die 1. Pfadregel (multiplizieren), die 2. Pfadregel (addieren) und das Gegenereignis. Such dir einen aus. Eine Stufe öffnet sich, sobald dir eine Aufgabe sicher gelingt.</p></div>'+
+    '<div class="dg"><span class="tx" aria-live="polite">'+(all?'✓ Tagesziel erreicht – alle vier Trainer bearbeitet.':'Heute: <b>'+nDone+' von '+N+'</b> Trainern bearbeitet')+'</span><span class="segs" role="img" aria-label="'+nDone+' von '+N+' Trainern bearbeitet">'+MAIN.map(t=>'<span class="seg'+(DAY.done[t.id]?' on':'')+'"></span>').join("")+'</span></div>';
+  wrap.appendChild(head);
+  MAIN.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="tile";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    const note=done?"Alle Stufen geschafft":"Stufe "+p.unlocked+" offen";
+    b.innerHTML=(DAY.done[tr.id]?'<span class="today"><span aria-hidden="true">✓</span> heute bearbeitet</span>':'')+'<span class="art">'+ART[tr.art]()+'</span><span class="tb"><h3>'+tr.name+'</h3><p>'+tr.blurb+'</p><span class="pips">'+pips+'</span><span class="pipnote">'+note+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    tiles.appendChild(b);
+  });
+  wrap.appendChild(tiles);
+  OPT.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="zusatz";
+    let pips="";
+    for(let i=0;i<3;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":(i+1<=p.unlocked?" open":""))+'"></span>';
+    const done=p.clean[2]>=NEED;
+    b.innerHTML='<span class="art">'+ART[tr.art]()+'</span><span class="tb"><span class="optbadge">Optional · für Schnelle und Interessierte</span><h3>'+tr.name+'</h3><p>'+tr.blurb+' Zählt nicht zum Tagesziel.</p><span class="pips">'+pips+'</span><span class="pipnote">'+(done?"Alle Stufen geschafft":"Stufe "+p.unlocked+" offen")+(DAY.done[tr.id]?" · heute bearbeitet":"")+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    wrap.appendChild(b);
+  });
+  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einem Hinweis, ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe schaltet die nächste Stufe frei. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Deine freigeschalteten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
+  const rr=div("resetrow");
+  const lk=mkbtn("linkbtn","Fortschritt zurücksetzen",()=>{
+    rr.innerHTML="";
+    const cf=div("confirm");
+    cf.setAttribute("role","alertdialog");cf.setAttribute("aria-label","Fortschritt zurücksetzen");
+    cf.appendChild(div("","Möchtest du wirklich deinen gesamten gespeicherten Fortschritt zurücksetzen? Alle freigeschalteten Stufen werden gelöscht."));
+    const row=div("btnrow");
+    row.appendChild(mkbtn("btn ghost","Abbrechen",()=>{rr.innerHTML="";rr.appendChild(lk);}));
+    row.appendChild(mkbtn("btn danger","Ja, zurücksetzen",()=>{resetProgress();showHalle();}));
+    cf.appendChild(row);rr.appendChild(cf);
+  });
+  rr.appendChild(lk);wrap.appendChild(rr);
+  st.appendChild(wrap);
+  window.scrollTo(0,0);
+}
+
+function openTrainer(id){
+  const tr=trOf(id),p=Prog.get(id);
+  CUR={id:id,lvl:TEACHER?1:p.unlocked};
+  document.body.classList.add("intr");
+  setBar(tr.name,"Übungshalle");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap");wrap.innerHTML='<div class="lvlbar" id="lvlbar"></div><div id="taskhost"></div>';
+  st.appendChild(wrap);
+  renderLevelBar();nextTask();
+}
+function renderLevelBar(){
+  const bar=$("lvlbar");if(!bar||!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);bar.innerHTML="";
+  tr.levels.forEach((L,i)=>{
+    const n=i+1,locked=n>p.unlocked;
+    const b=document.createElement("button");b.type="button";
+    b.className="lvl"+(n===CUR.lvl?" sel":"")+(locked?" lock":"");
+    b.innerHTML="<b>Stufe "+n+"</b><small>"+L.n+"</small>"+(locked?'<span class="lk">noch gesperrt</span>':'<span class="dots"><i class="dot'+(p.clean[i]>=NEED?" on":"")+'"></i><span class="lk">'+(p.clean[i]>=NEED?"geschafft":"noch offen")+"</span></span>");
+    b.setAttribute("aria-label","Stufe "+n+", "+L.n+(locked?", noch gesperrt":(p.clean[i]>=NEED?", geschafft":", noch offen")));
+    b.addEventListener("click",()=>{if(locked||n===CUR.lvl)return;CUR.lvl=n;renderLevelBar();nextTask();});
+    bar.appendChild(b);
+  });
+}
+function nextTask(){
+  if(!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);
+  let stuetz=false;
+  if(p.hard>=2&&!TEACHER){stuetz=true;p.hard=0;}
+  const T=new Task(tr,CUR.lvl,stuetz);
+  tr.start(T,CUR.lvl,stuetz);
+  Dock.measure();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Merkhilfe ---------- */
+function openSheet(){$("veil").classList.add("on");$("sheet").classList.add("on");$("sheetclose").focus();}
+function closeSheet(){$("veil").classList.remove("on");$("sheet").classList.remove("on");}
+$("merk").addEventListener("click",openSheet);
+$("sheetclose").addEventListener("click",closeSheet);
+$("veil").addEventListener("click",closeSheet);
+document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeSheet();});
+$("back").addEventListener("click",showHalle);
+$("tmode").classList.toggle("on",TEACHER);
+
+
+function frac(n,d){return '<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';}
+const M=(h)=>'<span class="mf">'+h+'</span>';
+/* =========================================================
+   Pfadregeln: gemeinsame Bausteine
+   ========================================================= */
+const NB=" ";
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=a%b;a=b;b=t;}return a||1;}
+function Q(n,d){if(d===undefined)d=1;const g=gcd(n,d);if(d<0){n=-n;d=-d;}return {n:n/g,d:d/g};}
+const qmul=(a,b)=>Q(a.n*b.n,a.d*b.d),qadd=(a,b)=>Q(a.n*b.d+b.n*a.d,a.d*b.d),qsub=(a,b)=>Q(a.n*b.d-b.n*a.d,a.d*b.d);
+const qv=(q)=>q.n/q.d;
+const qH=(q)=>q.d===1?String(q.n):frac(q.n,q.d);
+const qS=(q)=>q.d===1?String(q.n):q.n+"/"+q.d;
+const rawH=(r)=>frac(r.n,r.d);
+const Pr=(s)=>{if(/^\([^()]*\)$/.test(s))s=s.slice(1,-1);return "<i>P</i>("+s.replace(/; /g,";"+NB)+")";};
+const randInt=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const choice=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+const NW=["keine","eine","zwei","drei","vier"];
+const ZM=["","einmal","zweimal","dreimal","viermal"];
+
+/* Farbpaare der Urne */
+const PAIRS=[
+  {c:["r","b"],w:["rote","blaue"],f:["#ef8a80","#7fb2e0"],s:["#a8362b","#1f5f94"],t:["#5a1510","#0d2f4d"]},
+  {c:["g","b"],w:["gelbe","blaue"],f:["#f4c542","#7fb2e0"],s:["#9a7400","#1f5f94"],t:["#4d3a00","#0d2f4d"]},
+  {c:["w","s"],w:["weiße","schwarze"],f:["#f6f6f6","#4a4f5a"],s:["#8a93a3","#222831"],t:["#222831","#ffffff"]},
+  {c:["g","r"],w:["grüne","rote"],f:["#9ccf8a","#ef8a80"],s:["#3f7a2c","#a8362b"],t:["#1c3d12","#5a1510"]}
+];
+/* Urne: a Kugeln der 1. Farbe, b der 2. Farbe, rep = mit Zurücklegen */
+function mkUrn(stages,rep,opt){
+  opt=opt||{};
+  const P=choice(PAIRS);
+  let a,b,g=0;
+  const opts=[[3,2],[2,3],[4,2],[2,4],[3,3],[1,4],[4,1],[5,2],[2,5],[3,4],[4,3],[1,3],[3,1]];
+  do{const o=choice(opts);a=o[0];b=o[1];g++;
+    if(!rep&&(a+b<stages+1||(a+b)>6&&stages===3))continue;
+    if(!rep&&stages===3&&(a<1||b<1))continue;
+    if(opt.small&&a+b>5)continue;
+    if(opt.maxTot&&a+b>opt.maxTot)continue;
+    break;}while(g<200);
+  if(Math.random()<.5){const t=a;a=b;b=t;}
+  return {P,c:P.c,w:P.w,a,b,rep};
+}
+function stepsOf(U,path){
+  let a=U.a,b=U.b;const o=[];
+  for(const ch of path){
+    const tot=a+b;
+    if(ch===U.c[0]){if(a<=0)return null;o.push({n:a,d:tot});if(!U.rep)a--;}
+    else{if(b<=0)return null;o.push({n:b,d:tot});if(!U.rep)b--;}
+  }
+  return o;
+}
+function pathQ(U,path){const s=stepsOf(U,path);if(!s)return null;return s.reduce((p,r)=>qmul(p,Q(r.n,r.d)),Q(1));}
+function allPaths(U,k){
+  let L=[""];
+  for(let i=0;i<k;i++){const N=[];L.forEach(p=>U.c.forEach(c=>{const q=p+c;if(stepsOf(U,q))N.push(q);}));L=N;}
+  return L;
+}
+const cnt=(p,c)=>p.split("").filter(x=>x===c).length;
+/* Ereignisse: genau/mind/hoech + Anzahl m der Kugeln mit Farbe col, oder "same" */
+function holds(E,U,p){
+  if(E.k==="same")return p.split("").every(x=>x===p[0]);
+  const n=cnt(p,U.c[E.col]);
+  return E.k==="genau"?n===E.m:E.k==="mind"?n>=E.m:n<=E.m;
+}
+function evText(E,U){
+  if(E.k==="same")return "Alle gezogenen Kugeln haben dieselbe Farbe";
+  const w=U.w[E.col];
+  if((E.k==="hoech"&&E.m===0)||(E.k==="genau"&&E.m===0))return "keine "+w+" Kugel";
+  const pre=E.k==="genau"?"genau ":E.k==="mind"?"mindestens ":"höchstens ";
+  return pre+NW[E.m]+" "+w+" Kugel"+(E.m===1?"":"n");
+}
+const evSet=(E,U,paths)=>paths.filter(p=>holds(E,U,p));
+function evCands(stages){
+  const L=[];
+  [0,1].forEach(col=>{
+    L.push({k:"genau",m:1,col},{k:"mind",m:1,col},{k:"hoech",m:1,col},{k:"hoech",m:0,col});
+    if(stages>=2)L.push({k:"genau",m:2,col});
+    if(stages>=3){L.push({k:"mind",m:2,col},{k:"hoech",m:2,col});}
+  });
+  L.push({k:"same"});
+  return L;
+}
+function complementOf(E){
+  if(E.k==="mind")return {k:"hoech",m:E.m-1,col:E.col};
+  return {k:"mind",m:E.m+1,col:E.col};
+}
+/* Textbausteine */
+function urnLine(U){return "In einer Urne liegen <b>"+U.a+" "+U.w[0]+"</b> und <b>"+U.b+" "+U.w[1]+"</b> Kugeln.";}
+function drawLine(U,n){return "Es wird "+ZM[n]+" gezogen, "+(U.rep?"<b>mit</b>":"<b>ohne</b>")+" Zurücklegen.";}
+function ballsH(U){
+  let h='<div class="urnrow" aria-label="Urne mit Kugeln">';
+  [[0,U.a],[1,U.b]].forEach(([i,n])=>{for(let k=0;k<n;k++)h+='<span class="bl" style="background:'+U.P.f[i]+';border-color:'+U.P.s[i]+';color:'+U.P.t[i]+'">'+U.c[i]+'</span>';});
+  return h+"</div>";
+}
+const tup=(p)=>"("+p.split("").join(";"+NB)+")";
+function stepsH(U,path){return stepsOf(U,path).map(rawH).join(" · ");}
+function pathLineH(U,path){
+  const s=stepsOf(U,path),q=pathQ(U,path);
+  return Pr(tup(path))+" = "+s.map(rawH).join(" · ")+" = "+qH(q);
+}
+/* Baumdiagramm (waagerecht), hl: markierte Pfade */
+function treeSVG(U,stages,o){
+  o=o||{};const hl=o.hl||[];
+  const leaves=[];
+  function build(a,b,path,depth){
+    const n={path,depth,kids:[]};
+    if(depth<stages){const tot=a+b;
+      [0,1].forEach(i=>{const k=i?b:a;if(k<=0)return;
+        const kid=build(U.rep?a:(i?a:a-1),U.rep?b:(i?b-1:b),path+U.c[i],depth+1);
+        kid.edge={n:k,d:tot};kid.ch=U.c[i];kid.ix=i;n.kids.push(kid);});
+    }else leaves.push(n);
+    return n;
+  }
+  const root=build(U.a,U.b,"",0);
+  const rowH=stages>=3?44:66,top=26,leafW=o.noTup?26:(stages>=3?96:70),W=560,H=top*2+(leaves.length-1)*rowH;
+  const x0=24,dx=(W-x0-leafW-18)/stages;
+  let idx=0;
+  (function lay(n){n.x=x0+n.depth*dx;if(!n.kids.length){n.y=top+idx*rowH;idx++;}else{n.kids.forEach(lay);n.y=(n.kids[0].y+n.kids[n.kids.length-1].y)/2;}})(root);
+  const onHl=(p)=>p.length>0&&hl.some(h=>h.indexOf(p)===0);
+  let E="",L="",N="";
+  function fracSVG(x,y,n,d,col){
+    const bw=Math.max(String(n).length,String(d).length)*4.4+5,st='text-anchor="middle" font-size="13" font-weight="600" fill="'+col+'" stroke="#fff" stroke-width="4.5" paint-order="stroke" stroke-linejoin="round"';
+    return '<line x1="'+(x-bw)+'" x2="'+(x+bw)+'" y1="'+(y-4)+'" y2="'+(y-4)+'" stroke="#fff" stroke-width="4"/><text '+st+' x="'+x+'" y="'+(y-7)+'">'+n+'</text><text '+st+' x="'+x+'" y="'+(y+10)+'">'+d+'</text><line x1="'+(x-bw+1)+'" x2="'+(x+bw-1)+'" y1="'+(y-4)+'" y2="'+(y-4)+'" stroke="'+col+'" stroke-width="1.3"/>';
+  }
+  (function draw(n){
+    n.kids.forEach(k=>{
+      const h=onHl(k.path);
+      E+='<line x1="'+n.x+'" y1="'+n.y+'" x2="'+k.x+'" y2="'+k.y+'" stroke="'+(h?"#c2410c":"#64748b")+'" stroke-width="'+(h?3.6:1.6)+'" stroke-linecap="round"/>';
+      if(o.showP){const t=(k.depth>=2&&stages<3)?.6:((stages>=3&&k.depth===stages)?.72:.5);
+        L+=fracSVG(n.x+(k.x-n.x)*t,n.y+(k.y-n.y)*t,k.edge.n,k.edge.d,h?"#9a3412":"#1b2430");}
+      draw(k);
+    });
+    if(n.depth>0){
+      const i=n.ix,h=onHl(n.path);
+      N+='<circle cx="'+n.x+'" cy="'+n.y+'" r="13" fill="'+U.P.f[i]+'" stroke="'+(h?"#c2410c":U.P.s[i])+'" stroke-width="'+(h?3.4:1.6)+'"/><text x="'+n.x+'" y="'+(n.y+5)+'" text-anchor="middle" font-size="14" font-weight="700" fill="'+U.P.t[i]+'">'+n.ch+'</text>';
+      if(!n.kids.length&&!o.noTup)N+='<text x="'+(n.x+21)+'" y="'+(n.y+5)+'" font-size="13.5" fill="'+(h?"#9a3412":"#1b2430")+'" font-weight="'+(h?700:500)+'">'+tup(n.path)+'</text>';
+    }
+  })(root);
+  N+='<circle cx="'+root.x+'" cy="'+root.y+'" r="6" fill="#334155"/>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Baumdiagramm" preserveAspectRatio="xMidYMid meet">'+E+L+N+'</svg>';
+}
+function frow(labelHtml,f){
+  const r=div("term");const l=document.createElement("span");l.className="mf";l.innerHTML=labelHtml;
+  r.appendChild(l);r.appendChild(f.el);return r;
+}
+function OptList(T,items,onPick){
+  const ord=shuffle(items.map((_,i)=>i)),box=div("opts"),els=[];
+  ord.forEach((ix,k)=>{
+    const it=items[ix],b=document.createElement("button");b.type="button";b.className="opt";
+    b.innerHTML='<span class="mk">'+"ABCD"[k]+'</span>'+it.h;
+    b.addEventListener("click",()=>{if(T.over||b.disabled)return;onPick(it,b);});
+    els.push({b,it});box.appendChild(b);
+  });
+  return {box,els,lock(){els.forEach(o=>{o.b.disabled=true;});}};
+}
+/* Ausgabe der Eingabe: ganze Zahl, Bruch oder Dezimalzahl */
+function isFracIn(s){return s.indexOf("/")>=0;}
+function runNum(T,c){
+  /* c: prompt, pre(html), label, x(Zahl), xs(Feldtext der Lösung), int, wrong(v)->html|null, ok(html), sol(html), hints[], after() */
+  if(c.pre)T.body.appendChild(div("",c.pre));
+  T.body.appendChild(div("prompt",c.prompt));
+  const fx=Field({aria:"Antwort"});
+  T.body.appendChild(frow(c.label,fx));
+  const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+  Dock.use([fx],check);
+  window.__x=c.x;
+  function good(v){
+    if(c.int)return v===c.x;
+    if(isFracIn(fx.val))return Math.abs(v-c.x)<1e-9;
+    return Math.abs(v-c.x)<=(c.tol||0.0006);
+  }
+  function check(){
+    if(T.over)return;
+    const v=fx.num();
+    if(isNaN(v)){T.say("hint","Trage eine Zahl ein. Brüche schreibst du mit dem Bruchstrich, Dezimalzahlen mit Komma.");return;}
+    if(good(v)){
+      T.say("ok","<b>Richtig.</b> "+c.ok);fx.lock("ok");if(c.after)c.after();T.complete("");return;
+    }
+    fx.state("no");T.miss();
+    let msg=c.wrong?c.wrong(v):null;
+    if(!msg){
+      if(!c.int&&Math.abs(v-c.x)<0.01&&!isFracIn(fx.val))msg="Fast. Prüfe die Rundung oder gib den Bruch an.";
+      else if(!c.int&&v>1)msg="Eine Wahrscheinlichkeit ist nie größer als 1.";
+      else msg="Das stimmt noch nicht. Prüfe die Rechnung noch einmal.";
+    }
+    T.say("hint","<b>Noch nicht.</b> "+msg);
+  }
+  T.setHints(c.hints,()=>{
+    fx.set(c.xs);fx.lock("ok");
+    T.say("sol","<b>Lösung:</b> "+c.sol);
+    if(c.after)c.after();T.complete("");
+  });
+  return fx;
+}
+const pHint="Berechne die Wahrscheinlichkeit jedes einzelnen Pfades mit der 1. Pfadregel (entlang des Pfades multiplizieren).";
+const effL=(lvl,stuetz)=>stuetz?Math.max(1,lvl-1):lvl;
+
+/* =========================================================
+   TRAINER 1 – Pfade im Baum
+   ========================================================= */
+TR.push({
+  id:"pfade",name:"Pfade im Baum",art:"baum",noViz:false,
+  blurb:"Pfade zählen, zu einem Ereignis zuordnen und Ereignisse in Worten beschreiben.",
+  levels:[{n:"Pfade zählen"},{n:"Pfade eines Ereignisses"},{n:"Ereignis erkennen"}],
+  start(T,lvl,stuetz){
+    const L=effL(lvl,stuetz);
+    if(L===1){
+      const stages=(stuetz||Math.random()<.5)?2:3,rep=stuetz?true:Math.random()<.6,U=mkUrn(stages,rep);
+      const paths=allPaths(U,stages);
+      T.viz.innerHTML=treeSVG(U,stages,{});
+      T.body.appendChild(div("",urnLine(U)+" "+ballsH(U)+drawLine(U,stages)));
+      runNum(T,{prompt:"Wie viele <b>Pfade</b> hat das Baumdiagramm?",label:"Anzahl der Pfade =",x:paths.length,xs:String(paths.length),int:true,
+        wrong:(v)=>v>paths.length?"Das sind zu viele. Zähle die Endpunkte ganz rechts im Baum.":"Das sind zu wenige. Zähle alle Endpunkte ganz rechts im Baum.",
+        ok:paths.length+" Pfade, also "+paths.length+" mögliche Ergebnisse.",
+        sol:paths.length+" Pfade."+(U.rep?" Mit Zurücklegen verzweigt sich jede Stufe gleich: "+Array(stages).fill(2).join(" · ")+" = "+paths.length+".":" Ohne Zurücklegen fallen Pfade weg, die nicht mehr möglich sind."),
+        hints:["Zähle die Endpunkte ganz rechts im Baum. Jeder Endpunkt gehört zu genau einem Pfad.",U.rep?"Mit Zurücklegen ist die Urne in jeder Stufe gleich. Jede Stufe hat 2 Äste: "+Array(stages).fill(2).join(" · ")+".":"Ohne Zurücklegen ändert sich die Urne. Prüfe, ob in einer Stufe nur noch eine Farbe übrig ist.","Zähle der Reihe nach: erst alle Pfade, die oben mit "+U.c[0]+" beginnen, dann die mit "+U.c[1]+"."]});
+    }else if(L===2){
+      const stages=Math.random()<.55?2:3,rep=Math.random()<.65,U=mkUrn(stages,rep);
+      const paths=allPaths(U,stages);
+      let E,S,g=0;
+      do{E=choice(evCands(stages).filter(e=>e.k!=="same"||stages===2));S=evSet(E,U,paths);g++;}while((S.length===0||S.length===paths.length||(E.k==="same"))&&g<80);
+      T.viz.innerHTML=treeSVG(U,stages,{});
+      T.body.appendChild(div("",urnLine(U)+" "+ballsH(U)+drawLine(U,stages)));
+      T.body.appendChild(div("rule2","Ereignis E: „"+evText(E,U)+".“"));
+      runNum(T,{prompt:"Wie viele Pfade gehören zum Ereignis E?",label:"Anzahl =",x:S.length,xs:String(S.length),int:true,
+        wrong:(v)=>v===paths.length?"Das ist die Zahl aller Pfade. Gesucht sind nur die Pfade, die zu E passen.":(v>S.length?"Das sind zu viele. Prüfe bei jedem Pfad, ob E wirklich zutrifft.":"Das sind zu wenige. Prüfe jeden Pfad einzeln."),
+        ok:S.length+" Pfade: "+S.map(tup).join(", ")+".",sol:S.length+" Pfade: "+S.map(tup).join(", ")+".",
+        hints:["Gehe alle Pfade im Baum der Reihe nach durch. Wie oft kommt jeweils "+U.w[E.k==="same"?0:E.col]+" vor?","Schreibe die Pfade auf, die zu E gehören, zum Beispiel "+tup(S[0])+".","Bei „mindestens“ zählen auch Pfade mit mehr Treffern, bei „höchstens“ auch Pfade mit weniger."]});
+    }else{
+      const stages=Math.random()<.5?2:3,rep=true,U=mkUrn(stages,rep);
+      const paths=allPaths(U,stages),cands=evCands(stages);
+      const byKey={};
+      cands.forEach(e=>{const s=evSet(e,U,paths);if(!s.length||s.length===paths.length)return;const k=s.slice().sort().join();(byKey[k]=byKey[k]||[]).push({e,s});});
+      const keys=shuffle(Object.keys(byKey)),ck=keys[0],corr=choice(byKey[ck]),others=keys.slice(1,4).map(k=>choice(byKey[k]));
+      T.viz.innerHTML=treeSVG(U,stages,{hl:corr.s});
+      T.body.appendChild(div("",urnLine(U)+" "+ballsH(U)+drawLine(U,stages)));
+      T.body.appendChild(div("prompt","Im Baum sind die Pfade eines Ereignisses markiert. Welche Beschreibung passt?"));
+      const items=[{h:evText(corr.e,U),ok:1,s:corr.s}].concat(others.map(o=>({h:evText(o.e,U),ok:0,s:o.s})));
+      const OL=OptList(T,items,(it,b)=>{
+        if(it.ok){b.classList.add("chosen-ok");OL.lock();T.say("ok","<b>Richtig.</b> Markiert sind "+corr.s.length+" Pfade: "+corr.s.map(tup).join(", ")+". Das sind genau die Pfade zu „"+evText(corr.e,U)+"“.");T.complete("");}
+        else{b.classList.add("chosen-no");b.disabled=true;T.miss();T.say("hint","<b>Noch nicht.</b> Zu dieser Aussage gehören "+it.s.length+" Pfade ("+it.s.map(tup).join(", ")+"). Im Baum sind "+corr.s.length+" Pfade markiert.");}
+      });
+      T.body.appendChild(OL.box);
+      T.setHints(["Lies die markierten Pfade ab und zähle, wie oft "+U.w[0]+" und "+U.w[1]+" Kugeln darin vorkommen.","Hat jeder markierte Pfad dieselbe Anzahl einer Farbe, steht „genau“ da. Kommen mehrere Anzahlen vor, steht „mindestens“ oder „höchstens“ da.","Die markierten Pfade sind: "+corr.s.map(tup).join(", ")+"."],()=>{
+        OL.els.forEach(o=>{if(o.it.ok)o.b.classList.add("chosen-ok");});OL.lock();
+        T.say("sol","<b>Lösung:</b> „"+evText(corr.e,U)+"“.");T.complete("");
+      });
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 2 – 1. Pfadregel
+   ========================================================= */
+const CONTEXTS=[
+  {n:"Beim Elfmeter trifft eine Spielerin mit der Wahrscheinlichkeit 0,8.",y:"trifft",x:"verschießt"},
+  {n:"Ein Basketballspieler trifft beim Freiwurf mit der Wahrscheinlichkeit 0,7.",y:"trifft",x:"trifft nicht"},
+  {n:"Eine Verkehrsampel zeigt mit der Wahrscheinlichkeit 0,6 Grün.",y:"Grün",x:"nicht Grün"},
+  {n:"Ein Sportschütze trifft die Scheibe mit der Wahrscheinlichkeit 0,9.",y:"trifft",x:"verfehlt"}
+];
+TR.push({
+  id:"pfad1",name:"1. Pfadregel",art:"prod",noViz:false,
+  blurb:"Die Wahrscheinlichkeit eines Pfades: entlang des Pfades multiplizieren.",
+  levels:[{n:"Mit Zurücklegen"},{n:"Ohne Zurücklegen"},{n:"Drei Stufen"}],
+  start(T,lvl,stuetz){
+    const L=effL(lvl,stuetz);
+    const dec=(L===3&&!stuetz&&Math.random()<.3);
+    if(dec){
+      const C=choice(CONTEXTS),p=choice([.6,.7,.8,.9]),word=randInt(0,1);
+      const pat=shuffle(["y","y","x"].concat(Math.random()<.5?[]:[]));
+      const seq=choice(["yyx","yxy","xyy","yxx","xyx"]).split("");
+      const q=Math.round((1-p)*10)/10;
+      const x=seq.reduce((a,c)=>a*(c==="y"?p:q),1);
+      const xr=Math.round(x*1e6)/1e6;
+      const outc=seq.map(c=>c==="y"?C.y:C.x);
+      T.viz.innerHTML=chainSVGp(seq.map(c=>c==="y"?p:q),seq,C);
+      T.body.appendChild(div("",C.n+" Die Versuche sind voneinander unabhängig."));
+      const facs=seq.map(c=>mnum(c==="y"?p:q,1)).join(" · ");
+      runNum(T,{prompt:"Wie groß ist die Wahrscheinlichkeit für den Ablauf <b>„"+outc.join(", ")+"“</b> in dieser Reihenfolge?",label:Pr("Ablauf")+" =",x:xr,xs:mnum(xr,4),tol:0.0006,
+        wrong:(v)=>Math.abs(v-seq.reduce((a,c)=>a+(c==="y"?p:q),0))<1e-6?"Entlang eines Pfades werden die Wahrscheinlichkeiten <b>multipliziert</b>, nicht addiert.":null,
+        ok:facs+" = "+mnum(xr,4)+".",sol:facs+" = "+mnum(xr,4)+".",
+        hints:["Jeder Versuch ist eine Stufe. Schreibe für jede Stufe die Wahrscheinlichkeit auf: „"+C.y+"“ hat "+mnum(p,1)+", das Gegenteil hat "+mnum(q,1)+".","Wähle für jeden Versuch die passende Zahl in der Reihenfolge des Ablaufs: "+facs+".","Multipliziere die drei Zahlen miteinander."]});
+      return;
+    }
+    const stages=L===3?3:2,rep=L===1?true:(L===2?false:Math.random()<.5),U=mkUrn(stages,rep);
+    let path,g=0;
+    do{path=Array.from({length:stages},()=>choice(U.c)).join("");g++;}while(!stepsOf(U,path)&&g<100);
+    const q=pathQ(U,path),s=stepsOf(U,path);
+    if(L===1){T.viz.innerHTML=treeSVG(U,stages,{hl:[path],showP:true});}
+    else if(L===2){T.viz.innerHTML=treeSVG(U,stages,{hl:[path],showP:false});}
+    else{T.viz.innerHTML='<div class="vizcard">'+ballsH(U)+'<div class="small">'+(U.rep?"Mit":"Ohne")+' Zurücklegen, '+ZM[stages]+' gezogen</div></div>';}
+    T.body.appendChild(div("",urnLine(U)+" "+(L===3?"":ballsH(U))+drawLine(U,stages)));
+    const alt=U.rep?null:(()=>{let a=U.a,b=U.b;const tot=a+b;return path.split("").reduce((p,ch)=>qmul(p,Q(ch===U.c[0]?U.a:U.b,tot)),Q(1));})();
+    runNum(T,{prompt:"Wie groß ist die Wahrscheinlichkeit für das Ergebnis <b>"+tup(path)+"</b>?",label:Pr(tup(path))+" =",x:qv(q),xs:qS(q),tol:0.0006,
+      wrong:(v)=>{
+        const sum=s.reduce((a,r)=>qadd(a,Q(r.n,r.d)),Q(0));
+        if(Math.abs(v-qv(sum))<1e-6&&sum.d>0)return "Entlang eines Pfades werden die Wahrscheinlichkeiten <b>multipliziert</b>, nicht addiert.";
+        if(alt&&Math.abs(v-qv(alt))<1e-6)return "Ohne Zurücklegen ändert sich die Urne. Nach dem ersten Zug liegt eine Kugel weniger in der Urne, auch im Nenner.";
+        if(Math.abs(v-s[0].n/s[0].d)<1e-6)return "Das ist nur die Wahrscheinlichkeit der ersten Stufe. Der Pfad hat "+stages+" Stufen.";
+        return null;},
+      ok:Pr(tup(path))+" = "+stepsH(U,path)+" = "+qH(q)+(qv(q)>0&&q.d>1?" ≈ "+mnum(qv(q),3):"")+".",
+      sol:pathLineH(U,path),
+      hints:[L===1?"Multipliziere die Zahlen an den Ästen des markierten Pfades.":"Bestimme für jede Stufe, wie viele Kugeln in der Urne liegen und wie viele davon die gesuchte Farbe haben.",
+        U.rep?"Mit Zurücklegen ist die Urne vor jedem Zug gleich: Nenner immer "+(U.a+U.b)+".":"Ohne Zurücklegen liegt nach jedem Zug eine Kugel weniger in der Urne. Beachte, welche Farbe schon gezogen wurde.",
+        "Die Wahrscheinlichkeiten der einzelnen Stufen: "+stepsH(U,path)+". Multipliziere sie."]});
+  }
+});
+function chainSVGp(ps,seq,C){
+  const W=560,n=ps.length,x0=40,dx=(W-x0-40)/n,y=70;
+  let s='';
+  for(let i=0;i<n;i++){const xa=x0+i*dx,xb=xa+dx;
+    s+='<line x1="'+xa+'" y1="'+y+'" x2="'+xb+'" y2="'+y+'" stroke="#c2410c" stroke-width="3.6" stroke-linecap="round"/>';
+    s+='<text x="'+((xa+xb)/2)+'" y="'+(y-12)+'" text-anchor="middle" font-size="16" font-weight="700" fill="#9a3412" stroke="#fff" stroke-width="4.5" paint-order="stroke">'+mnum(ps[i],1)+'</text>';
+    s+='<text x="'+xb+'" y="'+(y+44)+'" text-anchor="middle" font-size="13" fill="#1b2430">'+(seq[i]==="y"?C.y:C.x)+'</text>';
+    s+='<circle cx="'+xb+'" cy="'+y+'" r="12" fill="'+(seq[i]==="y"?"#bfe3c8":"#f3c4bf")+'" stroke="#c2410c" stroke-width="2.6"/>';}
+  s+='<circle cx="'+x0+'" cy="'+y+'" r="6" fill="#334155"/>';
+  return '<svg viewBox="0 0 '+W+' 130" role="img" aria-label="Pfad mit Wahrscheinlichkeiten">'+s+'</svg>';
+}
+
+/* =========================================================
+   TRAINER 3 – 2. Pfadregel
+   ========================================================= */
+function evPathsHTML(U,S){return S.map(p=>pathLineH(U,p)).join("<br>");}
+TR.push({
+  id:"pfad2",name:"2. Pfadregel",art:"summe",noViz:false,
+  blurb:"Gehören mehrere Pfade zu einem Ereignis, werden ihre Wahrscheinlichkeiten addiert.",
+  levels:[{n:"Zwei Pfade"},{n:"Ereignis finden"},{n:"Drei Stufen"}],
+  start(T,lvl,stuetz){
+    const L=effL(lvl,stuetz);
+    const stages=L===3?3:2,rep=L===1?true:Math.random()<.5;
+    let U,paths,E,S,g=0;
+    do{
+      U=mkUrn(stages,rep,{maxTot:stages===3?5:7});paths=allPaths(U,stages);
+      if(L===1)E={k:"genau",m:1,col:randInt(0,1)};
+      else if(L===2)E=choice([{k:"genau",m:1,col:randInt(0,1)},{k:"same"},{k:"mind",m:2,col:randInt(0,1)},{k:"genau",m:2,col:randInt(0,1)}]);
+      else E=choice([{k:"genau",m:1,col:randInt(0,1)},{k:"genau",m:2,col:randInt(0,1)}]);
+      S=evSet(E,U,paths);g++;
+    }while((S.length<2||S.length>3||(L>=2&&(E.k==="mind")&&stages===2&&S.length<2))&&g<400);
+    if(S.length<2){U=mkUrn(2,true);paths=allPaths(U,2);E={k:"genau",m:1,col:0};S=evSet(E,U,paths);}
+    const x=S.reduce((a,p)=>qadd(a,pathQ(U,p)),Q(0));
+    T.viz.innerHTML=(L===1)?treeSVG(U,stages,{hl:S,showP:true}):'<div class="vizcard">'+ballsH(U)+'<div class="small">'+(U.rep?"Mit":"Ohne")+' Zurücklegen, '+ZM[stages]+' gezogen</div></div>';
+    T.body.appendChild(div("",urnLine(U)+" "+(L===1?ballsH(U):"")+drawLine(U,stages)));
+    T.body.appendChild(div("rule2","Ereignis E: „"+evText(E,U)+".“"+(L===1?" Die Pfade von E sind im Baum farbig markiert.":"")));
+    const pq=S.map(p=>pathQ(U,p));
+    runNum(T,{prompt:"Wie groß ist die Wahrscheinlichkeit von E?",label:Pr("E")+" =",x:qv(x),xs:qS(x),tol:0.0006,
+      wrong:(v)=>{
+        if(pq.some(q=>Math.abs(v-qv(q))<1e-6))return "Das ist nur die Wahrscheinlichkeit <b>eines</b> Pfades. Zu E gehören "+S.length+" Pfade, deren Wahrscheinlichkeiten du addierst.";
+        const pr=pq.reduce((a,q)=>qmul(a,q),Q(1));
+        if(Math.abs(v-qv(pr))<1e-6)return "Verschiedene Pfade werden <b>addiert</b>, nicht multipliziert. Multipliziert wird nur entlang eines Pfades.";
+        return null;},
+      ok:Pr("E")+" = "+S.map(p=>qH(pathQ(U,p))).join(" + ")+" = "+qH(x)+(x.d>1?" ≈ "+mnum(qv(x),3):"")+".",
+      sol:"Zu E gehören "+S.length+" Pfade:<br>"+evPathsHTML(U,S)+"<br>"+Pr("E")+" = "+S.map(p=>qH(pathQ(U,p))).join(" + ")+" = "+qH(x)+(x.d>1?" ≈ "+mnum(qv(x),3):""),
+      hints:["Welche Pfade gehören zu E? Schreibe sie auf. "+(L===1?"Sie sind im Baum markiert.":""),pHint,"Addiere die Wahrscheinlichkeiten der Pfade, die zu E gehören (2. Pfadregel)."]});
+  }
+});
+
+/* =========================================================
+   TRAINER 4 – Gegenereignis
+   ========================================================= */
+const PCTX=[
+  {t:(n,p)=>"Ein Basketballspieler trifft beim Freiwurf mit der Wahrscheinlichkeit "+mnum(p,1)+". Er wirft "+ZM[n]+".",e:"mindestens einmal trifft",ev:"kein Treffer",q:(p)=>1-p,pp:[.6,.7,.8,.9]},
+  {t:(n,p)=>"Ein Basketballspieler trifft beim Freiwurf mit der Wahrscheinlichkeit "+mnum(p,1)+". Er wirft "+ZM[n]+".",e:"mindestens einmal danebenwirft",ev:"immer ein Treffer",q:(p)=>p,pp:[.6,.7,.8,.9]},
+  {t:(n,p)=>"Ein Würfel wird "+ZM[n]+" geworfen.",e:"mindestens eine 6 fällt",ev:"keine 6",q:()=>5/6,fixed:true},
+  {t:(n,p)=>"Eine Münze wird "+ZM[n]+" geworfen.",e:"mindestens einmal Wappen fällt",ev:"nie Wappen",q:()=>1/2,fixed:true},
+  {t:(n,p)=>"Ein Glücksrad bleibt mit der Wahrscheinlichkeit "+mnum(p,1)+" auf Rot stehen. Es wird "+ZM[n]+" gedreht.",e:"mindestens einmal Rot kommt",ev:"nie Rot",q:(p)=>1-p,pp:[.2,.3,.4]}
+];
+TR.push({
+  id:"gegen",name:"Gegenereignis und „mindestens“",art:"gegen",noViz:true,
+  blurb:"Das Gegenereignis bilden und damit „mindestens ein …“ geschickt berechnen.",
+  levels:[{n:"Gegenereignis nennen"},{n:"Mindestens eine"},{n:"Wiederholte Versuche"}],
+  start(T,lvl,stuetz){
+    const L=effL(lvl,stuetz);
+    if(L===1){
+      const stages=Math.random()<.5?2:3,U=mkUrn(stages,true);
+      let E;do{E=choice(evCands(stages).filter(e=>e.k==="mind"||e.k==="hoech"));}while(E.k==="mind"&&E.m>stages);
+      const C=complementOf(E);
+      T.body.appendChild(div("",urnLine(U)+" "+ballsH(U)+drawLine(U,stages)));
+      T.body.appendChild(div("rule2","Ereignis E: „"+evText(E,U)+".“"));
+      T.body.appendChild(div("prompt","Wie lautet das <b>Gegenereignis</b> von E?"));
+      const paths=allPaths(U,stages),cs=evSet(C,U,paths);
+      const dist=[
+        {k:E.k,m:E.m+(E.k==="mind"?1:-1),col:E.col},
+        {k:E.k,m:E.m,col:1-E.col},
+        {k:E.k==="mind"?"hoech":"mind",m:E.m,col:E.col}
+      ].filter(d=>d.m>=0&&d.m<=stages);
+      const seen={},items=[{h:evText(C,U),ok:1}];seen[evText(C,U)]=1;seen[evText(E,U)]=1;
+      dist.concat([{k:"genau",m:1,col:E.col},{k:"genau",m:2,col:E.col},{k:"hoech",m:1,col:1-E.col}]).forEach(d=>{const t=evText(d,U);const ds=evSet(d,U,paths).slice().sort().join(),cs0=cs.slice().sort().join(),es0=evSet(E,U,paths).slice().sort().join();
+        if(items.length<4&&!seen[t]&&ds!==cs0&&ds!==es0&&d.m>=0&&d.m<=stages){seen[t]=1;items.push({h:t,ok:0,s:evSet(d,U,paths)});}});
+      const OL=OptList(T,items,(it,b)=>{
+        if(it.ok){b.classList.add("chosen-ok");OL.lock();T.say("ok","<b>Richtig.</b> E und das Gegenereignis zusammen umfassen alle Pfade, ohne sich zu überschneiden.");T.complete("");}
+        else{b.classList.add("chosen-no");b.disabled=true;T.miss();
+          const shared=it.s.filter(p=>holds(E,U,p)).length;
+          T.say("hint","<b>Noch nicht.</b> "+(shared?"Diese Aussage hat Pfade mit E gemeinsam (zum Beispiel "+tup(it.s.filter(p=>holds(E,U,p))[0])+"). Das Gegenereignis darf mit E keinen Pfad gemeinsam haben.":"Prüfe, ob zusammen mit E wirklich alle Pfade abgedeckt sind. Es fehlen noch Pfade."));}
+      });
+      T.body.appendChild(OL.box);
+      T.setHints(["Das Gegenereignis enthält genau die Pfade, die <b>nicht</b> zu E gehören.","Welche Pfade gehören zu E? Welche bleiben übrig?","Zu E gehören "+evSet(E,U,paths).map(tup).join(", ")+". Übrig bleiben "+cs.map(tup).join(", ")+"."],()=>{
+        OL.els.forEach(o=>{if(o.it.ok)o.b.classList.add("chosen-ok");});OL.lock();
+        T.say("sol","<b>Lösung:</b> „"+evText(C,U)+"“.");T.complete("");});
+      return;
+    }
+    if(L===2){
+      const stages=Math.random()<.65?2:3,U=mkUrn(stages,true,{maxTot:6});
+      const col=randInt(0,1),other=1-col;
+      const E={k:"mind",m:1,col};
+      const qn=Q(col===0?U.b:U.a,U.a+U.b),pg=Array(stages).fill(qn).reduce((a,q)=>qmul(a,q),Q(1)),x=qsub(Q(1),pg);
+      T.body.appendChild(div("",urnLine(U)+" "+ballsH(U)+drawLine(U,stages)));
+      T.body.appendChild(div("rule2","Ereignis E: „"+evText(E,U)+".“"));
+      const facs=Array(stages).fill(rawH(qn)).join(" · ");
+      runNum(T,{prompt:"Wie groß ist die Wahrscheinlichkeit von E? Nutze das Gegenereignis.",label:Pr("E")+" =",x:qv(x),xs:qS(x),tol:0.0006,
+        wrong:(v)=>Math.abs(v-qv(pg))<1e-6?"Das ist die Wahrscheinlichkeit des <b>Gegenereignisses</b> („"+(stages===2?"keine ":"keine ")+U.w[col]+" Kugel“). Gesucht ist die von E: 1 minus diese Zahl.":null,
+        ok:"Gegenereignis: keine "+U.w[col]+" Kugel, also nur "+U.w[other]+". "+Pr("Ē")+" = "+facs+" = "+qH(pg)+". Damit "+Pr("E")+" = 1 − "+qH(pg)+" = "+qH(x)+".",
+        sol:"Gegenereignis <i>Ē</i>: keine "+U.w[col]+" Kugel, alle "+stages+" Kugeln sind "+U.w[other]+": "+Pr("Ē")+" = "+facs+" = "+qH(pg)+".<br>"+Pr("E")+" = 1 − "+Pr("Ē")+" = 1 − "+qH(pg)+" = "+qH(x),
+        hints:["Das Gegenereignis von „mindestens eine "+U.w[col]+" Kugel“ lautet „keine "+U.w[col]+" Kugel“. Es hat nur einen Pfad.","Berechne den Pfad des Gegenereignisses: Alle Kugeln sind "+U.w[other]+". Mit Zurücklegen ist jede Stufe gleich.","Rechne <i>P</i>(E) = 1 − <i>P</i>(<i>Ē</i>)."]});
+      return;
+    }
+    const C=choice(PCTX),n=choice([3,4]),p=C.fixed?0:choice(C.pp);
+    const qq=C.q(p),q=qq,x=1-Math.pow(q,n),xr=Math.round(x*1e6)/1e6;
+    const qd=C.fixed?(C.ev==="keine 6"?"5/6":"1/2"):mnum(q,1);
+    const lines=C.fixed?(C.ev==="keine 6"?frac(5,6):frac(1,2)):mnum(q,1);
+    const powH=(C.fixed?(C.ev==="keine 6"?frac(5,6):frac(1,2)):mnum(q,1));
+    T.body.appendChild(div("",C.t(n,p)));
+    const frs=C.fixed?Array(n).fill(powH).join(" · "):Array(n).fill(mnum(q,1)).join(" · ");
+    const pgText=C.fixed?(C.ev==="keine 6"?qH(Q(Math.pow(5,n),Math.pow(6,n))):qH(Q(1,Math.pow(2,n)))):mnum(Math.pow(q,n),4);
+    const xText=C.fixed?(C.ev==="keine 6"?qH(Q(Math.pow(6,n)-Math.pow(5,n),Math.pow(6,n))):qH(Q(Math.pow(2,n)-1,Math.pow(2,n)))):mnum(x,4);
+    const xs=C.fixed?(C.ev==="keine 6"?qS(Q(Math.pow(6,n)-Math.pow(5,n),Math.pow(6,n))):qS(Q(Math.pow(2,n)-1,Math.pow(2,n)))):mnum(xr,4);
+    runNum(T,{pre:"",prompt:"Wie groß ist die Wahrscheinlichkeit, dass "+(C.e.indexOf("Rot")>=0||C.e.indexOf("Wappen")>=0||C.e.indexOf("6")>=0?"":"er ")+C.e+"? Runde auf drei Nachkommastellen oder gib einen Bruch an.",
+      label:Pr("E")+" =",x:x,xs:xs,tol:0.0006,
+      wrong:(v)=>Math.abs(v-Math.pow(q,n))<1e-6?"Das ist die Wahrscheinlichkeit des Gegenereignisses („"+C.ev+"“). Gesucht ist 1 minus diese Zahl.":(Math.abs(v-n*(1-q))<1e-6?"So darf man nicht rechnen: Die Fälle überschneiden sich, manche Pfade würden mehrfach gezählt. Nutze das Gegenereignis.":null),
+      ok:"Gegenereignis: „"+C.ev+"“. "+Pr("Ē")+" = "+frs+" = "+pgText+". Damit "+Pr("E")+" = 1 − "+pgText+" = "+xText+(C.fixed?" ≈ "+mnum(xr,3):"")+".",
+      sol:"Gegenereignis <i>Ē</i>: „"+C.ev+"“, das ist nur ein Pfad.<br>"+Pr("Ē")+" = "+frs+" = "+pgText+"<br>"+Pr("E")+" = 1 − "+pgText+" = "+xText+(C.fixed?" ≈ "+mnum(xr,3):""),
+      hints:["Das Gegenereignis hat nur einen Pfad: „"+C.ev+"“ in allen "+n+" Versuchen.","Wahrscheinlichkeit des Gegenereignisses: "+frs+".","Rechne 1 minus die Wahrscheinlichkeit des Gegenereignisses."]});
+  }
+});
+
+loadProgress();
+showHalle();
+</script>
+</body>
+</html>
