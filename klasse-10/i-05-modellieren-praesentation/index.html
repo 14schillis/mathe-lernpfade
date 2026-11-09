@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>I.5 Modellieren Präsentation</title>
+<style>
+
+:root{--ac:#4f46e5;--ac2:#eceaff;--ink:#14172b;--mut:#6a7090;--ok:#0f9d6b;--okb:#e1f7ee;--no:#d9363e;--nob:#fdeced;--pos:#4f46e5;--neg:#ea7a14;--fc:#3730a3;--gc:#0d9488;--math:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9dcec;font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center}
+#st{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;background:linear-gradient(135deg,#f9faff,#eef0fb);display:grid;grid-template-rows:auto auto 1fr auto;gap:1.8cqh;padding:2.6cqh 3cqw;overflow:hidden}
+header{display:flex;align-items:center;gap:1.4cqw}
+.bd{width:4.4cqw;height:4.4cqw;border-radius:1.2cqw;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:2.2cqw;font-weight:700}
+h1{font-size:2.5cqw;font-weight:700;letter-spacing:-.02em;flex:1}
+.rt{display:flex;align-items:center;gap:1.2cqw;color:var(--mut);font-size:1.6cqw;font-weight:600}
+#pb{height:.6cqh;background:#dcdff3;border-radius:9px;overflow:hidden}
+#pf{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .5s}
+main{min-height:0;display:flex;flex-direction:column}
+.sc{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.6cqh;animation:in .45s ease both}
+footer{display:flex;justify-content:space-between;align-items:center;gap:1.4cqw}
+.g{display:flex;gap:1.2cqw}
+.btn{font:inherit;font-size:1.7cqw;font-weight:600;min-height:7cqh;padding:0 2.4cqw;border:0;border-radius:1.4cqw;background:#fff;color:var(--ink);box-shadow:0 .2cqw .9cqw rgba(30,35,80,.12);cursor:pointer;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:var(--ac);color:#fff;min-width:22cqw}
+.btn.d{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.ic{min-height:5cqh;padding:0 1.2cqw}
+.g .btn.ic{min-height:7cqh}
+m,.tx{font-family:var(--math)}
+m{white-space:nowrap;font-style:normal}
+m i{font-style:italic}
+sup,sub{font-size:.62em;line-height:0;font-style:normal;margin-left:.08em}
+sup{vertical-align:.7em}sub{vertical-align:-.3em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .1em;font-size:.88em;line-height:1.15}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .2em .06em}
+.fr>span:last-child{padding:.06em .2em 0}
+.in{display:inline-flex;align-items:center;vertical-align:-.5em;margin-right:.12em}
+.in .sg{font-size:1.9em;line-height:1;font-weight:300}
+.in .lm{display:flex;flex-direction:column;justify-content:space-between;font-size:.55em;height:2.7em;margin-left:-.3em}
+.ab{display:inline-block;font-size:1.5em;line-height:.6;vertical-align:-.12em;font-weight:300;margin:0 .04em}
+.q{font-size:2cqw;color:var(--mut);font-weight:500}
+.q m{font-size:1.15em}
+.body{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:1.8cqw}
+.gp{background:#fff;border-radius:2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);padding:1cqh 1cqw;min-width:0;min-height:0;display:flex}
+.gp svg{width:100%;height:100%}
+.pn{display:flex;flex-direction:column;gap:1.3cqh;justify-content:center;min-width:0}
+.cd{display:flex;align-items:center;gap:1.2cqw;background:#fff;border-radius:1.6cqw;padding:1.5cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);border-left:.7cqw solid var(--ac)}
+.cd.pos{border-left-color:var(--pos)}.cd.neg{border-left-color:var(--neg)}
+.cd.fin{border-left-color:var(--ok);background:var(--okb)}.cd.bad{border-left-color:var(--no);background:var(--nob)}
+.nm{flex:none;width:3.2cqw;height:3.2cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:1.7cqw}
+.cp{display:block;font-size:1.35cqw;font-weight:600;color:var(--mut);margin-bottom:.4cqh}
+.cm{font-size:2.2cqw;line-height:1.55}
+.ln{display:flex;align-items:center;gap:.9cqw}
+.dt{flex:none;width:1.1cqw;height:1.1cqw;border-radius:50%}
+.ln.pos .dt{background:var(--pos)}.ln.neg .dt{background:var(--neg)}
+.rule{background:#fff;border-left:.7cqw solid var(--ac);border-radius:1.6cqw;padding:1.3cqh 2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.1);font-size:2.6cqw;text-align:center}
+.rv{transition:opacity .5s}
+.rv:not(.on){opacity:0;visibility:hidden;pointer-events:none}
+/* Diagramm */
+.gl{stroke:#e6e9f6;stroke-width:2}
+.ax{stroke:var(--ink);stroke-width:3}
+.axh{fill:var(--ink)}
+.tick{stroke:var(--ink);stroke-width:3}
+.tx{font-size:32px;fill:var(--ink);text-anchor:middle}
+.tx.nm2{font-size:28px;fill:var(--mut)}
+.tx.end{text-anchor:end}
+.tx.lg{font-size:42px;font-weight:600}
+.tx.pos{fill:var(--pos)}.tx.neg{fill:var(--neg)}.tx.cf{fill:var(--fc)}.tx.cg{fill:var(--gc)}.tx.cc{fill:var(--mut)}
+.cv{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.cv.f{stroke:var(--fc)}.cv.g{stroke:var(--gc)}
+.cv.gh{stroke:#aab0cc;stroke-dasharray:14 12;stroke-width:4}
+.ar{stroke:none}
+.ar.pos{fill:rgba(79,70,229,.28)}.ar.neg{fill:rgba(234,122,20,.34)}.ar.fin{fill:rgba(15,157,107,.42)}
+.dl{stroke:var(--mut);stroke-width:3;stroke-dasharray:9 8}
+.dot{fill:var(--ac);stroke:#fff;stroke-width:3}
+.mini .cv{stroke-width:10}.mini .ax{stroke-width:5}
+.sh{transition:transform 1.5s cubic-bezier(.45,0,.2,1)}
+.sh.mv{transform:translateY(var(--dy))}
+/* Quiz */
+.chips{display:flex;gap:1.1cqw;align-items:center}
+.chip{font:inherit;font-size:1.6cqw;font-weight:600;flex:1;padding:1.2cqh 1.2cqw;border-radius:1.2cqw;background:#fff;border:.22cqw solid #dfe2f3;text-align:center;cursor:pointer;transition:.3s;color:var(--ink);line-height:1.25}
+.chip m{font-size:2.4cqw}
+.sel{border-color:var(--ac)!important;background:var(--ac2)!important}
+.ok{border-color:var(--ok)!important;background:var(--okb)!important}
+.no{border-color:#f0b4b8!important;background:var(--nob)!important}
+.chip.no:not(.sel){opacity:.45;background:#fff!important;border-color:#dfe2f3!important}
+.qb{background:#fff;border-radius:1.6cqw;padding:1.8cqh 1.6cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh}
+.qt{font-size:2.3cqw}
+.ex{font-size:2cqw;color:var(--ok);font-weight:600}
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center}
+.qr{display:grid;grid-template-columns:17cqw 1fr;gap:1.6cqw;align-items:center;background:#fff;border-radius:1.6cqw;padding:1cqh 1.4cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09)}
+.qr svg{width:100%;height:auto;display:block}
+.qd{font-size:1.9cqw;font-weight:600;margin-bottom:1cqh}
+.qd m{font-size:1.15em}
+/* Abschluss */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;flex:1;min-height:0}
+.card{background:#fff;border-radius:2cqw;padding:2cqh 1.6cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);display:flex;flex-direction:column;gap:1.4cqh;align-items:center;text-align:center;justify-content:center}
+.card svg{width:100%;height:auto;display:block}
+.card .t1{font-size:1.9cqw;font-weight:700}
+.card .eq{font-size:2.6cqw;min-height:5cqh;display:flex;align-items:center}
+.card .t2{font-size:1.5cqw;color:var(--mut)}
+.strat{display:flex;align-items:center;gap:1.2cqw}
+.st{flex:1;background:#fff;border-radius:1.6cqw;padding:1.6cqh 1.6cqw;font-size:1.8cqw;font-weight:600;display:flex;align-items:center;gap:1.2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.08)}
+.st b{flex:none;width:3.4cqw;height:3.4cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ar2{color:var(--mut);font-size:2.4cqw}
+@keyframes in{from{opacity:0;transform:translateX(2.4cqw)}}
+@keyframes pop{from{opacity:0;transform:translateY(1.4cqh)}}
+#ov{position:absolute;inset:0;background:rgba(236,239,251,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;flex-direction:column;gap:3cqh;padding:4cqh 3.4cqw;z-index:5}
+#ov.on{display:flex;animation:pop .3s}
+.oh{display:flex;justify-content:space-between;align-items:center}
+.oh h2{font-size:3cqw}
+.tiles{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:1.4cqw}
+.tile{font:inherit;border:.25cqw solid transparent;background:#fff;border-radius:1.8cqw;padding:2cqh 1.4cqw;text-align:left;display:flex;flex-direction:column;gap:1cqh;cursor:pointer;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);color:var(--ink)}
+.tile b{color:var(--ac);font-size:2cqw}
+.tile span{font-size:1.6cqw;font-weight:700}
+.tile em{font-style:normal;font-size:1.8cqw;margin-top:auto;color:var(--mut)}
+.tile.cur{border-color:var(--ac)}
+:root{--lin:#2466a8;--exp:#d9660a;--linb:#e6effa;--expb:#fbeee1}
+.body.eq{grid-template-columns:1fr 1fr}
+.body.wide{grid-template-columns:1.55fr 1fr}
+.vg{display:grid;grid-template-columns:1fr;gap:1.4cqh;flex:1;min-height:0}
+.vt{position:relative;font:inherit;background:#fff;border:.25cqw solid #dfe2f3;border-radius:2cqw;box-shadow:0 .3cqw 1.4cqw rgba(40,45,110,.09);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8cqh;cursor:pointer}
+.vt .l{font-size:3cqw;font-weight:800;color:var(--ac)}
+.vt .n{font-size:2.6cqw;font-weight:700;font-variant-numeric:tabular-nums}
+.vt .br{width:70%;height:1.2cqh;background:#e6e9f6;border-radius:9px;overflow:hidden}
+.vt .br i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+.vt.top{border-color:var(--ok);background:var(--okb)}
+.vt .m{position:absolute;top:.8cqh;right:.8cqw;width:3.4cqw;height:3.4cqw;border-radius:50%;border:0;background:#eef0fb;font-size:2cqw;color:var(--mut);cursor:pointer}
+.cd.lin{border-left-color:var(--lin)}.cd.exp{border-left-color:var(--exp)}
+.tiles{grid-template-columns:repeat(4,1fr)!important;grid-template-rows:repeat(3,1fr)!important}
+.tile span{font-size:1.45cqw}.tile em{font-size:1.6cqw}
+.body{grid-template-rows:minmax(0,1fr)}
+.gp{overflow:hidden}
+.pnl{background:#fff;border-radius:2cqw;box-shadow:0 .4cqw 2cqw rgba(40,45,110,.09);padding:2cqh 1.6cqw;display:flex;flex-direction:column;gap:1.4cqh;justify-content:center;min-width:0}
+.pnl h3{font-size:2.2cqw;color:var(--ac)}
+.tbl{border-collapse:separate;border-spacing:.45cqw;width:100%;table-layout:fixed}
+.tbl th{font-weight:600;color:var(--mut);text-align:left;font-size:1.55cqw;white-space:nowrap;width:11cqw}
+.tbl td{background:#f4f5fc;border-radius:.9cqw;text-align:center;padding:1cqh .2cqw;font-size:2.1cqw;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;transition:background .4s,color .4s}
+.tbl td.z{color:var(--lin)}.tbl td.f{color:var(--exp)}
+.tbl td.e{background:none}
+.tbl tr.rv:not(.on){visibility:hidden;opacity:0}
+.tbl tr.okc td{background:var(--okb);color:var(--ok)}
+.tbl tr.dim td{opacity:.4}
+.tbl.sm th{width:9cqw;font-size:1.45cqw}.tbl.sm td{font-size:1.65cqw;padding:.7cqh .1cqw}
+.tbl td.l1{color:var(--lin)}.tbl td.e1{color:var(--exp)}
+.tbl th.l1{color:var(--lin)}.tbl th.e1{color:var(--exp)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw}
+.pt{fill:var(--ink);stroke:#fff;stroke-width:3}
+.ring{fill:#fdf3df;stroke:#c98a1c;stroke-width:5}
+.cv.lin{stroke:var(--lin)}.cv.exp{stroke:var(--exp)}
+.cv.dr{stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s ease;stroke-linecap:butt}
+.cv.dr.on{stroke-dashoffset:0}
+.cv.ghl{stroke:var(--lin);stroke-dasharray:14 12;stroke-width:4;opacity:.45}
+.cv.ghe{stroke:var(--exp);stroke-dasharray:14 12;stroke-width:4;opacity:.45}
+.tx.lin{fill:var(--lin);font-weight:700}.tx.exp{fill:var(--exp);font-weight:700}
+.tx.bl{text-anchor:start}
+.rtt{display:inline-flex;align-items:center;white-space:nowrap;vertical-align:middle}
+.rtt .ri{font-size:.6em;align-self:flex-start;margin-right:-.2em}.rtt .rs{font-size:2.1em;line-height:1;font-weight:200;transform:scaleY(1.05)}
+.rtt .rb{border-top:.07em solid currentColor;padding:.05em .25em 0;margin-left:-.1em;display:inline-block}
+.sm2{font-size:1.7cqw;color:var(--mut);font-weight:600;margin-top:.4cqh;display:block}
+.g3 .card.rv{align-items:flex-start;text-align:left}
+.card .nb{width:4.4cqw;height:4.4cqw;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:2.2cqw;font-weight:800}
+.card .t3{font-size:1.75cqw;color:var(--ink);line-height:1.45}
+.card .eq{justify-content:flex-start}
+.vl{stroke:var(--mut);stroke-width:3;stroke-dasharray:10 8}
+.bar1{transition:opacity .5s}
+.compact{justify-content:flex-start;gap:1.1cqh}
+.compact .cm{font-size:1.8cqw;line-height:1.4}.compact .cd{padding:1cqh 1.2cqw}
+.compact .cp{font-size:1.2cqw;margin-bottom:.2cqh}
+.compact .sm2{font-size:1.45cqw}
+.tbl td{padding:.6cqh .2cqw!important}
+.two .cm{font-size:1.9cqw;line-height:1.4}.two .cd{padding:1cqh 1.4cqw}
+.rule{font-size:2.2cqw!important;padding:1cqh 2cqw!important}
+.pnl h3{font-size:2cqw}
+.compact m{font-size:1.1em}
+
+.rtt{display:inline-flex;align-items:stretch;white-space:nowrap;vertical-align:middle}.rtt .ri{align-self:flex-start;margin-right:-.1em}.rtt .rsv{width:.8em;height:auto;align-self:stretch;overflow:visible}.rtt .rb{border-top:2px solid currentColor;padding:.05em .25em 0;margin-left:-.05em}.rtt .rs{display:none}
+
+</style>
+</head>
+<body>
+<div id="st">
+<header><div class="bd" id="bd">1</div><h1 id="ti"></h1><div class="rt"><span id="pg"></span><button class="btn ic" onclick="fs()">⛶</button></div></header>
+<div id="pb"><i id="pf"></i></div>
+<main id="mn"></main>
+<footer>
+<div class="g"><button class="btn" id="bk" onclick="nav(-1)">‹ Zurück</button><button class="btn" onclick="ov(1)">▦ Übersicht</button></div>
+<div class="g"><button class="btn ic" onclick="bk1()" title="Schritt zurück">↶</button><button class="btn p" id="sb" onclick="nx()"></button><button class="btn" onclick="go(cur)">↺ Zurücksetzen</button></div>
+<div class="g"><button class="btn d" id="fw" onclick="nav(1)">Weiter ›</button></div>
+</footer>
+<div id="ov"></div>
+</div>
+<script>
+const g=id=>document.getElementById(id);
+/* ---------- Mini-Formelsatz ---------- */
+const mt=(s,i)=>{let d=0;for(let j=i;j<s.length;j++){if(s[j]=='{')d++;else if(s[j]=='}'&&--d==0)return j}return s.length};
+function M(s){let o='',i=0;
+while(i<s.length){const c=s[i];
+if(c=='^'||c=='_'){const tg=c=='^'?'sup':'sub';i++;let t;if(s[i]=='{'){const j=mt(s,i);t=s.slice(i+1,j);i=j+1}else{t=s[i];i++}o+=`<${tg}>${M(t)}</${tg}>`}
+else if(c=='{'&&s.startsWith('{,}',i)){o+=',';i+=3}
+else if(c=='{'){const j=mt(s,i),p=s.slice(i+1,j).split('|');i=j+1;o+=`<span class="fr"><span>${M(p[0])}</span><span>${M(p[1])}</span></span>`}
+else if(c=='@'){const j=s.indexOf('@',i+1),p=s.slice(i+1,j).split(',');i=j+1;o+=`<span class="in"><span class="sg">∫</span><span class="lm"><span>${M(p[1])}</span><span>${M(p[0])}</span></span></span>`}
+else if(c=='|'){o+='<span class="ab">|</span>';i++}
+else if(/[a-z]/i.test(c)){o+='<i>'+c+'</i>';i++}
+else{o+=c=='*'?'·':c=='-'?'−':c;i++}}
+return o}
+const T=s=>s.replace(/\$([^$]+)\$/g,(_,x)=>'<m>'+M(x)+'</m>');
+const SM=s=>{let o='',sub=0;for(let i=0;i<s.length;i++){let c=s[i];
+if(c=='_'){i++;c=s[i];o+=`<tspan dy="10" font-size="66%"${/[a-z]/i.test(c)?' font-style="italic"':''}>${c}</tspan>`;sub=1;continue}
+const it=/[a-z]/i.test(c);o+=`<tspan${sub?' dy="-10"':''}${it?' font-style="italic"':''}>${c=='-'?'−':c}</tspan>`;sub=0}
+return o};
+
+const C=(s,cls,h,cap,nm)=>`<div class="cd rv ${cls||''}" data-s="${s}">${nm?`<b class="nm">${nm}</b>`:''}<div>${cap?`<span class="cp">${T(cap)}</span>`:''}<div class="cm">${T(h)}</div></div></div>`;
+const LN=(c,m)=>`<div class="ln ${c}"><i class="dt"></i>${m}</div>`;
+const BODY=(svg,cards,extra)=>`<div class="body"><div class="gp">${svg}</div><div class="pn">${cards}</div></div>${extra||''}`;
+const RULE=(s,h)=>`<div class="rule rv" data-s="${s}">${T(h)}</div>`;
+const CHP=(t,ok,h)=>`<span class="chip" data-hit="${h}" data-ok="${ok}" onclick="pk(this)">${T(t)}</span>`;
+const QB=(title,chips,ex,h)=>`<div class="qb"><div class="qt">${T(title)}</div><div class="chips">${chips}</div><div class="ex rv" data-s="${h}">${T(ex)}</div></div>`;
+const VA='Nullstellen → Beträge addieren',VB='$f-g$ bilden → ein Integral',VC='Schnittstellen → Beträge addieren';
+const QR=(th,d,opts)=>`<div class="qr"><div>${th}</div><div><div class="qd">${T(d)}</div><div class="chips">${opts.map(([t,ok])=>CHP(t,ok,1)).join('')}</div></div></div>`;
+/* ---------- Helfer ---------- */
+let GEN=0;
+const NB=' ';
+const rnd=Math.random;
+const dz=(x,d)=>x.toFixed(d).replace('.',',');
+const pc=x=>dz(x*100,1)+NB+'%';
+const grp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,NB);
+function tween(gen,dur,fn,done){const t0=performance.now();(function f(t){if(gen!==GEN)return;const k=Math.min(1,(t-t0)/dur);fn(k);if(k<1)requestAnimationFrame(f);else done&&done()})(t0)}
+const KV=(l,id,big)=>`<div class="kv"><span>${l}</span><b${big?' class="big"':''} id="${id}">–</b></div>`;
+const set=(id,h)=>{const e=g(id);if(e)e.innerHTML=h};
+/* Abstimmung */
+let VOTE=[],VN=[];
+function leader(){const m=Math.max(0,...VOTE),e=g('lead');if(!e)return;
+if(!m){e.innerHTML='Noch keine Stimmen';return}
+const w=VN.filter((_,i)=>VOTE[i]==m);e.innerHTML=w.length>1?'Gleichstand: <b>'+w.join(' und ')+'</b>':'Die Klasse vermutet: <b>'+w[0]+'</b>'}
+function vote(i,d,ev){if(ev)ev.stopPropagation();VOTE[i]=Math.max(0,VOTE[i]+d);paintVote();leader()}
+function paintVote(){const m=Math.max(0,...VOTE);document.querySelectorAll('.vt').forEach((e,i)=>{e.querySelector('.n').textContent=VOTE[i];e.querySelector('.br i').style.width=m?VOTE[i]/m*100+'%':'0';e.classList.toggle('top',m>0&&VOTE[i]==m&&step>=1)})}
+const vtiles=(names,c1)=>`<div class="vg${c1?' c1':''}">${names.map((l,i)=>`<div class="vt" role="button" onclick="vote(${i},1)"><span class="l">${l}</span><span class="n">0</span><div class="br"><i></i></div><button class="m" onclick="vote(${i},-1,event)" title="Stimme zurück">−</button></div>`).join('')}</div>`;
+function initVote(names){VN=names;VOTE=names.map(()=>0);paintVote();leader()}
+/* Zufallsexperimente */
+function shuf(n){const a=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
+function anyFixed(n){const a=shuf(n);for(let i=0;i<n;i++)if(a[i]==i)return 1;return 0}
+
+/* ---------- Daten & Modelle ---------- */
+const TT=[0,2,4,6,8,10,12,14],YY=[1100,1382,1772,2242,2660,3030,3492,3969];
+const M2=(YY[7]-YY[0])/14,A2=Math.pow(YY[7]/YY[0],1/14);
+const g2=t=>YY[0]+M2*t,f2=t=>YY[0]*Math.pow(A2,t);
+function linReg(xs,ys){const n=xs.length,mx=xs.reduce((a,b)=>a+b)/n,my=ys.reduce((a,b)=>a+b)/n;let sxy=0,sxx=0;for(let i=0;i<n;i++){sxy+=(xs[i]-mx)*(ys[i]-my);sxx+=(xs[i]-mx)**2}const k=sxy/sxx;return{k,d:my-k*mx}}
+const LR=linReg(TT,YY),ER=linReg(TT,YY.map(Math.log));
+const gC=t=>LR.k*t+LR.d,fC=t=>Math.exp(ER.d)*Math.exp(ER.k*t);
+const mad=F=>TT.reduce((s,t,i)=>s+Math.abs(F(t)-YY[i]),0)/8;
+const wz=(n,x)=>`<m><span class="rtt"><span class="ri">${n}</span><svg class="rsv" viewBox="0 0 10 20" preserveAspectRatio="none"><path d="M0.3 12.6 L2.6 11.2 L5.4 19.6 L9.7 0.4 L10.4 0.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="rb">${M(x)}</span></span></m>`;
+const D1=(x)=>dz(x,1);
+/* ---------- Diagramm ---------- */
+const CW=1000,CH_=600,cl=110,cr=30,ct=30,cb=95;
+const CX=t=>cl+(t+0.6)/15.2*(CW-cl-cr),CY=v=>CH_-cb-v/4800*(CH_-ct-cb);
+const pth=(F,a,b)=>{let d='';for(let k=0;k<=80;k++){const t=a+(b-a)*k/80;d+=(k?'L':'M')+CX(t).toFixed(1)+' '+CY(F(t)).toFixed(1)}return d};
+function chart(extra,opt){opt=opt||{};let s='';
+[0,1000,2000,3000,4000].forEach(v=>s+=`<line class="gl" x1="${cl}" x2="${CW-cr}" y1="${CY(v)}" y2="${CY(v)}"/><text class="tx nm2 end" x="${cl-14}" y="${CY(v)+10}">${grp(v)}</text>`);
+TT.forEach((t,i)=>s+=`<line class="tick" x1="${CX(t)}" x2="${CX(t)}" y1="${CY(0)}" y2="${CY(0)+10}"/><text class="tx nm2" x="${CX(t)}" y="${CY(0)+38}">${t}</text><text class="tx nm2" x="${CX(t)}" y="${CY(0)+68}" style="font-size:22px">${2005+t}</text>`);
+s+=`<line class="ax" x1="${cl}" x2="${CW-cr}" y1="${CY(0)}" y2="${CY(0)}"/><line class="ax" x1="${cl}" x2="${cl}" y1="${CY(0)}" y2="${ct-6}"/>`;
+s+=`<text class="tx nm2" x="${cl+14}" y="${ct+8}" style="text-anchor:start">Internetnutzer in Mio.</text><text class="tx nm2" x="${CW-cr}" y="${CY(0)-14}" style="text-anchor:end"><tspan font-style="italic">t</tspan> in Jahren seit 2005</text>`;
+s+=extra||'';
+if(!opt.nopts)TT.forEach((t,i)=>s+=`<circle class="pt" cx="${CX(t)}" cy="${CY(YY[i])}" r="11"/>`);
+return `<svg viewBox="0 0 ${CW} ${CH_}" preserveAspectRatio="xMidYMid meet">${s}</svg>`}
+const drw=(id,on)=>{const e=g(id);if(e)e.classList.toggle('on',!!on)};
+const curve=(id,cls,F,a,b)=>`<path id="${id}" class="cv dr ${cls}" pathLength="1" d="${pth(F,a||-0.5,b||14.5)}"/>`;
+const ringP=(i,lab,dx,dy,anc)=>`<g class="rv" data-s="1"><circle class="ring" cx="${CX(TT[i])}" cy="${CY(YY[i])}" r="19"/><text class="tx lg" style="text-anchor:${anc};font-size:34px" x="${CX(TT[i])+dx}" y="${CY(YY[i])+dy}">${lab}</text></g>`;
+const NBT=(t)=>`<m>${t}</m>`;
+const RAND='Zufall'; 
+const VNAMES=['eher linear','eher exponentiell','noch nicht sicher'];
+/* ---------- Szenen ---------- */
+const S=[
+/* 1 Einstieg */
+{t:'Welche Funktion passt?',e:'Schätzen',q:'Weltweite Internetnutzer 2005–2019. Sieht das eher linear oder eher exponentiell aus?',
+b:['Vermutung der Klasse'],
+h:`<div class="body wide"><div class="gp">${chart('')}</div><div class="pn" style="justify-content:stretch;gap:1.4cqh">${vtiles(VNAMES,1)}<div class="cd rv fin" data-s="1"><div class="cm" id="lead"></div></div></div></div>`,
+init(){initVote(VNAMES)},on(s){paintVote();leader()}},
+/* 2 Fingerabdruck */
+{t:'Der Fingerabdruck der Daten',e:'Zuwächse oder Faktoren',q:'Zwei Wertetabellen. Welche gehört zu linearem, welche zu exponentiellem Wachstum?',
+b:['Zuwächse berechnen','Faktoren berechnen','Auflösung'],
+h:(()=>{const tab=(id,name,v)=>{const z=v.slice(1).map((x,i)=>x-v[i]),f=v.slice(1).map((x,i)=>x/v[i]);
+return `<div class="pnl"><h3>${name}</h3><table class="tbl" id="${id}"><tr><th><i>t</i></th>${v.map((_,i)=>`<td>${i}</td>`).join('')}</tr><tr><th>Wert</th>${v.map(x=>`<td>${x}</td>`).join('')}</tr>
+<tr class="rv rz" data-s="1"><th>Zuwachs</th><td class="e"></td>${z.map(x=>`<td class="z">+${x}</td>`).join('')}</tr>
+<tr class="rv rf" data-s="2"><th>Faktor</th><td class="e"></td>${f.map(x=>`<td class="f">·${dz(Math.round(x*100)/100,2).replace(/0$/,'')}</td>`).join('')}</tr></table></div>`};
+return `<div class="body eq">${tab('ta','Tabelle A',[100,150,200,250,300])}${tab('tb','Tabelle B',[80,120,180,270,405])}</div>${RULE(3,'<b>A:</b> gleiche Zuwächse → <b>linear</b> &nbsp;·&nbsp; <b>B:</b> gleiche Faktoren → <b>exponentiell</b>')}`})(),
+on(s){const q=(id,c)=>document.querySelector('#'+id+' '+c);
+q('ta','.rz').classList.toggle('okc',s>=3);q('ta','.rf').classList.toggle('dim',s>=3);
+q('tb','.rf').classList.toggle('okc',s>=3);q('tb','.rz').classList.toggle('dim',s>=3)}},
+/* 3 Internetdaten prüfen */
+{t:'Die Internetdaten unter der Lupe',e:'Prüfen',q:'Sind bei den Internetnutzern die Zuwächse oder die Faktoren konstant?',
+b:['Zuwächse','Faktoren','Fazit'],
+h:(()=>{const z=YY.slice(1).map((x,i)=>x-YY[i]),f=YY.slice(1).map((x,i)=>x/YY[i]);
+return `<div class="pnl" style="flex:none"><table class="tbl"><tr><th>Jahr</th>${TT.map(t=>`<td>${2005+t}</td>`).join('')}</tr><tr><th><i>t</i></th>${TT.map(t=>`<td>${t}</td>`).join('')}</tr><tr><th>Nutzer (Mio.)</th>${YY.map(x=>`<td>${grp(x)}</td>`).join('')}</tr>
+<tr class="rv" data-s="1"><th>Zuwachs</th><td class="e"></td>${z.map(x=>`<td class="z">+${x}</td>`).join('')}</tr>
+<tr class="rv" data-s="2"><th>Faktor</th><td class="e"></td>${f.map(x=>`<td class="f">·${dz(x,2)}</td>`).join('')}</tr></table></div>
+<div class="two">${C(1,'lin','Die Zuwächse (je 2 Jahre) liegen zwischen <b>282</b> und <b>477</b>. Sie schwanken, bleiben aber <b>in der Größenordnung gleich</b>.','Zuwächse')}${C(2,'exp','Die Faktoren <b>sinken</b> von 1,28 auf 1,14. Von „konstant“ sind sie weit entfernt.','Faktoren')}</div>
+${RULE(3,'Keines ist exakt konstant. Die Daten sind <b>eher linear</b> – wie gut das passt, prüfen wir an einem Modell.')}`})(),
+on(){}},
+/* 4 Zwei-Punkte linear */
+{t:'Zwei-Punkte-Modell: linear',e:'Strategie',q:'Wir legen eine Gerade durch den ersten und den letzten Datenpunkt.',
+b:['Zwei Punkte wählen','Steigung berechnen','Gerade einzeichnen'],
+h:`<div class="body wide"><div class="gp">${chart(ringP(0,'P₁',24,-22,'start')+ringP(7,'P₂',-26,40,'end')+curve('c4','lin',g2))}</div><div class="pn">
+${C(1,'','erster Punkt P<sub>1</sub>(0|1100) &nbsp; letzter Punkt P<sub>2</sub>(14|3969)<span class="sm2"><i>t</i> = 0 steht für das Jahr 2005</span>','Zwei Punkte')}
+${C(2,'lin','$m={3969-1100|14-0}≈204{,}9$<span class="sm2">etwa 205 Mio. neue Nutzer pro Jahr</span>','Steigung')}
+${C(3,'fin','$g(t)=204{,}9*t+1100$','Modellfunktion')}</div></div>`,
+on(s){drw('c4',s>=3)}},
+/* 5 Zwei-Punkte exponentiell */
+{t:'Zwei-Punkte-Modell: exponentiell',e:'Strategie',q:'Dieselben zwei Punkte, jetzt für eine Exponentialfunktion.',
+b:['Ansatz und P₂','Durch 1100 teilen','14. Wurzel ziehen','Modellfunktion'],
+h:`<div class="body wide"><div class="gp">${chart(ringP(0,'P₁',24,-22,'start')+ringP(7,'P₂',-26,40,'end')+curve('c5','exp',f2))}</div><div class="pn compact">
+${C(1,'','Ansatz: $f(t)=1100*a^t$<br>P<sub>2</sub> einsetzen: $3969=1100*a^{14}$','Ansatz')}
+${C(2,'','Durch 1100 teilen: $a^{14}={3969|1100}$','Nach a auflösen')}
+${C(3,'exp','$a=$'+wz(14,'{3969|1100}')+' '+T('$≈1{,}096$')+'<span class="sm2">Taschenrechner: (3969 ÷ 1100) hoch (1 ÷ 14)</span>','Die 14. Wurzel macht „hoch 14“ rückgängig')}
+${C(4,'fin','$f(t)=1100*1{,}096^t$','Modellfunktion')}</div></div>`,
+on(s){drw('c5',s>=4)}},
+/* 6 Vergleich */
+{t:'Welches Modell passt besser?',e:'Prüfen',q:'Anfang und Ende treffen beide Modelle genau. Und dazwischen?',
+b:['Abweichungen zeigen','Mittlere Abweichung','Urteil'],
+h:(()=>{const dev=`<g class="rv" data-s="1">${[1,2,3,4,5,6].map(i=>{const t=TT[i],x=CX(t);return `<line x1="${x-9}" x2="${x-9}" y1="${CY(YY[i])}" y2="${CY(g2(t))}" stroke="var(--lin)" stroke-width="5" stroke-dasharray="6 5"/><line x1="${x+9}" x2="${x+9}" y1="${CY(YY[i])}" y2="${CY(f2(t))}" stroke="var(--exp)" stroke-width="5" stroke-dasharray="6 5"/>`}).join('')}</g>`;
+const tl=`<path class="cv lin" d="${pth(g2,-0.5,14.5)}"/><path class="cv exp" d="${pth(f2,-0.5,14.5)}"/><text class="tx lin bl" x="${CX(1)}" y="${CY(g2(1))-50}" style="font-size:34px;text-anchor:start">linear</text><text class="tx exp" x="${CX(12.6)}" y="${CY(f2(12.6))+62}" style="font-size:34px;text-anchor:middle">exponentiell</text>`;
+const row=(F,c)=>[1,2,3,4,5,6].map(i=>`<td class="${c}">${Math.round(Math.abs(F(TT[i])-YY[i]))}</td>`).join('');
+return `<div class="body wide"><div class="gp">${chart(tl+dev)}</div><div class="pn compact">
+<div class="cd rv" data-s="1" style="flex-direction:column;align-items:stretch"><span class="cp">Abweichung |Modell − Messwert| in Mio.</span><table class="tbl sm"><tr><th><i>t</i></th>${[2,4,6,8,10,12].map(x=>`<td>${x}</td>`).join('')}</tr><tr><th class="l1">linear</th>${row(g2,'l1')}</tr><tr><th class="e1">exponentiell</th>${row(f2,'e1')}</tr></table></div>
+${C(2,'',`Mittlere Abweichung über alle 8 Punkte:<br><b style="color:var(--lin)">linear ≈ ${Math.round(mad(g2))} Mio.</b> &nbsp; <b style="color:var(--exp)">exponentiell ≈ ${Math.round(mad(f2))} Mio.</b>`,'Im Mittel')}
+${C(3,'fin','Hier passt das <b>lineare</b> Modell deutlich besser. Das passt zu den ungefähr gleichen Zuwächsen.','Urteil')}</div></div>`})(),
+on(){}},
+/* 7 Computer */
+{t:'Und der Computer?',e:'Regression',q:'Der Computer berücksichtigt alle Punkte, nicht nur zwei. Wird das Modell damit gut?',
+b:['Regression linear','Regression exponentiell','Fazit'],
+h:`<div class="body wide"><div class="gp">${chart(
+`<path class="cv ghl" d="${pth(g2,-0.5,14.5)}"/>`+curve('r1','lin',gC)+
+`<g class="rv" data-s="2"><path class="cv ghe" d="${pth(f2,-0.5,14.5)}"/></g>`+curve('r2','exp',fC))}</div><div class="pn compact">
+${C(1,'lin',`Regressionsgerade: $y≈207{,}3*t+1004{,}8$<span class="sm2">Mittlere Abweichung: <b>${Math.round(mad(gC))} Mio.</b> (vorher ${Math.round(mad(g2))})</span>`,'Computer: linear')}
+${C(2,'exp',`Regression exponentiell: $y≈1189*1{,}096^t$<span class="sm2">Mittlere Abweichung: <b>${Math.round(mad(fC))} Mio.</b> (vorher ${Math.round(mad(f2))})</span>`,'Computer: exponentiell')}
+${C(3,'fin','Der Computer verbessert beide. Aus einem <b>unpassenden Typ</b> macht er aber kein gutes Modell. Welcher Typ passt, entscheiden <b>wir</b>.','Fazit')}</div></div>
+<div class="sm2" style="text-align:center;margin-top:-.4cqh">Gestrichelt: die Zwei-Punkte-Modelle. Wie man die Regression in der Tabellenkalkulation macht, lernen wir bei der Stochastik.</div>`,
+on(s){drw('r1',s>=1);drw('r2',s>=2)}},
+/* 8 Prognose */
+{t:'Grenzen der Prognose',e:'Weiterrechnen',q:'Wir verlängern beide Modelle in die Zukunft. Wie viele Internetnutzer sagen sie voraus?',
+b:['2025','2030','2050','Fazit'],
+h:(()=>{const x0=210,sc=63,X=m=>x0+m*sc,rows=[[2025,20],[2030,25],[2050,45]];let s='';
+[0,2,4,6,8,10,12].forEach(m=>s+=`<line class="gl" x1="${X(m)}" x2="${X(m)}" y1="40" y2="520"/><text class="tx nm2" x="${X(m)}" y="560">${m}</text>`);
+s+=`<text class="tx nm2" x="${X(12)}" y="595" style="text-anchor:end">Mrd. Internetnutzer</text>`;
+s+=`<text class="tx nm2 end" x="${x0-14}" y="${84}">2019</text><rect x="${X(0)}" y="60" width="${3.969*sc}" height="40" rx="6" fill="#9aa0c4"/><text class="tx nm2" x="${X(3.969)+14}" y="88" style="text-anchor:start">4,0 (Messwert)</text>`;
+rows.forEach(([y,t],k)=>{const top=140+k*125,gl=g2(t)/1000,fe=f2(t)/1000,cw=v=>Math.min(v,12)*sc;
+s+=`<g class="rv" data-s="${k+1}"><text class="tx lg end" x="${x0-14}" y="${top+62}" style="font-size:36px">${y}</text>
+<rect x="${X(0)}" y="${top}" width="${cw(gl)}" height="48" rx="6" fill="var(--lin)"/><text class="tx" x="${X(gl)+12}" y="${top+36}" style="text-anchor:start;font-size:30px;fill:var(--lin);font-weight:700">${D1(gl)}</text>
+<rect x="${X(0)}" y="${top+56}" width="${cw(fe)}" height="48" rx="6" fill="var(--exp)"/><text class="tx" x="${fe>12?X(12)-12:X(fe)+12}" y="${top+92}" style="text-anchor:${fe>12?'end':'start'};font-size:30px;font-weight:700;fill:${fe>12?'#fff':'var(--exp)'}">${D1(fe)}${fe>12?' ▶':''}</text></g>`});
+s+=`<line class="vl" x1="${X(8)}" x2="${X(8)}" y1="40" y2="520"/><text class="tx nm2" x="${X(8)+10}" y="34" style="text-anchor:start;font-weight:700">Weltbevölkerung ≈ 8</text>`;
+return `<div class="body wide"><div class="gp"><svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">${s}</svg></div><div class="pn compact">
+${C(1,'',`2025: linear <b style="color:var(--lin)">${D1(g2(20)/1000)} Mrd.</b>, exponentiell <b style="color:var(--exp)">${D1(f2(20)/1000)} Mrd.</b>`,'In 6 Jahren')}
+${C(2,'bad',`2030: Das exponentielle Modell sagt <b>${D1(f2(25)/1000)} Mrd.</b> voraus – <b>mehr Nutzer als Menschen</b>.`,'Moment mal')}
+${C(3,'bad',`2050: exponentiell sogar <b>${D1(f2(45)/1000)} Mrd.</b>, linear immerhin <b>${D1(g2(45)/1000)} Mrd.</b>`,'Und weiter?')}
+${C(4,'fin','Gut an die Daten angepasst heißt nicht: auch <b>außerhalb</b> richtig. Prognosen gelten nur in Grenzen.','Fazit')}</div></div>`})(),
+on(){}},
+/* 9 Merke */
+{t:'Merke: So modellierst du',e:'Zusammenfassung',q:'Unsere Strategie in drei Schritten.',
+b:['Schritt 1','Schritt 2','Schritt 3','Der Computer'],
+h:`<div class="g3">
+<div class="card rv" data-s="1"><div class="nb">1</div><div class="t1">Funktionstyp wählen</div><div class="t3">Zuwächse berechnen und Faktoren berechnen.<br><b style="color:var(--lin)">Zuwächse konstant → linear</b><br><b style="color:var(--exp)">Faktoren konstant → exponentiell</b></div></div>
+<div class="card rv" data-s="2"><div class="nb">2</div><div class="t1">Zwei-Punkte-Modell</div><div class="t3">Den <b>ersten</b> Punkt auf <i>t</i> = 0 legen, dann den <b>letzten</b> Punkt einsetzen.</div><div class="eq" style="min-height:0">${T('$m={y_2-y_1|t_2-t_1}$')}</div><div class="eq" style="min-height:0">${T('$a=$')}${wz('n','{y_2|y_1}')}</div></div>
+<div class="card rv" data-s="3"><div class="nb">3</div><div class="t1">Prüfen und bewerten</div><div class="t3">Stimmt das Modell auch bei den anderen Messwerten? Ist es im Sachzusammenhang sinnvoll, auch für Prognosen?</div></div></div>
+${RULE(4,'Die Regression macht der <b>Computer</b>: Das üben wir mit der Tabellenkalkulation bei der Stochastik.')}`,
+on(){}}
+];
+
+/* ---------- Steuerung ---------- */
+let cur=0,step=0;
+function go(i){GEN++;cur=i;step=0;const s=S[i];
+g('bd').textContent=i+1;g('ti').textContent=s.t;g('pg').textContent=(i+1)+' / '+S.length;g('pf').style.width=(i+1)/S.length*100+'%';
+g('mn').innerHTML='<div class="sc"><div class="q">'+T(s.q)+'</div>'+s.h+'</div>';s.init&&s.init();
+g('bk').disabled=!i;g('fw').disabled=i==S.length-1;upd(false)}
+function upd(anim){GEN++;const s=S[cur],m=g('mn');
+m.querySelectorAll('[data-s]').forEach(e=>{const a=+e.dataset.s,x=e.dataset.x!=null?+e.dataset.x:99;e.classList.toggle('on',step>=a&&step<x)});
+m.querySelectorAll('[data-m]').forEach(e=>e.classList.toggle('mv',step>=+e.dataset.m));
+m.querySelectorAll('[data-hit]').forEach(e=>{const o=step>=+e.dataset.hit;e.classList.toggle('ok',o&&e.dataset.ok=='1');e.classList.toggle('no',o&&e.dataset.ok!='1')});
+const d=step>=s.b.length;g('sb').textContent=d?'✓ Alles gezeigt':s.b[step];g('sb').disabled=d;s.on&&s.on(step,!!anim)}
+function nx(){if(step<S[cur].b.length){step++;upd(true)}}
+function bk1(){if(step>0){step--;upd(false)}}
+function nav(d){const n=cur+d;if(n>=0&&n<S.length)go(n)}
+function pk(e){if(step>=+e.dataset.hit)return;[...e.parentNode.children].forEach(c=>c.classList.remove('sel'));e.classList.add('sel')}
+function ov(o){const e=g('ov');if(o){e.innerHTML='<div class="oh"><h2>Übersicht</h2><button class="btn" onclick="ov(0)">✕ Schließen</button></div><div class="tiles">'+S.map((s,i)=>`<button class="tile${i==cur?' cur':''}" onclick="ov(0);go(${i})"><b>${i+1}</b><span>${s.t}</span><em>${T(s.e)}</em></button>`).join('')+'</div>'}e.classList.toggle('on',!!o)}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+document.addEventListener('keydown',e=>{if(e.key=='ArrowRight')nav(1);else if(e.key=='ArrowLeft')nav(-1);else if(e.key==' '||e.key=='Enter'){e.preventDefault();nx()}else if(e.key=='Backspace'){e.preventDefault();bk1()}else if(e.key=='Escape')ov(0)});
+go(0);
+
+</script>
+</body>
+</html>
