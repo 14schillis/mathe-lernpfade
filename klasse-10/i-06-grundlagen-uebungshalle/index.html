@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12233f">
+<title>Grundlagen-Halle Kapitel I – Exponentielles Wachstum</title>
+<style>
+/* =========================================================
+   Grundlagen-Halle zu Kapitel I Exponentielles Wachstum
+   Eine Datei, offline lauffähig, ohne externe Ressourcen.
+   Schrift: Systemschriften (auf dem iPad: SF Pro und New York).
+   ========================================================= */
+:root{
+  --ink:#12233f;          /* Tinte */
+  --ink-2:#2a4066;
+  --ink-soft:#4b5b73;
+  --paper:#f2f5fa;
+  --card:#ffffff;
+  --grid:#e3eaf4;
+  --line:#d5deea;
+  --blue:#1f6fb2;         /* Graph, wie im Lernpfad */
+  --blue-deep:#17508a;
+  --blue-soft:#e3eefa;
+  --amber:#c9770f;        /* zweiter Graph, wie im Lernpfad */
+  --amber-soft:#fdf0dc;
+  --coral:#d1432d;        /* markierte Punkte */
+  --ok:#1e7a4d;
+  --ok-soft:#e3f4ea;
+  --warn:#8a5a00;
+  --warn-soft:#fdf3e0;
+  --g1:#1f6fb2; --g2:#d9730d; --g3:#8e4ec6; --g4:#12907a;
+  --serif:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:18px;
+  --barH:60px;
+  --dockH:0px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{
+  margin:0;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.07) 1px,transparent 1px),
+    linear-gradient(rgba(31,111,178,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,111,178,.045) 1px,transparent 1px);
+  background-size:140px 140px,140px 140px,28px 28px,28px 28px;
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+body.hasdock{padding-bottom:var(--dockH)}
+button{font-family:inherit;font-size:1rem;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #7ba9d0;outline-offset:2px}
+p{margin:.5em 0}
+sub,sup{font-size:.7em}
+
+/* ---------- Mathematik-Satz ---------- */
+.m,.mf,.mblock{font-family:var(--serif);text-transform:none}
+.m{font-style:italic;padding-right:.04em}
+.mf{font-style:normal;white-space:nowrap}
+.mf i,.m i{font-style:italic;padding-right:.04em}
+.mf sup{padding-left:.02em}
+.nb{white-space:nowrap}
+
+/* ---------- Obere Leiste ---------- */
+.bar{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;padding-top:env(safe-area-inset-top)}
+.bar-in{
+  max-width:1180px;margin:0 auto;min-height:var(--barH);
+  padding:8px clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:10px;
+}
+.bar h1{
+  font:600 1.12rem/1.2 var(--serif);margin:0;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em;
+}
+.bar h1 small{font:500 .78rem var(--sans);color:#9fb3d1;margin-left:8px}
+.chipbtn{
+  min-height:44px;padding:0 15px;border-radius:22px;border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.chipbtn:hover{background:rgba(255,255,255,.16)}
+.chipbtn svg{width:18px;height:18px;flex:0 0 auto}
+.tmode{
+  display:none;font-size:.7rem;font-weight:700;color:#7a3907;background:#fbeadb;border:1px solid #e3c19c;
+  border-radius:20px;padding:2px 10px;white-space:nowrap;
+}
+.tmode.on{display:inline-block}
+#back{display:none}
+@media(max-width:560px){.chipbtn .lbl{display:none}.chipbtn{padding:0 12px}.bar h1 small{display:none}}
+body.intr #back{display:inline-flex}
+
+/* ---------- Halle: Kopfbereich ---------- */
+.hero{background:var(--ink);color:#fff;border-radius:0 0 30px 30px;overflow:hidden}
+.hero-in{
+  max-width:1180px;margin:0 auto;position:relative;
+  padding:clamp(20px,4vw,44px) clamp(16px,3vw,32px) clamp(24px,4vw,46px);
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(14px,3vw,36px);align-items:center;
+}
+.hero h2{font:700 clamp(2.1rem,5.6vw,3.5rem)/1.04 var(--serif);letter-spacing:-.02em;margin:0 0 12px}
+.hero p{margin:0;color:#c3d1e8;max-width:36ch;font-size:clamp(.98rem,1.7vw,1.1rem)}
+.hero .art{min-width:0}
+.hero .art svg{width:100%;height:auto;display:block}
+@media(max-width:640px){.hero-in{grid-template-columns:1fr}.hero .art{order:-1;max-width:420px}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.7s cubic-bezier(.3,.6,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ---------- Halle: Kacheln ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(12px,2.4vw,24px)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:clamp(12px,2vw,20px);margin:clamp(18px,3vw,30px) 0 14px}
+.tile{
+  display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:0;cursor:pointer;overflow:hidden;color:inherit;min-height:262px;position:relative;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -24px rgba(18,35,63,.45);
+}
+.tile:active{transform:translateY(1px)}
+@media(hover:hover){.tile:hover{border-color:#9fb8cd}}
+.tile .art{background:#fbfdff;border-bottom:1px solid var(--line);aspect-ratio:300/132;display:block}
+.tile .art svg{width:100%;height:100%;display:block}
+.tile .tb{padding:13px 17px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.tile h3{font:700 1.32rem/1.15 var(--serif);margin:0;letter-spacing:-.005em}
+.tile p{margin:0;color:var(--ink-soft);font-size:.96rem;line-height:1.4}
+.pips{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+.pip{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.pip.open{background:#9fc3de}
+.pip.full{background:var(--blue)}
+.pipnote{font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+.resetrow{margin:-14px 0 30px}
+.linkbtn{background:none;border:0;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;font-size:.88rem;min-height:44px;padding:0 4px;cursor:pointer}
+.confirm{background:#fff;border:1px solid var(--line);border-left:5px solid var(--coral);border-radius:14px;padding:12px 16px 8px;max-width:620px;font-size:.96rem}
+.btn.danger{background:var(--coral);border-color:var(--coral)}
+.daygoal{
+  display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap;
+  margin:clamp(18px,3vw,28px) 0 0;padding:10px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+}
+.daygoal+.tiles{margin-top:clamp(12px,2vw,18px)}
+.daygoal .tx{font-size:.96rem;color:var(--ink-soft)}
+.daygoal .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.daygoal .segs{display:flex;gap:6px;flex:1 1 150px;max-width:300px;min-width:130px}
+.seg{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.seg.on{background:var(--ok)}
+.daygoal.done{background:var(--ok-soft);border-color:#bcdfcb}
+.daygoal.done .tx{color:#14603c;font-weight:600}
+.today{
+  position:absolute;top:10px;right:10px;display:inline-flex;gap:5px;align-items:center;background:var(--ok-soft);
+  border:1px solid #bcdfcb;color:#14603c;border-radius:20px;padding:2px 11px 3px;font-size:.8rem;font-weight:700;
+}
+.rule{font-size:.9rem;color:var(--ink-soft);max-width:78ch;margin:2px 0 26px}
+
+/* ---------- Trainer-Ansicht ---------- */
+.lvlbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 6px}
+.lvl{
+  flex:1 1 170px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:9px 14px 10px;min-height:62px;cursor:pointer;color:var(--ink);
+}
+.lvl b{font:700 1rem var(--serif)}
+.lvl small{color:var(--ink-soft);font-size:.82rem;line-height:1.3}
+.lvl .dots{display:flex;gap:7px;margin-top:5px;align-items:center}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid #9fb0c6;background:#fff}
+.dot.on{background:var(--ok);border-color:var(--ok)}
+.lvl.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,111,178,.16)}
+.lvl.lock{opacity:.5;cursor:not-allowed}
+.lvl .lk{font-size:.78rem;color:var(--ink-soft)}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(14px,2vw,22px);margin:12px 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.04),0 16px 30px -24px rgba(18,35,63,.4);
+}
+.banner{
+  background:#eaf6f0;border:1px solid #bfe0cf;border-left:5px solid var(--ok);color:#14603c;
+  border-radius:12px;padding:9px 14px;margin:12px 0 0;font-size:.95rem;
+}
+.prompt{font:600 1.2rem/1.42 var(--serif);margin:0 0 10px}
+.prompt .m,.prompt .mf{font-size:1.02em}
+.small{font-size:.9rem;color:var(--ink-soft)}
+.work{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);align-items:start}
+.work>*{min-width:0}
+.work.one{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){.work{grid-template-columns:1fr;gap:10px}}
+@media(min-width:701px) and (max-width:1000px){.work:not(.one){grid-template-columns:minmax(0,53fr) minmax(0,47fr);gap:14px}}
+@media(min-width:701px) and (min-height:620px){.work.stick>.viz{position:sticky;top:calc(var(--barH) + env(safe-area-inset-top) + 10px)}}
+svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.figcap{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+.boardwrap{border:1px solid var(--line);border-radius:14px;background:#fff;padding:6px 6px 2px;overflow:hidden}
+.viz>svg{border:1px solid var(--line);border-radius:14px;background:#fff}
+
+/* ---------- Rückmeldungen und Hilfen ---------- */
+.fb{border-radius:12px;padding:10px 14px;margin-top:12px;font-size:.97rem;display:none;line-height:1.5}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.hint{background:var(--warn-soft);border-left:5px solid #d69220}
+.fb.sol{background:var(--blue-soft);border-left:5px solid var(--blue)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 2px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;
+  padding:10px 20px;border-radius:12px;cursor:pointer;font-weight:650;min-height:48px;min-width:48px;
+}
+.btn:active{background:#0b1830}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.ghost:active{background:var(--blue-soft)}
+.btn.blue{background:var(--blue);border-color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.helpbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.hbtn{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:22px;cursor:pointer;
+  border:1.5px solid #d69220;background:var(--warn-soft);color:var(--warn);font-weight:650;
+}
+.hbtn svg{width:18px;height:18px}
+.hbtn.sol{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-deep)}
+.hbtn.altbtn{border-color:var(--ink-2);background:#fff;color:var(--ink)}
+.hbtn.altbtn[aria-expanded="true"]{background:#eef2f8}
+.alt{background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--ink-2);border-radius:14px;padding:12px 14px 14px;margin-top:12px}
+.alt .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.alt h4{font:700 1.06rem/1.3 var(--serif);margin:0}
+.alt .sm{min-height:40px;padding:6px 14px;font-size:.92rem}
+.altstep{border-top:1px dashed var(--line);padding-top:9px;margin-top:10px}
+.altstep p{margin:.35em 0;font-size:.97rem}
+.altstep .sn{display:flex;gap:9px;align-items:center;font:700 1rem var(--serif);color:var(--blue-deep)}
+.altstep .sn i{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 .85rem var(--sans);font-style:normal;flex:0 0 auto}
+.eq{text-align:center;margin:7px 0;font:500 1.1rem/1.9 var(--serif)}
+.eq .mf{margin:0 .15em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;font-size:.95em;line-height:1.3}
+.frac>span:first-child{padding:0 .3em .05em;border-bottom:1.5px solid currentColor}
+.frac>span:last-child{padding:.05em .3em 0}
+.hbtn .tier{display:inline-flex;gap:3px}
+.hbtn .tier i{width:7px;height:7px;border-radius:50%;background:#e2c58f;display:block}
+.hbtn .tier i.on{background:var(--warn)}
+.hints{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hintcard{background:var(--warn-soft);border:1px solid #ecd2a2;border-left:5px solid #d69220;border-radius:12px;padding:9px 14px;font-size:.96rem}
+.hintcard b{color:var(--warn)}
+.result{margin-top:14px}
+.result .fb{display:block}
+
+/* ---------- Eingabefelder und Tastenfeld ---------- */
+.term{font:500 1.4rem/1.2 var(--serif);display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:10px 0}
+.term .dotop{color:var(--ink-soft)}
+.term .ex{align-self:flex-start;margin-top:3px;margin-left:-3px;font-size:1.1rem}
+.fld{
+  display:inline-flex;align-items:center;justify-content:center;min-width:92px;height:56px;padding:0 14px;
+  border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;
+  font:600 1.35rem var(--serif);position:relative;
+}
+.fld.sm{min-width:70px;height:48px;font-size:1.15rem;padding:0 10px;border-radius:11px}
+.fld .v{white-space:pre}
+.fld .v:empty::before{content:"?";color:#a9b6c9;font-weight:500}
+.fld.act{border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,111,178,.18)}
+.fld.act .v::after{content:"";display:inline-block;width:2px;height:1.15em;background:var(--blue);margin-left:2px;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.fld.act .v:empty::before{content:""}
+@keyframes blink{50%{opacity:0}}
+.fld.ok{border-color:var(--ok);background:var(--ok-soft)}
+.fld.no{border-color:var(--coral);background:#fdecea}
+.fld:disabled{cursor:default}
+.lab{font:italic 600 1.35rem var(--serif);color:var(--ink)}
+
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--ink);display:none;
+  padding:10px clamp(8px,2vw,18px) calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px 20px 0 0;box-shadow:0 -12px 32px -14px rgba(18,35,63,.55);
+}
+body.hasdock .dock{display:block}
+.dock-in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px}
+.key{
+  flex:1 1 42px;min-width:42px;height:50px;border:0;border-radius:11px;background:#f2f5fa;color:var(--ink);
+  font:600 1.3rem var(--serif);cursor:pointer;user-select:none;-webkit-user-select:none;
+}
+.key:active{background:#c9dbf0}
+.key.fn{background:var(--ink-2);color:#fff}
+.key.fn:active{background:#3a5584}
+.key.go{flex:2 1 112px;background:#5aa9ee;color:#0b1b33;font:700 1.05rem var(--sans)}
+.key.go:active{background:#8cc3f5}
+
+/* ---------- Kurven-Tuner ---------- */
+.stepper{display:flex;align-items:center;gap:10px;margin:8px 0}
+.stepper .lab{min-width:1.6ch}
+.sb{
+  width:58px;height:58px;border-radius:16px;border:2px solid var(--blue);background:#fff;color:var(--blue);
+  font:600 2rem/1 var(--sans);cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.sb:active{background:var(--blue-soft)}
+.sb:disabled{opacity:.35;cursor:not-allowed}
+.stepper .val{min-width:96px;text-align:center;font:600 1.7rem var(--serif);font-variant-numeric:tabular-nums}
+.livefn{font:500 1.5rem var(--serif);margin:6px 0 2px;padding:10px 14px;background:var(--blue-soft);border-radius:12px;display:inline-block}
+.goal{display:inline-block;font-size:.84rem;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:20px;padding:2px 11px;margin-bottom:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.86rem;color:var(--ink-soft);margin-top:6px;justify-content:center}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:26px;height:0;border-top:3.5px solid var(--blue);display:inline-block}
+.sw.dash{border-top-color:var(--amber);border-top-style:dashed}
+.sw.ghost{border-top-color:var(--ok);border-top-style:dotted}
+
+/* ---------- Zuordnen ---------- */
+.slots{display:grid;gap:9px;margin:8px 0}
+.slot{
+  display:flex;align-items:center;gap:12px;border:2px dashed #b9c7da;border-radius:14px;padding:7px 12px;min-height:60px;
+  background:#fff;cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit;
+}
+.badge{width:34px;height:34px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto;font-family:var(--sans)}
+.slot .ph{color:#8a9ab1;font-size:.93rem}
+.slot .tx{font:600 1.2rem var(--serif)}
+.slot.hl{border-color:var(--blue);background:var(--blue-soft)}
+.slot.pick{border-color:var(--blue);border-style:solid}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.slot.no{animation:shake .42s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.chip{
+  min-height:54px;padding:8px 18px;border-radius:28px;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  font:600 1.22rem var(--serif);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;
+}
+.chip.sel{background:var(--ink);color:#fff}
+.chip.used{opacity:.3;pointer-events:none}
+.chip.lifted{opacity:.35}
+.chip.drag{position:fixed;z-index:80;pointer-events:none;transform:translate(-50%,-60%);box-shadow:0 14px 28px -10px rgba(18,35,63,.55);background:#fff;color:var(--ink);opacity:1}
+
+/* ---------- Steckbrief ---------- */
+.clues{display:grid;gap:10px;margin:10px 0}
+.clue{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-left:6px solid var(--blue);border-radius:14px;padding:11px 14px}
+.clue .t{flex:1;font:500 1.08rem/1.45 var(--serif)}
+.clue .why{display:block;font:400 .9rem var(--sans);color:#8a2b1c;margin-top:4px}
+.clue .mk{font:700 1.2rem var(--sans);width:26px;text-align:center;flex:0 0 auto}
+.clue.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.clue.ok .mk{color:var(--ok)}
+.clue.no{border-left-color:var(--coral);background:#fdf1ef}
+.clue.no .mk{color:var(--coral)}
+
+/* ---------- Tabelle ---------- */
+.tblwrap{overflow-x:auto;margin:8px 0;-webkit-overflow-scrolling:touch}
+table.tb{border-collapse:separate;border-spacing:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;min-width:100%}
+table.tb th,table.tb td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font:600 1.2rem var(--serif);min-width:78px}
+table.tb tr:last-child td,table.tb tr:last-child th{border-bottom:0}
+table.tb td:last-child,table.tb th:last-child{border-right:0}
+table.tb th.rh{background:var(--ink);color:#fff;font-style:italic;text-align:center;min-width:64px}
+table.tb tr.xr td{background:var(--blue-soft)}
+table.tb tr.arr td{border-bottom:0;padding:0 4px;background:#fff;font:600 .86rem var(--sans);color:var(--amber);height:26px}
+table.tb tr.arr th{background:var(--ink);border-bottom:0}
+
+/* ---------- Fehlerdetektiv ---------- */
+.stud{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.stud .who{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stud .av{width:36px;height:36px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-weight:800}
+.stud .ln{font:500 1.12rem/1.55 var(--serif)}
+.opts{display:flex;flex-direction:column;gap:9px;margin:8px 0 4px}
+.opt{
+  text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;
+  min-height:50px;color:var(--ink);line-height:1.4;font-size:.98rem;
+}
+.opt .mk{font-weight:700;margin-right:.55em;color:var(--blue-deep)}
+.opt.chosen-ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.chosen-no{border-color:var(--coral);background:#fdecea}
+.opt:disabled{cursor:default}
+.probe{width:100%;border-collapse:collapse;font:500 1rem var(--serif);margin:6px 0 2px}
+.probe td,.probe th{border-bottom:1px solid #ecd2a2;padding:3px 8px;text-align:center}
+.probe .bad{color:var(--coral);font-weight:700}
+
+/* ---------- Merkhilfe ---------- */
+.veil{position:fixed;inset:0;background:rgba(10,20,40,.55);z-index:70;display:none}
+.veil.on{display:block}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:71;background:#fff;border-radius:24px 24px 0 0;max-height:86vh;overflow:auto;
+  padding:18px clamp(16px,3vw,32px) calc(26px + env(safe-area-inset-bottom));display:none;
+  box-shadow:0 -16px 40px -14px rgba(10,20,40,.6);
+}
+.sheet.on{display:block}
+.sheet-in{max-width:860px;margin:0 auto}
+.sheet h2{font:700 1.5rem var(--serif);margin:0 0 4px}
+.sheet h3{font:700 1.08rem var(--serif);margin:16px 0 4px;color:var(--blue-deep)}
+.sheet .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet .box{background:var(--blue-soft);border-left:5px solid var(--blue);border-radius:12px;padding:9px 14px;margin:6px 0}
+.sheet .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+@media(max-width:620px){.sheet .duo{grid-template-columns:1fr}}
+.sheet .duo div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.sheet .duo .up{border-left:5px solid var(--blue)}
+.sheet .duo .down{border-left:5px solid var(--amber)}
+.sheet ul{margin:.3em 0;padding-left:1.2em}
+.sheet li{margin:.25em 0}
+
+.hidden{display:none !important}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .draw{animation:none;stroke-dashoffset:0}
+  .fld.act .v::after{animation:none}
+  .slot.no{animation:none}
+}
+
+/* ---------- I.4: kompakter Kopf und Kacheln ---------- */
+.hhead{
+  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px clamp(16px,3vw,32px);align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px clamp(14px,2vw,22px);margin:clamp(12px,2vw,18px) 0 0;
+  box-shadow:0 1px 0 rgba(18,35,63,.05),0 16px 32px -26px rgba(18,35,63,.45);
+}
+.hhead .kap{font:600 .8rem var(--sans);color:var(--ink-soft)}
+.hhead h2{font:700 clamp(1.4rem,3.2vw,1.9rem)/1.15 var(--serif);margin:2px 0 4px;color:var(--ink);letter-spacing:-.01em}
+.hhead p{margin:0;color:var(--ink-soft);font-size:.95rem;max-width:64ch;line-height:1.45}
+.hhead .dg{display:flex;flex-direction:column;gap:8px;min-width:0}
+.hhead .dg .tx{font-size:.96rem;color:var(--ink-soft)}
+.hhead .dg .tx b{color:var(--ink);font-variant-numeric:tabular-nums}
+.hhead .dg .segs{display:flex;gap:6px;max-width:300px}
+.hhead.done{background:var(--ok-soft);border-color:#bcdfcb}
+.hhead.done .dg .tx{color:#14603c;font-weight:600}
+@media(max-width:700px){.hhead{grid-template-columns:1fr}}
+.tiles{margin-top:clamp(10px,1.6vw,16px)}
+.tile{min-height:226px}
+.tile .art{aspect-ratio:300/104}
+.rule{margin-bottom:18px}
+.eq{font-size:1.7rem}
+.ln{font:500 1.12rem/1.55 var(--serif)}
+.stud .ln+.ln{border-top:1px dashed var(--line);margin-top:2px;padding-top:2px}
+.tiles{grid-template-columns:repeat(auto-fill,minmax(204px,1fr));gap:clamp(10px,1.4vw,16px)}
+.tile{min-height:0}
+.tile h3{font-size:1.14rem}
+.tile p{font-size:.9rem}
+.tile .tb{padding:11px 14px 13px}
+.tile .art{aspect-ratio:300/112}
+
+/* ---------- Zusatz (optional) ---------- */
+.zusatz{
+  display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr);width:100%;text-align:left;color:inherit;cursor:pointer;
+  background:#fbfdff;border:2px dashed #9fb8cd;border-radius:var(--r);padding:0;overflow:hidden;margin:clamp(10px,1.4vw,16px) 0 14px;
+}
+.zusatz .art{display:block;border-right:1px dashed #b9c7da;background:#fff}
+.zusatz .art svg{width:100%;height:100%;display:block}
+.zusatz .tb{display:flex;flex-direction:column;gap:3px;padding:10px 16px 12px;min-width:0}
+.zusatz h3{font:700 1.14rem/1.15 var(--serif);margin:0}
+.zusatz p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.4}
+.zusatz .pips{margin-top:4px;max-width:260px}
+@media(hover:hover){.zusatz:hover{border-color:var(--blue)}}
+.optbadge{align-self:flex-start;font-size:.78rem;font-weight:700;color:#7a4a00;background:var(--amber-soft);border:1px solid #e8c78f;border-radius:20px;padding:1px 11px 2px}
+.optnote{background:var(--amber-soft);border:1px solid #e8c78f;border-left:5px solid var(--amber);color:#7a4a00;border-radius:12px;padding:8px 14px;margin:0 0 10px;font-size:.95rem}
+@media(max-width:600px){.zusatz{grid-template-columns:1fr}.zusatz .art{border-right:0;border-bottom:1px dashed #b9c7da;aspect-ratio:300/90}}
+/* ---------- Grundlagen-Halle: Extra-Bereich ---------- */
+.pip.xtra{background:#fff;border:1.5px dashed #9fb0c6;height:8px}
+.pip.xtra.open{border-color:var(--amber);background:var(--amber-soft)}
+.pip.xtra.full{border-style:solid;border-color:var(--blue);background:var(--blue)}
+.lvl.xtra{border-style:dashed}
+.lvl .optbadge{font-size:.7rem;margin-left:6px;padding:0 8px 1px;vertical-align:2px}
+.sheet table.mini{border-collapse:collapse;margin:6px 0;font-size:.95rem}
+.sheet table.mini td,.sheet table.mini th{border:1px solid var(--line);padding:4px 10px;text-align:left}
+.sheet .mf{white-space:normal}
+.gbox{max-width:560px;margin:8px auto 6px;background:#fbfdff;border:1px solid var(--line);border-radius:14px;padding:4px}
+
+</style>
+</head>
+
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="chipbtn" id="back" type="button" aria-label="Zurück zur Übungshalle">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg>
+      <span class="lbl">Halle</span>
+    </button>
+    <h1 id="bartitle">Übungshalle<small>Kapitel I · Grundlagen</small></h1>
+    <span class="tmode" id="tmode">Lehrermodus</span>
+    <button class="chipbtn" id="merk" type="button">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H16v12H5.5A1.5 1.5 0 0 0 4 16.5v-12Z"/><path d="M4 16.5A1.5 1.5 0 0 0 5.5 18H16v-3"/></svg>
+      <span class="lbl">Merkhilfe</span>
+    </button>
+  </div>
+</header>
+
+<main id="stage"></main>
+
+<div class="dock" id="dock" role="group" aria-label="Zahlen eingeben"><div class="dock-in" id="dockin"></div></div>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Merkhilfe">
+  <div class="sheet-in">
+    <div class="row"><h2>Merkhilfe Kapitel I</h2><button class="btn ghost" id="sheetclose" type="button">Schließen</button></div>
+    <div class="box">Exponentielles Wachstum: <span class="mf"><i>N</i>(<i>t</i>) = <i>b</i> · <i>a</i><sup><i>t</i></sup></span> mit Anfangswert <span class="m">b</span> und Wachstumsfaktor <span class="m">a</span></div>
+
+    <h3>Linear oder exponentiell?</h3>
+    <ul>
+      <li>Gleiche <b>Differenzen</b> aufeinanderfolgender Werte: linear. Gleiche <b>Quotienten</b>: exponentiell.</li>
+    </ul>
+
+    <h3>Prozent und Faktor</h3>
+    <div class="duo">
+      <div class="up"><b>Zunahme um <i>p</i> %</b><br><span class="mf"><i>a</i> = 1 + <i>p</i>/100</span></div>
+      <div class="down"><b>Abnahme um <i>p</i> %</b><br><span class="mf"><i>a</i> = 1 − <i>p</i>/100</span></div>
+    </div>
+    <ul>
+      <li>„um <i>p</i> %“ heißt <span class="mf">1 ± <i>p</i>/100</span>. „auf <i>p</i> %“ heißt <span class="mf"><i>a</i> = <i>p</i>/100</span>.</li>
+      <li>Aufeinanderfolgende Änderungen: Faktoren <b>multiplizieren</b>, nicht Prozente addieren.</li>
+    </ul>
+
+    <h3>Faktor aus zwei Werten</h3>
+    <ul>
+      <li>Ein Schritt: <span class="mf"><i>a</i> = Endwert : Anfangswert</span>.</li>
+      <li><i>n</i> Schritte: Quotient bilden und die <b><i>n</i>-te Wurzel</b> ziehen, <span class="mf"><i>a</i> = <sup><i>n</i></sup>√(<i>y</i><sub>2</sub> : <i>y</i><sub>1</sub>)</span>.</li>
+      <li>Anfangswert zurückrechnen: durch <span class="mf"><i>a</i><sup><i>t</i></sup></span> <b>teilen</b>.</li>
+    </ul>
+
+    <h3>Modellieren mit zwei Punkten (erster und letzter Datenpunkt)</h3>
+    <ul>
+      <li>Linear: <span class="mf"><i>m</i> = (<i>y</i><sub>2</sub> − <i>y</i><sub>1</sub>) : (<i>t</i><sub>2</sub> − <i>t</i><sub>1</sub>)</span>.</li>
+      <li>Exponentiell: <span class="mf"><i>a</i> = <sup><i>n</i></sup>√(<i>y</i><sub>2</sub> : <i>y</i><sub>1</sub>)</span> mit <span class="mf"><i>n</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub></span>.</li>
+      <li>Welches Modell besser passt: an einer Zwischenstelle beide Modellwerte ausrechnen und mit dem Messwert vergleichen.</li>
+    </ul>
+
+    <h3>Funktion <span class="mf"><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span></h3>
+    <ul>
+      <li>Bei <span class="mf"><i>b</i> &gt; 0</span>: <span class="mf"><i>a</i> &gt; 1</span> steigt, <span class="mf">0 &lt; <i>a</i> &lt; 1</span> fällt. Die <i>x</i>-Achse ist Asymptote, der Graph schneidet die <i>y</i>-Achse bei <i>b</i>.</li>
+      <li>Spiegeln an der <i>x</i>-Achse: <span class="mf">−<i>f</i>(<i>x</i>)</span>. Spiegeln an der <i>y</i>-Achse: <span class="mf"><i>f</i>(−<i>x</i>)</span>, die Basis wird zum Kehrwert. Strecken in <i>y</i>-Richtung mit <i>c</i>: <span class="mf"><i>c</i> · <i>f</i>(<i>x</i>)</span>.</li>
+      <li>Negativer Exponent: <span class="mf"><i>a</i><sup>−<i>n</i></sup> = 1 : <i>a</i><sup><i>n</i></sup></span>.</li>
+      <li>Punktprobe: <i>x</i> einsetzen und mit der <i>y</i>-Koordinate vergleichen.</li>
+      <li>Term aus zwei Punkten: Quotient der <i>y</i>-Werte (bei Abstand <i>d</i> die <i>d</i>-te Wurzel) gibt <i>a</i>, dann <i>b</i> durch Einsetzen eines Punktes.</li>
+    </ul>
+
+    <h3>Exponentialgleichungen</h3>
+    <ul>
+      <li>Umformen, bis links nur <span class="mf"><i>a</i><sup><i>x</i></sup></span> steht: erst <b>+</b> oder <b>−</b>, dann durch den Faktor <b>teilen</b>. Dann <span class="mf"><i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)</span>. Das rechnet der Taschenrechner: Taste für den Logarithmus mit frei wählbarer Basis, Basis und Argument eingeben. Probe: <i>x</i> einsetzen.</li>
+      <li>Steht rechts null oder eine negative Zahl, gibt es <b>keine Lösung</b>, denn eine Potenz mit positiver Basis ist immer positiv.</li>
+      <li>Exponent mit Term: der Logarithmus liefert den ganzen Exponenten, danach nach <i>x</i> auflösen, zum Beispiel <span class="mf">2<sup>3<i>x</i></sup> = 5</span> ⇒ <span class="mf">3<i>x</i> = log<sub>2</sub>(5)</span>.</li>
+      <li>Gleiche Basis auf beiden Seiten: die <b>Exponenten</b> gleichsetzen.</li>
+    </ul>
+
+    <h3>Zusatz: Zeit gesucht</h3>
+    <ul>
+      <li>Verdopplungszeit <span class="mf"><i>T</i> = log<sub><i>a</i></sub>(2)</span>, Halbwertszeit <span class="mf"><i>T</i> = log<sub><i>a</i></sub>(0,5)</span>. Der Anfangswert spielt keine Rolle.</li>
+      <li>Zielwert <i>Z</i> erreicht: <span class="mf"><i>b</i> · <i>a</i><sup><i>t</i></sup> = <i>Z</i></span>, durch <i>b</i> teilen, dann <span class="mf"><i>t</i> = log<sub><i>a</i></sub>(<i>Z</i> : <i>b</i>)</span>.</li>
+    </ul>
+  </div>
+</div>
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   Hilfsfunktionen
+   ========================================================= */
+const $=(id)=>document.getElementById(id);
+const TEACHER=/[?&]teacher=1(&|$)/.test(location.search);
+
+function div(cls,html){const d=document.createElement("div");if(cls)d.className=cls;if(html!==undefined)d.innerHTML=html;return d;}
+function mkbtn(cls,html,fn){const b=document.createElement("button");b.type="button";b.className=cls;b.innerHTML=html;if(fn)b.addEventListener("click",fn);return b;}
+
+/* deutsche Zahlschreibweise */
+function num(v,dec){
+  if(dec===undefined)dec=4;
+  if(!isFinite(v))return "—";
+  if(Math.abs(v)<5e-10)v=0;
+  let s=v.toFixed(dec);
+  if(s.indexOf(".")>=0){s=s.replace(/0+$/,"").replace(/\.$/,"");}
+  if(s==="-0")s="0";
+  return s.replace(".",",");
+}
+function mnum(v,dec){return num(v,dec).replace("-","−");}
+/* Eingabe: Komma oder Punkt, Minus als - oder −, Brüche wie 1/3 */
+function parseNum(s){
+  s=String(s).replace(/\s/g,"").replace(/−|–/g,"-");
+  if(s==="")return NaN;
+  const m=s.match(/^([-+]?)(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)$/);
+  if(m){
+    const n=parseFloat(m[2].replace(",",".")),d=parseFloat(m[3].replace(",","."));
+    return d===0?NaN:(m[1]==="-"?-1:1)*n/d;
+  }
+  s=s.replace(",",".");
+  if(!/^[-+]?\d*\.?\d+$/.test(s))return NaN;
+  return Number(s);
+}
+const close=(x,y,t)=>Math.abs(x-y)<=(t||1e-6)*Math.max(1,Math.abs(y));
+const pw=(a,x)=>Math.pow(a,x);
+const r6=(v)=>Math.round(v*1e6)/1e6;
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+const LAST={};
+function pick(pool,key){
+  let i=Math.floor(Math.random()*pool.length);
+  if(pool.length>1){let g=0;while(i===LAST[key]&&g++<30)i=Math.floor(Math.random()*pool.length);}
+  LAST[key]=i;return pool[i];
+}
+/* Wird eine Stützaufgabe gebraucht, kommt sie aus der Stufe darunter bzw. aus den leichten Aufgaben der Stufe 1. */
+function poolFor(P,lvl,stuetz){
+  if(!stuetz)return {eff:lvl,pool:P[lvl]};
+  if(lvl>1)return {eff:lvl-1,pool:P[lvl-1]};
+  const e=P[1].filter(x=>x.e);
+  return {eff:1,pool:e.length?e:P[1]};
+}
+
+/* Basis als Text: Brüche wie 1/3 werden als Bruch gezeigt */
+function baseHTML(a){
+  if(close(a,1/3))return "(1/3)";
+  if(close(a,2/3))return "(2/3)";
+  return mnum(a,4);
+}
+/* Term b · a^x als HTML. */
+function termHTML(b,a){
+  let bs;
+  if(b===1)bs="";else if(b===-1)bs="−";else bs=mnum(b,4)+" · ";
+  return '<span class="mf">'+bs+baseHTML(a)+"<sup><i>x</i></sup></span>";
+}
+function fnHTML(b,a,name){
+  return '<span class="mf"><i>'+(name||"f")+'</i>(<i>x</i>) = '+termHTML(b,a).replace('<span class="mf">',"").replace(/<\/span>$/,"")+"</span>";
+}
+const isUp=(a,b)=>(b>0&&a>1)||(b<0&&a<1);
+const ICON_BULB='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14.5h6M8 17h4M10 2.5a5 5 0 0 0-3 9c.7.6 1 1.2 1 2h4c0-.8.3-1.4 1-2a5 5 0 0 0-3-9Z"/></svg>';
+
+/* =========================================================
+   SVG-Koordinatensystem (Board-Technik aus dem Lernpfad)
+   ========================================================= */
+const NS="http://www.w3.org/2000/svg";
+let BOARDN=0;
+function el(name,attrs){const e=document.createElementNS(NS,name);for(const k in attrs){if(Object.prototype.hasOwnProperty.call(attrs,k))e.setAttribute(k,attrs[k]);}return e;}
+function clearNode(g){while(g&&g.firstChild)g.removeChild(g.firstChild);}
+const FF="ui-serif,'New York',Georgia,serif";
+
+function Board(host,o){
+  const W=o.w||560,H=o.h||380,fs=o.fs||14;
+  const pad={l:o.padL!==undefined?o.padL:46,r:o.padR!==undefined?o.padR:24,t:o.padT!==undefined?o.padT:16,b:o.padB!==undefined?o.padB:34};
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMid meet",role:"img"});
+  svg.setAttribute("style","width:100%;height:auto");
+  svg.setAttribute("aria-label",o.label||"Koordinatensystem");
+  const X=(x)=>pad.l+(x-xmin)/(xmax-xmin)*(W-pad.l-pad.r);
+  const Y=(y)=>H-pad.b-(y-ymin)/(ymax-ymin)*(H-pad.t-pad.b);
+  const cid="clip"+(++BOARDN);
+  const defs=el("defs",{});const cp=el("clipPath",{id:cid});
+  cp.appendChild(el("rect",{x:X(xmin),y:Y(ymax),width:X(xmax)-X(xmin),height:Y(ymin)-Y(ymax)}));
+  defs.appendChild(cp);svg.appendChild(defs);
+  const grid=el("g",{});let i;
+  const gx=o.gridx,gy=o.gridy;
+  if(gx)for(i=Math.ceil(xmin/gx-1e-9)*gx;i<=xmax+1e-9;i+=gx)grid.appendChild(el("line",{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:"#e6edf6","stroke-width":1}));
+  if(gy)for(i=Math.ceil(ymin/gy-1e-9)*gy;i<=ymax+1e-9;i+=gy)grid.appendChild(el("line",{x1:X(xmin),y1:Y(i),x2:X(xmax),y2:Y(i),stroke:"#e6edf6","stroke-width":1}));
+  svg.appendChild(grid);
+  const curves=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(curves);
+  const axg=el("g",{});svg.appendChild(axg);
+  const dots=el("g",{"clip-path":"url(#"+cid+")"});svg.appendChild(dots);
+  const lbls=el("g",{});svg.appendChild(lbls);
+  (function(){
+    const AX="#243b5e";
+    axg.appendChild(el("line",{x1:X(xmin),y1:Y(0),x2:X(xmax)-2,y2:Y(0),stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(xmax)+","+Y(0)+" "+(X(xmax)-9)+","+(Y(0)-4.5)+" "+(X(xmax)-9)+","+(Y(0)+4.5),fill:AX}));
+    axg.appendChild(el("line",{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax)+2,stroke:AX,"stroke-width":1.9}));
+    axg.appendChild(el("polygon",{points:X(0)+","+Y(ymax)+" "+(X(0)-4.5)+","+(Y(ymax)+9)+" "+(X(0)+4.5)+","+(Y(ymax)+9),fill:AX}));
+    let t;
+    const tx=o.tickx,ty=o.ticky;
+    if(tx)for(i=Math.ceil(xmin/tx-1e-9)*tx;i<=xmax-0.15*(xmax-xmin)/6;i+=tx){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(i),y1:Y(0)-4,x2:X(i),y2:Y(0)+4,stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(i),y:Y(0)+fs+4,"text-anchor":"middle","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    if(ty)for(i=Math.ceil(ymin/ty-1e-9)*ty;i<=ymax-0.12*(ymax-ymin);i+=ty){
+      if(Math.abs(i)<1e-9)continue;
+      axg.appendChild(el("line",{x1:X(0)-4,y1:Y(i),x2:X(0)+4,y2:Y(i),stroke:AX,"stroke-width":1.3}));
+      t=el("text",{x:X(0)-8,y:Y(i)+fs*0.34,"text-anchor":"end","font-size":fs,fill:"#4b5b73","font-family":FF,stroke:"#fff","stroke-width":3,"paint-order":"stroke","stroke-linejoin":"round"});
+      t.textContent=mnum(i,2);axg.appendChild(t);
+    }
+    const lx=el("text",{x:X(xmax)-2,y:Y(0)+2*fs+4,"text-anchor":"end","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    lx.textContent="x";axg.appendChild(lx);
+    const ly=el("text",{x:X(0)+8,y:Y(ymax)+fs*0.9,"text-anchor":"start","font-size":fs+1,fill:AX,"font-family":FF,"font-style":"italic"});
+    ly.textContent="y";axg.appendChild(ly);
+  })();
+  const YLO=ymin-3*(ymax-ymin),YHI=ymax+3*(ymax-ymin);
+  const api={svg,X,Y,xmin,xmax,ymin,ymax,curves,dots,lbls};
+  api.reset=()=>{clearNode(curves);clearNode(dots);clearNode(lbls);};
+  api.curve=(fn,x0,x1,op)=>{
+    op=op||{};const N=op.n||420;let d="",pen=false,x,y;
+    for(let k=0;k<=N;k++){
+      x=x0+(x1-x0)*k/N;y=fn(x);
+      if(typeof y!=="number"||!isFinite(y)){pen=false;continue;}
+      if(y<YLO)y=YLO;else if(y>YHI)y=YHI;
+      d+=(pen?"L":"M")+X(x).toFixed(2)+" "+Y(y).toFixed(2)+" ";pen=true;
+    }
+    if(d==="")return null;
+    const at={d,fill:"none",stroke:op.color||"#1f6fb2","stroke-width":op.w||3,"stroke-linejoin":"round","stroke-linecap":"round"};
+    if(op.dash)at["stroke-dasharray"]=op.dash;
+    if(op.opacity!==undefined)at.opacity=op.opacity;
+    const p=el("path",at);(op.layer||curves).appendChild(p);return p;
+  };
+  api.dot=(x,y,op)=>{
+    op=op||{};if(!isFinite(y))return null;
+    const c=el("circle",{cx:X(x),cy:Y(Math.max(YLO,Math.min(YHI,y))),r:op.r||6,fill:op.color||"#d1432d",stroke:op.ring||"#fff","stroke-width":op.rw||2});
+    (op.layer||dots).appendChild(c);return c;
+  };
+  api.seg=(x0,y0,x1,y1,op)=>{
+    op=op||{};
+    const l=el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1),stroke:op.color||"#94a3b8","stroke-width":op.w||1.5});
+    if(op.dash)l.setAttribute("stroke-dasharray",op.dash);
+    (op.layer||dots).appendChild(l);return l;
+  };
+  api.text=(x,y,s,op)=>{
+    op=op||{};
+    const t=el("text",{x:X(x)+(op.dx||0),y:Y(y)+(op.dy||0),"font-size":op.size||fs,fill:op.fill||"#243b5e","text-anchor":op.anchor||"middle","font-family":op.family||FF,"font-weight":op.weight||"600",stroke:"#fff","stroke-width":op.halo===false?0:3.6,"paint-order":"stroke","stroke-linejoin":"round"});
+    t.textContent=s;(op.layer||lbls).appendChild(t);return t;
+  };
+  host.innerHTML="";host.appendChild(svg);
+  return api;
+}
+/* Ein sinnvolles Fenster für Punkte (x|y) wählen */
+function niceStep(range,maxTicks){
+  const c=[1,2,5,10,20,50,100,200];
+  for(let i=0;i<c.length;i++){if(range/c[i]<=maxTicks)return c[i];}
+  return 500;
+}
+function viewFor(pts){
+  let xlo=0,xhi=0,ylo=0,yhi=0;
+  pts.forEach(p=>{xlo=Math.min(xlo,p[0]);xhi=Math.max(xhi,p[0]);ylo=Math.min(ylo,p[1]);yhi=Math.max(yhi,p[1]);});
+  const xmin=Math.floor(xlo-1.8),xmax=Math.ceil(xhi+1.8);
+  let yp=(yhi-ylo)||1;
+  const sy=niceStep(yp*1.5,8);
+  let ymax=yhi>0?Math.ceil((yhi+yp*0.22)/sy)*sy:Math.ceil(0.6*sy);
+  let ymin=ylo<0?Math.floor((ylo-yp*0.22)/sy)*sy:-Math.ceil(0.6*sy);
+  if(ymax<=0)ymax=sy;if(ymin>=0)ymin=-sy;
+  return {xmin,xmax,ymin,ymax,gridx:1,gridy:sy,tickx:1,ticky:sy};
+}
+
+/* =========================================================
+   Eingabefelder und Tastenfeld
+   ========================================================= */
+const Dock=(function(){
+  let fields=[],act=null,onCheck=null,visible=false;
+  const host=$("dockin");
+  const KEYS=["1","2","3","4","5","6","7","8","9","0",",","−","/","⌫"];
+  const NAMES={",":"Komma","−":"Minus","/":"Bruchstrich","⌫":"Löschen"};
+  KEYS.forEach(k=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="key"+(NAMES[k]?" fn":"");b.textContent=k;
+    b.setAttribute("aria-label",NAMES[k]||k);
+    b.addEventListener("pointerdown",(e)=>e.preventDefault());
+    b.addEventListener("click",()=>press(k));
+    host.appendChild(b);
+  });
+  const go=document.createElement("button");go.type="button";go.className="key go";go.textContent="Prüfen";
+  go.addEventListener("pointerdown",(e)=>e.preventDefault());
+  go.addEventListener("click",()=>{if(onCheck)onCheck();});
+  host.appendChild(go);
+
+  function measure(){
+    document.documentElement.style.setProperty("--dockH",visible?($("dock").offsetHeight+"px"):"0px");
+  }
+  function press(k){
+    const f=act;if(!f||f.locked)return;
+    let v=f.val;
+    const tail=v.split("/").pop();
+    if(k==="⌫")v=v.slice(0,-1);
+    else if(k==="−"){v=(v[0]==="-")?v.slice(1):"-"+v;}
+    else if(k===","){if(tail.indexOf(",")<0)v+=(tail===""||tail==="-")?"0,":",";}
+    else if(k==="/"){if(v!==""&&v!=="-"&&v.indexOf("/")<0&&!/,$/.test(v))v+="/";}
+    else if(v.length<10)v+=k;
+    f.set(v);f.state("");
+  }
+  function activate(f){
+    if(act)act.el.classList.remove("act");
+    act=f;if(f&&!f.locked)f.el.classList.add("act");
+  }
+  return {
+    use(list,check){
+      fields=list;onCheck=check;visible=true;
+      document.body.classList.add("hasdock");
+      list.forEach(f=>{f.el.addEventListener("click",()=>activate(f));});
+      const first=list.find(f=>!f.locked);activate(first||null);
+      measure();
+    },
+    off(){visible=false;onCheck=null;fields=[];if(act)act.el.classList.remove("act");act=null;document.body.classList.remove("hasdock");measure();},
+    focus:activate,
+    next(){const i=fields.indexOf(act);for(let k=1;k<=fields.length;k++){const f=fields[(i+k)%fields.length];if(!f.locked){activate(f);return;}}},
+    press,measure,
+    get visible(){return visible;},
+    check(){if(onCheck)onCheck();}
+  };
+})();
+window.addEventListener("resize",()=>Dock.measure());
+document.addEventListener("keydown",(e)=>{
+  if(!Dock.visible||e.metaKey||e.ctrlKey||e.altKey)return;
+  if($("sheet").classList.contains("on"))return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){Dock.press(k);e.preventDefault();}
+  else if(k===","||k==="."){Dock.press(",");e.preventDefault();}
+  else if(k==="-"){Dock.press("−");e.preventDefault();}
+  else if(k==="/"){Dock.press("/");e.preventDefault();}
+  else if(k==="Backspace"){Dock.press("⌫");e.preventDefault();}
+  else if(k==="Tab"){Dock.next();e.preventDefault();}
+  else if(k==="Enter"&&document.activeElement&&document.activeElement.classList.contains("fld")){Dock.check();e.preventDefault();}
+});
+
+function Field(opt){
+  opt=opt||{};
+  const b=document.createElement("button");b.type="button";b.className="fld"+(opt.sm?" sm":"");
+  b.setAttribute("aria-label",opt.aria||"Eingabefeld");
+  const v=document.createElement("span");v.className="v";b.appendChild(v);
+  const f={el:b,val:"",locked:false,
+    set(s){f.val=s;v.textContent=s.replace(/-/g,"−");},
+    num(){return parseNum(f.val);},
+    state(s){b.classList.remove("ok","no");if(s)b.classList.add(s);},
+    lock(s){f.locked=true;b.classList.remove("act");if(s)f.state(s);}
+  };
+  return f;
+}
+/* f(x) = [b] · [a]^x  – zwei Felder in einer Zeile */
+function TermRow(host,opt){
+  opt=opt||{};
+  const fb=Field({aria:"Wert für b"}),fa=Field({aria:"Wert für a"});
+  const row=div("term");
+  const l=document.createElement("span");l.className="mf";l.innerHTML="<i>"+(opt.name||"f")+"</i>(<i>"+(opt.v||"x")+"</i>) =";
+  row.appendChild(l);row.appendChild(fb.el);
+  const d=document.createElement("span");d.className="dotop";d.textContent="·";row.appendChild(d);
+  row.appendChild(fa.el);
+  const s=document.createElement("span");s.className="mf ex";s.innerHTML="<i>"+(opt.v||"x")+"</i>";row.appendChild(s);
+  host.appendChild(row);
+  return {fb,fa,row};
+}
+
+/* =========================================================
+   Fortschritt
+   ========================================================= */
+/* Tagesziel: nur im Arbeitsspeicher, unabhängig von Stufen und Mastery */
+const DAY={done:{}};
+const DAYGOAL=4;
+/* Eine erfolgreich gelöste Aufgabe schaltet die nächste Stufe frei */
+const NEED=1;
+const PROG={};
+const nLev=(tr)=>tr.levels.length;
+const Prog={
+  get(id){return PROG[id]||(PROG[id]={unlocked:nLev(trOf(id)),clean:[0,0,0,0],hard:0});},
+  /* Fortschritt (clean) und Stützlogik (hard) sind getrennt:
+     clean entscheidet nur über die Stufenfreischaltung,
+     hard zählt aufeinanderfolgende Durchgänge mit deutlichen Schwierigkeiten. */
+  record(id,lvl,clean,stuetz,hard){
+    const p=this.get(id),nl=nLev(trOf(id));let up=false;
+    if(clean&&!stuetz)p.clean[lvl-1]=Math.min(NEED,p.clean[lvl-1]+1);
+    if(hard)p.hard++;else p.hard=0;
+    if(!stuetz&&p.clean[lvl-1]>=NEED&&p.unlocked===lvl&&lvl<nl){p.unlocked=lvl+1;up=true;}
+    saveProgress();
+    return {up,mastered:p.clean[lvl-1]>=NEED,p};
+  }
+};
+
+/* Dauerhafte Speicherung (localStorage): nur unlocked und clean je Trainer.
+   Nicht gespeichert: Tagesziel (DAY), hard, laufende Aufgabe, Eingaben, Hinweise.
+   Im Lehrermodus wird weder gelesen noch geschrieben. */
+const STORE_KEY="expGrundlagenHalleKapIV1";
+function saveProgress(){
+  if(TEACHER)return;
+  try{
+    const o={v:1,p:{}};
+    TR.forEach(t=>{const p=PROG[t.id];if(p)o.p[t.id]={unlocked:p.unlocked,clean:p.clean.slice()};});
+    localStorage.setItem(STORE_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function validEntry(e,nl){
+  if(!e||typeof e!=="object"||!Array.isArray(e.clean)||e.clean.length!==4)return false;
+  for(let i=0;i<4;i++){
+    const c=e.clean[i];
+    if(!Number.isInteger(c)||c<0||c>NEED)return false;
+    if(i>=nl&&c>0)return false;
+  }
+  return true;
+}
+function loadProgress(){
+  if(TEACHER)return;
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw)return;
+    const o=JSON.parse(raw);
+    if(!o||typeof o!=="object"||o.v!==1||!o.p||typeof o.p!=="object")return;
+    TR.forEach(t=>{
+      const e=o.p[t.id];
+      if(validEntry(e,nLev(t)))PROG[t.id]={unlocked:nLev(t),clean:e.clean.slice(),hard:0};
+    });
+  }catch(e){}
+}
+function resetProgress(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  Object.keys(PROG).forEach(k=>{delete PROG[k];});
+  DAY.done={};
+}
+
+/* =========================================================
+   Aufgaben-Rahmen: Hilfen, Rückmeldung, Ergebnis
+   ========================================================= */
+let CUR=null;
+function Task(tr,lvl,stuetz){
+  const T=this;
+  T.tr=tr;T.lvl=lvl;T.stuetz=stuetz;T.wrong=0;T.helpN=0;T.solShown=false;T.over=false;T.hints=[];T.solFn=null;
+  const host=$("taskhost");host.innerHTML="";Dock.off();
+  if(stuetz)host.appendChild(div("banner","<b>Stützaufgabe.</b> Diese Aufgabe ist etwas leichter, damit du wieder in Schwung kommst. Sie zählt nicht für die Stufe."));
+  const card=div("card");host.appendChild(card);
+  T.work=div("work stick"+(tr.noViz?" one":""));card.appendChild(T.work);
+  T.viz=div("viz");T.side=div("side");
+  if(!tr.noViz)T.work.appendChild(T.viz);
+  T.work.appendChild(T.side);
+  T.body=div("");T.side.appendChild(T.body);
+  T.fb=div("fb");T.side.appendChild(T.fb);
+  T.helpHost=div("");T.side.appendChild(T.helpHost);
+  T.res=div("result");T.side.appendChild(T.res);
+}
+Task.prototype.say=function(kind,html){this.fb.className="fb "+kind+" show";this.fb.innerHTML=html;};
+Task.prototype.clearSay=function(){this.fb.className="fb";this.fb.innerHTML="";};
+Task.prototype.miss=function(){
+  this.wrong++;
+  if(this.wrong>=3&&this.solBtn)this.solBtn.style.display="";
+};
+Task.prototype.setHints=function(hints,solFn){
+  const T=this;T.hints=hints;T.solFn=solFn;
+  T.helpHost.innerHTML="";
+  const bar=div("helpbar"),list=div("hints");
+  T.helpHost.appendChild(bar);T.helpHost.appendChild(list);
+  const hb=document.createElement("button");hb.type="button";hb.className="hbtn";
+  const sb=document.createElement("button");sb.type="button";sb.className="hbtn sol";sb.textContent="Lösung zeigen";
+  function lab(){hb.innerHTML=ICON_BULB+"<span>Hilfe</span><span class='tier'>"+hints.map((h,i)=>"<i class='"+(i<T.helpN?"on":"")+"'></i>").join("")+"</span>";}
+  lab();
+  hb.addEventListener("click",()=>{
+    if(T.over||T.helpN>=hints.length)return;
+    let h=hints[T.helpN];T.helpN++;
+    if(typeof h==="function")h=h();
+    const txt=(h&&h.t!==undefined)?h.t:h;
+    list.appendChild(div("hintcard","<b>Hinweis "+T.helpN+".</b> "+txt));
+    if(h&&h.fn)h.fn();
+    lab();
+    if(T.helpN>=hints.length){hb.style.display="none";sb.style.display="";}
+    Dock.measure();
+  });
+  sb.addEventListener("click",()=>{
+    if(T.over)return;
+    T.solShown=true;
+    if(solFn)solFn();
+  });
+  sb.style.display=TEACHER?"":"none";
+  bar.appendChild(hb);bar.appendChild(sb);
+  T.solBtn=sb;T.hideHelp=()=>{bar.style.display="none";};
+};
+/* Aufgabe beendet (richtig gelöst oder Lösung gezeigt) */
+Task.prototype.complete=function(extraHtml){
+  const T=this;if(T.over)return;T.over=true;
+  if(T.hideHelp)T.hideHelp();
+  Dock.off();
+  /* Tagesziel: nur Basisstufen der Haupt-Trainer */
+  if(!T.tr.optional&&T.lvl<=3)DAY.done[T.tr.id]=true;
+  const clean=!T.solShown&&T.helpN<=1&&T.wrong<=2;
+  /* deutliche Schwierigkeiten: Lösung gezeigt oder Hinweise plus Fehlversuche zusammen mindestens 2 */
+  const hard=T.solShown||(T.helpN+T.wrong)>=2;
+  const r=Prog.record(T.tr.id,T.lvl,clean,T.stuetz,hard);
+  const nl=nLev(T.tr),hasX=!!T.tr.extra;
+  T.res.innerHTML="";
+  let msg;
+  if(T.solShown)msg="<b>Lösung angezeigt.</b> Diese Aufgabe zählt nicht mit. Die nächste probierst du selbst.";
+  else if(!clean)msg="<b>Gelöst, aber mit Hilfe oder mehreren Anläufen.</b> Diese Aufgabe zählt noch nicht. Die nächste schaffst du selbst.";
+  else if(T.stuetz)msg="<b>Gut gelöst.</b> Du bist wieder im Fluss. Weiter geht es mit der normalen Aufgabe.";
+  else if(r.up&&hasX&&T.lvl===3)msg="<b>Erfolgreich gelöst. Stufe 3 ist geschafft.</b> Der optionale Extra-Bereich ist für alle, die noch mehr wollen.";
+  else if(r.up)msg="<b>Erfolgreich gelöst. Stufe "+(T.lvl+1)+" ist freigeschaltet.</b>";
+  else if(r.mastered&&T.lvl===nl&&hasX)msg="<b>Erfolgreich gelöst. Der Extra-Bereich ist geschafft.</b> Stark. Du kannst weiterüben oder einen anderen Trainer wählen.";
+  else if(r.mastered&&T.lvl===nl)msg="<b>Erfolgreich gelöst. Alle Stufen dieses Trainers sind geschafft.</b> Du kannst weiterüben oder einen anderen Trainer wählen.";
+  else if(r.mastered&&hasX&&T.lvl===3)msg="<b>Erfolgreich gelöst.</b> Die Stufen 1 bis 3 dieses Trainers sind damit abgedeckt. Du kannst weiterüben, den optionalen Extra-Bereich probieren oder einen anderen Trainer wählen.";
+  else if(r.mastered)msg="<b>Erfolgreich gelöst.</b> Diese Stufe ist geschafft. Du kannst weiterüben oder zur nächsten Stufe wechseln.";
+  else msg="<b>Erfolgreich gelöst.</b>";
+  const box=div("fb "+(clean?"ok":"hint")+" show",(extraHtml?extraHtml+"<br>":"")+msg);
+  T.res.appendChild(box);
+  const row=div("btnrow");
+  row.appendChild(mkbtn("btn","Nächste Aufgabe",()=>nextTask()));
+  if(r.mastered&&!T.stuetz&&T.lvl<nl)row.appendChild(mkbtn("btn blue",(hasX&&T.lvl===3)?"Zum Extra-Bereich":"Zu Stufe "+(T.lvl+1),()=>{CUR.lvl=T.lvl+1;renderLevelBar();nextTask();}));
+  row.appendChild(mkbtn("btn ghost","Zur Halle",()=>showHalle()));
+  T.res.appendChild(row);
+  renderLevelBar();
+  setTimeout(()=>{try{T.res.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},60);
+};
+
+/* =========================================================
+   Illustrationen (Kopfbereich und Kacheln)
+   ========================================================= */
+function cd(fn,x0,x1,map,n){
+  n=n||90;let d="";
+  for(let i=0;i<=n;i++){
+    const x=x0+(x1-x0)*i/n;let y=fn(x);
+    if(!isFinite(y))continue;
+    y=Math.max(-40,Math.min(60,y));
+    const p=map(x,y);d+=(d?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  }
+  return d;
+}
+function artWrap(inner){
+  let g="";
+  for(let i=0;i<=15;i++)g+='<line x1="'+(i*20)+'" y1="0" x2="'+(i*20)+'" y2="132" stroke="#e8eef6"/>';
+  for(let j=0;j<=7;j++)g+='<line x1="0" y1="'+(j*20)+'" x2="300" y2="'+(j*20)+'" stroke="#e8eef6"/>';
+  return '<svg viewBox="0 0 300 132" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+g+inner+'</svg>';
+}
+function axes(ox,oy){
+  return '<path d="M8 '+oy+'H292M'+ox+' 128V6" stroke="#243b5e" stroke-width="1.6" fill="none"/>';
+}
+function artTxt(x,y,size,fill,inner,anchor){
+  return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||"middle")+'" font-family="'+FF+'" font-size="'+size+'" fill="'+fill+'">'+inner+'</text>';
+}
+const ART={
+  pf(){
+    return artWrap(
+      artTxt(150,56,24,"#12233f",'8 % Zunahme')+
+      '<path d="M150 66V86" stroke="#c9770f" stroke-width="2.8" stroke-linecap="round" fill="none"/><path d="M143 80l7 8 7-8" stroke="#c9770f" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+      artTxt(150,116,26,"#1f6fb2",'<tspan font-style="italic">a</tspan> = 1,08'));
+  },
+  gl(){
+    const m=(x,y)=>[40+34*x,112-9*y];
+    return artWrap(axes(40,112)+
+      '<path d="'+cd(x=>pw(1.45,x)*2,0,6,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      artTxt(206,92,20,"#12233f",'<tspan font-style="italic">N</tspan>(<tspan font-style="italic">t</tspan>) = <tspan font-style="italic">b</tspan> · <tspan font-style="italic">a</tspan><tspan dy="-7" font-size="13" font-style="italic">t</tspan>'));
+  },
+  fw(){
+    return artWrap(
+      artTxt(58,76,26,"#12233f","800")+artTxt(242,76,26,"#12233f","1250")+
+      '<path d="M96 70H198" stroke="#c9770f" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M188 61l11 9-11 9" stroke="#c9770f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+      artTxt(150,58,15,"#9a5b0a","· a")+
+      artTxt(150,114,21,"#1f6fb2",'<tspan font-style="italic">a</tspan> = 1250 : 800'));
+  },
+  fn(){
+    const m=(x,y)=>[150+30*x,70-9*y];
+    return artWrap(axes(150,70)+
+      '<path d="'+cd(x=>pw(2,x),-3.6,3.1,m)+'" stroke="#1f6fb2" stroke-width="3.4" fill="none" stroke-linecap="round"/>'+
+      '<path d="'+cd(x=>pw(0.5,x),-3.1,3.6,m)+'" stroke="#c9770f" stroke-width="3.4" fill="none" stroke-linecap="round"/>'+
+      '<path d="'+cd(x=>-pw(2,x),-3.6,3.1,m)+'" stroke="#8e4ec6" stroke-width="3.4" fill="none" stroke-linecap="round"/>');
+  },
+  tp(){
+    const m=(x,y)=>[40+36*x,116-8.5*y];
+    const p=m(0,2),q=m(3,16);
+    return artWrap(axes(40,116)+
+      '<path d="'+cd(x=>2*pw(2,x),-0.8,3.5,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="6.5" fill="#d1432d" stroke="#fff" stroke-width="2.2"/><circle cx="'+q[0]+'" cy="'+q[1]+'" r="6.5" fill="#d1432d" stroke="#fff" stroke-width="2.2"/>'+
+      artTxt(p[0]+10,p[1]-12,15,"#9b2c1f",'P',"start")+artTxt(q[0]-10,q[1]-8,15,"#9b2c1f",'Q',"end")+
+      artTxt(222,100,18,"#12233f",'<tspan font-style="italic">b</tspan> · <tspan font-style="italic">a</tspan><tspan dy="-6" font-size="12" font-style="italic">x</tspan>'));
+  },
+  eg(){
+    const m=(x,y)=>[96+34*x,112-11.5*y];
+    const xs=Math.log(5)/Math.log(2),p=m(xs,5),q=m(0,5);
+    return artWrap(axes(96,112)+
+      '<path d="'+cd(x=>pw(2,x),-2.6,3.6,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      '<path d="M'+q[0]+' '+q[1]+'H'+(p[0]+8)+'" stroke="#c9770f" stroke-width="3" stroke-dasharray="8 6" fill="none"/>'+
+      '<path d="M'+p[0]+' '+p[1]+'V112" stroke="#94a3b8" stroke-dasharray="3 4" fill="none"/>'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="7" fill="#d1432d" stroke="#fff" stroke-width="2.4"/>'+
+      artTxt(p[0],128,15,"#9b2c1f",'<tspan font-style="italic">x</tspan> ≈ 2,32')+
+      artTxt(228,40,20,"#12233f",'2<tspan dy="-7" font-size="13" font-style="italic">x</tspan><tspan dy="7"> = 5</tspan>'));
+  },
+  sa(){
+    const m=(x,y)=>[66+24*x,116-11*y];
+    const t=Math.log(2)/Math.log(1.2);
+    const p=m(t,2),q=m(0,1);
+    return artWrap(axes(66,116)+
+      '<path d="'+cd(x=>pw(1.2,x),0,7.6,m)+'" stroke="#1f6fb2" stroke-width="3.6" fill="none" stroke-linecap="round"/>'+
+      '<path d="M'+q[0]+' '+p[1]+'H'+p[0]+'V116" stroke="#c9770f" stroke-width="2.6" stroke-dasharray="7 5" fill="none"/>'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="6.5" fill="#d1432d" stroke="#fff" stroke-width="2.2"/>'+
+      artTxt(p[0],130,15,"#9b2c1f",'<tspan font-style="italic">T</tspan>')+
+      artTxt(62,p[1]+5,14,"#9a5b0a",'2<tspan font-style="italic">b</tspan>',"end")+
+      artTxt(62,q[1]+5,14,"#9a5b0a",'<tspan font-style="italic">b</tspan>',"end"));
+  }
+};
+
+/* =========================================================
+   Router: Trainerliste
+   ========================================================= */
+const TR=[];
+const trOf=(id)=>TR.find(t=>t.id===id);
+function setBar(title,small){$("bartitle").innerHTML=title+(small?"<small>"+small+"</small>":"");}
+
+/* =========================================================
+   Gemeinsame Bausteine
+   ========================================================= */
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const choice=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+const M=(h)=>'<span class="mf">'+h+'</span>';
+const lg=(a,y)=>Math.log(y)/Math.log(a);
+const near=(v,y,t)=>Math.abs(v-y)<=t;
+const isInt=(v)=>Math.abs(v-Math.round(v))<1e-9;
+const bg=(v)=>String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g," ");
+const P=(b,e)=>b+"<sup>"+e+"</sup>";
+function lv(lvl,stuetz){return stuetz?(lvl>1?{eff:lvl-1,easy:false}:{eff:1,easy:true}):{eff:lvl,easy:false};}
+function frow(labelHtml,f){
+  const r=div("term");const l=document.createElement("span");l.className="mf";l.innerHTML=labelHtml;
+  r.appendChild(l);r.appendChild(f.el);return r;
+}
+function OptList(T,items,onPick){
+  const ord=shuffle(items.map((_,i)=>i)),box=div("opts"),els=[];
+  ord.forEach((ix,k)=>{
+    const it=items[ix],b=document.createElement("button");b.type="button";b.className="opt";
+    b.innerHTML='<span class="mk">'+"ABCD"[k]+'</span>'+it.h;
+    b.addEventListener("click",()=>{if(T.over||b.disabled)return;onPick(it,b);});
+    els.push({b,it});box.appendChild(b);
+  });
+  return {box,els,lock(){els.forEach(o=>{o.b.disabled=true;});}};
+}
+/* Zahlen-Aufgabe mit einem oder mehreren Feldern.
+   sp: {prompt, text, show, fields:[{label,ans,tol,dec,aria}], hints:[], explain, wrong(vals,oks)} */
+function numTask(T,sp){
+  T.body.appendChild(div("prompt",sp.prompt));
+  if(sp.text)T.body.appendChild(div("small",sp.text));
+  if(sp.show)T.body.appendChild(div("eq",sp.show));
+  if(sp.draw)sp.draw(T.body);
+  const fs=sp.fields.map(f=>Field({aria:f.aria||"Eingabe"}));
+  if(sp.termRow){
+    const tr=TermRow(T.body,sp.termRow);
+    fs.length=0;fs.push(tr.fb,tr.fa);
+    if(sp.lockA!==undefined){tr.fa.set(num(sp.lockA,4));tr.fa.lock("");}
+  }else{
+    sp.fields.forEach((f,i)=>{T.body.appendChild(frow(f.label,fs[i]));});
+  }
+  const live=fs.filter(f=>!f.locked);
+  const brow=div("btnrow");brow.appendChild(mkbtn("btn","Prüfen",check));T.body.appendChild(brow);
+  Dock.use(live,check);
+  const idx=sp.termRow&&sp.lockA!==undefined?[0]:null;
+  function fieldList(){return sp.termRow?(sp.lockA!==undefined?[fs[0]]:[fs[0],fs[1]]):fs;}
+  function check(){
+    if(T.over)return;
+    const F=fieldList();
+    const vals=F.map(f=>f.num());
+    if(vals.some(isNaN)){T.say("hint","Trage in jedes Feld eine Zahl ein. Dezimalzahlen schreibst du mit Komma.");return;}
+    const oks=sp.fields.map((f,i)=>Math.abs(vals[i]-f.ans)<=f.tol);
+    F.forEach((f,i)=>f.state(oks[i]?"ok":"no"));
+    if(oks.every(Boolean)){
+      F.forEach(f=>f.lock("ok"));
+      T.say("ok","<b>Richtig.</b> "+sp.explain);
+      T.complete("");return;
+    }
+    T.miss();
+    let m=sp.wrong?sp.wrong(vals,oks):"";
+    if(!m){
+      if(oks.some(Boolean))m="Ein Wert stimmt schon, er ist grün. Prüfe den anderen.";
+      else if(sp.fields.some((f,i)=>Math.abs(vals[i]-f.ans)<=f.tol*6))m="Fast. Prüfe die Rundung (Anzahl der Nachkommastellen in der Aufgabe).";
+      else m="Prüfe deine Rechnung noch einmal Schritt für Schritt.";
+    }
+    T.say("hint","<b>Noch nicht.</b> "+m);
+  }
+  T.__t={fs:fieldList(),check,sp};
+  T.setHints(sp.hints,()=>{
+    const F=fieldList();
+    F.forEach((f,i)=>{f.set(num(sp.fields[i].ans,sp.fields[i].dec!==undefined?sp.fields[i].dec:4));f.lock("ok");});
+    T.say("sol","<b>Lösung:</b> "+sp.explain);
+    T.complete("");
+  });
+}
+/* Auswahl-Aufgabe. sp: {prompt, text, show, html, options:[{h,v}], correct, why, wrong:{v:msg}, hints} */
+function mcTask(T,sp){
+  T.body.appendChild(div("prompt",sp.prompt));
+  if(sp.text)T.body.appendChild(div("small",sp.text));
+  if(sp.show)T.body.appendChild(div("eq",sp.show));
+  if(sp.html)T.body.appendChild(div("",sp.html));
+  if(sp.draw)sp.draw(T.body);
+  let found=false;
+  const list=OptList(T,sp.options,(it,b)=>{
+    if(it.v===sp.correct){
+      found=true;list.lock();b.classList.add("chosen-ok");
+      T.say("ok","<b>Richtig.</b> "+sp.why);T.complete("");
+    }else{
+      b.disabled=true;b.classList.add("chosen-no");T.miss();
+      T.say("hint","<b>Noch nicht.</b> "+((sp.wrong&&sp.wrong[it.v])||"Gehe das Rezept auf der Karte noch einmal durch."));
+    }
+  });
+  T.body.appendChild(list.box);
+  T.__mc={list,correct:sp.correct};
+  T.setHints(sp.hints,()=>{
+    if(!found){found=true;list.lock();list.els.forEach(o=>{if(o.it.v===sp.correct)o.b.classList.add("chosen-ok");});}
+    T.say("sol","<b>Lösung:</b> "+sp.why);
+    T.complete("");
+  });
+}
+const CTX_UP=[
+  {s:(b,p)=>"Zu Beginn sind "+bg(b)+" Bakterien in einer Kultur. Die Anzahl wächst jede Stunde um "+p+" %.",u:"Stunden",w:"Bakterien",tu:"Stunde"},
+  {s:(b,p)=>"Auf einem Konto liegen "+bg(b)+" €. Das Guthaben wächst jedes Jahr um "+p+" %.",u:"Jahren",w:"Euro",tu:"Jahr"},
+  {s:(b,p)=>"Ein Dorf hat "+bg(b)+" Einwohner. Die Einwohnerzahl wächst jedes Jahr um "+p+" %.",u:"Jahren",w:"Einwohner",tu:"Jahr"}
+];
+const CTX_DN=[
+  {s:(b,p)=>"Ein Auto ist neu "+bg(b)+" € wert. Der Wert sinkt jedes Jahr um "+p+" %.",u:"Jahren",w:"Euro",tu:"Jahr"},
+  {s:(b,p)=>"Im Blut sind "+bg(b)+" mg eines Medikaments. Die Menge sinkt jede Stunde um "+p+" %.",u:"Stunden",w:"mg",tu:"Stunde"},
+  {s:(b,p)=>"Eine Stadt hat "+bg(b)+" Einwohner. Die Einwohnerzahl sinkt jedes Jahr um "+p+" %.",u:"Jahren",w:"Einwohner",tu:"Jahr"}
+];
+const fT=(b,a)=>mnum(b,4)+" · "+mnum(a,4)+"<sup><i>t</i></sup>";
+
+/* =========================================================
+   TRAINER 1 – Prozent und Faktor
+   ========================================================= */
+TR.push({
+  id:"pf",name:"Prozent und Faktor",art:"pf",noViz:true,extra:true,
+  blurb:"Aus Prozent wird der Wachstumsfaktor, und zurück.",
+  levels:[{n:"Prozent → Faktor"},{n:"Faktor → Prozent"},{n:"„um“ oder „auf“"},{n:"Gesamtänderung"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=L.eff;
+    if(eff===1){
+      const up=Math.random()<.5;
+      const p=L.easy?choice([10,20,50,5,25]):choice([1,2,3,4,6,7,8,9,12,15,18,25,35,45,60,75,0.5,1.5,2.5,3.5,4.5,7.5,12.5]);
+      const a=r6(up?1+p/100:1-p/100),ps=mnum(p,1);
+      numTask(T,{
+        prompt:"Gib den Wachstumsfaktor <i class='m'>a</i> an.",
+        text:up?"Eine Größe nimmt pro Schritt um "+ps+" % zu.":"Eine Größe nimmt pro Schritt um "+ps+" % ab.",
+        fields:[{label:"<i>a</i> =",ans:a,tol:1e-6,aria:"Wachstumsfaktor"}],
+        wrong:(v)=>near(v,p/100,1e-6)?"Das ist nur der Prozentsatz als Dezimalzahl. Der Faktor beschreibt die ganze Größe: "+(up?"1 + "+mnum(p/100,4):"1 − "+mnum(p/100,4))+".":near(v,up?1-p/100:1+p/100,1e-6)?"Du hast Zunahme und Abnahme vertauscht. Hier "+(up?"nimmt die Größe zu, also 1 + p/100.":"nimmt die Größe ab, also 1 − p/100."):"",
+        hints:["Zunahme: <span class='mf'><i>a</i> = 1 + <i>p</i>/100</span>. Abnahme: <span class='mf'><i>a</i> = 1 − <i>p</i>/100</span>.","Hier handelt es sich um eine <b>"+(up?"Zunahme":"Abnahme")+"</b> um "+ps+" %. Rechne "+M("1 "+(up?"+":"−")+" "+mnum(p/100,4))+"."],
+        explain:M("<i>a</i> = 1 "+(up?"+":"−")+" "+mnum(p/100,4)+" = "+mnum(a,4))
+      });
+    }else if(eff===2){
+      const a=choice([1.07,1.035,1.045,1.0125,1.15,1.012,0.88,0.915,0.965,0.975,0.92,1.125,0.99,1.04,0.85,0.7,1.35,0.985,1.9]);
+      const ch=r6((a-1)*100);
+      numTask(T,{
+        prompt:"Um wie viel Prozent ändert sich die Größe pro Schritt?",
+        text:"Der Wachstumsfaktor beträgt <i class='m'>a</i> = "+mnum(a,4)+". Bei einer Abnahme trägst du eine negative Zahl ein.",
+        fields:[{label:"Änderung in % =",ans:ch,tol:0.0051,aria:"Änderung in Prozent"}],
+        wrong:(v)=>near(v,a*100,0.0051)?"Das ist <i>a</i> in Prozent. Die Änderung ist <span class='mf'><i>a</i> − 1</span>.":near(v,-ch,0.0051)?"Das Vorzeichen stimmt nicht. Ist <i>a</i> kleiner als 1, nimmt die Größe ab.":"",
+        hints:["Die Änderung ist <span class='mf'><i>a</i> − 1</span>. Ist das Ergebnis negativ, nimmt die Größe ab.","Rechne "+M(mnum(a,4)+" − 1 = "+mnum(r6(a-1),4))+" und schreibe das als Prozentsatz."],
+        explain:M(mnum(a,4)+" − 1 = "+mnum(r6(a-1),4))+", das sind "+M(mnum(ch,2)+" %")+"."
+      });
+    }else if(eff===3){
+      const k=ri(0,3);let p,a,txt,rule;
+      if(k===0){p=choice([4,6,8,12,15,35,45,60,75]);a=r6(1+p/100);txt="Der Preis einer Ware wird um "+p+" % erhöht.";rule="„um p % erhöht“ heißt: zu 100 % kommen p % dazu, <span class='mf'><i>a</i> = 1 + <i>p</i>/100</span>.";}
+      else if(k===1){p=choice([4,6,8,12,15,35,45,70,85,95]);a=r6(1-p/100);txt="Der Preis einer Ware wird um "+p+" % verringert.";rule="„um p % verringert“ heißt: von 100 % gehen p % weg, <span class='mf'><i>a</i> = 1 − <i>p</i>/100</span>.";}
+      else if(k===2){p=choice([105,108,112,115,125,135,140,160,175,200]);a=r6(p/100);txt="Der Preis einer Ware steigt auf "+p+" % des bisherigen Preises.";rule="„auf p %“ heißt: der neue Wert ist p % des alten, <span class='mf'><i>a</i> = <i>p</i>/100</span>.";}
+      else{p=choice([8,12,35,40,60,65,75,85,92,95]);a=r6(p/100);txt="Der Preis einer Ware sinkt auf "+p+" % des bisherigen Preises.";rule="„auf p %“ heißt: der neue Wert ist p % des alten, <span class='mf'><i>a</i> = <i>p</i>/100</span>.";}
+      const other=k<2?r6(p/100):(k===2?r6(1+p/100):r6(1-p/100));
+      numTask(T,{
+        prompt:"Gib den Wachstumsfaktor <i class='m'>a</i> an.",
+        text:txt,
+        fields:[{label:"<i>a</i> =",ans:a,tol:1e-6,aria:"Wachstumsfaktor"}],
+        wrong:(v)=>near(v,other,1e-6)?(k<2?"Bei „um p %“ rechnest du mit 1 ± p/100. Nur bei „auf p %“ ist <i>a</i> = p/100.":"Bei „auf p %“ ist der neue Wert schon p % des alten, also <i>a</i> = p/100."):"",
+        hints:["Achte auf das Wort: „um p %“ oder „auf p %“?",rule],
+        explain:rule.replace(/<span class='mf'>.*?<\/span>/,"")+" "+M("<i>a</i> = "+mnum(a,4))
+      });
+    }else{
+      if(Math.random()<.5){
+        const pr=choice([[10,20],[20,20],[50,10],[15,15],[25,20],[5,15],[30,10],[40,25],[12,8]]);
+        const dn=Math.random()<.5;
+        const a1=1+pr[0]/100,a2=dn?1-pr[1]/100:1+pr[1]/100,ans=r6((a1*a2-1)*100);
+        numTask(T,{
+          prompt:"Um wie viel Prozent hat sich der Preis insgesamt geändert?",
+          text:"Ein Preis steigt zuerst um "+pr[0]+" % und "+(dn?"sinkt":"steigt")+" danach um "+pr[1]+" %. Bei einer Abnahme trägst du eine negative Zahl ein.",
+          fields:[{label:"Gesamtänderung in % =",ans:ans,tol:0.0051,aria:"Gesamtänderung in Prozent"}],
+          wrong:(v)=>near(v,dn?pr[0]-pr[1]:pr[0]+pr[1],0.0051)?"Prozente darf man hier nicht addieren oder subtrahieren. Der zweite Faktor wirkt auf den schon erhöhten Preis. Multipliziere die Faktoren.":"",
+          hints:["Multipliziere die beiden Faktoren: "+M(mnum(a1,3)+" · "+mnum(a2,3)),"Gesamtfaktor "+M(mnum(a1,3)+" · "+mnum(a2,3)+" = "+mnum(r6(a1*a2),4))+". Davon ziehst du 1 ab."],
+          explain:M(mnum(a1,3)+" · "+mnum(a2,3)+" = "+mnum(r6(a1*a2),4))+", das sind "+M((ans>=0?"+":"")+mnum(ans,2)+" %")+"."
+        });
+      }else{
+        const p=choice([2,3,4,5,6,8,10,12]),n=choice([3,4,5,6,8]);
+        const f=Math.pow(1+p/100,n),ans=(f-1)*100;
+        numTask(T,{
+          prompt:"Um wie viel Prozent ist die Größe nach "+n+" Tagen gewachsen? Runde auf eine Nachkommastelle.",
+          text:"Eine Größe wächst jeden Tag um "+p+" %.",
+          fields:[{label:"Gesamtänderung in % ≈",ans:ans,tol:0.0601,dec:1,aria:"Gesamtänderung in Prozent"}],
+          wrong:(v)=>near(v,p*n,0.0601)?"Nicht "+p+" · "+n+". Das Wachstum wirkt jeden Tag auf den schon gewachsenen Wert. Rechne mit dem Faktor hoch "+n+".":"",
+          hints:["Der Faktor pro Tag ist "+M(mnum(1+p/100,4))+". Nach "+n+" Tagen gilt "+M(P(mnum(1+p/100,4),n)),"Rechne "+M(P(mnum(1+p/100,4),n)+" = "+mnum(f,4))+" und ziehe 1 ab."],
+          explain:M(P(mnum(1+p/100,4),n)+" ≈ "+mnum(f,4))+", das sind etwa "+M("+"+mnum(ans,1)+" %")+"."
+        });
+      }
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 2 – Wachstumsgleichung
+   ========================================================= */
+function seqLinear(){
+  const d=choice([-30,-20,-15,-10,-5,5,8,10,12,15,20,25,30,40]);
+  let y0=ri(4,20)*10;if(d<0)y0=Math.max(y0,Math.abs(d)*4+10);
+  return [0,1,2,3].map(t=>y0+d*t);
+}
+function seqExp(){
+  const o=choice([[2,[5,10,20,40,3]],[3,[2,4,5,10]],[1.5,[8,16,24,32,80]],[0.5,[80,160,400,320]],[1.2,[125,250,500]],[0.8,[125,250,500]],[1.1,[1000,2000,500]],[1.25,[64,80,160]],[0.9,[1000,2000]],[1.4,[50,250]]]);
+  const a=o[0],y0=choice(o[1]);
+  return {a,y:[0,1,2,3].map(t=>r6(y0*Math.pow(a,t)))};
+}
+function seqTable(ys){
+  return '<div class="tblwrap"><table class="tb"><tr><th class="rh"><i>t</i></th>'+[0,1,2,3].map(t=>"<td>"+t+"</td>").join("")+'</tr><tr><th class="rh"><i>y</i></th>'+ys.map(v=>"<td>"+mnum(v,2)+"</td>").join("")+"</tr></table></div>";
+}
+TR.push({
+  id:"gl",name:"Wachstumsgleichung",art:"gl",noViz:true,extra:true,
+  blurb:"Wachstumsart erkennen, Gleichung aufstellen, Werte ausrechnen.",
+  levels:[{n:"Linear oder exponentiell?"},{n:"Gleichung aufstellen"},{n:"Wert berechnen"},{n:"Anfangswert zurückrechnen"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=L.eff;
+    if(eff===1){
+      const lin=Math.random()<.5;
+      let ys,a=null;
+      if(lin)ys=seqLinear();else{const s=seqExp();ys=s.y;a=s.a;}
+      const diffs=[1,2,3].map(i=>r6(ys[i]-ys[i-1])),quots=[1,2,3].map(i=>r6(ys[i]/ys[i-1]));
+      const dtxt=diffs.map(d=>(d>=0?"+":"−")+mnum(Math.abs(d),2)).join(", "),qtxt=quots.map(q=>"·"+mnum(q,2)).join(", ");
+      mcTask(T,{
+        prompt:"Ist das Wachstum linear oder exponentiell?",
+        text:"Die Zeitschritte sind gleich lang.",
+        html:seqTable(ys),
+        options:[{h:"linear",v:"lin"},{h:"exponentiell",v:"exp"}],
+        correct:lin?"lin":"exp",
+        why:lin?"Die Differenzen sind immer gleich ("+dtxt+"). Das ist <b>lineares</b> Wachstum.":"Die Quotienten sind immer gleich ("+qtxt+"). Das ist <b>exponentielles</b> Wachstum mit <i>a</i> = "+mnum(a,2)+".",
+        wrong:lin?{exp:"Bilde die Quotienten aufeinanderfolgender Werte. Sie sind nicht gleich. Prüfe die Differenzen."}:{lin:"Bilde die Differenzen aufeinanderfolgender Werte. Sie sind nicht gleich. Prüfe die Quotienten."},
+        hints:["Bilde die <b>Differenzen</b> aufeinanderfolgender Werte (zweiter minus erster, dritter minus zweiter, ...).","Sind die Differenzen gleich, ist es linear. Sonst bilde die <b>Quotienten</b> (zweiter durch ersten, ...). Sind die gleich, ist es exponentiell.",lin?"Die Differenzen sind: "+dtxt+".":"Die Quotienten sind: "+qtxt+"."]
+      });
+    }else if(eff===2){
+      const up=Math.random()<.5,c=choice(up?CTX_UP:CTX_DN);
+      const b=choice([100,200,250,500,800,1000,1200,1500,2000,5000,20000]);
+      const p=up?choice([2,3,4,6,7,8,9,12,15,18,25,35]):choice([4,6,8,12,15,18,25,35]);
+      const a=r6(up?1+p/100:1-p/100);
+      numTask(T,{
+        prompt:"Stelle die Wachstumsgleichung <span class='mf'><i>N</i>(<i>t</i>) = <i>b</i> · <i>a</i><sup><i>t</i></sup></span> auf. <i class='m'>t</i> zählt in "+c.u+".",
+        text:c.s(b,p),
+        termRow:{name:"N",v:"t"},
+        fields:[{ans:b,tol:1e-6},{ans:a,tol:1e-6}],
+        wrong:(v,oks)=>(near(v[1],p/100,1e-6)||near(v[1],up?1-p/100:1+p/100,1e-6))&&oks[0]?"<i>b</i> stimmt. Der Faktor <i>a</i> ist nicht der Prozentsatz. Bei "+(up?"Zunahme":"Abnahme")+" gilt <i>a</i> = 1 "+(up?"+":"−")+" p/100.":(near(v[0],a,1e-6)&&near(v[1],b,1e-6)?"Du hast <i>b</i> und <i>a</i> vertauscht. <i>b</i> ist der Anfangswert, <i>a</i> der Faktor.":""),
+        hints:["<i>b</i> ist der Wert am Anfang (<span class='mf'><i>t</i> = 0</span>). <i>a</i> ist der Faktor pro Schritt.","<i>a</i> bekommst du aus den Prozent: "+(up?"Zunahme: 1 + p/100":"Abnahme: 1 − p/100")+".",{t:"Hier ist <i>b</i> = "+bg(b)+" und <i>a</i> = "+M("1 "+(up?"+":"−")+" "+mnum(p/100,4)),fn:null}],
+        explain:M("<i>N</i>(<i>t</i>) = "+bg(b)+" · "+mnum(a,4)+"<sup><i>t</i></sup>")
+      });
+    }else if(eff===3){
+      const up=Math.random()<.6;
+      const b=choice([200,500,1000,2500,80,150,400,12000]);
+      const a=up?choice([1.3,1.05,1.2,1.5,1.1,1.04,1.08,1.25,1.035,1.15]):choice([0.9,0.8,0.95,0.92,0.75,0.85,0.97]);
+      const t=ri(3,12);
+      const N=b*Math.pow(a,t);
+      const dec=N>=100?0:1;
+      numTask(T,{
+        prompt:"Berechne <span class='mf'><i>N</i>("+t+")</span>. Runde auf "+(dec===0?"ganze Zahlen":"eine Nachkommastelle")+".",
+        text:"Die Größe wird beschrieben durch die Gleichung:",
+        show:M("<i>N</i>(<i>t</i>) = "+bg(b)+" · "+mnum(a,4)+"<sup><i>t</i></sup>"),
+        fields:[{label:"<i>N</i>("+t+") ≈",ans:N,tol:dec===0?0.51:0.051,dec:dec,aria:"Wert"}],
+        wrong:(v)=>near(v,Math.pow(b*a,t),Math.max(1,Math.pow(b*a,t)*0.002))?"Du hast <i>b</i> mit <i>a</i> multipliziert und dann potenziert. Zuerst die Potenz rechnen, dann mal <i>b</i>.":near(v,b*a*t,1)?"Das ist <i>b</i> · <i>a</i> · <i>t</i>. Die Zahl <i>t</i> steht im Exponenten: <i>a</i> wird <i>t</i>-mal mit sich selbst multipliziert.":"",
+        hints:["Setze <span class='mf'><i>t</i> = "+t+"</span> ein.","Rechne zuerst die Potenz "+M(mnum(a,4)+"<sup>"+t+"</sup> = "+mnum(Math.pow(a,t),5)),"Dann mal "+bg(b)+"."],
+        explain:M("<i>N</i>("+t+") = "+bg(b)+" · "+mnum(a,4)+"<sup>"+t+"</sup> ≈ "+mnum(N,dec))
+      });
+    }else{
+      const up=Math.random()<.4;
+      const b=choice([100000,2000,50000,10000,8000,25000]);
+      const a=up?choice([1.04,1.05,1.06,1.1,1.2,1.5,1.25]):choice([0.9,0.8,0.92,0.95,0.75,0.85]);
+      const t=ri(4,10);
+      const N=Math.round(b*Math.pow(a,t));
+      const nm=up?"Das Guthaben auf einem Konto":"Der Wert einer Maschine";
+      numTask(T,{
+        prompt:"Berechne den Anfangswert <i class='m'>b</i> (Wert bei <span class='mf'><i>t</i> = 0</span>) in Euro.",
+        text:nm+(up?" wächst jedes Jahr um "+mnum(r6((a-1)*100),1)+" %":" verliert jedes Jahr "+mnum(r6((1-a)*100),1)+" % an Wert")+". Nach "+t+" Jahren sind es "+bg(N)+" €. Runde auf ganze Euro.",
+        fields:[{label:"<i>b</i> ≈",ans:b,tol:Math.max(1,b*0.0015),dec:0,aria:"Anfangswert"}],
+        wrong:(v)=>near(v,N*Math.pow(a,t),Math.max(2,N*Math.pow(a,t)*0.002))?"Du hast mit <i>a</i><sup>"+t+"</sup> multipliziert. Rückwärts musst du <b>teilen</b>.":"",
+        hints:["Stelle die Gleichung auf: "+M("<i>N</i>("+t+") = <i>b</i> · "+mnum(a,4)+"<sup>"+t+"</sup> = "+bg(N)),"Teile beide Seiten durch "+M(mnum(a,4)+"<sup>"+t+"</sup>")+".","Rechne "+M(bg(N)+" : "+mnum(a,4)+"<sup>"+t+"</sup> = "+bg(N)+" : "+mnum(Math.pow(a,t),5))+"."],
+        explain:M("<i>b</i> = "+bg(N)+" : "+mnum(a,4)+"<sup>"+t+"</sup> ≈ "+bg(b)+" €")
+      });
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 3 – Faktor aus zwei Werten
+   ========================================================= */
+function rootH(n,inner){return "<sup>"+n+"</sup>√("+inner+")";}
+TR.push({
+  id:"fw",name:"Faktor aus zwei Werten",art:"fw",noViz:true,extra:true,
+  blurb:"Wachstumsfaktor aus Anfangs- und Endwert, bis zum Zwei-Punkte-Modell.",
+  levels:[{n:"Ein Schritt"},{n:"Zwei bis drei Schritte"},{n:"Zwei-Punkte-Modell"},{n:"Beliebige Werte, Prozent pro Jahr"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=({1:1,2:2,3:4,4:3})[L.eff];
+    if(eff===1){
+      const a=choice([1.2,1.5,1.25,0.8,0.5,1.1,0.75,2,1.4,0.6,1.8,0.7,1.6,0.4,2.5,1.3,0.9]);
+      let y1;do{y1=choice([40,80,100,200,400,500,20,60,30,70,90,150,250,300]);}while(Math.abs(y1*a-Math.round(y1*a))>1e-9);
+      const y2=Math.round(y1*a);
+      numTask(T,{
+        prompt:"Bestimme den Wachstumsfaktor <i class='m'>a</i> pro Jahr.",
+        text:"Die Zahl der Besucher einer Seite "+(a>1?"steigt":"sinkt")+" innerhalb eines Jahres von "+y1+" auf "+y2+".",
+        fields:[{label:"<i>a</i> =",ans:a,tol:0.0006,aria:"Wachstumsfaktor"}],
+        wrong:(v)=>near(v,y2-y1,1e-6)?"Das ist die Differenz. Der Faktor ist der Quotient: Endwert durch Anfangswert.":near(v,y1/y2,0.0006)?"Du hast den Quotienten umgekehrt. Endwert durch Anfangswert.":"",
+        hints:["Der Faktor ist <span class='mf'>Endwert : Anfangswert</span>.","Rechne "+M(y2+" : "+y1)+"."],
+        explain:M("<i>a</i> = "+y2+" : "+y1+" = "+mnum(a,4))
+      });
+    }else if(eff===2){
+      let a,y1,n,y2;
+      do{a=choice([1.1,1.2,1.5,2,0.9,0.8,0.5,1.3,3,1.4,1.25,1.6,0.7,2.5]);n=ri(2,4);y1=choice([100,200,50,1000,500,40,400]);y2=y1*Math.pow(a,n);}
+      while(Math.abs(y2*100-Math.round(y2*100))>1e-6||y2>2e5);
+      y2=r6(y2);
+      numTask(T,{
+        prompt:"Bestimme den Wachstumsfaktor <i class='m'>a</i> pro Jahr.",
+        text:"Ein Bestand wächst gleichmäßig exponentiell. Er beträgt am Anfang "+mnum(y1,2)+" und nach "+n+" Jahren "+mnum(y2,2)+".",
+        fields:[{label:"<i>a</i> =",ans:a,tol:0.0006,aria:"Wachstumsfaktor"}],
+        wrong:(v)=>near(v,y2/y1,0.001)?"Das ist der Faktor für alle "+n+" Jahre zusammen. Ziehe daraus die "+n+"-te Wurzel.":near(v,y2/y1/n,0.001)?"Du hast durch "+n+" geteilt. Man zieht die "+n+"-te Wurzel.":"",
+        hints:["Der Faktor für alle "+n+" Jahre zusammen ist "+M(mnum(y2,2)+" : "+mnum(y1,2)+" = "+mnum(r6(y2/y1),4))+".","Ziehe die <b>"+n+"-te Wurzel</b> daraus, das ist der Faktor pro Jahr.","Taschenrechner: "+M(rootH(n,mnum(r6(y2/y1),4)))+"."],
+        explain:M("<i>a</i> = "+rootH(n,mnum(y2,2)+" : "+mnum(y1,2))+" = "+rootH(n,mnum(r6(y2/y1),4))+" = "+mnum(a,4))
+      });
+    }else if(eff===3){
+      const d=choice([[1100,3969,14],[5000,8200,6],[250,1000,10],[80,320,7],[1200,700,5],[900,450,8],[60000,35000,4],[12,100,9],[300,1500,12],[2000,3100,5],[450,780,6],[3200,5000,11],[20,95,15],[7500,4000,8],[640,1000,9]]);
+      const y1=d[0],y2=d[1],n=d[2],a=Math.pow(y2/y1,1/n),p=(a-1)*100;
+      numTask(T,{
+        prompt:"Bestimme den Wachstumsfaktor <i class='m'>a</i> pro Jahr (drei Nachkommastellen) und die Änderung in Prozent pro Jahr (eine Nachkommastelle).",
+        text:"Ein Wert ändert sich in "+n+" Jahren von "+bg(y1)+" auf "+bg(y2)+".",
+        fields:[{label:"<i>a</i> ≈",ans:a,tol:0.0006,dec:3,aria:"Wachstumsfaktor"},{label:"Änderung in % ≈",ans:p,tol:0.0601,dec:1,aria:"Änderung in Prozent pro Jahr"}],
+        wrong:(v,oks)=>near(v[0],y2/y1,0.01)?"Das ist der Faktor für alle "+n+" Jahre zusammen. Ziehe die "+n+"-te Wurzel.":near(v[0],y2/y1/n,0.01)?"Man teilt nicht durch "+n+", sondern zieht die "+n+"-te Wurzel.":(oks[0]&&!oks[1]?"<i>a</i> stimmt. Die Änderung in Prozent ist <span class='mf'>(<i>a</i> − 1) · 100</span>.":""),
+        hints:["Faktor für alle Jahre: "+M(bg(y2)+" : "+bg(y1)+" = "+mnum(y2/y1,5)),"<i>a</i> ist die <b>"+n+"-te Wurzel</b> aus diesem Quotienten.","Die Änderung in Prozent ist "+M("(<i>a</i> − 1) · 100")+"."],
+        explain:M("<i>a</i> = "+rootH(n,bg(y2)+" : "+bg(y1))+" ≈ "+mnum(a,3))+", das sind etwa "+M((p>=0?"+":"")+mnum(p,1)+" %")+" pro Jahr."
+      });
+    }else{
+      if(Math.random()<.55){
+        const y1=choice([100,200,500,1000,50,800]),t2=choice([5,6,7,8,9,10,12,14,15]);
+        const y2=Math.round(y1*choice([2.2,2.5,3,3.6,4,1.8,2,5,1.5,2.4,6])*100)/100;
+        const m=(y2-y1)/t2,a=Math.pow(y2/y1,1/t2);
+        numTask(T,{
+          prompt:"Modelliere mit dem ersten und letzten Datenpunkt: lineares Modell <span class='mf'><i>g</i>(<i>t</i>) = <i>m</i> · <i>t</i> + "+bg(y1)+"</span>, exponentielles Modell <span class='mf'><i>f</i>(<i>t</i>) = "+bg(y1)+" · <i>a</i><sup><i>t</i></sup></span>. Bestimme <i class='m'>m</i> (zwei Nachkommastellen) und <i class='m'>a</i> (drei Nachkommastellen).",
+          text:"Erster Datenpunkt <span class='mf'>P₁(0 | "+bg(y1)+")</span>, letzter Datenpunkt <span class='mf'>P₂("+t2+" | "+mnum(y2,2)+")</span>.",
+          fields:[{label:"<i>m</i> ≈",ans:m,tol:0.0051,dec:2,aria:"Steigung m"},{label:"<i>a</i> ≈",ans:a,tol:0.0006,dec:3,aria:"Faktor a"}],
+          wrong:(v,oks)=>(!oks[0]&&near(v[0],y2/y1,0.01))?"Die Steigung ist der Zuwachs durch die Zeit: <span class='mf'>(<i>y</i>₂ − <i>y</i>₁) : <i>t</i>₂</span>, nicht der Quotient.":(!oks[1]&&near(v[1],(y2-y1)/t2,0.01))?"Das ist die Steigung <i>m</i>. Für <i>a</i> brauchst du die "+t2+"-te Wurzel aus dem Quotienten.":"",
+          hints:["Linear: <span class='mf'><i>m</i> = (<i>y</i>₂ − <i>y</i>₁) : <i>t</i>₂</span>. Exponentiell: <span class='mf'><i>a</i> = "+rootH("<i>n</i>","<i>y</i>₂ : <i>y</i>₁")+"</span> mit <i>n</i> = <i>t</i>₂.","<i>m</i> = "+M("("+mnum(y2,2)+" − "+bg(y1)+") : "+t2),"<i>a</i> = "+M(rootH(t2,mnum(y2,2)+" : "+bg(y1)))+"."],
+          explain:M("<i>m</i> = ("+mnum(y2,2)+" − "+bg(y1)+") : "+t2+" ≈ "+mnum(m,2))+"; "+M("<i>a</i> = "+rootH(t2,mnum(y2,2)+" : "+bg(y1))+" ≈ "+mnum(a,3))
+        });
+      }else{
+        const y1=choice([100,200,300,500,1000,50]),t2=choice([8,10,12,14]),mid=t2/2;
+        const y2=Math.round(y1*choice([2.5,3,3.5,4,5]));
+        const lin=(y1+y2)/2,exp=Math.sqrt(y1*y2);
+        const linBest=Math.random()<.5;
+        const meas=Math.round((linBest?lin:exp)*(1+choice([-.02,.02,.015,-.015])));
+        const dl=Math.abs(lin-meas),de=Math.abs(exp-meas);
+        const ok=dl<de?"lin":"exp";
+        mcTask(T,{
+          prompt:"Welches Modell passt an der Stelle <span class='mf'><i>t</i> = "+mid+"</span> besser zum Messwert?",
+          text:"Gegeben sind erster und letzter Datenpunkt <span class='mf'>P₁(0 | "+bg(y1)+")</span> und <span class='mf'>P₂("+t2+" | "+bg(y2)+")</span>. Der Messwert bei <span class='mf'><i>t</i> = "+mid+"</span> beträgt "+bg(meas)+". Das lineare Modell ist <span class='mf'><i>g</i>(<i>t</i>) = "+mnum((y2-y1)/t2,3)+" · <i>t</i> + "+bg(y1)+"</span>, das exponentielle <span class='mf'><i>f</i>(<i>t</i>) = "+bg(y1)+" · "+mnum(Math.pow(y2/y1,1/t2),4)+"<sup><i>t</i></sup></span>.",
+          options:[{h:"Das lineare Modell",v:"lin"},{h:"Das exponentielle Modell",v:"exp"}],
+          correct:ok,
+          why:M("<i>g</i>("+mid+") ≈ "+mnum(lin,1))+" (Abweichung "+mnum(dl,1)+"), "+M("<i>f</i>("+mid+") ≈ "+mnum(exp,1))+" (Abweichung "+mnum(de,1)+"). Das Modell mit der kleineren Abweichung passt besser.",
+          wrong:{lin:"Berechne beide Modellwerte bei <i>t</i> = "+mid+" und vergleiche die Abweichungen zum Messwert.",exp:"Berechne beide Modellwerte bei <i>t</i> = "+mid+" und vergleiche die Abweichungen zum Messwert."},
+          hints:["Setze <span class='mf'><i>t</i> = "+mid+"</span> in beide Modelle ein.","Bilde jeweils die Abweichung <span class='mf'>|Modellwert − Messwert|</span>."]
+        });
+      }
+    }
+  }
+});
+
+/* =========================================================
+   Hilfen für die Trainer 4 bis 8
+   ========================================================= */
+/* Basis als Text: ganze Zahl, Bruch 1/n oder Dezimalzahl */
+function bs(a){
+  if(isInt(a))return mnum(a,0);
+  const r=1/a;
+  if(a<1&&isInt(r)&&r<=10)return "(1/"+Math.round(r)+")";
+  return mnum(a,4);
+}
+function tH(b,a){
+  let s;
+  if(b===1)s="";else if(b===-1)s="−";else s=mnum(b,4)+" · ";
+  return s+bs(a)+"<sup><i>x</i></sup>";
+}
+function fH(b,a,name){return "<i>"+(name||"f")+"</i>(<i>x</i>) = "+tH(b,a);}
+function lgH(a,y){return "log<sub>"+mnum(a,4)+"</sub>("+y+")";}
+function inRange(v,lo,hi){return v>=lo&&v<=hi;}
+function dec2(v,d){const k=Math.pow(10,d);return Math.abs(v*k-Math.round(v*k))<1e-6;}
+/* lineare Exponenten wie 2x − 1 */
+function linX(m,n){
+  let s="";
+  if(m===1)s="<i>x</i>";else if(m===-1)s="−<i>x</i>";else if(m!==0)s=mnum(m,0)+"<i>x</i>";
+  if(n>0)s+=(s?" + ":"")+n;else if(n<0)s+=(s?" − ":"−")+Math.abs(n);
+  return s||"0";
+}
+
+/* =========================================================
+   TRAINER 4 – Funktionen a^x: Verlauf, Spiegeln, Strecken
+   ========================================================= */
+function fnOld(T,L,eff){
+    if(eff===1){
+      const up=Math.random()<.5;
+      const a=up?choice(L.easy?[2,3,1.5,10]:[1.05,1.2,1.5,2,3,4,10,1.1]):choice(L.easy?[0.5,0.1,0.8]:[0.5,0.9,0.8,0.25,0.1,0.95,0.6]);
+      const neg=!L.easy&&Math.random()<.4;
+      const b0=choice([1,2,3,5,0.5,4]),b=neg?-b0:b0;
+      const upv=neg?!up:up;
+      mcTask(T,{
+        prompt:"Wie verläuft der Graph der Funktion von links nach rechts?",
+        show:M(fH(b,a)),
+        options:[{h:"Er steigt (streng monoton wachsend).",v:"up"},{h:"Er fällt (streng monoton fallend).",v:"dn"}],
+        correct:upv?"up":"dn",
+        why:neg?"Hier ist <i>b</i> = "+mnum(b,4)+" negativ. Ohne das Vorzeichen "+(up?"würde":"würde")+" der Graph "+(up?"steigen":"fallen")+" (<span class='mf'><i>a</i> "+(up?"&gt;":"&lt;")+" 1</span>). Das negative <i>b</i> spiegelt ihn an der <i>x</i>-Achse, also "+(upv?"steigt":"fällt")+" er.":"Hier ist <i>a</i> = "+mnum(a,4)+" und <i>b</i> = "+mnum(b,4)+" ist positiv. Für <span class='mf'><i>a</i> "+(up?"&gt;":"&lt;")+" 1</span> "+(up?"steigt":"fällt")+" der Graph.",
+        wrong:upv?{dn:"Schau auf die Basis <i>a</i> und auf das Vorzeichen von <i>b</i>."}:{up:"Schau auf die Basis <i>a</i> und auf das Vorzeichen von <i>b</i>."},
+        hints:["Entscheidend sind die Basis <i>a</i> (Vergleich mit 1) und das Vorzeichen von <i>b</i>.","Bei positivem <i>b</i>: <span class='mf'><i>a</i> &gt; 1</span> steigt, <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> fällt. Bei negativem <i>b</i> ist es genau umgekehrt, weil der Graph an der <i>x</i>-Achse gespiegelt ist."]
+      });
+    }else if(eff===2){
+      const a=choice([2,3,4,5,10]),b=choice([1,2,3,4,5]),k=ri(0,2);
+      let prompt,correct,why,opts;
+      const O=(bb,aa)=>({h:M(tH(bb,aa)),v:tH(bb,aa)});
+      if(k===0){
+        prompt="Der Graph von <i>f</i> wird an der <b>x-Achse</b> gespiegelt. Welcher Term gehört zum neuen Graphen?";
+        correct=tH(-b,a);why="Spiegeln an der <i>x</i>-Achse macht jeden Funktionswert zum Gegenteil, also wird <i>b</i> zu −<i>b</i>. Die Basis bleibt: "+M(fH(-b,a,"g"));
+        opts=[O(-b,a),O(b,1/a),O(2*b,a),O(-b,1/a)];
+      }else if(k===1){
+        prompt="Der Graph von <i>f</i> wird an der <b>y-Achse</b> gespiegelt. Welcher Term gehört zum neuen Graphen?";
+        correct=tH(b,1/a);why="Spiegeln an der <i>y</i>-Achse ersetzt <i>x</i> durch −<i>x</i>. Aus <i>a</i><sup>−<i>x</i></sup> wird <span class='mf'>(1/<i>a</i>)<sup><i>x</i></sup></span>. Der Faktor <i>b</i> bleibt: "+M(fH(b,1/a,"g"));
+        opts=[O(b,1/a),O(-b,a),O(-b,1/a),O(2*b,a)];
+      }else{
+        const c=choice([2,3,4]);
+        prompt="Der Graph von <i>f</i> wird in <b>y-Richtung</b> mit dem Faktor "+c+" gestreckt. Welcher Term gehört zum neuen Graphen?";
+        correct=tH(c*b,a);why="Strecken in <i>y</i>-Richtung multipliziert alle Funktionswerte mit "+c+". Also wird <i>b</i> zu "+mnum(c*b,4)+", die Basis bleibt: "+M(fH(c*b,a,"g"));
+        opts=[O(c*b,a),O(b,c*a),O(b,a/c>0?1/c*a:a),O(-c*b,a)];
+        opts[2]=O(b+c,a);
+      }
+      const seen={};opts=opts.filter(o=>{if(seen[o.v])return false;seen[o.v]=1;return true;});
+      if(opts.length<3)opts.push(O(b+1,a+1));
+      mcTask(T,{
+        prompt:prompt,
+        show:M(fH(b,a)),
+        options:opts,correct:correct,why:why,
+        wrong:{},
+        hints:["Spiegeln an der <i>x</i>-Achse: <span class='mf'>−<i>f</i>(<i>x</i>)</span>. Spiegeln an der <i>y</i>-Achse: <span class='mf'><i>f</i>(−<i>x</i>)</span>. Strecken in <i>y</i>-Richtung: <span class='mf'><i>c</i> · <i>f</i>(<i>x</i>)</span>.",k===0?"Alle Funktionswerte bekommen das Gegenteil. Was passiert dann mit dem Faktor <i>b</i>?":k===1?"Ersetze <i>x</i> durch −<i>x</i> und nutze <span class='mf'><i>a</i><sup>−<i>x</i></sup> = (1/<i>a</i>)<sup><i>x</i></sup></span>.":"Alle Funktionswerte werden mit dem Streckfaktor multipliziert. Rechne den neuen Faktor <i>b</i> aus."]
+      });
+    }else if(eff===3){
+      let a,b,x0,v;
+      do{
+        a=choice([2,0.5,10,4,5,0.25,0.2]);b=choice([1,2,3,4,5,0.5,10,6,12]);x0=choice([-4,-3,-2,-1,-1,-2,3,4,5]);
+        v=b*Math.pow(a,x0);
+      }while(!dec2(v,4)||v>5000);
+      numTask(T,{
+        prompt:"Berechne den Funktionswert <span class='mf'><i>f</i>("+mnum(x0,0)+")</span>.",
+        text:"Ein negativer Exponent bedeutet: den Kehrwert nehmen. Es gilt <span class='mf'><i>a</i><sup>−<i>n</i></sup> = 1 : <i>a</i><sup><i>n</i></sup></span>.",
+        show:M(fH(b,a)),
+        fields:[{label:"<i>f</i>("+mnum(x0,0)+") =",ans:v,tol:0.00006,dec:4,aria:"Funktionswert"}],
+        wrong:(val)=>x0<0&&near(val,b*Math.pow(a,-x0),0.00006)?"Du hast mit +"+(-x0)+" statt mit −"+(-x0)+" als Exponent gerechnet. Ein negativer Exponent führt zum Kehrwert.":x0<0&&near(val,-b*Math.pow(a,-x0),0.00006)?"Ein negativer Exponent macht das Ergebnis nicht negativ, sondern führt zum Kehrwert.":"",
+        hints:["Setze <span class='mf'><i>x</i> = "+mnum(x0,0)+"</span> ein.",x0<0?"Rechne erst <span class='mf'>"+bs(a)+"<sup>"+mnum(x0,0)+"</sup> = 1 : "+bs(a)+"<sup>"+(-x0)+"</sup></span>.":"Rechne erst die Potenz "+M(bs(a)+"<sup>"+x0+"</sup>")+".","Multipliziere dann mit <i>b</i> = "+mnum(b,4)+"."],
+        explain:M("<i>f</i>("+mnum(x0,0)+") = "+mnum(b,4)+" · "+bs(a)+"<sup>"+mnum(x0,0)+"</sup> = "+mnum(v,4))
+      });
+    }else{
+      let a=choice([2,4,5,0.5,0.25,0.2]),b=choice([1,2,3,0.5,4]);
+      const c=choice([2,3,4]),ref=Math.random()<.5;
+      const an=ref?1/a:a,bn=ref?c*b:-c*b;
+      numTask(T,{
+        prompt:"Gib den Term der neuen Funktion <i class='m'>g</i> an.",
+        text:"Der Graph von <i>f</i> mit "+M(fH(b,a))+" wird "+(ref?"an der <b>y-Achse gespiegelt</b>":"an der <b>x-Achse gespiegelt</b>")+" und danach in <i>y</i>-Richtung mit dem Faktor "+c+" gestreckt. Brüche wie 1/5 darfst du mit dem Bruchstrich eingeben.",
+        termRow:{name:"g",v:"x"},
+        fields:[{ans:bn,tol:1e-6},{ans:an,tol:1e-6}],
+        wrong:(v,oks)=>(ref&&near(v[1],a,1e-6)&&oks[0])?"<i>b</i> stimmt. Beim Spiegeln an der <i>y</i>-Achse wird die Basis zum Kehrwert.":(!ref&&near(v[0],c*b,1e-6)&&oks[1])?"Die Basis stimmt. Beim Spiegeln an der <i>x</i>-Achse ändert sich das Vorzeichen von <i>b</i>.":"",
+        hints:["Arbeite Schritt für Schritt. Erst spiegeln, dann strecken.",ref?"Spiegeln an der <i>y</i>-Achse: die Basis wird zum Kehrwert, <i>b</i> bleibt.":"Spiegeln an der <i>x</i>-Achse: <i>b</i> wird zu −<i>b</i>, die Basis bleibt.","Strecken mit "+c+": der Faktor vor der Potenz wird mit "+c+" multipliziert."],
+        explain:M(fH(bn,an,"g"))
+      });
+    }
+}
+
+
+/* ----- Graphen für den Trainer ----- */
+const COL_F="#1f6fb2",COL_G="#d9730d";
+function gView(fns,xs){
+  let lo=0,hi=0;
+  fns.forEach(f=>xs.forEach(x=>{const y=f(x);if(isFinite(y)){lo=Math.min(lo,y);hi=Math.max(hi,y);}}));
+  const span=(hi-lo)||1,st=niceStep(span*1.15,10);
+  const ymax=hi>0?Math.ceil((hi+0.06*span)/st)*st:st,ymin=lo<0?Math.floor((lo-0.06*span)/st)*st:-st;
+  return {xmin:-3,xmax:4,ymin,ymax,gridx:1,gridy:st,tickx:1,ticky:st};
+}
+function drawGraphs(host,defs,pts){
+  const box=div("gbox");host.appendChild(box);
+  const view=gView(defs.map(d=>d.fn),[-1,0,1,2]);
+  const B=Board(box,Object.assign({w:560,h:340,fs:15,label:"Graph der Funktion"},view));
+  defs.forEach(d=>B.curve(d.fn,view.xmin,view.xmax,{color:d.color,w:3.4}));
+  (pts||[]).forEach(p=>{B.dot(p.x,p.y,{color:p.color||"#d1432d",r:6});if(p.label)B.text(p.x,p.y,p.label,{dx:p.dx!==undefined?p.dx:-14,dy:p.dy!==undefined?p.dy:-12,fill:"#9b2c1f",size:16});});
+  return B;
+}
+const FNO=(b,a)=>({h:M(tH(b,a)),v:tH(b,a)});
+function uniqOpts(o){const seen={};return o.filter(x=>{if(seen[x.v])return false;seen[x.v]=1;return true;});}
+function bigVal(fns){let m=0;fns.forEach(f=>[-1,0,1,2].forEach(x=>{m=Math.max(m,Math.abs(f(x)));}));return m;}
+
+/* Stufe 1: Welcher Term gehört zum Graphen? */
+function fnGraphTerm(T,L){
+  const b0=choice([1,2,3,4]),neg=Math.random()<.5,aa=Math.random()<.5?choice([2,3]):choice([0.5,0.5,1/3]);
+  const b=neg?-b0:b0,f=x=>b*Math.pow(aa,x);
+  const rising=(b>0)===(aa>1);
+  mcTask(T,{
+    prompt:"Welcher Funktionsterm gehört zum abgebildeten Graphen?",
+    text:"Der Graph gehört zu einer Funktion der Form <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span>.",
+    draw:(h)=>{drawGraphs(h,[{fn:f,color:COL_F}],[{x:0,y:b,color:"#d1432d"}]);},
+    options:uniqOpts([FNO(b,aa),FNO(-b,aa),FNO(b,1/aa),FNO(-b,1/aa)]),
+    correct:tH(b,aa),
+    why:"Der Graph schneidet die <i>y</i>-Achse bei <i>y</i> = "+mnum(b,0)+", also ist <i>b</i> = "+mnum(b,0)+". Er "+(rising?"steigt":"fällt")+". Mit "+(b>0?"positivem":"negativem")+" <i>b</i> gehört dazu <span class='mf'><i>a</i> "+(aa>1?"&gt;":"&lt;")+" 1</span>, also <i>a</i> = "+bs(aa)+".",
+    wrong:{},
+    hints:["Wo schneidet der Graph die <i>y</i>-Achse (roter Punkt)? Das ist <i>b</i>, mit Vorzeichen.","Steigt oder fällt der Graph? Bei positivem <i>b</i>: <span class='mf'><i>a</i> &gt; 1</span> steigt, <span class='mf'>0 &lt; <i>a</i> &lt; 1</span> fällt. Bei negativem <i>b</i> ist es umgekehrt."]
+  });
+}
+/* Stufe 2: blauer Graph f, oranger Graph g */
+function fnGraphTrafo(T,L){
+  let a,b,c,type,gb,ga,f,g;
+  let n=0;
+  do{
+    a=choice([2,3,0.5,2]);b=choice([1,2,3,4]);type=ri(0,2);c=choice([2,3,0.5]);
+    if(type===0){gb=-b;ga=a;}else if(type===1){gb=b;ga=1/a;}else{gb=c*b;ga=a;}
+    f=x=>b*Math.pow(a,x);g=x=>gb*Math.pow(ga,x);
+  }while((!dec2(gb,1)||!dec2(gb*ga,1)||bigVal([f,g])>24||(type===2&&near(c*b,b,1e-9)))&&n++<200);
+  const desc=Math.random()<.5;
+  const ctext=c>1?"in <i>y</i>-Richtung mit dem Faktor "+mnum(c,0)+" gestreckt":"in <i>y</i>-Richtung mit dem Faktor "+mnum(c,1)+" gestaucht";
+  const common={
+    text:"Der <b style='color:"+COL_F+"'>blaue</b> Graph gehört zu "+M(fH(b,a))+". Der <b style='color:"+COL_G+"'>orange</b> Graph <i>g</i> entsteht aus ihm.",
+    draw:(h)=>{drawGraphs(h,[{fn:f,color:COL_F},{fn:g,color:COL_G}]);},
+    wrong:{}
+  };
+  const hintsG=["Vergleiche die beiden Graphen: Wo schneiden sie die <i>y</i>-Achse? Wie verlaufen sie?","Spiegeln an der <i>x</i>-Achse: der Graph liegt unter der <i>x</i>-Achse. Spiegeln an der <i>y</i>-Achse: derselbe Schnittpunkt mit der <i>y</i>-Achse, aber steigend wird fallend. Strecken oder Stauchen: anderer Schnittpunkt mit der <i>y</i>-Achse, gleiche Richtung."];
+  if(desc){
+    const O=(h,v)=>({h:h,v:v});
+    const stretchTxt=type===2?ctext:"in <i>y</i>-Richtung mit dem Faktor 2 gestreckt";
+    mcTask(T,Object.assign({},common,{
+      prompt:"Wie ist der orange Graph aus dem blauen entstanden?",
+      options:[O("an der <i>x</i>-Achse gespiegelt","rx"),O("an der <i>y</i>-Achse gespiegelt","ry"),O(stretchTxt,"st"),O("um 2 nach oben verschoben","sh")],
+      correct:["rx","ry","st"][type],
+      why:type===0?"Der orange Graph liegt unter der <i>x</i>-Achse, jeder Wert hat das Gegenteil. Das ist eine Spiegelung an der <i>x</i>-Achse.":type===1?"Beide Graphen schneiden die <i>y</i>-Achse an derselben Stelle, aber der orange verläuft genau umgekehrt. Das ist eine Spiegelung an der <i>y</i>-Achse.":"Die Schnittstelle mit der <i>y</i>-Achse ändert sich von "+mnum(b,0)+" auf "+mnum(gb,1)+", das ist der Faktor "+mnum(c,1)+". Der Graph wird "+(c>1?"gestreckt":"gestaucht")+".",
+      hints:hintsG
+    }));
+  }else{
+    const O=FNO;
+    let opts;
+    if(type===0)opts=[O(-b,a),O(b,1/a),O(-b,1/a),O(2*b,a)];
+    else if(type===1)opts=[O(b,1/a),O(-b,a),O(-b,1/a),O(2*b,1/a)];
+    else{let alt=O(b,a*c);if(near(a*c,1,1e-9)||near(a*c,1/a,1e-9))alt=O(b,a+1);opts=[O(c*b,a),alt,O(-c*b,a),O(b/c,a)];}
+    mcTask(T,Object.assign({},common,{
+      prompt:"Welcher Funktionsterm gehört zum orangen Graphen <i>g</i>?",
+      options:uniqOpts(opts),correct:tH(gb,ga),
+      why:type===0?"Spiegeln an der <i>x</i>-Achse macht <i>b</i> zu −<i>b</i>, die Basis bleibt: "+M(fH(gb,ga,"g")):type===1?"Spiegeln an der <i>y</i>-Achse macht die Basis zum Kehrwert, <i>b</i> bleibt: "+M(fH(gb,ga,"g")):"Der Graph schneidet die <i>y</i>-Achse bei "+mnum(gb,1)+". Der Faktor <i>b</i> ist "+mnum(c,1)+"-mal so groß, die Basis bleibt: "+M(fH(gb,ga,"g")),
+      hints:hintsG
+    }));
+  }
+}
+/* Stufe 3: Funktionsterm ablesen */
+function fnGraphRead(T,L){
+  const D=[[1,2],[2,2],[3,2],[4,0.5],[8,0.5],[2,0.5],[1,3],[-1,2],[-2,2],[-4,0.5],[-1,3],[6,0.5]];
+  const d=choice(D),b=d[0],a=d[1];
+  let n=1;
+  if(Math.random()<.35&&Math.abs(b*a*a)<=16&&a!==3)n=2;
+  const y=r6(b*Math.pow(a,n)),f=x=>b*Math.pow(a,x);
+  numTask(T,{
+    prompt:"Bestimme den Funktionsterm <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> zum abgebildeten Graphen.",
+    text:"Lies die Koordinaten der markierten Punkte P und Q am Gitter ab.",
+    draw:(h)=>{drawGraphs(h,[{fn:f,color:COL_F}],[{x:0,y:b,label:"P",color:"#d1432d"},{x:n,y:y,label:"Q",color:"#d1432d"}]);},
+    termRow:{name:"f",v:"x"},
+    fields:[{ans:b,tol:1e-6},{ans:a,tol:0.0006}],
+    wrong:(v,oks)=>oks[0]&&n===1&&near(v[1],y-b,1e-6)?"<i>b</i> stimmt. <i>a</i> ist nicht die Differenz, sondern der Quotient <span class='mf'><i>y</i><sub>Q</sub> : <i>y</i><sub>P</sub></span>.":(oks[0]&&n===2&&near(v[1],y/b,1e-6)?"<i>b</i> stimmt. Q liegt zwei Schritte nach P. Der Quotient gilt für beide Schritte, ziehe die Wurzel.":""),
+    hints:["P liegt bei <span class='mf'><i>x</i> = 0</span>. Seine <i>y</i>-Koordinate ist <i>b</i>.",n===1?"Q liegt bei <span class='mf'><i>x</i> = 1</span>, einen Schritt nach P. Also ist <i>a</i> = <i>y</i><sub>Q</sub> : <i>y</i><sub>P</sub>.":"Q liegt bei <span class='mf'><i>x</i> = 2</span>, zwei Schritte nach P. Der Quotient <i>y</i><sub>Q</sub> : <i>y</i><sub>P</sub> gilt für beide Schritte, daraus ziehst du die Wurzel.","Hier ist P("+0+" | "+mnum(b,0)+") und Q("+n+" | "+mnum(y,1)+")."],
+    explain:M("<i>b</i> = "+mnum(b,0)+"; <i>a</i> = "+(n===1?"":"√(")+mnum(y,1)+" : "+mnum(b,0)+(n===1?"":")")+" = "+bs(a))+". Also "+M(fH(b,a))+"."
+  });
+}
+/* Extra: g aus dem Graphen bestimmen, nachdem f gespiegelt und gestreckt wurde */
+function fnGraphExtra(T,L){
+  let a,b,c,ref,gb,ga,f,g,n=0;
+  do{
+    a=choice([2,3,0.5,2]);b=choice([1,2,3,4]);c=choice([2,3,0.5]);ref=Math.random()<.5;
+    ga=ref?1/a:a;gb=ref?c*b:-c*b;
+    f=x=>b*Math.pow(a,x);g=x=>gb*Math.pow(ga,x);
+  }while((!dec2(gb,1)||!dec2(gb*ga,1)||Math.abs(gb)>12||bigVal([f,g])>24)&&n++<300);
+  numTask(T,{
+    prompt:"Der orange Graph <i>g</i> entsteht aus dem blauen Graphen von <i>f</i> durch Spiegeln und anschließendes Strecken oder Stauchen in <i>y</i>-Richtung. Bestimme seinen Term.",
+    text:"Der <b style='color:"+COL_F+"'>blaue</b> Graph gehört zu "+M(fH(b,a))+". Lies die Punkte P und Q des orangen Graphen ab. Brüche darfst du mit dem Bruchstrich eingeben.",
+    draw:(h)=>{drawGraphs(h,[{fn:f,color:COL_F},{fn:g,color:COL_G}],[{x:0,y:gb,label:"P",color:"#d1432d"},{x:1,y:gb*ga,label:"Q",color:"#d1432d",dx:14}]);},
+    termRow:{name:"g",v:"x"},
+    fields:[{ans:gb,tol:1e-6},{ans:ga,tol:0.0006}],
+    wrong:(v,oks)=>oks[0]&&!oks[1]?"<i>b</i> stimmt. Die Basis ergibt sich aus <span class='mf'><i>y</i><sub>Q</sub> : <i>y</i><sub>P</sub></span>.":"",
+    hints:["P liegt bei <span class='mf'><i>x</i> = 0</span>. Seine <i>y</i>-Koordinate ist <i>b</i> von <i>g</i>.","Q liegt einen Schritt nach P: <span class='mf'><i>a</i> = <i>y</i><sub>Q</sub> : <i>y</i><sub>P</sub></span>.","P("+0+" | "+mnum(gb,1)+") und Q(1 | "+mnum(gb*ga,1)+")."],
+    explain:M(fH(gb,ga,"g"))
+  });
+}
+
+TR.push({
+  id:"fn",name:"Verlauf, Spiegeln, Strecken",art:"fn",noViz:true,extra:true,
+  blurb:"Graphen lesen: Welcher Term passt? Wie entsteht ein Graph durch Spiegeln und Strecken? Funktionsterm ablesen.",
+  levels:[{n:"Verlauf und Graph"},{n:"Spiegeln und Strecken am Graphen"},{n:"Funktionsterm ablesen"},{n:"Mehrere Veränderungen"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=L.eff,r=Math.random();
+    if(eff===1){if(L.easy||r<.4)fnOld(T,L,1);else fnGraphTerm(T,L);}
+    else if(eff===2){if(L.easy||r<.2)fnOld(T,L,2);else fnGraphTrafo(T,L);}
+    else if(eff===3){if(r<.2)fnOld(T,L,3);else fnGraphRead(T,L);}
+    else{if(r<.2)fnOld(T,L,4);else fnGraphExtra(T,L);}
+  }
+});
+
+/* =========================================================
+   TRAINER 5 – Term aus Punkten, Punktprobe
+   ========================================================= */
+TR.push({
+  id:"tp",name:"Term aus Punkten",art:"tp",noViz:true,extra:true,
+  blurb:"Liegt der Punkt auf dem Graphen? Den Term <i>b</i> · <i>a</i><sup><i>x</i></sup> aus zwei Punkten bestimmen.",
+  levels:[{n:"Punktprobe"},{n:"Term aus P(0 | b) und Q(1 | y)"},{n:"Term aus P(0 | b) und Q(n | y)"},{n:"Term aus zwei beliebigen Punkten"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=L.eff;
+    if(eff===1){
+      const a=choice(L.easy?[2,3,10]:[2,3,0.5,10,4,5,1.5,0.25]),b=choice([1,2,3,5,10,4,0.5]),x0=choice(L.easy?[0,1,2]:[0,1,2,3,-1,-2,4]);
+      const v=b*Math.pow(a,x0);
+      const yes=Math.random()<.5;
+      let y0=v;
+      if(!yes){y0=choice([b*Math.pow(a,x0+1),b*Math.pow(a,x0-1),v+1,v*2+1,b*x0*a]);if(near(y0,v,1e-9))y0=v+2;}
+      y0=r6(y0);
+      mcTask(T,{
+        prompt:"Liegt der Punkt <span class='mf'>P("+mnum(x0,0)+" | "+mnum(y0,4)+")</span> auf dem Graphen von <i>f</i>?",
+        show:M(fH(b,a)),
+        options:[{h:"Ja, der Punkt liegt auf dem Graphen.",v:"y"},{h:"Nein, der Punkt liegt nicht auf dem Graphen.",v:"n"}],
+        correct:yes?"y":"n",
+        why:"Einsetzen: "+M("<i>f</i>("+mnum(x0,0)+") = "+mnum(b,4)+" · "+bs(a)+"<sup>"+mnum(x0,0)+"</sup> = "+mnum(v,4))+". "+(yes?"Das ist die <i>y</i>-Koordinate von P. Der Punkt liegt auf dem Graphen.":"Das ist nicht "+mnum(y0,4)+". Der Punkt liegt nicht auf dem Graphen."),
+        wrong:{},
+        hints:["Setze die <i>x</i>-Koordinate von P in den Term ein.","Vergleiche das Ergebnis mit der <i>y</i>-Koordinate von P."]
+      });
+    }else if(eff===2){
+      const b=choice([2,3,5,10,4,100,200,0.5]),a=choice([1.5,2,3,0.5,1.2,0.8,1.1,0.25,4]);
+      const y=r6(b*a);
+      numTask(T,{
+        prompt:"Bestimme den Term <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> der Funktion, deren Graph durch die Punkte <span class='mf'>P(0 | "+mnum(b,4)+")</span> und <span class='mf'>Q(1 | "+mnum(y,4)+")</span> verläuft.",
+        termRow:{name:"f",v:"x"},
+        fields:[{ans:b,tol:1e-6},{ans:a,tol:1e-6}],
+        wrong:(v,oks)=>oks[0]&&near(v[1],y-b,1e-6)?"<i>b</i> stimmt. <i>a</i> ist nicht die Differenz, sondern der Quotient <span class='mf'><i>y</i><sub>Q</sub> : <i>y</i><sub>P</sub></span>.":(oks[0]&&near(v[1],b/y,1e-6)?"<i>b</i> stimmt. Du hast den Quotienten umgekehrt. Rechne Wert bei Q durch Wert bei P.":""),
+        hints:["Bei <span class='mf'><i>x</i> = 0</span> ist <span class='mf'><i>a</i><sup>0</sup> = 1</span>. Die <i>y</i>-Koordinate von P ist also gleich <i>b</i>.","Der Faktor <i>a</i> ist der Quotient der beiden <i>y</i>-Werte, weil Q genau einen Schritt nach P liegt: "+M("<i>a</i> = "+mnum(y,4)+" : "+mnum(b,4))+"."],
+        explain:M("<i>b</i> = "+mnum(b,4)+"; <i>a</i> = "+mnum(y,4)+" : "+mnum(b,4)+" = "+mnum(a,4))+". Also "+M(fH(b,a))+"."
+      });
+    }else if(eff===3){
+      let a,b,n,y;
+      do{a=choice([1.5,2,3,0.5,1.1,1.2,0.8,0.9,4,5]);b=choice([4,10,20,50,100,200,5,2,8,1000]);n=ri(2,4);y=b*Math.pow(a,n);}
+      while(!dec2(y,3)||y>20000);
+      y=r6(y);
+      numTask(T,{
+        prompt:"Bestimme den Term <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> der Funktion, deren Graph durch die Punkte <span class='mf'>P(0 | "+mnum(b,4)+")</span> und <span class='mf'>Q("+n+" | "+mnum(y,4)+")</span> verläuft.",
+        termRow:{name:"f",v:"x"},
+        fields:[{ans:b,tol:1e-6},{ans:a,tol:0.0006}],
+        wrong:(v,oks)=>oks[0]&&near(v[1],y/b,0.001)?"<i>b</i> stimmt. Das ist der Faktor für alle "+n+" Schritte zusammen. Ziehe die "+n+"-te Wurzel.":(oks[0]&&near(v[1],y/b/n,0.001)?"<i>b</i> stimmt. Du hast durch "+n+" geteilt. Man zieht die "+n+"-te Wurzel.":""),
+        hints:["Bei <span class='mf'><i>x</i> = 0</span> ist <span class='mf'><i>a</i><sup>0</sup> = 1</span>, also ist <i>b</i> die <i>y</i>-Koordinate von P.","Q liegt "+n+" Schritte nach P. Der Quotient "+M(mnum(y,4)+" : "+mnum(b,4)+" = "+mnum(r6(y/b),4))+" gilt für alle "+n+" Schritte.","Ziehe die <b>"+n+"-te Wurzel</b>: "+M(rootH(n,mnum(r6(y/b),4)))+"."],
+        explain:M("<i>b</i> = "+mnum(b,4)+"; <i>a</i> = "+rootH(n,mnum(y,4)+" : "+mnum(b,4))+" = "+mnum(a,4))+". Also "+M(fH(b,a))+"."
+      });
+    }else{
+      let a,b,x1,d,y1,y2;
+      do{a=choice([2,3,0.5,1.5,4,5,0.2,0.25]);b=choice([1,2,3,4,5,8,10,0.5,20]);x1=ri(1,4);d=ri(1,4);y1=b*Math.pow(a,x1);y2=b*Math.pow(a,x1+d);}
+      while(!dec2(y1,2)||!dec2(y2,2)||y1>5000||y2>5000||y1<0.05||y2<0.05);
+      y1=r6(y1);y2=r6(y2);const x2=x1+d;
+      numTask(T,{
+        prompt:"Bestimme den Term <span class='mf'><i>f</i>(<i>x</i>) = <i>b</i> · <i>a</i><sup><i>x</i></sup></span> der Funktion, deren Graph durch die Punkte <span class='mf'>P("+x1+" | "+mnum(y1,4)+")</span> und <span class='mf'>Q("+x2+" | "+mnum(y2,4)+")</span> verläuft.",
+        text:"Tipp: Bestimme zuerst <i>a</i> aus dem Quotienten der <i>y</i>-Werte, dann <i>b</i> durch Einsetzen eines Punktes.",
+        termRow:{name:"f",v:"x"},
+        fields:[{ans:b,tol:0.0006},{ans:a,tol:0.0006}],
+        wrong:(v,oks)=>oks[1]&&!oks[0]?"<i>a</i> stimmt. Setze nun P in <span class='mf'><i>b</i> · <i>a</i><sup><i>x</i></sup></span> ein und löse nach <i>b</i> auf: <span class='mf'><i>b</i> = <i>y</i><sub>P</sub> : <i>a</i><sup>"+x1+"</sup></span>.":(near(v[0],y1,0.001)&&!oks[0]?"<i>b</i> ist nicht die <i>y</i>-Koordinate von P. P liegt nicht bei <span class='mf'><i>x</i> = 0</span>.":""),
+        hints:["Die beiden Punkte liegen "+d+(d===1?" Schritt":" Schritte")+" auseinander. Der Quotient "+M(mnum(y2,4)+" : "+mnum(y1,4)+" = "+mnum(r6(y2/y1),4))+" gilt für diese "+d+(d===1?" Schritt":" Schritte")+".",d===1?"Dieser Quotient ist schon <i>a</i>.":"Ziehe daraus die <b>"+d+"-te Wurzel</b>, das ist <i>a</i>.","Setze P in <span class='mf'><i>b</i> · <i>a</i><sup><i>x</i></sup> = <i>y</i></span> ein: "+M("<i>b</i> · "+bs(a)+"<sup>"+x1+"</sup> = "+mnum(y1,4))+". Dann teilst du durch die Potenz."],
+        explain:M("<i>a</i> = "+(d===1?"":"<sup>"+d+"</sup>√")+"("+mnum(y2,4)+" : "+mnum(y1,4)+") = "+mnum(a,4)+"; <i>b</i> = "+mnum(y1,4)+" : "+bs(a)+"<sup>"+x1+"</sup> = "+mnum(b,4))+". Also "+M(fH(b,a))+"."
+      });
+    }
+  }
+});
+
+/* =========================================================
+   TRAINER 7 – Exponentialgleichungen lösen
+   ========================================================= */
+TR.push({
+  id:"eg",name:"Exponentialgleichungen",art:"eg",noViz:true,extra:true,
+  blurb:"<span class='mf'><i>a</i><sup><i>x</i></sup> = <i>y</i></span> lösen, umformen und prüfen, ob es eine Lösung gibt.",
+  levels:[{n:"Potenz erkennen"},{n:"Mit dem Taschenrechner"},{n:"Gibt es eine Lösung?"},{n:"Exponent als Term, gleiche Basis"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=L.eff;
+    const eqH=(c,a,rhs)=>M((c===1?"":mnum(c,4)+" · ")+bs(a)+"<sup><i>x</i></sup> = "+rhs);
+    if(eff===1){
+      const a=choice(L.easy?[2,3,10]:[2,3,5,10,4,6,7,8,9]),k=ri(1,L.easy?3:5);
+      const neg=a===10&&!L.easy&&Math.random()<.35;
+      const kk=neg?-ri(1,3):k,y=neg?mnum(Math.pow(10,kk),-kk):bg(Math.pow(a,k));
+      numTask(T,{
+        prompt:"Löse die Gleichung. Es kommt eine ganze Zahl heraus.",
+        show:eqH(1,a,y),
+        fields:[{label:"<i>x</i> =",ans:kk,tol:1e-6,dec:0,aria:"Lösung x"}],
+        wrong:(v)=>neg&&near(v,-kk,1e-6)?"Das Vorzeichen stimmt nicht. Ein Wert unter 1 gehört zu einem negativen Exponenten.":near(v,Math.pow(a,k)/a,1e-6)?"Du suchst den Exponenten, nicht eine Division. "+mnum(a,0)+" hoch was ergibt "+y+"?":"",
+        hints:["Schreibe die rechte Seite als Potenz von "+mnum(a,0)+".","Probiere: "+(neg?M("10<sup>−1</sup> = 0,1; 10<sup>−2</sup> = 0,01 ..."):M(mnum(a,0)+"<sup>1</sup>, "+mnum(a,0)+"<sup>2</sup> = "+bg(a*a)+", "+mnum(a,0)+"<sup>3</sup> = "+bg(a*a*a)+" ..."))+"."],
+        explain:M(mnum(a,0)+"<sup>"+kk+"</sup> = "+y)+", also "+M("<i>x</i> = "+kk)
+      });
+    }else if(eff===2){
+      const a=choice([2,3,5,10,1.5,0.5,1.2,4,7,1.05,1.1,0.9,0.8,0.75]),cmode=Math.random()<.6;
+      let c=1,d,x;
+      do{
+        c=cmode?choice([2,3,4,5,10,0.5]):1;
+        const y=choice([7,20,50,100,300,5,12,40,0.3,0.6,2.5,9,60]);
+        d=cmode?r6(c*y):y;
+        x=lg(a,d/c);
+      }while(!isFinite(x)||Math.abs(x)<0.3||Math.abs(x)>45||Math.abs(x-Math.round(x))<0.002||(cmode&&!dec2(d,2)));
+      const q=r6(d/c);
+      numTask(T,{
+        prompt:"Löse die Gleichung. Runde auf drei Nachkommastellen.",
+        show:eqH(c,a,mnum(d,4)),
+        fields:[{label:"<i>x</i> ≈",ans:x,tol:0.00051,dec:3,aria:"Lösung x"}],
+        wrong:(v)=>cmode&&near(v,lg(a,d)-c,0.001)||cmode&&near(v,lg(a,d)/c,0.001)||cmode&&near(v,lg(a,d)*c,0.001)?"Der Faktor <i>"+"c"+"</i> vor der Potenz wird zuerst auf der rechten Seite <b>geteilt</b>. Erst dann den Logarithmus bilden.":near(v,d/Math.log(a),0.01)||near(v,Math.log(d),0.001)?"Du brauchst den Logarithmus zur Basis "+mnum(a,4)+", nicht ln oder Division durch ln.":"",
+        hints:cmode?["Forme so um, dass links nur "+M(bs(a)+"<sup><i>x</i></sup>")+" steht: teile durch "+mnum(c,4)+".","Dann: "+M(bs(a)+"<sup><i>x</i></sup> = "+mnum(d,4)+" : "+mnum(c,4)+" = "+mnum(q,5)),"Jetzt gilt "+M("<i>x</i> = "+lgH(a,mnum(q,5)))+". Gib den Logarithmus in den Taschenrechner ein."]:["Die Gleichung hat die Form "+M("<i>a</i><sup><i>x</i></sup> = <i>y</i>")+". Dann ist "+M("<i>x</i> = log<sub><i>a</i></sub>(<i>y</i>)")+".","Gib "+M(lgH(a,mnum(d,4)))+" in den Taschenrechner ein (Logarithmus mit frei wählbarer Basis)."],
+        explain:(cmode?M(bs(a)+"<sup><i>x</i></sup> = "+mnum(d,4)+" : "+mnum(c,4)+" = "+mnum(q,5))+", also ":"")+M("<i>x</i> = "+lgH(a,mnum(q,5))+" ≈ "+mnum(x,3))
+      });
+    }else if(eff===3){
+      const a=choice([2,3,5,10,4,0.5]),kind=ri(0,3);
+      let c=1,q=0,d,solv,text;
+      if(kind===0){d=choice([-3,-8,-1,0,-10,-20]);solv=false;text=M(bs(a)+"<sup><i>x</i></sup> = "+mnum(d,0));}
+      else if(kind===1){c=choice([2,3,4,5]);d=choice([-6,-12,-20,-15]);solv=false;text=M(mnum(c,0)+" · "+bs(a)+"<sup><i>x</i></sup> = "+mnum(d,0));}
+      else if(kind===2){q=choice([2,3,5,10]);d=q-choice([1,2,4,q]);solv=d-q>0;text=M(bs(a)+"<sup><i>x</i></sup> + "+q+" = "+mnum(d,0));}
+      else{q=choice([2,3,5,10]);d=q+choice([1,2,4,5,10]);solv=true;text=M(bs(a)+"<sup><i>x</i></sup> + "+q+" = "+mnum(d,0));
+        if(Math.random()<.5){c=choice([2,3]);d=q+c*choice([1,2,4,5]);text=M(mnum(c,0)+" · "+bs(a)+"<sup><i>x</i></sup> + "+q+" = "+mnum(d,0));}}
+      const rhs=(d-q)/c;
+      mcTask(T,{
+        prompt:"Wie viele Lösungen hat die Gleichung?",
+        text:"Forme zuerst um, bis links nur noch "+M(bs(a)+"<sup><i>x</i></sup>")+" steht. Rechne nicht aus, entscheide nur.",
+        show:text,
+        options:[{h:"Keine Lösung",v:"no"},{h:"Genau eine Lösung",v:"one"}],
+        correct:solv?"one":"no",
+        why:"Umgeformt steht rechts "+M(mnum(rhs,4))+". "+(solv?"Das ist positiv. Eine Potenz kann jeden positiven Wert annehmen, es gibt genau eine Lösung.":"Das ist null oder negativ. Eine Potenz mit positiver Basis ist immer positiv, es gibt keine Lösung."),
+        wrong:{},
+        hints:["Forme um: erst die Zahl neben der Potenz wegschaffen (Gegenoperation), dann durch den Faktor teilen.","Eine Potenz <span class='mf'><i>a</i><sup><i>x</i></sup></span> mit positiver Basis ist <b>immer positiv</b>. Was steht nach dem Umformen rechts?"]
+      });
+    }else{
+      const kind=ri(0,2);
+      if(kind===0){
+        const a=choice([2,3,5,10]),k=choice([2,3]),y=choice([20,50,100,7,300]),x=lg(a,y)/k;
+        numTask(T,{
+          prompt:"Löse die Gleichung. Runde auf drei Nachkommastellen.",
+          show:M(mnum(a,0)+"<sup>"+k+"<i>x</i></sup> = "+y),
+          fields:[{label:"<i>x</i> ≈",ans:x,tol:0.00051,dec:3,aria:"Lösung x"}],
+          wrong:(v)=>near(v,lg(a,y),0.001)?"Das ist <span class='mf'>"+k+"<i>x</i></span>, nicht <i>x</i>. Teile noch durch "+k+".":near(v,lg(a,y)*k,0.001)?"Der Exponent ist "+k+"<i>x</i>. Du musst durch "+k+" teilen, nicht multiplizieren.":"",
+          hints:["Der Logarithmus liefert den ganzen Exponenten: "+M(k+"<i>x</i> = "+lgH(a,y)),"Berechne "+M(lgH(a,y)+" ≈ "+mnum(lg(a,y),4))+" und teile durch "+k+"."],
+          explain:M(k+"<i>x</i> = "+lgH(a,y)+" ≈ "+mnum(lg(a,y),4))+", also "+M("<i>x</i> ≈ "+mnum(x,3))
+        });
+      }else if(kind===1){
+        const a=choice([2,3,5,10]),q=choice([1,2,3,-1,-2]),y=choice([20,50,100,7,300]),x=lg(a,y)-q;
+        numTask(T,{
+          prompt:"Löse die Gleichung. Runde auf drei Nachkommastellen.",
+          show:M(mnum(a,0)+"<sup><i>x</i>"+(q>0?" + ":" − ")+Math.abs(q)+"</sup> = "+y),
+          fields:[{label:"<i>x</i> ≈",ans:x,tol:0.00051,dec:3,aria:"Lösung x"}],
+          wrong:(v)=>near(v,lg(a,y),0.001)?"Das ist der ganze Exponent <span class='mf'><i>x</i> "+(q>0?"+":"−")+" "+Math.abs(q)+"</span>. Rechne noch "+(q>0?"minus ":"plus ")+Math.abs(q)+".":near(v,lg(a,y)+q,0.001)?"Du hast die falsche Gegenoperation benutzt. Steht im Exponenten "+(q>0?"+ ":"− ")+Math.abs(q)+", musst du "+(q>0?"subtrahieren":"addieren")+".":"",
+          hints:["Der Logarithmus liefert den ganzen Exponenten: "+M("<i>x</i> "+(q>0?"+ ":"− ")+Math.abs(q)+" = "+lgH(a,y)),"Berechne "+M(lgH(a,y)+" ≈ "+mnum(lg(a,y),4))+" und löse nach <i>x</i> auf."],
+          explain:M("<i>x</i> "+(q>0?"+ ":"− ")+Math.abs(q)+" = "+lgH(a,y)+" ≈ "+mnum(lg(a,y),4))+", also "+M("<i>x</i> ≈ "+mnum(x,3))
+        });
+      }else{
+        const a=choice([2,3,5]);let m1,m2,n1,n2,x;
+        do{m1=ri(1,4);m2=ri(1,4);x=ri(-3,6);n1=ri(-4,4);n2=n1+(m1-m2)*x;}
+        while(m1===m2||Math.abs(n2)>9||x===0);
+        numTask(T,{
+          prompt:"Löse die Gleichung. Beide Seiten haben dieselbe Basis.",
+          show:M(mnum(a,0)+"<sup>"+linX(m1,n1)+"</sup> = "+mnum(a,0)+"<sup>"+linX(m2,n2)+"</sup>"),
+          fields:[{label:"<i>x</i> =",ans:x,tol:1e-6,dec:0,aria:"Lösung x"}],
+          wrong:()=>"Bei gleicher Basis sind die <b>Exponenten</b> gleich. Setze "+M(linX(m1,n1)+" = "+linX(m2,n2))+" und löse diese Gleichung.",
+          hints:["Gleiche Basis auf beiden Seiten: Dann müssen die Exponenten gleich sein.","Löse "+M(linX(m1,n1)+" = "+linX(m2,n2))+" wie eine gewöhnliche Gleichung."],
+          explain:M(linX(m1,n1)+" = "+linX(m2,n2))+", also "+M("<i>x</i> = "+mnum(x,0))
+        });
+      }
+    }
+  }
+});
+
+/* =========================================================
+   ZUSATZ-TRAINER – Sachaufgaben: Verdopplungszeit, Halbwertszeit, Zielwert
+   ========================================================= */
+TR.push({
+  id:"sa",name:"Sachaufgaben: Zeit gesucht",art:"sa",noViz:true,optional:true,
+  blurb:"Wann hat sich etwas verdoppelt, halbiert oder einen Zielwert erreicht?",
+  levels:[{n:"Verdopplungszeit"},{n:"Halbwertszeit"},{n:"Zielwert"}],
+  start(T,lvl,stuetz){
+    const L=lv(lvl,stuetz),eff=L.eff;
+    if(eff===1||eff===2){
+      const dbl=eff===1,c=choice(dbl?CTX_UP:CTX_DN);
+      const p=dbl?choice([5,8,10,12,15,20,25,30,50]):choice([5,8,10,12,15,20,25,30]);
+      const a=r6(dbl?1+p/100:1-p/100),t=lg(a,dbl?2:0.5);
+      numTask(T,{
+        prompt:dbl?"Nach wie vielen "+c.u+" hat sich der Bestand verdoppelt? Runde auf zwei Nachkommastellen.":"Nach wie vielen "+c.u+" ist nur noch die Hälfte übrig? Runde auf zwei Nachkommastellen.",
+        text:c.s(ri(2,9)*100,p),
+        fields:[{label:"<i>T</i> ≈",ans:t,tol:0.0051,dec:2,aria:"Zeit"}],
+        wrong:(v)=>near(v,dbl?100/p:50/p,0.0051)?"Das ist die Faustregel für lineares Wachstum. Hier wächst der Wert auf den schon gewachsenen Wert weiter. Löse "+M(mnum(a,4)+"<sup><i>T</i></sup> = "+(dbl?"2":"0,5"))+".":"",
+        hints:["Der Anfangswert <i>b</i> spielt keine Rolle. Du suchst <i>T</i> mit "+M("<i>b</i> · "+mnum(a,4)+"<sup><i>T</i></sup> = "+(dbl?"2":"0,5")+" · <i>b</i>")+".","Teile durch <i>b</i>: "+M(mnum(a,4)+"<sup><i>T</i></sup> = "+(dbl?"2":"0,5")),"Dann gilt "+M("<i>T</i> = "+lgH(a,dbl?"2":"0,5"))+"."],
+        explain:M(mnum(a,4)+"<sup><i>T</i></sup> = "+(dbl?"2":"0,5")+" ⇒ <i>T</i> = "+lgH(a,dbl?"2":"0,5")+" ≈ "+mnum(t,2))+" "+c.u+"."
+      });
+    }else{
+      const up=Math.random()<.5,c=choice(up?CTX_UP:CTX_DN);
+      const b=choice([200,500,1000,2000,5000,800]);
+      const p=up?choice([5,8,10,12,15,20,25]):choice([5,8,10,12,15,20]);
+      const a=r6(up?1+p/100:1-p/100);
+      const Z=up?choice([2,3,4,5])*b:Math.round(b*choice([0.5,0.4,0.25,0.2,0.1]));
+      const t=lg(a,Z/b);
+      numTask(T,{
+        prompt:"Nach wie vielen "+c.u+" wird der Wert "+bg(Z)+" erreicht? Runde auf zwei Nachkommastellen.",
+        text:c.s(b,p),
+        fields:[{label:"<i>t</i> ≈",ans:t,tol:0.0051,dec:2,aria:"Zeit"}],
+        wrong:(v)=>near(v,Math.abs(Z-b)/(b*p/100),0.0101)?"Das wäre lineares Wachstum. Hier ändert sich der Wert jedes Mal um denselben <b>Prozentsatz</b>. Stelle die Gleichung "+M(bg(b)+" · "+mnum(a,4)+"<sup><i>t</i></sup> = "+bg(Z))+" auf.":"",
+        hints:["Stelle die Gleichung auf: "+M(bg(b)+" · "+mnum(a,4)+"<sup><i>t</i></sup> = "+bg(Z)),"Teile durch "+bg(b)+": "+M(mnum(a,4)+"<sup><i>t</i></sup> = "+mnum(Z/b,4)),"Dann gilt "+M("<i>t</i> = "+lgH(a,mnum(Z/b,4)))+"."],
+        explain:M(bg(b)+" · "+mnum(a,4)+"<sup><i>t</i></sup> = "+bg(Z)+" ⇒ <i>t</i> = "+lgH(a,mnum(Z/b,4))+" ≈ "+mnum(t,2))+" "+c.u+"."
+      });
+    }
+  }
+});
+
+const HALLE_SUB="Kapitel I · Grundlagen";
+function pipsFor(tr,p){
+  let pips="";
+  const nl=nLev(tr),base=tr.extra?3:nl;
+  for(let i=0;i<base;i++)pips+='<span class="pip'+(p.clean[i]>=NEED?" full":" open")+'"></span>';
+  if(tr.extra)pips+='<span class="pip xtra'+(p.clean[3]>=NEED?" full":" open")+'" title="Extra"></span>';
+  return pips;
+}
+function noteFor(tr,p){
+  const base=tr.extra?3:nLev(tr);let n=0;
+  for(let i=0;i<base;i++)if(p.clean[i]>=NEED)n++;
+  let t=n+" von "+base+" Stufen geschafft";
+  if(tr.extra&&p.clean[3]>=NEED)t+=" · Extra geschafft";
+  return t;
+}
+function showHalle(){
+  CUR=null;Dock.off();document.body.classList.remove("intr");
+  setBar("Übungshalle",HALLE_SUB);
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap"),tiles=div("tiles");
+  const MAIN=TR.filter(t=>!t.optional),OPT=TR.filter(t=>t.optional),N=MAIN.length,nDone=MAIN.filter(t=>DAY.done[t.id]).length,all=nDone>=DAYGOAL;
+  const head=div("hhead"+(all?" done":""));
+  head.innerHTML='<div><div class="kap">Mathematik 10 · Kapitel I</div><h2>Grundlagen-Halle Exponentielles Wachstum</h2><p>Sechs Trainer zu den Grundlagen von Kapitel I, genau passend für die Schulaufgabe. Such dir einen aus. Alle Stufen sind von Anfang an offen. Schätze selbst ein, wo du stehst, und starte dort. Wer fertig ist, findet in jedem Trainer einen optionalen Extra-Bereich mit schwierigeren Aufgaben.</p></div>'+
+    '<div class="dg"><span class="tx" aria-live="polite">'+(all?'✓ Tagesziel erreicht – '+nDone+' Trainer bearbeitet.':'Tagesziel: <b>'+nDone+' von '+DAYGOAL+'</b> Trainern bearbeitet')+'</span><span class="segs" role="img" aria-label="'+nDone+' von '+DAYGOAL+' Trainern bearbeitet">'+Array.from({length:DAYGOAL},(_,i)=>'<span class="seg'+(i<nDone?' on':'')+'"></span>').join("")+'</span></div>';
+  wrap.appendChild(head);
+  MAIN.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="tile";
+    b.innerHTML=(DAY.done[tr.id]?'<span class="today"><span aria-hidden="true">✓</span> heute bearbeitet</span>':'')+'<span class="art">'+ART[tr.art]()+'</span><span class="tb"><h3>'+tr.name+'</h3><p>'+tr.blurb+'</p><span class="pips">'+pipsFor(tr,p)+'</span><span class="pipnote">'+noteFor(tr,p)+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    tiles.appendChild(b);
+  });
+  wrap.appendChild(tiles);
+  OPT.forEach(tr=>{
+    const p=Prog.get(tr.id);
+    const b=document.createElement("button");b.type="button";b.className="zusatz";
+    b.innerHTML='<span class="art">'+ART[tr.art]()+'</span><span class="tb"><span class="optbadge">Optional · für Schnelle und Interessierte</span><h3>'+tr.name+'</h3><p>'+tr.blurb+' Zählt nicht zum Tagesziel.</p><span class="pips">'+pipsFor(tr,p)+'</span><span class="pipnote">'+noteFor(tr,p)+(DAY.done[tr.id]?" · heute bearbeitet":"")+'</span></span>';
+    b.addEventListener("click",()=>openTrainer(tr.id));
+    wrap.appendChild(b);
+  });
+  wrap.appendChild(div("rule","So zählt eine Aufgabe: Du löst sie mit höchstens einem Hinweis, ohne dass die Lösung angezeigt wird, und mit höchstens zwei Fehlversuchen. Eine solche Aufgabe hakt die Stufe ab. Du darfst jede Stufe jederzeit wählen. Wer ins Stolpern kommt, bekommt zwischendurch eine leichtere Stützaufgabe. Zum Tagesziel zählen die Stufen 1 bis 3. Der Extra-Bereich und der Zusatz-Trainer sind freiwillig. Deine abgehakten Stufen bleiben auf diesem Gerät gespeichert. Das Tagesziel beginnt bei jedem Öffnen der Seite neu."));
+  const rr=div("resetrow");
+  const lk=mkbtn("linkbtn","Fortschritt zurücksetzen",()=>{
+    rr.innerHTML="";
+    const cf=div("confirm");
+    cf.setAttribute("role","alertdialog");cf.setAttribute("aria-label","Fortschritt zurücksetzen");
+    cf.appendChild(div("","Möchtest du wirklich deinen gesamten gespeicherten Fortschritt zurücksetzen? Alle abgehakten Stufen werden gelöscht."));
+    const row=div("btnrow");
+    row.appendChild(mkbtn("btn ghost","Abbrechen",()=>{rr.innerHTML="";rr.appendChild(lk);}));
+    row.appendChild(mkbtn("btn danger","Ja, zurücksetzen",()=>{resetProgress();showHalle();}));
+    cf.appendChild(row);rr.appendChild(cf);
+  });
+  rr.appendChild(lk);wrap.appendChild(rr);
+  st.appendChild(wrap);
+  window.scrollTo(0,0);
+}
+
+function openTrainer(id){
+  const tr=trOf(id),p=Prog.get(id);
+  CUR={id:id,lvl:1};
+  document.body.classList.add("intr");
+  setBar(tr.name,"Übungshalle");
+  const st=$("stage");st.innerHTML="";
+  const wrap=div("wrap");wrap.innerHTML='<div class="lvlbar" id="lvlbar"></div><div id="taskhost"></div>';
+  st.appendChild(wrap);
+  renderLevelBar();nextTask();
+}
+function renderLevelBar(){
+  const bar=$("lvlbar");if(!bar||!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);bar.innerHTML="";
+  tr.levels.forEach((L,i)=>{
+    const n=i+1,locked=n>p.unlocked,isX=tr.extra&&n===4;
+    const b=document.createElement("button");b.type="button";
+    b.className="lvl"+(isX?" xtra":"")+(n===CUR.lvl?" sel":"")+(locked?" lock":"");
+    const nm=isX?"Extra":"Stufe "+n;
+    b.innerHTML="<b>"+nm+(isX?' <span class="optbadge">optional</span>':"")+"</b><small>"+L.n+"</small>"+(locked?'<span class="lk">noch gesperrt</span>':'<span class="dots"><i class="dot'+(p.clean[i]>=NEED?" on":"")+'"></i><span class="lk">'+(p.clean[i]>=NEED?"geschafft":"noch offen")+"</span></span>");
+    b.setAttribute("aria-label",nm+", "+L.n+(locked?", noch gesperrt":(p.clean[i]>=NEED?", geschafft":", noch offen")));
+    b.addEventListener("click",()=>{if(locked||n===CUR.lvl)return;CUR.lvl=n;renderLevelBar();nextTask();});
+    bar.appendChild(b);
+  });
+}
+function nextTask(){
+  if(!CUR)return;
+  const tr=trOf(CUR.id),p=Prog.get(CUR.id);
+  let stuetz=false;
+  if(p.hard>=2&&!TEACHER){stuetz=true;p.hard=0;}
+  const T=new Task(tr,CUR.lvl,stuetz);
+  window.__T=T;
+  tr.start(T,CUR.lvl,stuetz);
+  if(tr.extra&&CUR.lvl===4&&!stuetz)T.host_extra=true;
+  Dock.measure();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Merkhilfe ---------- */
+function openSheet(){$("veil").classList.add("on");$("sheet").classList.add("on");$("sheetclose").focus();}
+function closeSheet(){$("veil").classList.remove("on");$("sheet").classList.remove("on");}
+$("merk").addEventListener("click",openSheet);
+$("sheetclose").addEventListener("click",closeSheet);
+$("veil").addEventListener("click",closeSheet);
+document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeSheet();});
+$("back").addEventListener("click",showHalle);
+$("tmode").classList.toggle("on",TEACHER);
+
+/* =========================================================
+   Start
+   ========================================================= */
+loadProgress();
+showHalle();
+
+</script>
+</body>
+</html>
